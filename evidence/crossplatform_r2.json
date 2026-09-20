@@ -1,9 +1,9 @@
 {
   "schema": 1,
-  "utc": "2026-09-20T11:11:45.704114+00:00",
-  "version": "4.1.1-crossplatform-r2",
+  "utc": "2026-09-20T12:03:15.705095+00:00",
+  "version": "4.1.2-crossplatform-r2",
   "manifest": {
-    "sha256": "BA74AFF725697896AB852E271FBD17CEE2A45E1F4C92E240448F746801C1E062",
+    "sha256": "BB4E213BA45A9D94ECB1FABCA7DFC59F1401A03F92C782A2299AA1A7DB5B1F6F",
     "entries": 25,
     "mismatches": []
   },

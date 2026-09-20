@@ -1,9 +1,9 @@
 param([switch]$Smoke)
-# FreeNet Hub 4.0. One UI; explicit browser-scoped operations. No automatic system VPN.
+# FreeNet Hub 4.1.2. One UI; explicit browser-scoped operations. No automatic system VPN.
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $script:Root=Split-Path $PSScriptRoot -Parent
-$script:Task=$null;$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1')
+$script:Task=$null;$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
 function Read-Json([string]$p){if(!(Test-Path -LiteralPath $p)){return $null};if((Get-Item $p).Length -gt 4194304){throw 'RESULT_TOO_LARGE'};Get-Content -LiteralPath $p -Raw -Encoding utf8|ConvertFrom-Json -AsHashtable}
 function Write-Json([string]$p,$v){$t=$p+'.'+[guid]::NewGuid().ToString('N')+'.tmp';[IO.File]::WriteAllText($t,($v|ConvertTo-Json -Depth 18),[Text.UTF8Encoding]::new($false));[IO.File]::Move($t,$p,$true)}
 function Sanitize($v){if($v -is [Collections.IDictionary]){$r=@{};foreach($k in $v.Keys){$r[$k]=if($k -in @('private_key','token','password','secret','home','localProxy')){'[redacted]'}elseif($k -in @('ip','endpoint') -and !$script:C.ShowIp.IsChecked){'[hidden]'}else{Sanitize $v[$k]}};return $r};if($v -is [array]){return ,@(foreach($x in $v){Sanitize $x})};if($v -is [string]){return $v.Replace($env:USERPROFILE,'[USER]')};return $v}
@@ -44,15 +44,41 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   foreach($n in @('Connect','QuickConnect','QuickStop','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country')){$script:C[$n].IsEnabled=!$busy}
   $script:C.Cancel.IsEnabled=$busy;$script:C.Progress.IsIndeterminate=$busy
  }
+ function Friendly-Error([string]$code,$h=$null){
+  switch($code){
+   'NOT_CONNECTED'{return 'مسیر انتخاب‌شده متصل نیست. ابتدا «شروع اتصال» را بزنید، سپس دوباره بررسی کنید.'}
+   'PATH_NOT_READY'{return 'پردازش مسیر شروع شده اما پروکسی محلی هنوز آماده نیست. چند ثانیه صبر کنید یا اتصال را دوباره برقرار کنید.'}
+   'LOCAL_PROXY_UNREACHABLE'{return 'پروکسی محلی این مسیر در دسترس نیست؛ وضعیت اتصال با اجرای واقعی مسیر هم‌خوان نیست.'}
+   'PORT_OWNED_BY_ANOTHER_PROCESS'{return 'پورت محلی این مسیر توسط پردازشی خارج از مالکیت تأییدشدهٔ FreeNet Hub اشغال شده است.'}
+   'COUNTRY_MISMATCH_OR_UNKNOWN'{return 'HTTPS برقرار است، اما کشور خروجی با سیاست انتخاب‌شده تطابق ندارد یا قابل تأیید نیست.'}
+   'HTTPS_VERIFICATION_FAILED'{return 'مسیر متصل است، اما آزمون HTTPS کامل تأیید نشد. جزئیات آزمون را بررسی کنید.'}
+   'ALL_PATHS_FAILED'{
+    if($h -and $h.ContainsKey('attempts')){$x=@($h.attempts|ForEach-Object{$_.mode+': '+$_.reason});if($x.Count){return 'هیچ مسیر قابل‌قبولی برقرار نشد. '+($x -join ' | ')}}
+    return 'هیچ مسیر قابل‌قبولی برقرار نشد.'
+   }
+   'CONNECT_FIRST'{return 'این عملیات به یک مسیر فعال نیاز دارد. ابتدا اتصال را برقرار کنید.'}
+   'BROWSER_BLOCKED_PATH_UNHEALTHY'{return 'مرورگر باز نشد چون مسیر فعلی آزمون HTTPS را پاس نکرد.'}
+   default{return $(if($code){'خطا: '+$code}else{'عملیات کامل نشد. جزئیات فنی را بررسی کنید.'})}
+  }
+ }
  function Paint-Health{
   $h=$script:Health;if(!$h -or !$h.ContainsKey('mode') -or !$h.ContainsKey('checked')){return}
+  $state=$(if($h.ContainsKey('state')){[string]$h.state}else{''});$connected=$(if($h.ContainsKey('connected')){[bool]$h.connected}else{$true})
   $fresh=$false;try{$age=([DateTimeOffset]::UtcNow-[DateTimeOffset]::Parse($h.checked)).TotalSeconds;$fresh=$age -ge 0 -and $age -lt 65}catch{}
-  $script:C.RouteValue.Text=[string]$h.mode;$script:C.CountryValue.Text=if($h.country -eq 'T1'){'Tor / کشور نامعلوم'}elseif($h.country){$h.country}else{'نامشخص'}
-  $script:C.LatencyValue.Text=([math]::Round([double]$h.seconds*1000)).ToString()+' ms'
+  $script:C.RouteValue.Text=[string]$h.mode
+  if(!$connected -or $state -in @('NOT_CONNECTED','STARTING_OR_UNREADY','FOREIGN_OR_STALE_LISTENER','CONNECT_FAILED')){
+   $script:C.CountryValue.Text='—';$script:C.LatencyValue.Text='—';$script:C.IpValue.Text='—'
+   $script:C.StatusTitle.Text=$(switch($state){'STARTING_OR_UNREADY'{'مسیر هنوز آماده نیست'}'CONNECT_FAILED'{'اتصال برقرار نشد'}'FOREIGN_OR_STALE_LISTENER'{'تعارض روی پروکسی محلی'}default{'مسیر متصل نیست'}})
+   $script:C.StatusDetail.Text=Friendly-Error ([string]$h.error) $h
+   $script:C.SidebarState.Text='متصل نیست';$script:C.SidebarDetail.Text='آخرین بررسی: '+$h.checked
+   return
+  }
+  $script:C.CountryValue.Text=if($h.country -eq 'T1'){'Tor / کشور نامعلوم'}elseif($h.country){$h.country}else{'نامشخص'}
+  $script:C.LatencyValue.Text=if($h.healthy -and $null -ne $h.seconds){([math]::Round([double]$h.seconds*1000)).ToString()+' ms'}else{'—'}
   $script:C.IpValue.Text=if($script:C.ShowIp.IsChecked -and $h.ip){$h.ip}else{'IP پنهان'}
-  $script:C.StatusTitle.Text=if($h.healthy -and $fresh){'مسیر HTTPS تأیید شد'}elseif($h.healthy){'شاهد قبلی؛ وضعیت اکنون بررسی نشده'}else{'مسیر در آزمون اخیر تأیید نشد'}
-  $script:C.StatusDetail.Text=if($h.mode -eq 'CFON'){'کشور خروجی مطابق سیاست بررسی می‌شود؛ ترافیک بازی UDP تأیید نشده.'}else{'این نتیجهٔ آزمون وب است؛ ورود به حساب، رسانه و همهٔ انواع نشت آزمون جدا دارند.'}
-  $script:C.SidebarState.Text=if($h.healthy -and $fresh){'بررسی موفق'}else{'نیاز به بررسی'}
+  $script:C.StatusTitle.Text=if($h.healthy -and $fresh){'مسیر HTTPS تأیید شد'}elseif($h.healthy){'شاهد قبلی؛ وضعیت اکنون بررسی نشده'}else{'مسیر متصل است؛ HTTPS تأیید نشد'}
+  $script:C.StatusDetail.Text=if(!$h.healthy){Friendly-Error ([string]$h.error) $h}elseif($h.mode -eq 'CFON'){'کشور خروجی مطابق سیاست بررسی می‌شود؛ ترافیک بازی UDP تأیید نشده.'}else{'این نتیجهٔ آزمون وب است؛ ورود به حساب، رسانه و همهٔ انواع نشت آزمون جدا دارند.'}
+  $script:C.SidebarState.Text=if($h.healthy -and $fresh){'بررسی موفق'}elseif($h.healthy){'متصل / شاهد قدیمی'}else{'متصل / نیاز به بررسی'}
   $script:C.SidebarDetail.Text='آخرین شاهد: '+$h.checked
  }
  function Start-Work([string]$action,[string]$mode='AUTO',[string]$payload=''){
@@ -67,16 +93,16 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
  function Selected{return [string]$script:C.Mode.SelectedItem.Tag}
  function Cancel-Work{if($script:Task){[IO.File]::WriteAllText((Join-Path $script:Root ('jobs\'+$script:Job+'.cancel')),'user cancel');$script:Cancelled=$true;$script:C.Cancel.IsEnabled=$false;$script:C.StatusDetail.Text='لغو درخواست شد؛ منتظر ثبت نتیجه و پاک‌سازی محدود هستیم.'}}
  function Open-Doc([string]$file){$p=Join-Path $script:Root ('docs\'+$file);$psi=[Diagnostics.ProcessStartInfo]::new();$psi.FileName='notepad.exe';$psi.UseShellExecute=$false;[void]$psi.ArgumentList.Add($p);[void][Diagnostics.Process]::Start($psi)}
- $script:C.QuickConnect.Add_Click({Start-Work 'Connect' 'AUTO'})
- $script:C.Connect.Add_Click({$m=Selected;if($m -eq 'DIRECT' -and [Windows.MessageBox]::Show('این حالت IP اصلی را به سایت‌ها نشان می‌دهد و تونل نیست. ادامه؟','FreeNet Hub','YesNo','Warning') -ne 'Yes'){return};$script:Repairs=0;Start-Work 'Connect' $m})
- $script:C.Verify.Add_Click({$m=Selected;if($m -eq 'AUTO'){$m=$script:CurrentMode};if(!$m){$script:C.StatusDetail.Text='ابتدا یک مسیر مشخص انتخاب کنید.';return};Start-Work 'Verify' $m})
- $script:C.Browser.Add_Click({if(!$script:CurrentMode){$script:C.StatusDetail.Text='ابتدا مسیر را متصل و تأیید کنید.';return};Start-Work 'Browser' $script:CurrentMode})
+ $script:C.QuickConnect.Add_Click({$script:DesiredMode='AUTO';Start-Work 'Connect' 'AUTO'})
+ $script:C.Connect.Add_Click({$m=Selected;if($m -eq 'DIRECT' -and [Windows.MessageBox]::Show('این حالت IP اصلی را به سایت‌ها نشان می‌دهد و تونل نیست. ادامه؟','FreeNet Hub','YesNo','Warning') -ne 'Yes'){return};$script:DesiredMode=$m;$script:Repairs=0;Start-Work 'Connect' $m})
+ $script:C.Verify.Add_Click({$m=Selected;if($m -eq 'AUTO'){$m=if($script:CurrentMode){$script:CurrentMode}else{$script:DesiredMode}};if(!$m -or $m -eq 'AUTO'){$script:C.StatusTitle.Text='مسیر فعالی برای بررسی نیست';$script:C.StatusDetail.Text='ابتدا «شروع اتصال» را بزنید یا یک مسیر مشخص انتخاب کنید.';return};Start-Work 'Verify' $m})
+ $script:C.Browser.Add_Click({if(!$script:CurrentMode){$script:C.StatusTitle.Text='مرورگر باز نشد';$script:C.StatusDetail.Text=Friendly-Error 'CONNECT_FIRST';return};Start-Work 'Browser' $script:CurrentMode})
  $script:C.QuickStop.Add_Click({if([Windows.MessageBox]::Show('فقط پردازش‌های متعلق به FreeNet Hub 4 متوقف شوند؟ سایر VPNها و Firefox تغییر نمی‌کنند.','توقف محدود','YesNo','Question') -eq 'Yes'){Start-Work 'Stop'}})
  $script:C.Cancel.Add_Click({Cancel-Work})
  $script:C.Scan.Add_Click({Start-Work 'Scan'})
  $script:C.Inventory.Add_Click({Start-Work 'Inventory'})
  $script:C.Doctor.Add_Click({Start-Work 'Doctor'})
- $script:C.Speed.Add_Click({if(!$script:CurrentMode){$script:C.StatusDetail.Text='ابتدا یک مسیر متصل انتخاب کنید.';return};Start-Work 'Speed' $script:CurrentMode})
+ $script:C.Speed.Add_Click({if(!$script:CurrentMode){$script:C.StatusTitle.Text='آزمون سرعت اجرا نشد';$script:C.StatusDetail.Text=Friendly-Error 'CONNECT_FIRST';return};Start-Work 'Speed' $script:CurrentMode})
  $script:C.Updates.Add_Click({Start-Work 'Updates'})
  $script:C.Export.Add_Click({Start-Work 'Export'})
  $script:C.ShowIp.Add_Click({Paint-Health;if($script:Last){$script:C.Details.Text=(Sanitize $script:Last)|ConvertTo-Json -Depth 15}})
@@ -109,26 +135,51 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
      $ec=$script:Task.ExitCode;$script:Task.Dispose();$script:Task=$null;$r=Read-Json (Join-Path $script:Root ('jobs\'+$script:Job+'.json'))
      if(!$r -or $r.job -ne $script:Job -or $r.action -ne $script:Action -or $r.exit -ne $ec){$r=@{exit=1;result=@{error='RESULT_PROTOCOL_MISMATCH'};action=$script:Action}}
      $script:Last=$r;$script:C.Details.Text=(Sanitize $r)|ConvertTo-Json -Depth 16
-     if($r.exit -ne 0){if($r.result.ContainsKey('healthy') -and $r.result.ContainsKey('mode')){$script:Health=$r.result}elseif($script:Action -in @('Verify','Connect') -and $script:Health){$script:Health.healthy=$false};$script:C.StatusTitle.Text=if($r.exit -eq 20){'عملیات لغو شد'}elseif($r.exit -eq 124){'مهلت تلاش تمام شد'}else{'درخواست تأیید نشد'};$script:C.StatusDetail.Text=if($r.result.ContainsKey('error')){[string]$r.result.error}else{'برای جزئیات، زبانهٔ ابزارها را ببینید.'};$script:C.SidebarState.Text='تأیید نشده';if($script:Action -eq 'Verify'){$script:Failures++}}
-     elseif($r.result.ContainsKey('healthy')){$script:Health=$r.result;if($r.result.healthy){$script:CurrentMode=$r.result.mode;$script:Failures=0};Paint-Health}
-     else{$script:C.StatusTitle.Text='درخواست انجام شد';$script:C.StatusDetail.Text='نتیجهٔ دقیق در زبانهٔ ابزارها ثبت شد؛ این پیام لزوماً اتصال موفق نیست.';if($r.action -eq 'Stop'){$script:CurrentMode='';$script:Health=$null;$script:C.SidebarState.Text='قطع شده'};if($r.action -eq 'Scan'){$script:C.ScanSummary.Text='ترتیب نمونهٔ اخیر: '+($r.result.rank -join ' → ')};if($r.action -eq 'Inventory'){$script:C.BridgeStatus.Text=($r.result.providers|Where-Object{$_.mode -in @('WEBTUNNEL','OBFS4')}|ForEach-Object{$_.mode+': '+$_.state}) -join "`r`n"}}
+     if($r.result.ContainsKey('healthy') -and $r.result.ContainsKey('mode')){
+      $script:Health=$r.result
+      if($r.result.healthy){$script:CurrentMode=[string]$r.result.mode;$script:DesiredMode=$script:CurrentMode;$script:Failures=0}
+      else{
+       $conn=$(if($r.result.ContainsKey('connected')){[bool]$r.result.connected}else{$true})
+       if(!$conn -and $script:CurrentMode -eq [string]$r.result.mode){$script:CurrentMode=''}
+       if($script:Action -eq 'Verify'){$script:Failures++}
+      }
+      Paint-Health
+     }
+     elseif($r.exit -ne 0){$script:C.StatusTitle.Text=if($r.exit -eq 20){'عملیات لغو شد'}elseif($r.exit -eq 124){'مهلت زمانی تمام شد'}else{'عملیات انجام نشد'};$script:C.StatusDetail.Text=Friendly-Error $(if($r.result.ContainsKey('error')){[string]$r.result.error}else{''}) $r.result;$script:C.SidebarState.Text='نیاز به بررسی'}
+     else{
+      $script:C.StatusTitle.Text='عملیات انجام شد';$script:C.StatusDetail.Text='تغییر فقط در محدودهٔ اعلام‌شده انجام شد؛ برای نتیجهٔ شبکه از دکمه بررسی استفاده کنید.'
+      if($r.action -eq 'Stop'){$script:CurrentMode='';$script:DesiredMode='';$script:Health=$null;$script:C.SidebarState.Text='بدون اتصال'}
+      if($r.action -eq 'Scan'){$script:C.ScanSummary.Text='ترتیب پیشنهادی فعلی: '+($r.result.rank -join ' ← ')}
+      if($r.action -eq 'Inventory'){
+       $script:C.BridgeStatus.Text=($r.result.providers|Where-Object{$_.mode -in @('WEBTUNNEL','OBFS4')}|ForEach-Object{$_.mode+': '+$_.state}) -join [Environment]::NewLine
+       $running=@($r.result.providers|Where-Object{$_.state -in @('CONNECTED_NOT_VERIFIED','STARTING_OR_UNREADY')})
+       if($running.Count -eq 1){$script:CurrentMode=[string]$running[0].mode;$script:DesiredMode=$script:CurrentMode;$script:C.StatusTitle.Text='مسیر فعال شناسایی شد';$script:C.StatusDetail.Text=$script:CurrentMode+' فعال است؛ برای شاهد HTTPS تازه «بررسی مسیر انتخاب‌شده» را بزنید.';$script:C.SidebarState.Text='فعال / تأیید نشده'}
+       elseif($running.Count -gt 1){$script:CurrentMode='';$script:C.StatusTitle.Text='چند مسیر فعال شناسایی شد';$script:C.StatusDetail.Text='برای جلوگیری از ابهام، مسیر موردنظر را انتخاب و وضعیت را بررسی کنید.';$script:C.SidebarState.Text='نیاز به بررسی'}
+       elseif(!$script:Health){$script:CurrentMode='';$script:C.StatusTitle.Text='آماده برای اتصال';$script:C.StatusDetail.Text='هیچ مسیر مدیریت‌شده‌ای فعال نیست. مسیر را انتخاب و «شروع اتصال» را بزنید.';$script:C.SidebarState.Text='بدون اتصال'}
+      }
+     }
      Set-Busy;$script:NextCheck=[DateTime]::UtcNow.AddSeconds(45);$script:C.Elapsed.Text='عملیات پایان یافت؛ اتصال کل سیستم تغییر نکرد.'
     }
    }else{
     if($script:Tick % 25 -eq 0){Paint-Health}
-    if(!$Smoke -and $script:C.Monitor.IsChecked -and $script:CurrentMode -and [DateTime]::UtcNow -ge $script:NextCheck){
+    if(!$Smoke -and $script:C.Monitor.IsChecked -and $script:DesiredMode -and [DateTime]::UtcNow -ge $script:NextCheck){
      $script:NextCheck=[DateTime]::UtcNow.AddSeconds(90)
-     if($script:C.AutoRepair.IsChecked -and $script:Failures -ge 3 -and $script:Repairs -lt 2){$script:Repairs++;$script:Failures=0;Start-Work 'Connect' $script:CurrentMode}else{Start-Work 'Verify' $script:CurrentMode}
+     if(!$script:CurrentMode){
+      if($script:C.AutoRepair.IsChecked -and $script:Repairs -lt 2){$script:Repairs++;$script:Failures=0;Start-Work 'Connect' $script:DesiredMode}
+      else{$script:C.SidebarState.Text='قطع / بازیابی خاموش';$script:C.StatusDetail.Text='مسیر فعال نیست و بازیابی خودکار خاموش است.'}
+     }
+     elseif($script:C.AutoRepair.IsChecked -and $script:Failures -ge 3 -and $script:Repairs -lt 2){$script:Repairs++;$script:Failures=0;Start-Work 'Connect' $script:DesiredMode}
+     else{Start-Work 'Verify' $script:CurrentMode}
     }
    }
    if($Smoke -and $script:Tick -ge 6 -and !$script:Task){
     $script:Window.UpdateLayout();$b=[Windows.Media.Imaging.RenderTargetBitmap]::new([int]$script:Window.ActualWidth,[int]$script:Window.ActualHeight,96,96,[Windows.Media.PixelFormats]::Pbgra32);$b.Render($script:Window)
     $encoder=[Windows.Media.Imaging.PngBitmapEncoder]::new();$encoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($b));$f=[IO.File]::Create((Join-Path $script:Root 'evidence\UI.png'));try{$encoder.Save($f)}finally{$f.Dispose()}
-    Write-Json (Join-Path $script:Root 'evidence\gui.json') @{utc=[DateTime]::UtcNow.ToString('o');visible=$script:Window.IsVisible;controls=$script:C.Count;width=$script:Window.ActualWidth;height=$script:Window.ActualHeight;ticks=$script:Tick;topmost=$script:Window.Topmost;networkRequested=$false;theme=$script:Settings.theme;workerAction=$(if($script:Last){$script:Last.action}else{''});workerExit=$(if($script:Last){$script:Last.exit}else{-1})};$script:AllowClose=$true;$script:Window.Close()
+    Write-Json (Join-Path $script:Root 'evidence\gui.json') @{utc=[DateTime]::UtcNow.ToString('o');visible=$script:Window.IsVisible;controls=$script:C.Count;width=$script:Window.ActualWidth;height=$script:Window.ActualHeight;ticks=$script:Tick;topmost=$script:Window.Topmost;networkRequested=$false;theme=$script:Settings.theme;workerAction=$(if($script:Last){$script:Last.action}else{''});workerExit=$(if($script:Last){$script:Last.exit}else{-1});currentMode=$script:CurrentMode;desiredMode=$script:DesiredMode;statusTitle=$script:C.StatusTitle.Text;statusDetail=$script:C.StatusDetail.Text;latency=$script:C.LatencyValue.Text;country=$script:C.CountryValue.Text;sidebarState=$script:C.SidebarState.Text};$script:AllowClose=$true;$script:Window.Close()
    }
   }catch{$script:C.StatusTitle.Text='خطای نمایش نتیجه';$script:C.Details.Text=$_.Exception.ToString()}
  })
- $script:Window.Add_ContentRendered({[void]$script:Window.Activate();[void]$script:C.Connect.Focus();if($Smoke){Start-Work 'Inventory'}})
+ $script:Window.Add_ContentRendered({[void]$script:Window.Activate();[void]$script:C.Connect.Focus();if($script:SmokeVerifyMode){Start-Work 'Verify' $script:SmokeVerifyMode}else{Start-Work 'Inventory'}})
  Set-Busy;$script:Timer.Start();[void]$script:Window.ShowDialog()
 }catch{
  $msg=$_.Exception.ToString();[IO.File]::WriteAllText((Join-Path $script:Root 'logs\ui-error.txt'),$msg,[Text.UTF8Encoding]::new($false));try{Add-Type -AssemblyName PresentationFramework;[Windows.MessageBox]::Show($msg,'FreeNet Hub — startup error')|Out-Null}catch{};exit 1

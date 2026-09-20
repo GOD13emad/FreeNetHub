@@ -28,3 +28,7 @@ crossplatform/android/.gradle/
 crossplatform/android/**/build/
 crossplatform/ios/*.xcodeproj/
 DerivedData/
+
+session.json
+evidence/UI*.png
+evidence/gui.json

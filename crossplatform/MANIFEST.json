@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "version": "4.1.1-crossplatform-r2",
+  "version": "4.1.2-crossplatform-r2",
   "files": [
     {
       "file": "android/app/build.gradle.kts",
       "bytes": 254,
-      "sha256": "E0F71EB9CA5A496D7A188C8CAE1CE650B971E12D3070B354608AA8E9F66F343E"
+      "sha256": "66489B5CB015BAABE883177F28F7BBA779A701DA4737576F2BDA265413871EF6"
     },
     {
       "file": "android/app/src/main/AndroidManifest.xml",
@@ -20,7 +20,7 @@
     {
       "file": "android/app/src/main/java/com/freenethub/mobile/MainActivity.kt",
       "bytes": 1044,
-      "sha256": "BF820D30F2989ED58AB7C9B65D688A54FA121024D505F974A2BAC2587E5BCDD9"
+      "sha256": "9FF74EC8DB75CFA65DDEA74BBBDE814CADFD827B0A2FA2F27CDB55A303B7CEB9"
     },
     {
       "file": "android/build.gradle.kts",
@@ -50,12 +50,12 @@
     {
       "file": "common/platform_matrix.json",
       "bytes": 775,
-      "sha256": "6C7F239FB61E0A8BB475A526F1FFF9EE47111E55026A34E1B827EF74AE1A38FD"
+      "sha256": "97846288A6579F2E271B16A5348312EACEB34FC786025F6962CA371828279EF2"
     },
     {
       "file": "ios/FreeNetHub/ContentView.swift",
       "bytes": 361,
-      "sha256": "E6CC96E5AFDA43B42358061A3B46219C0FFDCA911F4EA9DE3705E0214BE29E69"
+      "sha256": "974B390DE7F3D7022246405CD9B6858E9EC07712F7AD7565D64D76FA58FCBF83"
     },
     {
       "file": "ios/FreeNetHub/FreeNetHub.entitlements",
@@ -95,7 +95,7 @@
     {
       "file": "linux/freenet_hub_linux.py",
       "bytes": 6239,
-      "sha256": "F1198EA7F4F45E4D847CB99CDB6C68F6C1DC2AD6FEE4BA8A92B3754284DBE80D"
+      "sha256": "310D6958D02882CB3005EB99573A1FEFDEE8CF7B6B223CA6AD59302F22EB7F88"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -125,7 +125,7 @@
     {
       "file": "README_FA.md",
       "bytes": 301,
-      "sha256": "2A818143119C4F7064C9EC5C2516AAC453A144A4ECD5437DCD63DFC6D99F1B30"
+      "sha256": "CA5C13F20E40462F076EC637F7C531DE8C81E4985FD9941A56B6196C2A8EEB1E"
     }
   ]
 }

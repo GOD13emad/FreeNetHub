@@ -1,27 +1,32 @@
 {
-  "utc": "2026-09-20T07:25:05.7769188+00:00",
+  "utc": "2026-09-20T12:01:23.2377203+00:00",
   "product": "FreeNet Hub",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "targetRuntimeAccepted": true,
   "scope": "BROWSER_PROXY",
+  "state": "TARGET_RUNTIME_ACCEPTED",
   "checks": {
-    "exeExists": true,
-    "exeVersion": "4.1.1.0",
-    "shortcutTargetsExe": true,
-    "shortcutUsesExeIcon": true,
+    "reportedVerifyDisconnected": "PASS",
+    "activeProviderReconcile": "PASS",
+    "warpConnectVerifyCleanup": "PASS",
     "singleInstance": true,
     "minimizeHiddenToTray": true,
     "restoredVisible": true,
     "taskbarWindowIconSet": true,
     "processAppUserModelIdSet": true,
-    "appUserModelIdResult": 0,
     "noTerminalProcesses": true,
-    "hostedGuiSmoke": true,
-    "unitSuite": true,
-    "routeUnchanged": true,
-    "proxyUnchanged": true,
-    "projectListenersEmpty": true
+    "networkPrePostUnchanged": true
   },
-  "acceptedExeSha256": "CD784B72A1F0BA851D8FA97EE8393D6927C180E071024A65558EC9678719E27A",
-  "note": "Sanitized target acceptance summary. Full-system VPN/TUN remains outside the accepted scope."
+  "acceptedHashes": {
+    "engine": "7B67C9A3536F048445AC90E1D0FF13FC60DD4645E5EDD2082EE5C9DDB0BBE690",
+    "ui": "F7A762826B77AFC510776B857E01F55DB897BF407B65C3969399324166998924",
+    "view": "5D63C190BBE819BD8CB281EC3299C2D0A0B1EAF60A7592D91C2518FD84D832A9",
+    "appManifest": "08E57C399529AA1E925C8AA6D73497DBCD647D39D2EDFC7330D4521144717F9A",
+    "desktopExe": "6983634C84325E36D0522917EB1610C40FEAC990A45D6B2EA605DCC7E7FC22A2",
+    "unitEvidence": "C924E1964A7A1A7AC048C7FFA5F584F106E08149FBA2422A4D2A6E56CA6434E5",
+    "disconnectedUi": "BBCBA2E619A5352137933E97613401F67F7DF169928984194BA2BD5346CA94B2",
+    "activeUi": "8D273319A63892644552DD0A064386F83D8D560934B6D72AF97DAFDA962EE6C6",
+    "shellRuntime": "32FAFAC04C8B7D3A3371F65795542D07344AA5350F0109E810F4DD634D8A90ED"
+  },
+  "note": "Accepted for Windows browser/proxy scope only. Full-system TUN/kill-switch/leak/UDP/soak remain open."
 }

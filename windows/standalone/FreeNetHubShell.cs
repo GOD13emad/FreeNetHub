@@ -11,8 +11,8 @@ using System.Reflection;
 [assembly: AssemblyProduct("FreeNet Hub")]
 [assembly: AssemblyDescription("Standalone desktop shell for FreeNet Hub")]
 [assembly: AssemblyCompany("FreeNet Hub")]
-[assembly: AssemblyVersion("4.1.1.0")]
-[assembly: AssemblyFileVersion("4.1.1.0")]
+[assembly: AssemblyVersion("4.1.2.0")]
+[assembly: AssemblyFileVersion("4.1.2.0")]
 
 internal static class Native
 {

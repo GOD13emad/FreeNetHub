@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "product": "FreeNet Hub",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "platforms": {
     "windows": {
       "status": "ACCEPTED_BROWSER_PROXY",

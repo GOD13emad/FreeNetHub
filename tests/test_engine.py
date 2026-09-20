@@ -104,6 +104,30 @@ class Unit(unittest.TestCase):
    s.bind(('127.0.0.1',0));s.listen();port=s.getsockname()[1]
    with patch.dict(E.PORTS,{'TEST':port}),patch.object(E,'owned',return_value=None),patch.object(E,'recover_owned',return_value=None):
     with self.assertRaisesRegex(RuntimeError,'PORT_OWNED'):E.start('TEST')
+ def test_verify_disconnected_managed_path_does_not_curl(self):
+  with patch.object(E,'owned',return_value=None),patch.object(E,'port_open',return_value=False),patch.object(E,'probe') as pr:
+   r=E.verify('WARP');self.assertFalse(r['healthy']);self.assertFalse(r['connected']);self.assertEqual(r['state'],'NOT_CONNECTED');self.assertEqual(r['error'],'NOT_CONNECTED');self.assertIsNone(r['seconds']);pr.assert_not_called()
+ def test_verify_starting_path_does_not_curl(self):
+  fake={'pid':1,'path':'x','created':1}
+  with patch.object(E,'owned',return_value=fake),patch.object(E,'port_open',return_value=False),patch.object(E,'probe') as pr:
+   r=E.verify('WARP');self.assertEqual(r['state'],'STARTING_OR_UNREADY');self.assertEqual(r['error'],'PATH_NOT_READY');pr.assert_not_called()
+ def test_verify_foreign_listener_does_not_curl(self):
+  with patch.object(E,'owned',return_value=None),patch.object(E,'port_open',return_value=True),patch.object(E,'recover_owned',return_value=None),patch.object(E,'probe') as pr:
+   r=E.verify('WARP');self.assertEqual(r['state'],'FOREIGN_OR_STALE_LISTENER');self.assertEqual(r['error'],'PORT_OWNED_BY_ANOTHER_PROCESS');pr.assert_not_called()
+ def test_verify_connected_marks_connection_state(self):
+  fake={'pid':1,'path':'x','created':1};healthy={'healthy':True,'mode':'WARP','error':'','seconds':.2}
+  with patch.object(E,'owned',return_value=fake),patch.object(E,'port_open',return_value=True),patch.object(E,'probe',return_value=healthy):
+   r=E.verify('WARP');self.assertTrue(r['connected']);self.assertEqual(r['state'],'CONNECTED_HEALTHY')
+ def test_probe_failure_hides_latency_and_classifies_dead_proxy(self):
+  with patch.object(E,'curl',side_effect=[{'exit':7,'code':'000','body':'','seconds':2.0},{'exit':7,'code':'000','seconds':2.0}]):
+   r=E.probe('WARP');self.assertFalse(r['healthy']);self.assertIsNone(r['seconds']);self.assertEqual(r['error'],'LOCAL_PROXY_UNREACHABLE')
+ def test_inventory_distinguishes_connected_and_foreign_listener(self):
+  fake={'pid':1,'path':'x','created':1}
+  with patch.object(E,'deps',return_value={'warp':{'path':sys.executable},'tor':{'path':sys.executable}}),patch.object(E,'owned',side_effect=lambda m: fake if m=='WARP' else None),patch.object(E,'port_open',side_effect=lambda port: port in (E.PORTS['WARP'],E.PORTS['TOR'])),patch.object(E,'settings',return_value=E.DEFAULT):
+   rows={x['mode']:x for x in E.inventory()['providers']};self.assertEqual(rows['WARP']['state'],'CONNECTED_NOT_VERIFIED');self.assertEqual(rows['TOR']['state'],'LISTENER_PRESENT_NOT_OWNED')
+ def test_connect_failure_is_structured_for_ui(self):
+  with patch.object(E,'settings',return_value=E.DEFAULT|{'order':['WARP']}),patch.object(E,'ensure',side_effect=RuntimeError('PATH_NOT_VERIFIED_WARP')),patch.object(E,'write'):
+   r=E.dispatch('Connect','AUTO','');self.assertFalse(r['healthy']);self.assertFalse(r['connected']);self.assertEqual(r['state'],'CONNECT_FAILED');self.assertEqual(r['error'],'ALL_PATHS_FAILED');self.assertIsNone(r['seconds'])
  def test_missing_bridge_skipped(self):
   if (R/'data'/'bridges_webtunnel.txt').exists():self.skipTest('user supplied bridge')
   with self.assertRaisesRegex(ValueError,'MISSING_PRIVATE'):E.ensure('WEBTUNNEL')

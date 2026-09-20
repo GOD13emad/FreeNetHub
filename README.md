@@ -1,6 +1,6 @@
 # FreeNet Hub
 
-FreeNet Hub 4.1.1 is an explicit-connect desktop connectivity control center. The accepted Windows scope is browser/proxy routing, not a system-wide VPN.
+FreeNet Hub 4.1.2 is an explicit-connect desktop connectivity control center. The accepted Windows scope is browser/proxy routing, not a system-wide VPN.
 
 ## Current evidence-backed status
 
@@ -12,7 +12,7 @@ Android: native VpnService integration/build pack. The forwarding core is intent
 
 iOS: native NEPacketTunnelProvider integration/build pack. It fails closed until forwarding core, signing and entitlement runtime gates are completed.
 
-The Windows acceptance summary is in evidence/PUBLISH_ACCEPTANCE_20260920.json. Full-system TUN, system kill-switch, DNS/IPv6 leak capture, UDP/game acceptance, long soak, and mobile runtime gates remain explicitly unproven/open.
+The current Windows acceptance authority is in evidence/STATE_VERIFY_UX_412_ACCEPTANCE.json. Version 4.1.2 also fixes connection-state verification: verifying a disconnected managed path now reports NOT_CONNECTED without probing a dead local proxy or displaying failed-request time as latency. Full-system TUN, system kill-switch, DNS/IPv6 leak capture, UDP/game acceptance, long soak, and mobile runtime gates remain explicitly unproven/open.
 
 ## Windows
 

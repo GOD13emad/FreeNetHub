@@ -89,13 +89,18 @@ def trace(text):
 
 def probe(mode,proxy=None,required_country=None):
  if proxy is None:proxy='' if mode=='DIRECT' else settings()['localProxy'] if mode=='CUSTOM' else f'socks5h://127.0.0.1:{PORTS[mode]}'
- progress('آزمون IP و HTTPS از مسیر انتخاب‌شده',mode)
+ progress('در حال بررسی IP و HTTPS مسیر انتخاب‌شده',mode)
  a=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy);t=trace(a['body'])
  b=curl('https://www.youtube.com/generate_204',proxy,body=False)
  good=bool(a['exit']==0 and a['code']=='200' and t and b['exit']==0 and b['code']=='204')
  c=required_country or (settings()['country'] if mode=='CFON' else '')
- if c and c!='AUTO' and t.get('loc')!=c:good=False
- return {'healthy':good,'mode':mode,'scope':'BROWSER_HTTPS','ip':t.get('ip',''),'country':t.get('loc',''),'warp':t.get('warp',''),'seconds':b['seconds'],'checked':now(),'checks':[{'name':'Cloudflare HTTPS trace','code':a['code'],'exit':a['exit']},{'name':'YouTube HTTPS','code':b['code'],'exit':b['exit']}],'countryPolicy':c,'error':('COUNTRY_MISMATCH_OR_UNKNOWN' if c and c!='AUTO' and t.get('loc')!=c else ''),'applicationAcceptance':'NOT_TESTED'}
+ country_bad=bool(c and c!='AUTO' and t.get('loc')!=c)
+ if country_bad:good=False
+ error=''
+ if country_bad:error='COUNTRY_MISMATCH_OR_UNKNOWN'
+ elif proxy and (a['exit']==7 or b['exit']==7):error='LOCAL_PROXY_UNREACHABLE'
+ elif not good:error='HTTPS_VERIFICATION_FAILED'
+ return {'healthy':good,'mode':mode,'scope':'BROWSER_HTTPS','ip':t.get('ip',''),'country':t.get('loc',''),'warp':t.get('warp',''),'seconds':b['seconds'] if good else None,'checked':now(),'checks':[{'name':'Cloudflare HTTPS trace','code':a['code'],'exit':a['exit']},{'name':'YouTube HTTPS','code':b['code'],'exit':b['exit']}],'countryPolicy':c,'error':error,'applicationAcceptance':'NOT_TESTED'}
 
 # Windows process identity: exact executable, creation time and process ID, not name/port alone.
 def identity(pid):
@@ -213,6 +218,22 @@ def port_open(port):
   with socket.create_connection(('127.0.0.1',int(port)),timeout=.25):return True
  except OSError:return False
 
+def disconnected_health(mode,state='NOT_CONNECTED',error='NOT_CONNECTED'):
+ return {'healthy':False,'connected':False,'state':state,'mode':mode,'scope':'BROWSER_HTTPS','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':[],'countryPolicy':'','error':error,'applicationAcceptance':'NOT_TESTED'}
+
+def verify(mode):
+ if mode in PORTS:
+  r=owned(mode);opened=port_open(PORTS[mode])
+  if not r and opened:r=recover_owned(mode)
+  if not r:
+   return disconnected_health(mode,'FOREIGN_OR_STALE_LISTENER' if opened else 'NOT_CONNECTED','PORT_OWNED_BY_ANOTHER_PROCESS' if opened else 'NOT_CONNECTED')
+  if not opened:return disconnected_health(mode,'STARTING_OR_UNREADY','PATH_NOT_READY')
+  h=probe(mode);h['connected']=True;h['state']='CONNECTED_HEALTHY' if h['healthy'] else 'CONNECTED_UNHEALTHY'
+  if h.get('error')=='LOCAL_PROXY_UNREACHABLE':
+   h['connected']=False;h['state']='NOT_CONNECTED'
+  return h
+ h=probe(mode);h['state']='HEALTHY' if h['healthy'] else 'UNHEALTHY';return h
+
 def bridge_lines(text,transport):
  if transport not in ('webtunnel','obfs4'):raise ValueError('BRIDGE_TYPE_UNSUPPORTED')
  lines=[]
@@ -284,10 +305,11 @@ def ensure(mode):
  if mode in ('WEBTUNNEL','OBFS4') and not (ROOT/'data'/('bridges_'+mode.lower()+'.txt')).exists():raise ValueError('MISSING_PRIVATE_BRIDGES')
  if owned(mode):
   h=probe(mode)
-  if h['healthy']:return h
+  if h['healthy']:
+   h['connected']=True;h['state']='CONNECTED_HEALTHY';return h
   stop(mode)
  for scan in ((False,True) if mode in ('WARP','GOOL','CFON') else (False,)):
-  check();progress('در حال برقراری مسیر؛ بدون تغییر شبکهٔ ویندوز',mode);starter=start(mode,scan)
+  check();progress('در حال راه‌اندازی و تأیید مسیر',mode);starter=start(mode,scan)
   end=min(DEADLINE,time.monotonic()+(100 if scan else 65 if mode in ('WARP','GOOL') else 110));grace=time.monotonic()+5
   while time.monotonic()<end:
    check()
@@ -300,6 +322,7 @@ def ensure(mode):
    if port_open(PORTS[mode]):
     h=probe(mode)
     if h['healthy']:
+     h['connected']=True;h['state']='CONNECTED_HEALTHY'
      if mode in ('WARP','GOOL','CFON'):
       log=(ROOT/'data'/mode/'stdout.log').read_text(encoding='utf-8',errors='replace')[-50000:]
       matches=re.findall(r'using warp endpoints.*?\[([\d.]+:\d+)',log)
@@ -312,22 +335,24 @@ def ensure(mode):
 
 def browser(mode):
  s=settings();proxy=local_proxy(s['localProxy']) if mode=='CUSTOM' else '' if mode=='DIRECT' else f'socks5://127.0.0.1:{PORTS[mode]}'
- h=probe(mode)
- if not h['healthy']:raise ValueError('BROWSER_BLOCKED_PATH_UNHEALTHY')
+ h=verify(mode)
+ if not h['healthy']:
+  if h.get('connected') is False:raise ValueError('CONNECT_FIRST')
+  raise ValueError('BROWSER_BLOCKED_PATH_UNHEALTHY')
  profile=ROOT/'data'/('Browser_'+mode);profile.mkdir(exist_ok=True)
  args=[deps()['chrome'],f'--user-data-dir={profile}','--no-first-run','--no-default-browser-check','--disable-quic','--force-webrtc-ip-handling-policy=disable_non_proxied_udp']
- if proxy:args +=['--proxy-server='+proxy.replace('socks5h:','socks5:'),'--proxy-bypass-list=<-loopback>','--host-resolver-rules=MAP * ~NOTFOUND , EXCLUDE 127.0.0.1','--dns-prefetch-disable']
- else:args+=['--no-proxy-server']
- args+=[s['home']];sp.Popen(args,stdin=sp.DEVNULL,stdout=sp.DEVNULL,stderr=sp.DEVNULL,creationflags=FLAGS,close_fds=True)
- return h|{'browser':'LAUNCH_REQUESTED_NOT_PAGE_ACCEPTANCE'}
+ if proxy:args+=[f'--proxy-server={proxy}','--proxy-bypass-list=<-loopback>','--host-resolver-rules=MAP * ~NOTFOUND , EXCLUDE 127.0.0.1']
+ args+=[s['home']]
+ sp.Popen(args,stdin=sp.DEVNULL,stdout=sp.DEVNULL,stderr=sp.DEVNULL,creationflags=FLAGS,cwd=str(ROOT),env=env(),close_fds=True)
+ return {'launched':True,'mode':mode,'health':h}
 
 def inventory():
  d=deps();r=[]
  for mode in PORTS:
   name='warp' if mode in ('WARP','GOOL','CFON') else 'tor'
-  f=ROOT/'data'/('bridges_'+mode.lower()+'.txt')
-  state='RUNNING_NOT_HEALTH_CHECKED' if owned(mode) else 'AVAILABLE_NOT_CONNECTED'
-  if mode in ('WEBTUNNEL','OBFS4') and not f.exists():state='MISSING_PRIVATE_BRIDGES'
+  f=ROOT/'data'/('bridges_'+mode.lower()+'.txt');o=owned(mode);opened=port_open(PORTS[mode])
+  state='CONNECTED_NOT_VERIFIED' if o and opened else 'STARTING_OR_UNREADY' if o else 'LISTENER_PRESENT_NOT_OWNED' if opened else 'AVAILABLE_NOT_CONNECTED'
+  if mode in ('WEBTUNNEL','OBFS4') and not f.exists() and not o:state='MISSING_PRIVATE_BRIDGES'
   r.append({'mode':mode,'state':state,'port':PORTS[mode],'installed':pathlib.Path(d[name]['path']).exists()})
  return {'providers':r,'settings':settings(),'fullSystem':'NOT_VALIDATED_DISABLED','systemMutation':False,'utc':now()}
 
@@ -359,12 +384,15 @@ def dispatch(action,mode,payload):
   for m in candidates:
    try:
     h=probe(m) if m in ('CUSTOM','DIRECT') else ensure(m)
-    if h['healthy']:write(ROOT/'session.json',h);return h
+    if h['healthy']:
+     if m not in PORTS:h['state']='HEALTHY'
+     write(ROOT/'session.json',h);return h
     failed.append({'mode':m,'reason':h['error'] or 'HTTPS_FAILED'})
    except (ValueError,RuntimeError) as e:failed.append({'mode':m,'reason':str(e)})
-  return {'healthy':False,'attempts':failed}
+  h={'healthy':False,'connected':False,'state':'CONNECT_FAILED','mode':mode,'scope':'BROWSER_HTTPS','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':[],'countryPolicy':'','error':'ALL_PATHS_FAILED','attempts':failed,'applicationAcceptance':'NOT_TESTED'}
+  write(ROOT/'session.json',h);return h
  if action=='Verify':
-  h=probe(mode);write(ROOT/'session.json',h);return h
+  h=verify(mode);write(ROOT/'session.json',h);return h
  if action=='Browser':return browser(mode)
  if action=='Stop':
   stopped=[m for m in PORTS if stop(m)];write(ROOT/'session.json',{'healthy':False,'stopped':True,'checked':now()});return {'stopped':stopped}
