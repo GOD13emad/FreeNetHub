@@ -1,0 +1,28 @@
+{
+  "version": "4.1.1",
+  "scope": "BROWSER_PROXY",
+  "code": [
+    {
+      "file": "engine.py",
+      "sha256": "541195121E95156DD25574CC2416B5450BCAC8B942DB34496B0C759930B73703",
+      "bytes": 25268
+    },
+    {
+      "file": "FreeNetHub.ps1",
+      "sha256": "F34C9BEFD61DE03AB66BCBE4DBF968DF301669CA956DFCAC6C8663960B9565BD",
+      "bytes": 19458
+    },
+    {
+      "file": "View.xaml",
+      "sha256": "879F6E3263AF027211BF70EEC79FE4AF4C319BBF0F8ACD9867D80896961F8412",
+      "bytes": 17144
+    },
+    {
+      "file": "assets/FreeNetHub.ico",
+      "sha256": "30BDD9DD5BE732C49D5F56BC56DA799158D628A40502479973D6AD3E982175CC",
+      "bytes": 45853
+    }
+  ],
+  "coreVersion": "4.0",
+  "dependencyConfig": "runtime-local-not-versioned"
+}

@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "version": "4.1.1-crossplatform-r2",
+  "files": [
+    {
+      "file": "android/app/build.gradle.kts",
+      "bytes": 254,
+      "sha256": "E0F71EB9CA5A496D7A188C8CAE1CE650B971E12D3070B354608AA8E9F66F343E"
+    },
+    {
+      "file": "android/app/src/main/AndroidManifest.xml",
+      "bytes": 700,
+      "sha256": "67623E6E847D8A473416FCFDF6CD5A2353F709DDAF445C9FBC88141B8D494CC3"
+    },
+    {
+      "file": "android/app/src/main/java/com/freenethub/mobile/FreeNetVpnService.kt",
+      "bytes": 253,
+      "sha256": "2AF0C52D9EA58894132C25161FA1ED87A778F1157D27CEF13BDFD555F04E7093"
+    },
+    {
+      "file": "android/app/src/main/java/com/freenethub/mobile/MainActivity.kt",
+      "bytes": 1044,
+      "sha256": "BF820D30F2989ED58AB7C9B65D688A54FA121024D505F974A2BAC2587E5BCDD9"
+    },
+    {
+      "file": "android/build.gradle.kts",
+      "bytes": 129,
+      "sha256": "78A871EE302F3C7DC7E4430679D30C24BF90235291608CF55EE411C7B07DD2A2"
+    },
+    {
+      "file": "android/gradle.properties",
+      "bytes": 75,
+      "sha256": "D164ADEA7913DD88757CB40136D4532E5D9FE200D4D11B98551D9FB4B3B6E6EE"
+    },
+    {
+      "file": "android/README_FA.md",
+      "bytes": 199,
+      "sha256": "2A284598C8AD8110BAA614F6936DE7E11A8F266A9FCC233968195E171FDB9308"
+    },
+    {
+      "file": "android/settings.gradle.kts",
+      "bytes": 274,
+      "sha256": "1BE61B3BAC3F9CCECDA6FACB9A9570306AFDB01C4E3ADC157C81ECF7AF83DBF7"
+    },
+    {
+      "file": "common/METHOD_EVIDENCE.md",
+      "bytes": 1059,
+      "sha256": "B3B6CBBDADA9DF9783AAB77D82F80014F53B787F6A8F1FF3B9AA9D2CD3756F9D"
+    },
+    {
+      "file": "common/platform_matrix.json",
+      "bytes": 775,
+      "sha256": "6C7F239FB61E0A8BB475A526F1FFF9EE47111E55026A34E1B827EF74AE1A38FD"
+    },
+    {
+      "file": "ios/FreeNetHub/ContentView.swift",
+      "bytes": 361,
+      "sha256": "E6CC96E5AFDA43B42358061A3B46219C0FFDCA911F4EA9DE3705E0214BE29E69"
+    },
+    {
+      "file": "ios/FreeNetHub/FreeNetHub.entitlements",
+      "bytes": 300,
+      "sha256": "454BA0FBC00A37A939D88396A5B354E4B13303695C6334F3B6D78AB75DFFCCE0"
+    },
+    {
+      "file": "ios/FreeNetHub/FreeNetHubApp.swift",
+      "bytes": 108,
+      "sha256": "E46200439CF8A5E7E2F47404BA3C47D3FCF8D857FF90093915C2469F34E96AE2"
+    },
+    {
+      "file": "ios/PacketTunnel/Info.plist",
+      "bytes": 413,
+      "sha256": "55BD5963DF32C7EE405194812E10D4E9F2524A067F84A338F0BAF1D67E4B28C5"
+    },
+    {
+      "file": "ios/PacketTunnel/PacketTunnel.entitlements",
+      "bytes": 300,
+      "sha256": "454BA0FBC00A37A939D88396A5B354E4B13303695C6334F3B6D78AB75DFFCCE0"
+    },
+    {
+      "file": "ios/PacketTunnel/PacketTunnelProvider.swift",
+      "bytes": 417,
+      "sha256": "DA637DC2538135F5A2F1646B474804B6EA7A5C79C458B881B18CCD7C42BA8BF7"
+    },
+    {
+      "file": "ios/project.yml",
+      "bytes": 687,
+      "sha256": "5F8AE008507E381FC6FABA402DEA25CD6DD829B959A44DC9E1F41E05D1F7FE9B"
+    },
+    {
+      "file": "ios/README_FA.md",
+      "bytes": 194,
+      "sha256": "6E6103E744FE7C81E9DFD7CD06A69F1E6C5F1FBC5081075AC844B46B499C8838"
+    },
+    {
+      "file": "linux/freenet_hub_linux.py",
+      "bytes": 6239,
+      "sha256": "F1198EA7F4F45E4D847CB99CDB6C68F6C1DC2AD6FEE4BA8A92B3754284DBE80D"
+    },
+    {
+      "file": "linux/freenethub.desktop",
+      "bytes": 216,
+      "sha256": "C865A9894616C45D768499E9F124424B13DBCD0ED67F5A1AAC5D3648818AE796"
+    },
+    {
+      "file": "linux/FreeNetHub.svg",
+      "bytes": 420,
+      "sha256": "B0D6A4B0F9181E13BB18E0EFAE83392419C83D0F3427FD9D40048E52ECBC1A7C"
+    },
+    {
+      "file": "linux/install.sh",
+      "bytes": 802,
+      "sha256": "473D91159244B5928C30E2231806F5A671F2E473CE24483C9611D0A94FBE3365"
+    },
+    {
+      "file": "linux/README_FA.md",
+      "bytes": 258,
+      "sha256": "5621BD9B28A88EE9117BC9BC16BA45A20A54E1C15FC6B5852AD7DF7A921007CC"
+    },
+    {
+      "file": "linux/selftest.py",
+      "bytes": 223,
+      "sha256": "1CD8292BCCF3B2D000FB823CC2F03D16119B954108D97D1FCA0071ADF124C619"
+    },
+    {
+      "file": "README_FA.md",
+      "bytes": 301,
+      "sha256": "2A818143119C4F7064C9EC5C2516AAC453A144A4ECD5437DCD63DFC6D99F1B30"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  windows-unit:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify public manifests
+        run: python tests/verify_public_tree.py
+      - name: Unit tests
+        run: python tests/test_engine.py
+      - name: Parse PowerShell UI
+        shell: pwsh
+        run: |
+          $t=$null;$e=$null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path app/FreeNetHub.ps1),[ref]$t,[ref]$e)|Out-Null
+          if(@($e).Count){$e|ForEach-Object{$_.Message};exit 1}
+  linux-static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Linux static checks
+        run: |
+          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/selftest.py
+          python3 crossplatform/linux/selftest.py
+          bash -n crossplatform/linux/install.sh
+  android-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Install Android SDK 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Build fail-closed Android integration pack
+        working-directory: crossplatform/android
+        run: gradle :app:assembleDebug --stacktrace
+  ios-static:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Apple plists and Swift syntax
+        run: |
+          plutil -lint crossplatform/ios/FreeNetHub/FreeNetHub.entitlements
+          plutil -lint crossplatform/ios/PacketTunnel/PacketTunnel.entitlements
+          plutil -lint crossplatform/ios/PacketTunnel/Info.plist
+          xcrun swiftc -parse crossplatform/ios/FreeNetHub/FreeNetHubApp.swift crossplatform/ios/FreeNetHub/ContentView.swift
+          xcrun swiftc -parse crossplatform/ios/PacketTunnel/PacketTunnelProvider.swift

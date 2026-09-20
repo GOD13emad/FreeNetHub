@@ -1,0 +1,23 @@
+name: FreeNetHub
+options:
+  bundleIdPrefix: com.freenethub
+targets:
+  FreeNetHub:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources: [FreeNetHub]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.freenethub.app
+      CODE_SIGN_ENTITLEMENTS: FreeNetHub/FreeNetHub.entitlements
+    dependencies:
+      - target: PacketTunnel
+  PacketTunnel:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources: [PacketTunnel]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.freenethub.app.PacketTunnel
+      CODE_SIGN_ENTITLEMENTS: PacketTunnel/PacketTunnel.entitlements
+      INFOPLIST_FILE: PacketTunnel/Info.plist

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=FreeNet Hub
+Comment=Explicit connection control centre
+Exec=__HOME__/.local/bin/freenethub
+Icon=freenethub
+Terminal=false
+Categories=Network;Utility;
+StartupNotify=true

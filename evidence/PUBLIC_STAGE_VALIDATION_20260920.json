@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "utc": "2026-09-20T11:27:14.661936+00:00",
+  "product": "FreeNet Hub",
+  "version": "4.1.1",
+  "status": "PASS",
+  "publicTree": {
+    "appManifest": "PASS",
+    "crossPlatformManifest": "PASS",
+    "windowsPackageManifest": "PASS",
+    "releaseHashes": "PASS"
+  },
+  "publicUnit": {
+    "tests": 39,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success": true,
+    "sha256": "B06E74842868DDBEBEB8F8BD1A9A95621E2394A7A478EE446021CC35677BB2B1"
+  },
+  "powershellUiParse": "PASS",
+  "dependencyBootstrap": {
+    "autoDetectOnAcceptedTarget": "PASS",
+    "inventoryExit": 0,
+    "providerCount": 6,
+    "machineLocalConfigRetained": false
+  },
+  "uiSmoke": {
+    "status": "PASS",
+    "controls": 46,
+    "workerExit": 0,
+    "networkRequested": false
+  },
+  "sanitization": {
+    "sensitivePatternHits": 0,
+    "forbiddenRuntimeArtifacts": 0,
+    "privateRuntimeStateIncluded": false
+  },
+  "acceptedRuntimeEvidence": "evidence/PUBLISH_ACCEPTANCE_20260920.json",
+  "limitations": {
+    "fullSystemValidated": false,
+    "linuxRuntime": "OPEN",
+    "androidRuntime": "OPEN",
+    "iosRuntime": "OPEN"
+  }
+}

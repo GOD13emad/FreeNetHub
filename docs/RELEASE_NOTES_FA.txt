@@ -1,0 +1,39 @@
+FreeNet Hub 4.0 — ۱۹ سپتامبر ۲۰۲۶
+
+محدودهٔ انتشار: مرکز واحد کنترل اتصال برای مرورگر اختصاصی Windows. این انتشار ادعای VPN کامل سیستم یا امنیت مطلق ندارد.
+
+آنچه تغییر کرد
+- رابط WPF فارسی با پنج بخش: اتصال، تاب‌آوری، ابزارها، پژوهش، تنظیمات؛ تم تیره/روشن و سینی ویندوز.
+- کار شبکه از thread رابط جدا شد؛ پیشرفت و نتیجه با Job ID مستقل و فایل اتمیک ثبت می‌شوند.
+- launch اصلی از راه‌انداز بدون‌کنسول موجود و آزمودهٔ R3 استفاده می‌کند؛ راه‌انداز جدید سفارشی ساخته نشد.
+- WARP، GOOL، CFON و Tor از data/identity و پورت‌های اختصاصی این نسخه استفاده می‌کنند. کلید WARP از نسخهٔ قبلی کپی نشده است.
+- AUTO اتصال مستقیم یا پروکسی پولی قبلی را انتخاب نمی‌کند. DIRECT و CUSTOM فقط دستی‌اند.
+- CFON کشور واقعیِ گزارش‌شده را با کشور انتخابی تطبیق می‌دهد؛ انتخاب گزینهٔ AT به‌تنهایی PASS نیست.
+- وضعیتِ «فایل موجود»، «فرایند روشن» و «HTTPS آزموده‌شده» جداست؛ نتیجهٔ قدیمی تازه نمایش داده نمی‌شود.
+- private bridges، بررسی نسخه بدون نصب، آزمایش سرعت نمونه‌ای، Doctor، export پالایش‌شده و پایش اختیاری محدود اضافه شدند.
+
+شواهد همین نسخه
+چهار حالت WARP،GOOL،CFON/AT وTor در اجرای ترتیبی روی همین رایانه دو پاسخ معتبر HTTPS دادند. WARP وGOOL کدIR، CFONکدAT، TorکدT1 نشان دادند.
+سه HEAD مجزا از YouTube،Instagram وTelegram Web داخل WARP،HTTP200 دادند. ورود حساب، پخش رسانه و بازی آزموده نشد.
+Chrome واقعی در حالت headless با پروکسی معتبر trace دریافت کرد؛ با پروکسی بسته خطای proxy داد و آن درخواست به DIRECT نرفت. این آزمون، ادعای صفرنشت همهٔ ترافیک نیست.
+AUTO پس از توقف محدود WARP دوباره اتصال را برقرار کرد. تست۲MB مقدار16.1Mbps در همان نمونه داشت؛ قابل مقایسهٔ مستقیم با نمونه‌های50MB قبلی نیست.
+تم روشن و تیره هر دو رندر واقعی شدند:46کنترل،6tick پاسخ‌گو،Inventory worker باexit0؛Terminal/OpenConsoleجدید صفر بود.
+تنظیم نامعتبر home=file باexit1 رد شد و فایل تنظیمات تغییر نکرد. لغو پیش از شروع باexit20 انجام شد و تونل قبلی همین نسخه زنده ماند.
+مجموعهٔ کامل unit test در ۲۰ سپتامبر ۲۰۲۶ اجرا شد: ۳۲ تست، صفر failure، صفر error و یک skip موردانتظار؛ skip فقط به این دلیل بود که فایل پل WebTunnel کاربر وجود داشت. شواهد در evidence/unit_tests.json ثبت شده است.
+
+موارد باز و محدودیت‌ها
+Full-System،FAST/WinDivert،Hybrid،Kill Switch کل ویندوز و بازیUDP در این انتشار فعال نیستند. کد R3 برای برگشت محفوظ است؛ روشن‌کردن سراسری نیازمند آزمون مستقل و مجوز روشن است.
+WebTunnel/obfs4 بدون پل واقعی آماده نیستند. واردکردن قالب پل انجام‌پذیر است؛ runtimeپل خصوصی هنوز آزموده نشده.
+پایش اختیاری در عمر همین پنل عمل می‌کند؛ بعد از بستن پنل، repairسرویس دائمی فعال نیست. دو بار repairحداکثر نشست، آزمون۲۴ساعته نیست.
+MASQUE،پروتکل‌های server-dependent،حسابProton/JumpJump/Lantern و همهٔ سرویس‌های جهان نصب یا پذیرفته نشده‌اند. مقایسه۲۰محصول/خانواده در پژوهش ثبت شده است.
+
+بدون تغییر به Firefox،DNSویندوز،WinINET/WinHTTP و default route. Start Menu فقط همان ورودی FreeNet Hub را نگه می‌دارد؛ قبل از promotionنسخهٔR3و shortcutآن backupمی‌شوند.
+
+
+FreeNet Hub 4.1.1 — Windows Standalone Shell — ۲۰ سپتامبر ۲۰۲۶
+- Start Menu اکنون مستقیماً FreeNetHub.exe واقعی را اجرا می‌کند؛ backend پاورشل مخفی است و در runtime آزموده‌شده WindowsTerminal/OpenConsole جدید ساخته نشد.
+- آیکون EXE برای Start/Taskbar/Tray استفاده می‌شود و AppUserModelID در process رابط با HRESULT صفر روی FreeNetHub.Desktop تنظیم شد.
+- Minimize→Tray→Restore و اجرای دوم بدون instance جدید روی سیستم هدف آزموده و PASS شدند.
+- installer مسیر canonical app\FreeNetHub.ps1 را می‌شناسد، قبل از تغییر backup می‌گیرد و package manifest را verify می‌کند.
+- باگ برخورد نام تابع H با alias Get-History و باگ انتخاب helper HWND قبل از main WPF window رفع و regression شدند.
+- runtime acceptance: evidence\shell411_acceptance.json. این پذیرش همچنان فقط Browser/Proxy است؛ Full-System TUN/kill-switch/DNS-IPv6/UDP هنوز OPEN است.

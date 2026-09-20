@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "utc": "2026-09-20T11:11:45.704114+00:00",
+  "version": "4.1.1-crossplatform-r2",
+  "manifest": {
+    "sha256": "BA74AFF725697896AB852E271FBD17CEE2A45E1F4C92E240448F746801C1E062",
+    "entries": 25,
+    "mismatches": []
+  },
+  "linux": {
+    "windowsPythonSyntax": "PASS",
+    "wslDistro": "PCMClawUbuntu",
+    "wslPythonSyntax": "PASS",
+    "bashSyntax": "PASS",
+    "tkinterAvailable": false,
+    "warpCliAvailable": false,
+    "torAvailable": false,
+    "curlAvailable": true,
+    "runtimeUi": "NOT_RUN_MISSING_TK",
+    "providerRuntime": "NOT_RUN_MISSING_WARP_TOR"
+  },
+  "android": {
+    "xmlStatic": "PASS",
+    "vpnServiceFailClosed": true,
+    "localJava": true,
+    "localAndroidSdk": false,
+    "localGradle": false,
+    "localAdb": false,
+    "build": "NOT_RUN_TOOLCHAIN_MISSING",
+    "runtime": "NOT_RUN"
+  },
+  "ios": {
+    "plistStatic": "PASS",
+    "packetTunnelFailClosed": true,
+    "localXcode": false,
+    "build": "NOT_RUN_EXTERNAL_MACOS_GATE",
+    "runtime": "NOT_RUN"
+  },
+  "scope": {
+    "windows": "ACCEPTED_BROWSER_PROXY",
+    "linux": "SOURCE_STATIC_PASS_RUNTIME_OPEN",
+    "android": "BUILD_PACK_STATIC_PASS_BUILD_RUNTIME_OPEN",
+    "ios": "BUILD_PACK_STATIC_PASS_BUILD_RUNTIME_OPEN"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "product": "FreeNet Hub",
+  "version": "4.1.1",
+  "state": "TARGET_RUNTIME_ACCEPTED",
+  "scope": "WINDOWS_STANDALONE_BROWSER_PROXY",
+  "files": [
+    {
+      "name": "FreeNetHub.exe",
+      "bytes": 38400,
+      "sha256": "CD784B72A1F0BA851D8FA97EE8393D6927C180E071024A65558EC9678719E27A"
+    },
+    {
+      "name": "FreeNetHub.ico",
+      "bytes": 23025,
+      "sha256": "9D21AF6936F06C718B422DF0A455953E6CDF744D633B1C0600EDC2C97E24CCEF"
+    },
+    {
+      "name": "FreeNetHub.png",
+      "bytes": 2256,
+      "sha256": "BF82C39BAA849005C63F57376EF396142F29D21639A8DCE2D35B9ADEE0A34A77"
+    },
+    {
+      "name": "FreeNetHubShell.cs",
+      "bytes": 11932,
+      "sha256": "046792E832A3D347AEE03D9B47128EE1109980B5E8CC51EB99C8BFD8C3AFB76D"
+    },
+    {
+      "name": "FreeNetHubShell.manifest",
+      "bytes": 911,
+      "sha256": "C01C2B3510B64296665A1034558CDB1F235B2F76EB489ACDB888EB810A162E53"
+    },
+    {
+      "name": "Install-FreeNetHubShell.ps1",
+      "bytes": 4390,
+      "sha256": "62474FF164F7B73EFA604A7E062327CA6DBB97C59F2D2782CCF534F185DB5AA9"
+    },
+    {
+      "name": "Verify-FreeNetHubShell.ps1",
+      "bytes": 1720,
+      "sha256": "9D3F258D72C02EB5E6BB5FDFF3A39E389D572554EA9DA4D41461A6F2101D3D23"
+    },
+    {
+      "name": "Rollback-FreeNetHubShell.ps1",
+      "bytes": 1041,
+      "sha256": "B851F60BDD759E068359E51003F41529E6D911321D8B1F896BFFCBDC4182B9E1"
+    },
+    {
+      "name": "README_FA.md",
+      "bytes": 1651,
+      "sha256": "F9CA19269D7FBBEDA1CF39688959E6C75AB96546565622D3D904668FF8AB9203"
+    },
+    {
+      "name": "RUNTIME_ACCEPTANCE.json",
+      "bytes": 888,
+      "sha256": "2FC26F64ABFE774805ADBE4B7A5B5E48D644A4569C8006F7EB68F80D2559F10C"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "utc": "2026-09-20T07:25:05.7769188+00:00",
+  "product": "FreeNet Hub",
+  "version": "4.1.1",
+  "targetRuntimeAccepted": true,
+  "scope": "BROWSER_PROXY",
+  "checks": {
+    "exeExists": true,
+    "exeVersion": "4.1.1.0",
+    "shortcutTargetsExe": true,
+    "shortcutUsesExeIcon": true,
+    "singleInstance": true,
+    "minimizeHiddenToTray": true,
+    "restoredVisible": true,
+    "taskbarWindowIconSet": true,
+    "processAppUserModelIdSet": true,
+    "appUserModelIdResult": 0,
+    "noTerminalProcesses": true,
+    "hostedGuiSmoke": true,
+    "unitSuite": true,
+    "routeUnchanged": true,
+    "proxyUnchanged": true,
+    "projectListenersEmpty": true
+  },
+  "acceptedExeSha256": "CD784B72A1F0BA851D8FA97EE8393D6927C180E071024A65558EC9678719E27A",
+  "note": "Sanitized target acceptance summary. Full-system VPN/TUN remains outside the accepted scope."
+}

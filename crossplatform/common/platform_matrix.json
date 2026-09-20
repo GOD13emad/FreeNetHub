@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "product": "FreeNet Hub",
+  "version": "4.1.1",
+  "platforms": {
+    "windows": {
+      "status": "ACCEPTED_BROWSER_PROXY",
+      "evidence": "evidence/PUBLISH_ACCEPTANCE_20260920.json"
+    },
+    "linux": {
+      "status": "SOURCE_FUNCTIONAL_LOCAL_STATIC_PENDING",
+      "providers": [
+        "DIRECT",
+        "CLOUDFLARE_WARP_SYSTEM",
+        "TOR_LOCAL_SOCKS"
+      ],
+      "networkOnLaunch": false
+    },
+    "android": {
+      "status": "BUILD_PACK_CORE_NOT_LINKED",
+      "framework": "android.net.VpnService",
+      "tunEstablishEnabled": false
+    },
+    "ios": {
+      "status": "BUILD_PACK_CORE_NOT_LINKED",
+      "framework": "NetworkExtension/NEPacketTunnelProvider",
+      "tunStartEnabled": false
+    }
+  }
+}
