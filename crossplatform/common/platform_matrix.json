@@ -14,13 +14,19 @@
       "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "SOURCE_STATIC_PASS_RUNTIME_OPEN",
-      "providers": [
-        "DIRECT",
-        "CLOUDFLARE_WARP_SYSTEM",
-        "TOR_LOCAL_SOCKS"
-      ],
-      "networkOnLaunch": false
+      "status": "WSL_TOR_RUNTIME_PASS_NATIVE_WARP_OPEN",
+      "environment": "Ubuntu 24.04.4 LTS on WSL",
+      "providers": {
+        "DIRECT_HTTPS": "PASS",
+        "TOR_DIRECT": "PASS",
+        "TOR_SNOWFLAKE": "PASS",
+        "TOR_OBFS4": "PASS",
+        "CLOUDFLARE_WARP_SYSTEM": "OPEN_NATIVE_LINUX_RUNTIME"
+      },
+      "installUiSmoke": "PASS",
+      "privateBridgeFilesPublished": false,
+      "networkOnLaunch": false,
+      "evidence": "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json"
     },
     "android": {
       "status": "BUILD_PACK_CORE_NOT_LINKED",

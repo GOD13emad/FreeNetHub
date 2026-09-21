@@ -26,7 +26,11 @@ For source installation:
 
 ## Cross-platform source
 
-Linux source/static validation is provided under crossplatform/linux. Android and iOS are native integration/build packs that intentionally fail closed until a real packet-forwarding core and platform runtime gates are completed. They are not presented as production VPN binaries.
+The v4.2.0 tag and release assets remain immutable. Current `main` contains a post-release Linux hardening delta.
+
+On Ubuntu 24.04.4 under WSL, Linux static checks, source install, Tk UI smoke, and Tor runtime passed. Direct Tor, Snowflake, and obfs4 each reached bootstrap 100%, carried HTTPS through the managed local SOCKS path, and stopped cleanly. Stale FreeNet Hub-owned listeners are recovered only after executable + command-line ownership proof. Real bridge material is runtime-only and is not stored in the public source tree.
+
+Cloudflare WARP on a native Linux host remains a separate runtime gate; missing `warp-cli` fails closed. Android and iOS remain native integration/build packs that intentionally fail closed until a real packet-forwarding core and platform runtime gates are completed.
 
 ## Security boundary
 

@@ -1,7 +1,7 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-final-r1",
+  "releaseRevision": "4.2.0-public-main-linux-r4",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
@@ -13,14 +13,21 @@
   "viewSha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "63FDED4905DC80752451F0221B00F57B759E5E83AF736391095AC10A1FC0BC82",
-  "crossPlatformManifestSha256": "881E43B3546496A11380C35844E6D3A428683C9D8AFE9A14E65FCAF7BCE27AF7",
+  "crossPlatformManifestSha256": "B6C22C2F6032585C4FF7E13B8A7367F2AEBF63A722629ACE259CE8CB7402A3F1",
   "installerSha256": "0642C5CBAD6A6447C1A7A2FCF3406755016A2B11D00DA884BAB6815A99DF4D85",
   "acceptanceEvidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "SOURCE_STATIC_PASS_RUNTIME_OPEN",
+    "linux": "WSL_TOR_RUNTIME_PASS_NATIVE_WARP_OPEN",
     "android": "BUILD_PACK_CORE_NOT_LINKED",
     "ios": "BUILD_PACK_CORE_NOT_LINKED"
   },
-  "publicSourceLineEndings": "LF"
+  "publicSourceLineEndings": "LF",
+  "postReleaseMainDelta": {
+    "linuxTorWsl": "PASS_DIRECT_SNOWFLAKE_OBFS4",
+    "linuxInstallUiSmoke": "PASS",
+    "privateBridgeMaterialInSource": false,
+    "nativeLinuxWarp": "OPEN",
+    "v4.2.0TagAndAssetsImmutable": true
+  }
 }

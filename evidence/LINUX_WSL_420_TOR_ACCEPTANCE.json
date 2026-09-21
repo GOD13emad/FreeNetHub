@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "utc": "2026-09-21T06:05:40.802Z",
+  "product": "FreeNet Hub",
+  "version": "4.2.0-linux.3",
+  "environment": {
+    "distro": "PCMClawUbuntu",
+    "os": "Ubuntu 24.04.4 LTS",
+    "kind": "WSL"
+  },
+  "status": "ACCEPTED_WSL_LINUX_TOR_RUNTIME",
+  "static": {
+    "pythonCompile": "PASS",
+    "backendImport": "PASS",
+    "networkOnImport": false
+  },
+  "install": {
+    "bashInstall": "PASS",
+    "tkWindow": "PASS",
+    "privateBridgePreserved": true,
+    "networkStartedByInstall": false
+  },
+  "tor": {
+    "version": "0.4.9.11",
+    "direct": {
+      "bootstrap": 100,
+      "https": "PASS",
+      "stop": "PASS"
+    },
+    "snowflake": {
+      "clientVersion": "2.5.1",
+      "bootstrap": 100,
+      "https": "PASS",
+      "stop": "PASS"
+    },
+    "obfs4": {
+      "clientVersion": "0.0.14",
+      "bootstrap": 100,
+      "https": "PASS",
+      "stop": "PASS"
+    },
+    "ownerFinal": null,
+    "staleProjectListenerRecovery": "PASS",
+    "foreignListenerPolicy": "FAIL_CLOSED"
+  },
+  "privacy": {
+    "realBridgeMaterialInSource": false,
+    "realBridgeMaterialInPublicRelease": false,
+    "runtimeBridgeFilesPrivate": true
+  },
+  "warp": {
+    "status": "OPEN_NATIVE_LINUX_RUNTIME",
+    "currentWslBehavior": "FAIL_CLOSED_WARP_CLI_MISSING"
+  },
+  "limitation": "WSL Tor acceptance does not prove Cloudflare WARP runtime on a native Linux host."
+}

@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-final-r2",
+  "version": "4.2.0-public-main-linux-r4",
   "source": "git-index-blobs",
   "files": [
     {
@@ -25,18 +25,18 @@
     },
     {
       "file": "README.md",
-      "bytes": 2245,
-      "sha256": "77CA26AF4E73B7FBC69EBDD2227EDF80ED22EDB1E5C1407AF5C12A4D132AB4BE"
+      "bytes": 2770,
+      "sha256": "B6DB3EADF11161200BD7B71F8A17BEF20222CA200A70B57E6590F641ACF9A751"
     },
     {
       "file": "README_FA.md",
-      "bytes": 970,
-      "sha256": "7DE0D1F13E67D70A66546CB740C1689B99BEDF633CED3DF0BCEAEF77899F49B3"
+      "bytes": 1395,
+      "sha256": "49D2AFB5FF967F96160847294E9E96ABCEBD22577B1E289B3A4C8E1C5345D890"
     },
     {
       "file": "RELEASE.json",
-      "bytes": 1178,
-      "sha256": "0D96D7591B73264F61AF0B4C993F90DC226E30D9BFC41F5ED130049E168E9D2C"
+      "bytes": 1422,
+      "sha256": "793FA53786F333265BD187C89BDA5864416E4D0318047B8F5D64B631BE159C8F"
     },
     {
       "file": "SECURITY.md",
@@ -90,13 +90,13 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 4153,
-      "sha256": "881E43B3546496A11380C35844E6D3A428683C9D8AFE9A14E65FCAF7BCE27AF7"
+      "bytes": 4795,
+      "sha256": "B6C22C2F6032585C4FF7E13B8A7367F2AEBF63A722629ACE259CE8CB7402A3F1"
     },
     {
       "file": "crossplatform/README_FA.md",
-      "bytes": 746,
-      "sha256": "E73769A195AEF2230EF7E376F2A3CB305889DCF7F36F8AC7BDF0B5813A6E46DB"
+      "bytes": 1113,
+      "sha256": "FAD40800031EA021D4B61C9F93E1D39DB5DEF105A1CF4551ABD16AE40EAA6BED"
     },
     {
       "file": "crossplatform/android/README_FA.md",
@@ -145,8 +145,8 @@
     },
     {
       "file": "crossplatform/common/platform_matrix.json",
-      "bytes": 912,
-      "sha256": "E6FAEAD6287BE045FBFBD4E8DFC147C1695C1DF3E773643ECE90899AC46667FD"
+      "bytes": 1216,
+      "sha256": "7E4DF534FF03EB9AFE75E1D8471319D96C475C9C6851DA52D076BB03052CECEA"
     },
     {
       "file": "crossplatform/ios/FreeNetHub/ContentView.swift",
@@ -195,13 +195,23 @@
     },
     {
       "file": "crossplatform/linux/README_FA.md",
-      "bytes": 256,
-      "sha256": "5337653233F8903AE77D13C24066AC3A01AA899F22F1309F7CDE75FCBC57F600"
+      "bytes": 1434,
+      "sha256": "6554B95525B7867C626899520822876A9D69AFFFF72D57D96DD7C23066A14A39"
+    },
+    {
+      "file": "crossplatform/linux/bridges_obfs4.txt",
+      "bytes": 254,
+      "sha256": "02805F495653F47DD971EA685E52D67D5CB885F0B011F1C609FDCD0EAC671845"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
-      "bytes": 6147,
-      "sha256": "F63D2E135F211BFE84EB31B4BB4BEDD2ECACF34F3BB1930193F5CA3BD4FAD011"
+      "bytes": 14913,
+      "sha256": "0C5592D976841B9CB3BE871BEC6753724732C478E7F4A63BD3BD1924760FD8E1"
+    },
+    {
+      "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
+      "bytes": 3833,
+      "sha256": "D1B9F1824567D01406CBAC02FDAD3E339F25D6E141821D0B4D546FBEFFCFCFD0"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -210,13 +220,23 @@
     },
     {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 788,
-      "sha256": "0707A45C90FB70DC79ABD1CFFB0A5DC0AC1E3536318EA13C427AFCA272ACD375"
+      "bytes": 1755,
+      "sha256": "FBFB374F3D8D5BB12DB95997600B4D5B042A6FDB6A0EB17E9DAC6272B11F3437"
+    },
+    {
+      "file": "crossplatform/linux/recover_warp_remote.sh",
+      "bytes": 657,
+      "sha256": "525FB134CCEF73547EE56B9B9CF0C07A37DE60D4829C90C400979ED72F371B95"
     },
     {
       "file": "crossplatform/linux/selftest.py",
-      "bytes": 219,
-      "sha256": "4737AE4EB1CA74158501EFC5A3FD588D561E81B18B6F829C686486A9DBEFED9A"
+      "bytes": 571,
+      "sha256": "3CDC411F36F88B086BFF681750761033BA1251B61E48A1C08B8A12A54F3E8740"
+    },
+    {
+      "file": "crossplatform/linux/warp_guard.py",
+      "bytes": 635,
+      "sha256": "831A95098C9BE2227CD07DFDC0A6A25C54874FC16114C3EF57E8C9F011B13E5E"
     },
     {
       "file": "data/.gitkeep",
@@ -257,6 +277,11 @@
       "file": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
       "bytes": 1418,
       "sha256": "24103C4DC6457E0584DE59E27F59FE986C52C31270D3BDF75AD583740109AAB1"
+    },
+    {
+      "file": "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",
+      "bytes": 1373,
+      "sha256": "A8932FE0C2AB70A07D034689D2E18229D9DF733A1E71D37145EB4274CCD4BFDA"
     },
     {
       "file": "evidence/PUBLIC_STAGE_VALIDATION_20260921.json",
@@ -400,8 +425,8 @@
     },
     {
       "file": "tests/security_scan_public.py",
-      "bytes": 1883,
-      "sha256": "A960D561E32ECBD3C5B9C46B56DF44753089011C0A903C88982147E7DE3BC09F"
+      "bytes": 2275,
+      "sha256": "40B64065452B09EBB218FDE847175C9FB7D23EC8F28088B172EBCB91F96403DF"
     },
     {
       "file": "tests/test_engine.py",

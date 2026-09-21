@@ -10,3 +10,7 @@
 - providerهای مرورگری داخل repository/installer بازتوزیع نمی‌شوند؛ Gateway core و sing-box پین‌شده provision می‌شوند.
 
 برای Windows از asset نهایی FreeNetHub_4.2.0_FINAL_Setup.exe در Release v4.2.0 استفاده کنید.
+
+## به‌روزرسانی Linux روی main
+
+Tag و assetهای v4.2.0 تغییر نکرده‌اند. در `main`، Linux روی Ubuntu 24.04.4/WSL برای نصب UI و Tor runtime پذیرش شده است: Direct، Snowflake و obfs4 هر سه bootstrap=100، HTTPS=PASS و Stop=PASS دارند. bridge واقعی در source نگهداری نمی‌شود. WARP روی Linux native هنوز gate جداگانه است.

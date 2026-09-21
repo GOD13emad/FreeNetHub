@@ -32,6 +32,14 @@ for f in R.rglob("*"):
             if name=="json_private_key_value" and rel=="gateway/tests/test_gateway.py" and "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" in sample:
                 continue
             hits.append({"file":rel,"pattern":name,"match":sample[:120]})
+for bridge_rel in ("crossplatform/linux/bridges_obfs4.txt","crossplatform/linux/bridges_snowflake.txt"):
+    bp=R/bridge_rel
+    if bp.is_file():
+        for line in bp.read_text(encoding="utf-8-sig").splitlines():
+            s=line.strip()
+            if s and not s.startswith("#"):
+                hits.append({"file":bridge_rel,"pattern":"active_bridge_material","match":"<redacted>"})
+
 result={"forbiddenRuntimeArtifacts":forbidden,"sensitivePatternHits":hits,"pass":not forbidden and not hits}
 print(json.dumps(result,indent=2))
 sys.exit(0 if result["pass"] else 1)
