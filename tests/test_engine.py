@@ -132,6 +132,20 @@ class Unit(unittest.TestCase):
   if (R/'data'/'bridges_webtunnel.txt').exists():self.skipTest('user supplied bridge')
   with self.assertRaisesRegex(ValueError,'MISSING_PRIVATE'):E.ensure('WEBTUNNEL')
 
+
+ def test_inventory_missing_optional_dependencies_is_safe(self):
+  with patch.object(E,'deps',return_value={'pwsh':sys.executable}),patch.object(E,'owned',return_value=None),patch.object(E,'port_open',return_value=False),patch.object(E,'settings',return_value=E.DEFAULT):
+   rows=E.inventory()['providers'];self.assertEqual(len(rows),len(E.PORTS));self.assertTrue(all(x['installed'] is False for x in rows));self.assertTrue(all(x['state']=='DEPENDENCY_NOT_CONFIGURED' for x in rows))
+ def test_missing_provider_dependency_is_structured(self):
+  with patch.object(E,'deps',return_value={}):
+   with self.assertRaisesRegex(ValueError,'DEPENDENCY_NOT_CONFIGURED_WARP'):E.check_binary('warp')
+
+ def test_stop_one_only_requested_mode(self):
+  with patch.object(E,'stop',return_value=True) as st:
+   r=E.dispatch('StopOne','WARP','');self.assertEqual(r['stopped'],['WARP']);st.assert_called_once_with('WARP')
+ def test_stop_one_rejects_invalid_mode(self):
+  with self.assertRaisesRegex(ValueError,'INVALID_STOP_MODE'):E.dispatch('StopOne','AUTO','')
+
 if __name__=='__main__':
  suite=unittest.defaultTestLoader.loadTestsFromTestCase(Unit);result=unittest.TextTestRunner(verbosity=2).run(suite)
  E.write(R/'evidence'/'unit_tests.json',{'utc':E.now(),'tests':result.testsRun,'failures':len(result.failures),'errors':len(result.errors),'skipped':len(result.skipped),'scope':'Unit validation, ownership and bounded native child; no product tunnel start','success':result.wasSuccessful()})

@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
+  "scope": [
+    "BROWSER_PROXY",
+    "PC_TUNNEL_WARP",
+    "CONSOLE_GATEWAY_SOFTWARE"
+  ],
+  "installer": {
+    "name": "FreeNetHub_4.2.0_FINAL_Setup.exe",
+    "bytes": 2215996,
+    "sha256": "0642C5CBAD6A6447C1A7A2FCF3406755016A2B11D00DA884BAB6815A99DF4D85",
+    "authenticode": "NotSigned",
+    "cleanInstall": "PASS",
+    "defaultInstall": "PASS",
+    "uninstallE2E": "PASS"
+  },
+  "pcTunnel": {
+    "provider": "WARP",
+    "start": "PASS",
+    "warp": "on",
+    "youtube": "204",
+    "udp": "PASS",
+    "stop": "PASS",
+    "networkBaselineRestored": true
+  },
+  "consoleGateway": {
+    "linuxRouterSimulation": "PASS",
+    "usbRealtekWslAttachDetach": "PASS",
+    "physicalConsoleFieldValidation": "OPEN_LINK_DISCONNECTED"
+  },
+  "regression": {
+    "engineTests": 50,
+    "engineFailures": 0,
+    "engineErrors": 0,
+    "engineSkipped": 1,
+    "gatewayTests": 9,
+    "gatewayFailures": 0,
+    "powerShellParse": "PASS"
+  },
+  "portability": {
+    "gatewayCoreProvisioned": true,
+    "singBoxVersion": "1.14.0",
+    "singBoxSha256": "AAD0EDE010EAFA7B277E520464F3A66FDE820103D737EFF739F40F3CC9451DCC",
+    "browserProvidersBundled": false
+  },
+  "limitations": [
+    "PHYSICAL_CONSOLE_GAME_E2E_OPEN",
+    "TRUSTED_CODE_SIGNING_CERTIFICATE_MISSING",
+    "NON_WINDOWS_RUNTIME_RELEASE_OPEN"
+  ]
+}

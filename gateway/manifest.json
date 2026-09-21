@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "product": "FreeNet Hub Gateway",
+  "version": "4.2.0",
+  "scope": "PC_TUNNEL+CONSOLE_GATEWAY",
+  "files": [
+    {
+      "file": "gateway_control.ps1",
+      "bytes": 11344,
+      "sha256": "72BD5A6BE94FBF3FB7C5003BC321FC051C55DB9761B8F1B4D6614C4AEF0C425B"
+    },
+    {
+      "file": "gateway_request.ps1",
+      "bytes": 3101,
+      "sha256": "EC3AD0266C755DFD12AF573C56D7873C022C2C75066A49A7BB129FCB9EF8E6E7"
+    },
+    {
+      "file": "Setup-GatewayCore.ps1",
+      "bytes": 4086,
+      "sha256": "958F7C43794683F3F9319879FBF5BE4CB5B3FD7534BE458667A7AD43733FF4ED"
+    },
+    {
+      "file": "Setup-ConsoleGateway.ps1",
+      "bytes": 12277,
+      "sha256": "1F642B9479DD6EF00D9F5296ACE6311602C12E55798D48C5F6CFDD76AFFBD6D9"
+    },
+    {
+      "file": "gateway_defaults.json",
+      "bytes": 1245,
+      "sha256": "65197D07D2E6C8B636AE5AC22C2698566C2B60A384ACD3995B3CB899C39CE093"
+    },
+    {
+      "file": "runtime_config.ps1",
+      "bytes": 4131,
+      "sha256": "079E0D88793C95EEAF70A1648C71989301ABBC9995E13AC97755047291113E3F"
+    },
+    {
+      "file": "preflight.ps1",
+      "bytes": 2151,
+      "sha256": "4A2B7AC20056DBA3A7AD6A1E02130BD2C525B86047314430524B61863BC6FF67"
+    },
+    {
+      "file": "generate_config.py",
+      "bytes": 4236,
+      "sha256": "A0CB20B18FB2D6AA48499F8D7BE69C4C6A105E94DA4FB14178C80B02C9BF7A29"
+    },
+    {
+      "file": "apply_elevated.ps1",
+      "bytes": 6475,
+      "sha256": "36B8474E9A8546A99B089A3031B11E1F7B19F1A7B5C93970E39FC93D79945596"
+    },
+    {
+      "file": "stop_elevated.ps1",
+      "bytes": 4550,
+      "sha256": "7D019A0E4D5737DFE3B28B48F49609A85E83DADF3CF642403CE18475A2C2B112"
+    },
+    {
+      "file": "console_provider.ps1",
+      "bytes": 8172,
+      "sha256": "CEEE84242621A5AF43C48F4B352C9C79EDBADFD3E8EA0AC9C4EB255A9312D9F2"
+    },
+    {
+      "file": "wsl_console.ps1",
+      "bytes": 27610,
+      "sha256": "459B218A681050077A6ABE46DC10D67724BE221CEB6E8894948BDF62883142FC"
+    },
+    {
+      "file": "build_isolated_mihomo.py",
+      "bytes": 1944,
+      "sha256": "0C9640096638C27A96EF75E296DD39E5AED2DFE736ACA055108552D24CC0B118"
+    },
+    {
+      "file": "import_wireguard.py",
+      "bytes": 2390,
+      "sha256": "D31832432F27EAE03D1F555754A8BF819543DD93684F6E80BCFAAAF1E8B0FDDC"
+    },
+    {
+      "file": "validate_console_profile.ps1",
+      "bytes": 4566,
+      "sha256": "E9ADCDA00D169A5D3CF79103ACA7AEF03995A326AF12060B054F7F7148C62132"
+    },
+    {
+      "file": "tests/direct_stun.py",
+      "bytes": 906,
+      "sha256": "8B24DAC139E85681BE8ECC3A5E47068E37837480EEFEACAB6F6CF1C407D7582F"
+    },
+    {
+      "file": "socks_udp_probe.py",
+      "bytes": 1985,
+      "sha256": "CD51A2A3EF77E3C52A76543A609D60079450AFED1E157364994241E955798826"
+    }
+  ],
+  "excludes": [
+    "runtime/**",
+    "tests/*acceptance*",
+    "tests/*patch*",
+    "tests/*request*",
+    "tests/*cleanup*",
+    "*.private.*"
+  ]
+}

@@ -11,8 +11,8 @@ using System.Reflection;
 [assembly: AssemblyProduct("FreeNet Hub")]
 [assembly: AssemblyDescription("Standalone desktop shell for FreeNet Hub")]
 [assembly: AssemblyCompany("FreeNet Hub")]
-[assembly: AssemblyVersion("4.1.2.0")]
-[assembly: AssemblyFileVersion("4.1.2.0")]
+[assembly: AssemblyVersion("4.2.0.0")]
+[assembly: AssemblyFileVersion("4.2.0.0")]
 
 internal static class Native
 {
@@ -232,6 +232,7 @@ internal static class Program
                 Application.SetCompatibleTextRenderingDefault(false);
                 string script=args.Length>0 ? args[0] : DiscoverScript();
                 string ps=DiscoverPowerShell();
+                if(!EnsureDependencies(script,ps)) return;
                 Application.Run(new ShellContext(script,ps,activation));
             }
         }
@@ -246,7 +247,44 @@ internal static class Program
         foreach(var p in candidates) if(File.Exists(p)) return p;
         string path=Environment.GetEnvironmentVariable("PATH") ?? "";
         foreach(var dir in path.Split(';')) { try { var p=Path.Combine(dir.Trim(),"pwsh.exe"); if(File.Exists(p)) return p; } catch{} }
+        try {
+            var wa=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),"WindowsApps");
+            if(Directory.Exists(wa)) {
+                var dirs=Directory.GetDirectories(wa,"Microsoft.PowerShell_*");
+                Array.Sort(dirs,StringComparer.OrdinalIgnoreCase); Array.Reverse(dirs);
+                foreach(var d in dirs) { var p=Path.Combine(d,"pwsh.exe"); if(File.Exists(p)) return p; }
+            }
+        } catch { }
         return candidates[0];
+    }
+
+    static bool EnsureDependencies(string script,string ps)
+    {
+        try {
+            if(!File.Exists(script) || !File.Exists(ps)) return true;
+            var appDir=Path.GetDirectoryName(script);
+            if(String.IsNullOrEmpty(appDir)) return true;
+            var deps=Path.Combine(appDir,"dependencies.json");
+            if(File.Exists(deps)) return true;
+            var root=Directory.GetParent(appDir);
+            if(root==null) return true;
+            var setup=Path.Combine(root.FullName,"Setup-WindowsDependencies.ps1");
+            if(!File.Exists(setup)) return true;
+            var psi=new ProcessStartInfo();
+            psi.FileName=ps; psi.UseShellExecute=false; psi.CreateNoWindow=true; psi.WindowStyle=ProcessWindowStyle.Hidden;
+            psi.WorkingDirectory=root.FullName;
+            psi.Arguments="-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \""+setup.Replace("\"","\\\"")+"\" -InstallMissingRuntime";
+            using(var p=Process.Start(psi)) {
+                if(p==null || !p.WaitForExit(180000) || p.ExitCode!=0 || !File.Exists(deps)) {
+                    MessageBox.Show("آماده‌سازی runtime کامل نشد. PowerShell 7 و Python را بررسی کنید و Setup را دوباره اجرا کنید.","FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return true;
+        } catch(Exception ex) {
+            MessageBox.Show("آماده‌سازی runtime ناموفق بود:\n"+ex.Message,"FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            return false;
+        }
     }
 
     static string DiscoverScript()

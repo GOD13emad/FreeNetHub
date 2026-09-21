@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "utc": "2026-09-21T05:25:27.822Z",
+  "status": "PASS",
+  "release": "4.2.0",
+  "validation": {
+    "publicManifest": "PASS",
+    "appManifest": "PASS",
+    "gatewayManifest": "PASS",
+    "crossPlatformManifest": "PASS",
+    "windowsPackageManifest": "PASS",
+    "releaseHashes": "PASS",
+    "forbiddenRuntimeArtifacts": 0,
+    "sensitivePatternHits": 0,
+    "engineTests": 50,
+    "engineFailures": 0,
+    "engineErrors": 0,
+    "gatewayTests": 9,
+    "gatewayFailures": 0,
+    "powerShellParse": "PASS",
+    "linuxStatic": "PASS"
+  },
+  "note": "Whitelist-built public staging. Physical console runtime, Authenticode signing, Linux provider runtime, Android runtime and iOS runtime remain separate gates."
+}

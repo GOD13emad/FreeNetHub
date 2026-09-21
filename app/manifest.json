@@ -1,21 +1,21 @@
 {
-  "version": "4.1.2",
-  "scope": "BROWSER_PROXY",
+  "version": "4.2.0",
+  "scope": "BROWSER_PROXY+PC_TUNNEL+CONSOLE_GATEWAY",
   "code": [
     {
       "file": "engine.py",
-      "sha256": "7B67C9A3536F048445AC90E1D0FF13FC60DD4645E5EDD2082EE5C9DDB0BBE690",
-      "bytes": 26998
+      "sha256": "966DAFFDAAB6723EEAB8511CA5D9DB7A5AA3E0D8E29FFEABC8C04952E53E1FC3",
+      "bytes": 28418
     },
     {
       "file": "FreeNetHub.ps1",
-      "sha256": "F7A762826B77AFC510776B857E01F55DB897BF407B65C3969399324166998924",
-      "bytes": 24965
+      "sha256": "853BBA2B51E5C1457BDCD399AB5BC5D505A50B64CE6094F60C26E82D966C9120",
+      "bytes": 35399
     },
     {
       "file": "View.xaml",
-      "sha256": "5D63C190BBE819BD8CB281EC3299C2D0A0B1EAF60A7592D91C2518FD84D832A9",
-      "bytes": 17146
+      "sha256": "A3DAA4F57B43706B16FF7BD32060A599B4D1647EEDB419B4921CEEE3ADC1A109",
+      "bytes": 21538
     },
     {
       "file": "assets/FreeNetHub.ico",
@@ -23,6 +23,5 @@
       "bytes": 45853
     }
   ],
-  "coreVersion": "4.0",
-  "dependencyConfig": "runtime-local-not-versioned"
+  "coreVersion": "4.0"
 }

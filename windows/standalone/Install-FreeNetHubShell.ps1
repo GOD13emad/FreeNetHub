@@ -8,7 +8,7 @@ function Assert-PackageIntegrity{
   $mp=Join-Path $PSScriptRoot 'MANIFEST.json'
   if(!(Test-Path -LiteralPath $mp)){throw 'Package manifest missing.'}
   $m=Get-Content -LiteralPath $mp -Raw -Encoding UTF8|ConvertFrom-Json
-  if($m.product -ne 'FreeNet Hub' -or $m.version -ne '4.1.2'){throw 'Package identity mismatch.'}
+  if($m.product -ne 'FreeNet Hub' -or $m.version -ne '4.2.0'){throw 'Package identity mismatch.'}
   foreach($f in $m.files){
     $p=Join-Path $PSScriptRoot ([string]$f.name)
     if(!(Test-Path -LiteralPath $p -PathType Leaf)){throw ('Package file missing: '+$f.name)}
@@ -34,7 +34,7 @@ $pwsh=@(
   (Get-Command pwsh.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue)
 ) | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -First 1
 if(-not $pwsh){ throw 'PowerShell 7 (pwsh.exe) not found.' }
-$backup=Join-Path $Root ('backup\shell-v41-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
+$backup=Join-Path $Root ('backup\shell-v42-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Force -Path $backup | Out-Null
 $out=Join-Path $Root 'FreeNetHub.exe'
 $oldShortcut=Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\FreeNet Hub.lnk'
@@ -68,11 +68,11 @@ $s.TargetPath=$out
 $s.Arguments='"'+$entry+'"'
 $s.WorkingDirectory=$Root
 $s.IconLocation="$out,0"
-$s.Description='FreeNet Hub 4.1.2 — standalone desktop shell'
+$s.Description='FreeNet Hub 4.2 — standalone desktop shell'
 $s.Save()
 
 $status=[ordered]@{
-  product='FreeNet Hub'; shellVersion='4.1.2'; installed=(Get-Date).ToString('o'); root=$Root; exe=$out; entry=$entry; powershell=$pwsh; shortcut=$lnk; backup=$backup;
+  product='FreeNet Hub'; shellVersion='4.2.0'; installed=(Get-Date).ToString('o'); root=$Root; exe=$out; entry=$entry; powershell=$pwsh; shortcut=$lnk; backup=$backup;
   exeSha256=(Get-FileSha256 $out); iconSha256=(Get-FileSha256 $icon); entrySha256=(Get-FileSha256 $entry); routeOrProxyMutation=$false; startupInstalled=$false
 }
 $status | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $Root 'SHELL_HOST_STATUS.json') -Encoding UTF8

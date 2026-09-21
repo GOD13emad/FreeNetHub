@@ -37,3 +37,26 @@ FreeNet Hub 4.1.1 — Windows Standalone Shell — ۲۰ سپتامبر ۲۰۲۶
 - installer مسیر canonical app\FreeNetHub.ps1 را می‌شناسد، قبل از تغییر backup می‌گیرد و package manifest را verify می‌کند.
 - باگ برخورد نام تابع H با alias Get-History و باگ انتخاب helper HWND قبل از main WPF window رفع و regression شدند.
 - runtime acceptance: evidence\shell411_acceptance.json. این پذیرش همچنان فقط Browser/Proxy است؛ Full-System TUN/kill-switch/DNS-IPv6/UDP هنوز OPEN است.
+
+
+FreeNet Hub 4.1.2 — ۲۰ سپتامبر ۲۰۲۶
+- اصلاح مدل state اتصال: Verify روی provider خاموش دیگر به proxy مرده درخواست نمی‌فرستد.
+- در حالت قطع، latency/country/IP به‌صورت — نمایش داده می‌شوند و پیام «مسیر متصل نیست» نشان داده می‌شود.
+- CurrentMode و DesiredMode جدا شدند؛ startup provider فعال را با Inventory خواندنی reconcile می‌کند.
+- WARP واقعی Connect/Verify/Cleanup، 46 تست، Taskbar/Tray/single-instance و network pre/post PASS شدند.
+- GitHub v4.1.2 منتشر شد؛ Actions hosted به‌علت billing lock حساب قبل از runner/step متوقف است و failure کد محسوب نمی‌شود.
+
+
+FreeNet Hub 4.2.0 — ۲۱ سپتامبر ۲۰۲۶
+- Windows installer به چرخهٔ کامل install → runtime bootstrap → launch → PC_TUN → rollback → uninstall ارتقا یافت.
+- PC_TUNNEL از clean install واقعی PASS شد: Cloudflare warp=on، YouTube=204 و UDP/STUN=PASS؛ سپس Stop/rollback شبکه را به baseline بازگرداند.
+- Gateway core اکنون sing-box 1.14.0 را با SHA-256 ثابت داخل runtime خود برنامه provision می‌کند و برای Full-PC به state آزمایشگاهی قبلی وابسته نیست.
+- clean-install blockerها رفع شدند: bootstrap ناقص installer، نبودن docs/research.json، StrictMode روی property اختیاری console/wsl و resolution شکنندهٔ PowerShell 7 در uninstaller.
+- uninstaller fail-closed است: اگر وضعیت Gateway یا cleanup قابل اثبات نباشد حذف متوقف می‌شود. تست end-to-end uninstall با exit=0 و حذف EXE/uninstaller PASS شد.
+- Shell 4.2.0 از نصب پیش‌فرض PASS است: single-instance، Minimize-to-Tray، Restore، Taskbar icon، AppUserModelID و بدون WindowsTerminal/OpenConsole جدید.
+- Regression نهایی: 50 تست engine با 0 failure/error و 1 skip موردانتظار؛ 9 تست gateway با 0 failure؛ PowerShell parse PASS.
+- Console software path: WSL2 Linux-router simulation برای TCP/UDP خارجی PASS و Realtek USB GbE attach/detach با WSL PASS است.
+- Field gate کنسول هنوز باز است چون در ممیزی نهایی Realtek کابل/کنسول نداشت و Disconnected/0 bps بود؛ بنابراین بازی واقعی/UDP از خود کنسول ادعای PASS ندارد.
+- providerهای مرورگری WARP/Tor/GOOL/CFON در installer بازتوزیع نمی‌شوند و در نبود dependency باید Missing/fail-closed باشند. Gateway core و sing-box پین‌شده داخل installer هستند.
+- installer Authenticode-signed نیست چون گواهی code-signing trusted در اختیار پروژه نبود؛ SHA-256 release authority است.
+- Authority: evidence/FINAL_420_ACCEPTANCE.json.

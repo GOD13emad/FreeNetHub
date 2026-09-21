@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.1.2-crossplatform-r2",
+  "version": "4.2.0-crossplatform-r3",
   "files": [
     {
       "file": "android/app/build.gradle.kts",
@@ -49,8 +49,8 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 775,
-      "sha256": "97846288A6579F2E271B16A5348312EACEB34FC786025F6962CA371828279EF2"
+      "bytes": 912,
+      "sha256": "E6FAEAD6287BE045FBFBD4E8DFC147C1695C1DF3E773643ECE90899AC46667FD"
     },
     {
       "file": "ios/FreeNetHub/ContentView.swift",
@@ -95,7 +95,7 @@
     {
       "file": "linux/freenet_hub_linux.py",
       "bytes": 6239,
-      "sha256": "310D6958D02882CB3005EB99573A1FEFDEE8CF7B6B223CA6AD59302F22EB7F88"
+      "sha256": "93FD93492F3F3A3FDCC8C47F576F96464DECEEABB86DFD0D8D59DD82DD731186"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -124,8 +124,8 @@
     },
     {
       "file": "README_FA.md",
-      "bytes": 301,
-      "sha256": "CA5C13F20E40462F076EC637F7C531DE8C81E4985FD9941A56B6196C2A8EEB1E"
+      "bytes": 746,
+      "sha256": "E73769A195AEF2230EF7E376F2A3CB305889DCF7F36F8AC7BDF0B5813A6E46DB"
     }
   ]
 }

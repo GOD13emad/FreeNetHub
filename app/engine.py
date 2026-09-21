@@ -32,7 +32,11 @@ def write(p,value):
 def digest(p):
  with open(p,'rb') as f:return hashlib.file_digest(f,'sha256').hexdigest().upper()
 def settings():return DEFAULT|read(ROOT/'settings.json',{})
-def deps():return read(APP/'dependencies.json')
+def deps():return read(APP/'dependencies.json',{}) or {}
+def dep_path(name):
+ d=deps();x=d.get(name)
+ if isinstance(x,dict):return str(x.get('path') or '')
+ return str(x or '')
 def validate_settings(s):
  if s.get('theme') not in ('dark','light'):raise ValueError('INVALID_THEME')
  if s.get('country') not in ALLOWED_COUNTRIES:raise ValueError('INVALID_COUNTRY')
@@ -157,9 +161,9 @@ def recover_owned(mode,not_before=0):
  if not_before and cur['created']<int(not_before):return None
  d=deps()
  if mode in ('WARP','GOOL','CFON'):
-  expected=d['warp']['path'];needle=f'--bind 127.0.0.1:{PORTS[mode]}';scope=str((ROOT/'data'/mode/'cache').resolve())
+  expected=dep_path('warp');needle=f'--bind 127.0.0.1:{PORTS[mode]}';scope=str((ROOT/'data'/mode/'cache').resolve())
  else:
-  expected=d['tor']['path'];needle=str((ROOT/'data'/mode/'torrc').resolve());scope=needle
+  expected=dep_path('tor');needle=str((ROOT/'data'/mode/'torrc').resolve());scope=needle
  try:
   if pathlib.Path(cur['path']).resolve()!=pathlib.Path(expected).resolve():return None
  except (OSError,RuntimeError):return None
@@ -183,17 +187,28 @@ def kill_identity(r):
 
 def children(pid):
  # Read-only process metadata; no process is acted on without a fresh identity match.
- r=native([deps()['pwsh'],'-NoProfile','-NonInteractive','-Command',f'Get-CimInstance Win32_Process -Filter "ParentProcessId={int(pid)}" | Select-Object ProcessId,ExecutablePath | ConvertTo-Json -Compress'],8)
+ pwsh=dep_path('pwsh')
+ if not pwsh:return []
+ r=native([pwsh,'-NoProfile','-NonInteractive','-Command',f'Get-CimInstance Win32_Process -Filter "ParentProcessId={int(pid)}" | Select-Object ProcessId,ExecutablePath | ConvertTo-Json -Compress'],8)
  if not r['out'].strip():return []
  x=json.loads(r['out']);return x if isinstance(x,list) else [x]
+
 def stop(mode):
+ owner_path=ROOT/'data'/mode/'owner.json'
  r=owned(mode)
- if not r and port_open(PORTS.get(mode,0)):r=recover_owned(mode)
- if not r:return False
+ opened=port_open(PORTS.get(mode,0))
+ if not r and opened:r=recover_owned(mode)
+ if not r:
+  # A stale owner record is not authority. Remove it only when there is no
+  # listener to attribute, and never act on a foreign listener/process.
+  if not opened and owner_path.exists():
+   owner_path.unlink(missing_ok=True)
+  return False
  pts=[]
  if mode in ('TOR','WEBTUNNEL','OBFS4'):
   for child in children(r['pid']):
-   if str(child.get('ExecutablePath','')).lower()==deps()['lyrebird']['path'].lower():
+   ly=dep_path('lyrebird')
+   if ly and str(child.get('ExecutablePath','')).lower()==ly.lower():
     i=identity(child['ProcessId'])
     if i and i['created']>=r['created']:pts.append(i)
  kill_identity(r)
@@ -206,11 +221,14 @@ def stop(mode):
   if newer and newer['pid']!=r['pid']:kill_identity(newer)
   time.sleep(.08)
  if port_open(PORTS[mode]):raise RuntimeError('OWNED_PROCESS_STOP_INCOMPLETE')
+ owner_path.unlink(missing_ok=True)
  return True
 
 def check_binary(name):
- x=deps()[name];p=pathlib.Path(x['path'])
- if not p.is_file() or digest(p)!=x['sha256'].upper():raise ValueError('ENGINE_INTEGRITY_FAILED_'+name)
+ x=deps().get(name)
+ if not isinstance(x,dict) or not x.get('path') or not x.get('sha256'):raise ValueError('DEPENDENCY_NOT_CONFIGURED_'+name.upper())
+ p=pathlib.Path(x['path'])
+ if not p.is_file() or digest(p)!=str(x['sha256']).upper():raise ValueError('ENGINE_INTEGRITY_FAILED_'+name)
  return p
 
 def port_open(port):
@@ -270,7 +288,10 @@ def service_config(mode,scan=False):
   args+=['--scan','--rtt','2s'] if scan else ['--endpoint',ep]
  else:
   exe=check_binary('tor');check_binary('lyrebird')
-  old=pathlib.Path(d['torrc']).read_text(encoding='utf-8-sig').splitlines()
+  torrc=str(d.get('torrc') or '');oldroot=str(d.get('oldRoot') or '')
+  if not torrc or not pathlib.Path(torrc).is_file():raise ValueError('DEPENDENCY_NOT_CONFIGURED_TORRC')
+  if not oldroot or not pathlib.Path(oldroot).is_dir():raise ValueError('DEPENDENCY_NOT_CONFIGURED_PROVIDER_ROOT')
+  old=pathlib.Path(torrc).read_text(encoding='utf-8-sig').splitlines()
   lines=[l for l in old if not re.match(r'^(SocksPort|DataDirectory|Bridge|Log|ControlPort)\s',l)]
   if mode=='TOR':br=[l for l in old if l.startswith('Bridge snowflake ')]
   else:
@@ -279,7 +300,7 @@ def service_config(mode,scan=False):
   if not br:raise ValueError('MISSING_PRIVATE_BRIDGES')
   tor_data=data/'tor';tor_data.mkdir(exist_ok=True)
   # Only public directory caches are reused; no identity/guard/browser state is copied.
-  old_data=pathlib.Path(d['oldRoot'])/'TorSnowflake'/'data'
+  old_data=pathlib.Path(oldroot)/'TorSnowflake'/'data'
   for n in ('cached-certs','cached-microdesc-consensus','cached-microdescs','cached-microdescs.new'):
    src=old_data/n;dst=tor_data/n
    if src.is_file() and not dst.exists():shutil.copyfile(src,dst)
@@ -340,20 +361,23 @@ def browser(mode):
   if h.get('connected') is False:raise ValueError('CONNECT_FIRST')
   raise ValueError('BROWSER_BLOCKED_PATH_UNHEALTHY')
  profile=ROOT/'data'/('Browser_'+mode);profile.mkdir(exist_ok=True)
- args=[deps()['chrome'],f'--user-data-dir={profile}','--no-first-run','--no-default-browser-check','--disable-quic','--force-webrtc-ip-handling-policy=disable_non_proxied_udp']
+ browser_exe=dep_path('chrome')
+ if not browser_exe or not pathlib.Path(browser_exe).is_file():raise ValueError('DEPENDENCY_NOT_CONFIGURED_BROWSER')
+ args=[browser_exe,f'--user-data-dir={profile}','--no-first-run','--no-default-browser-check','--disable-quic','--force-webrtc-ip-handling-policy=disable_non_proxied_udp']
  if proxy:args+=[f'--proxy-server={proxy}','--proxy-bypass-list=<-loopback>','--host-resolver-rules=MAP * ~NOTFOUND , EXCLUDE 127.0.0.1']
  args+=[s['home']]
  sp.Popen(args,stdin=sp.DEVNULL,stdout=sp.DEVNULL,stderr=sp.DEVNULL,creationflags=FLAGS,cwd=str(ROOT),env=env(),close_fds=True)
  return {'launched':True,'mode':mode,'health':h}
 
 def inventory():
- d=deps();r=[]
+ r=[]
  for mode in PORTS:
   name='warp' if mode in ('WARP','GOOL','CFON') else 'tor'
   f=ROOT/'data'/('bridges_'+mode.lower()+'.txt');o=owned(mode);opened=port_open(PORTS[mode])
-  state='CONNECTED_NOT_VERIFIED' if o and opened else 'STARTING_OR_UNREADY' if o else 'LISTENER_PRESENT_NOT_OWNED' if opened else 'AVAILABLE_NOT_CONNECTED'
-  if mode in ('WEBTUNNEL','OBFS4') and not f.exists() and not o:state='MISSING_PRIVATE_BRIDGES'
-  r.append({'mode':mode,'state':state,'port':PORTS[mode],'installed':pathlib.Path(d[name]['path']).exists()})
+  installed=bool(dep_path(name) and pathlib.Path(dep_path(name)).is_file())
+  state='CONNECTED_NOT_VERIFIED' if o and opened else 'STARTING_OR_UNREADY' if o else 'LISTENER_PRESENT_NOT_OWNED' if opened else 'AVAILABLE_NOT_CONNECTED' if installed else 'DEPENDENCY_NOT_CONFIGURED'
+  if mode in ('WEBTUNNEL','OBFS4') and not f.exists() and not o and installed:state='MISSING_PRIVATE_BRIDGES'
+  r.append({'mode':mode,'state':state,'port':PORTS[mode],'installed':installed})
  return {'providers':r,'settings':settings(),'fullSystem':'NOT_VALIDATED_DISABLED','systemMutation':False,'utc':now()}
 
 def diagnostics():
@@ -361,7 +385,9 @@ def diagnostics():
  rows={u:curl(u,seconds=5,body=False) for u in ('https://www.google.com/','https://www.youtube.com/generate_204','https://www.instagram.com/','https://web.telegram.org/')}
  dns={}
  for host in ('www.youtube.com','www.instagram.com','web.telegram.org'):
-  r=native([deps()['pwsh'],'-NoProfile','-Command',f'Resolve-DnsName {host} -Type A -QuickTimeout -ErrorAction SilentlyContinue | Select-Object -ExpandProperty IPAddress'],7)
+  pwsh=dep_path('pwsh')
+  if not pwsh:raise ValueError('DEPENDENCY_NOT_CONFIGURED_PWSH')
+  r=native([pwsh,'-NoProfile','-Command',f'Resolve-DnsName {host} -Type A -QuickTimeout -ErrorAction SilentlyContinue | Select-Object -ExpandProperty IPAddress'],7)
   ips=list(dict.fromkeys(r['out'].split()));dns[host]={'addresses':ips,'nonPublic':any(not ipaddress.ip_address(a).is_global for a in ips if re.fullmatch(r'[\d.]+',a))}
  return {'direct':rows,'dns':dns,'note':'Direct probes bypass inherited proxies. DNS anomaly is an indication, not definitive attribution.','utc':now()}
 
@@ -396,6 +422,9 @@ def dispatch(action,mode,payload):
  if action=='Browser':return browser(mode)
  if action=='Stop':
   stopped=[m for m in PORTS if stop(m)];write(ROOT/'session.json',{'healthy':False,'stopped':True,'checked':now()});return {'stopped':stopped}
+ if action=='StopOne':
+  if mode not in PORTS:raise ValueError('INVALID_STOP_MODE')
+  did=stop(mode);return {'stopped':[mode] if did else [],'mode':mode}
  if action=='Scan':
   old=[m for m in PORTS if owned(m)];rows=[]
   try:

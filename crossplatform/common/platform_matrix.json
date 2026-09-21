@@ -1,14 +1,20 @@
 {
-  "schema": 1,
+  "schema": 2,
   "product": "FreeNet Hub",
-  "version": "4.1.2",
+  "version": "4.2.0",
   "platforms": {
     "windows": {
-      "status": "ACCEPTED_BROWSER_PROXY",
-      "evidence": "evidence/PUBLISH_ACCEPTANCE_20260920.json"
+      "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
+      "scope": [
+        "BROWSER_PROXY",
+        "PC_TUNNEL_WARP",
+        "CONSOLE_GATEWAY_SOFTWARE"
+      ],
+      "physicalConsoleFieldValidation": false,
+      "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "SOURCE_FUNCTIONAL_LOCAL_STATIC_PENDING",
+      "status": "SOURCE_STATIC_PASS_RUNTIME_OPEN",
       "providers": [
         "DIRECT",
         "CLOUDFLARE_WARP_SYSTEM",

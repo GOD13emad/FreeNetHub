@@ -1,12 +1,12 @@
-# FreeNet Hub 4.1.2
+# FreeNet Hub 4.2.0
 
-وضعیت پذیرفته‌شده Windows فقط Browser/Proxy Scope است و Full-System VPN هنوز ادعای PASS ندارد.
+نسخه Windows 4.2.0 برای Browser/Proxy، تونل کامل PC با WARP، و مسیر نرم‌افزاری Console Gateway پذیرش شده است.
 
-در تست نهایی روی سیستم هدف، WARP / GOOL / CFON / TOR برای HTTPS واقعی PASS شدند و EXE مستقل، Start Menu، آیکون Taskbar، Minimize-to-Tray-to-Restore، single-instance و عدم بازشدن Terminal نیز PASS شدند. route/DNS/WinINET proxy قبل و بعد از تست تغییر نکرد.
+- PC_TUNNEL از clean install واقعی: warp=on، YouTube=204، UDP/STUN=PASS و rollback=PASS.
+- Installer: clean install/bootstrap/uninstall=PASS.
+- Console Gateway: شبیه‌سازی Linux-router و attach/detach آداپتور Realtek با WSL=PASS.
+- تست بازی از کنسول فیزیکی هنوز OPEN است چون لینک اختصاصی هنگام پذیرش نهایی قطع بود.
+- installer امضای Authenticode ندارد؛ SHA-256 منتشرشده را بررسی کنید.
+- providerهای مرورگری داخل repository/installer بازتوزیع نمی‌شوند؛ Gateway core و sing-box پین‌شده provision می‌شوند.
 
-Linux فعلاً source/static PASS است و runtime provider gate باز است. Android و iOS build/integration packهای native و fail-closed هستند و تا زمانی که forwarding core واقعی و تست runtime کامل نشود به‌عنوان VPN نهایی معرفی نمی‌شوند.
-
-برای Windows ابتدا dependencyهای local را با Setup-WindowsDependencies.ps1 ثبت کنید و سپس Install-Windows.ps1 را اجرا کنید. فایل app/dependencies.json محلی است و وارد Git نمی‌شود.
-
-## اصلاح 4.1.2
-بررسی مسیر خاموش دیگر به proxy مرده درخواست نمی‌فرستد و زمان شکست را latency نشان نمی‌دهد. مسیر خاموش با پیام «مسیر متصل نیست» و مقادیر — نمایش داده می‌شود؛ همچنین بازشدن دوبارهٔ پنل، provider فعال متعلق به برنامه را با Inventory خواندنی تشخیص می‌دهد.
+برای Windows از asset نهایی FreeNetHub_4.2.0_FINAL_Setup.exe در Release v4.2.0 استفاده کنید.

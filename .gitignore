@@ -9,9 +9,14 @@ logs/
 backup/
 staging/
 delivery/
+gateway/runtime/
+gateway/__pycache__/
 SHELL_HOST_STATUS.json
+INSTALL_RUNTIME_STATUS.json
+PWSH_PATH.txt
 settings.json
 last.json
+session.json
 *.progress.json
 *.cancel
 *.log
@@ -28,7 +33,5 @@ crossplatform/android/.gradle/
 crossplatform/android/**/build/
 crossplatform/ios/*.xcodeproj/
 DerivedData/
-
-session.json
 evidence/UI*.png
 evidence/gui.json

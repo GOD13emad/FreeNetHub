@@ -1,13 +1,16 @@
-# FreeNet Hub 4.1.2 — Windows Standalone Shell
+# FreeNet Hub 4.2 — Windows Standalone Shell
 
-این بسته نسخهٔ اصلاح‌شده و runtime-tested پوستهٔ مستقل Windows است.
+این بسته پوستهٔ مستقل Windows برای FreeNet Hub 4.2 است.
 
-- اجرای کاربر از `FreeNetHub.exe` انجام می‌شود؛ PowerShell فقط backend مخفی است و Windows Terminal/OpenConsole باز نمی‌شود.
+- اجرای کاربر از `FreeNetHub.exe` انجام می‌شود؛ PowerShell backend مخفی است و Windows Terminal/OpenConsole باز نمی‌شود.
 - Start Menu مستقیماً به EXE اشاره می‌کند و آیکون EXE برای Start/Taskbar/Tray استفاده می‌شود.
 - Minimize پنجره را به System Tray می‌برد و اجرای دوباره همان instance را Restore می‌کند.
-- AppUserModelID در process رابط روی `FreeNetHub.Desktop` تنظیم می‌شود.
-- installer قبل از تغییر EXE/Shortcut backup می‌سازد و route/DNS/proxy/Firefox/Startup را تغییر نمی‌دهد.
-- installer ابتدا `MANIFEST.json` را verify می‌کند و از EXE پذیرفته‌شدهٔ داخل بسته استفاده می‌کند؛ compiler فقط fallback است.
+- AppUserModelID روی `FreeNetHub.Desktop` تنظیم می‌شود.
+- خود shell با `asInvoker` اجرا می‌شود؛ Administrator دائمی نیست.
+- بازشدن برنامه route/DNS/proxy/TUN/firewall را تغییر نمی‌دهد.
+- عملیات Full-PC Tunnel و Console Gateway فقط از تب «گیت‌وی» و با UAC جداگانه انجام می‌شوند.
+- installer قبل از جایگزینی EXE/Shortcut backup می‌سازد و Startup خودکار نصب نمی‌کند.
+- installer ابتدا `MANIFEST.json` را verify می‌کند و سپس EXE پذیرفته‌شدهٔ داخل بسته را نصب می‌کند.
 
 ## نصب
 
@@ -15,8 +18,8 @@
 pwsh.exe -NoProfile -ExecutionPolicy Bypass -File .\Install-FreeNetHubShell.ps1 -Root "C:\Users\<USER>\source\repos\FreeNetHub"
 ```
 
-## وضعیت پذیرش روی سیستم هدف
+## پذیرش runtime
 
-Runtime acceptance برای shell Windows PASS شده است: EXE 4.1.2.0، single-instance، Minimize→Tray، Restore، icon handle، AppUserModelID و نبود Terminal. جزئیات sanitized در `RUNTIME_ACCEPTANCE.json` است.
+Shell 4.2.0.0 روی سیستم هدف PASS شده است: single-instance، Minimize→Tray، Restore، icon، AppUserModelID، نبود Terminal/OpenConsole و نبود mutation شبکه هنگام launch.
 
-این پذیرش فقط برای Windows browser/proxy scope است و به معنی PASS شدن Full-System TUN، DNS/IPv6 leak، kill switch یا UDP/game نیست.
+جزئیات sanitized در `RUNTIME_ACCEPTANCE.json` است.

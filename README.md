@@ -1,37 +1,33 @@
-# FreeNet Hub
+# FreeNet Hub 4.2.0
 
-FreeNet Hub 4.1.2 is an explicit-connect desktop connectivity control center. The accepted Windows scope is browser/proxy routing, not a system-wide VPN.
+FreeNet Hub is an explicit-connect Windows connectivity control center with browser/proxy modes, an optional full-PC WARP tunnel, and a console-gateway software path.
 
-## Current evidence-backed status
+## Evidence-backed Windows status
 
-Windows: runtime accepted for browser/proxy scope. WARP, GOOL, CFON and Tor HTTPS probes passed. Standalone EXE, Start Menu, taskbar icon, tray restore and single-instance passed.
+- Browser/proxy control surface: accepted.
+- Native Windows shell: single instance, Taskbar/Tray identity, Minimize-to-Tray/Restore, no new Windows Terminal/OpenConsole on launch.
+- PC_TUNNEL with WARP: runtime accepted from a clean installer. Cloudflare reported warp=on, YouTube returned 204, UDP/STUN passed, and Stop restored the recorded network baseline.
+- Installer lifecycle: clean install, runtime bootstrap, app-local pinned sing-box core, fail-closed cleanup, and uninstall passed.
+- Console Gateway: WSL2 Linux-router simulation and Realtek USB GbE attach/detach passed. Physical console/game end-to-end validation is still open because the dedicated console link was disconnected during final acceptance.
 
-Linux: source/static validation passed; runtime provider acceptance remains open.
+The sanitized acceptance summary is in evidence/FINAL_420_PUBLIC_ACCEPTANCE.json.
 
-Android: native VpnService integration/build pack. The forwarding core is intentionally not linked, so no TUN is established.
+## Install on Windows
 
-iOS: native NEPacketTunnelProvider integration/build pack. It fails closed until forwarding core, signing and entitlement runtime gates are completed.
+The recommended path is the FreeNetHub_4.2.0_FINAL_Setup.exe asset from the v4.2.0 GitHub Release. Verify its SHA-256 against SHA256SUMS.txt.
 
-The current Windows acceptance authority is in evidence/STATE_VERIFY_UX_412_ACCEPTANCE.json. Version 4.1.2 also fixes connection-state verification: verifying a disconnected managed path now reports NOT_CONNECTED without probing a dead local proxy or displaying failed-request time as latency. Full-system TUN, system kill-switch, DNS/IPv6 leak capture, UDP/game acceptance, long soak, and mobile runtime gates remain explicitly unproven/open.
+The installer does not auto-connect networking. Network mutation is explicit and elevated only when Full PC or Console Gateway actions are requested.
 
-## Windows
+Gateway core provisioning uses pinned sing-box 1.14.0. Browser provider binaries/configs such as WARP/Tor/GOOL/CFON are not redistributed by this repository; missing optional providers remain unavailable/fail-closed rather than silently falling back to DIRECT.
 
-Prerequisites: PowerShell 7, Python, Chrome, a pinned warp-plus.exe, and a Tor bundle containing tor.exe, lyrebird.exe, and a working torrc. Provider binaries are not redistributed by this repository.
+For source installation:
 
-On a machine that already has the project FreeTunnelLab provider bundle in the default location, run:
-
-    pwsh.exe -NoProfile -ExecutionPolicy Bypass -File .\Install-Windows.ps1
-
-If provider binaries are elsewhere, pass their paths to Setup-WindowsDependencies.ps1 first. The generated app/dependencies.json contains machine-local paths and hashes and is intentionally ignored by Git.
-
-The UI is launched through FreeNetHub.exe. Its PowerShell backend is hidden. Opening the UI does not automatically connect a provider.
+    pwsh.exe -NoProfile -ExecutionPolicy Bypass -File .\Install-Windows.ps1 -InstallMissingRuntime
 
 ## Cross-platform source
 
-See crossplatform/README_FA.md and crossplatform/common/METHOD_EVIDENCE.md. Android/iOS packages are deliberately fail-closed until a real packet-forwarding core is integrated and runtime-tested; they are not presented as signed production VPN apps.
+Linux source/static validation is provided under crossplatform/linux. Android and iOS are native integration/build packs that intentionally fail closed until a real packet-forwarding core and platform runtime gates are completed. They are not presented as production VPN binaries.
 
-## Safety and state model
+## Security boundary
 
-FreeNet Hub owns only processes it can prove belong to pinned binaries and project-specific command lines. Provider operations are bounded, cleanup is verified, and the accepted Windows run showed no global route/DNS/WinINET proxy drift before versus after the test.
-
-Runtime state, browser profiles, bridge material, logs, job files, local dependency paths, and backups are excluded from the public repository.
+Runtime identities, private profiles/keys, bridge files, browser state, local dependency paths and raw private evidence are excluded from Git history by construction. See SECURITY.md.

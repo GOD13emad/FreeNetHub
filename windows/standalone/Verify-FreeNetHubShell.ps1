@@ -9,12 +9,12 @@ $Root=(Resolve-Path -LiteralPath $Root).Path
 $exe=Join-Path $Root 'FreeNetHub.exe'; $status=Join-Path $Root 'SHELL_HOST_STATUS.json'; $lnk=Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\FreeNet Hub.lnk'
 $checks=[ordered]@{}
 $checks.ExeExists=Test-Path -LiteralPath $exe
-$checks.StatusExists=Test-Path -LiteralPath $status; if($checks.StatusExists){$st=Get-Content -LiteralPath $status -Raw -Encoding UTF8|ConvertFrom-Json;$checks.StatusShellVersion=$st.shellVersion;$checks.StatusShellVersionExpected=($st.shellVersion -eq '4.1.2')}
+$checks.StatusExists=Test-Path -LiteralPath $status; if($checks.StatusExists){$st=Get-Content -LiteralPath $status -Raw -Encoding UTF8|ConvertFrom-Json;$checks.StatusShellVersion=$st.shellVersion;$checks.StatusShellVersionExpected=($st.shellVersion -eq '4.2.0')}
 $checks.ShortcutExists=Test-Path -LiteralPath $lnk
 if($checks.ExeExists){
   $v=[Diagnostics.FileVersionInfo]::GetVersionInfo($exe)
   $checks.ProductName=$v.ProductName
-  $checks.FileVersion=$v.FileVersion; $checks.FileVersionExpected=($v.FileVersion -eq '4.1.2.0')
+  $checks.FileVersion=$v.FileVersion; $checks.FileVersionExpected=($v.FileVersion -eq '4.2.0.0')
   $checks.ExeSha256=(Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash
 }
 if($checks.ShortcutExists){

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json, os, pathlib, shutil, signal, socket, subprocess, threading, time
 import tkinter as tk
 from tkinter import ttk, messagebox
-APP="FreeNet Hub";VERSION="4.1.2"
+APP="FreeNet Hub";VERSION="4.2.0"
 STATE=pathlib.Path.home()/".local"/"share"/"FreeNetHub";TOR_STATE=STATE/"tor";OWNER=TOR_STATE/"owner.json";SOCKS_PORT=9909
 def exists(name): return shutil.which(name) is not None
 def run(args,timeout=20): return subprocess.run(args,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=timeout)

@@ -1,19 +1,11 @@
 {
+  "schema": 2,
   "pythonw": "C:\\Path\\To\\pythonw.exe",
-  "lyrebird": {
-    "path": "C:\\Path\\To\\lyrebird.exe",
-    "sha256": "<SHA256>"
-  },
-  "torrc": "C:\\Path\\To\\torrc",
   "pwsh": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
-  "oldRoot": "C:\\Path\\To\\ProviderRoot",
   "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-  "warp": {
-    "path": "C:\\Path\\To\\warp-plus.exe",
-    "sha256": "<SHA256>"
-  },
-  "tor": {
-    "path": "C:\\Path\\To\\tor.exe",
-    "sha256": "<SHA256>"
-  }
+  "warp": null,
+  "tor": null,
+  "lyrebird": null,
+  "torrc": "",
+  "oldRoot": ""
 }

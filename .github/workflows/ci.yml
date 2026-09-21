@@ -12,14 +12,22 @@ jobs:
           python-version: '3.13'
       - name: Verify public manifests
         run: python tests/verify_public_tree.py
-      - name: Unit tests
+      - name: Scan public tree for private/runtime material
+        run: python tests/security_scan_public.py
+      - name: Engine unit tests
         run: python tests/test_engine.py
-      - name: Parse PowerShell UI
+      - name: Gateway unit tests
+        run: python gateway/tests/test_gateway.py
+      - name: Parse PowerShell sources
         shell: pwsh
         run: |
-          $t=$null;$e=$null
-          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path app/FreeNetHub.ps1),[ref]$t,[ref]$e)|Out-Null
-          if(@($e).Count){$e|ForEach-Object{$_.Message};exit 1}
+          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1')
+          $files += Get-ChildItem gateway -Filter *.ps1 -File | ForEach-Object FullName
+          foreach($f in $files){
+            $t=$null;$e=$null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $f),[ref]$t,[ref]$e)|Out-Null
+            if(@($e).Count){$e|ForEach-Object{$_.Message};exit 1}
+          }
   linux-static:
     runs-on: ubuntu-latest
     steps:
