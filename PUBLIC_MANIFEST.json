@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r5",
+  "version": "4.2.0-public-main-r6",
   "source": "git-index-blobs",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 2638,
-      "sha256": "B03D3D77D1335E2B17CEE7120FC17560A5B6007A5A327C0A43069ECC3B276AA8"
+      "bytes": 2747,
+      "sha256": "690757EFB73CC9AADF478C2C053037A74F6C3EBE267A9813E70CA7ED96FD6910"
     },
     {
       "file": ".gitignore",
@@ -25,18 +25,18 @@
     },
     {
       "file": "README.md",
-      "bytes": 3016,
-      "sha256": "037336B7DC7F8AEB742A4735421D40EDC456C3CD74157E2362C880B171C76D77"
+      "bytes": 3214,
+      "sha256": "0003BA32EE5EB01E765F8CD3E4965EE2C300AA29CEC381758E55CA4794760F97"
     },
     {
       "file": "README_FA.md",
-      "bytes": 1832,
-      "sha256": "B95187FC5C1DC554A01C60D07D53302F66EC9780486BBC01A1840128939755F1"
+      "bytes": 2114,
+      "sha256": "3B6FE68CFEEAD87C437A4BF4CC7E5C5DFA253136C6429A6699DEEA658F118206"
     },
     {
       "file": "RELEASE.json",
-      "bytes": 1700,
-      "sha256": "2C0E892F7114B731733F34C0AE4440816F3B0879B8C22604B2092F317BAE2A2E"
+      "bytes": 1785,
+      "sha256": "2D2E75EE4BBA7384DC67CABB593EC36C325BC98F2BBF383A6F9BB28930212090"
     },
     {
       "file": "SECURITY.md",
@@ -90,13 +90,13 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 4977,
-      "sha256": "64117DF947119EBB76682F7FD293D475BE8487307B1803D8F98DB7536827B070"
+      "bytes": 5140,
+      "sha256": "4CA58D7DAD47216B354AAB23E391FFC5AAFAA720E94828D5051214871FF979DD"
     },
     {
       "file": "crossplatform/README_FA.md",
-      "bytes": 1164,
-      "sha256": "DCFB11D522D5D03C58DE28A41E99418B33C5831F81F2F1B76D67A0213C49233E"
+      "bytes": 1231,
+      "sha256": "DEB22B6055DBA0C202E3E6DD9AA397FB0795BCA14D4F55116404581585594BB5"
     },
     {
       "file": "crossplatform/android/README_FA.md",
@@ -145,8 +145,13 @@
     },
     {
       "file": "crossplatform/common/platform_matrix.json",
-      "bytes": 1660,
-      "sha256": "10E86C8DAE07FE6DDDDA6367B2958FD4009BAC1AE0C7FAB646BE542CDA211CFD"
+      "bytes": 1973,
+      "sha256": "590E64994D5034B8D38DAE20F363DB33937E23DC6CAA5FC1FAAB629885C6231C"
+    },
+    {
+      "file": "crossplatform/common/verify_fail_closed.py",
+      "bytes": 2626,
+      "sha256": "5DA9E240E451719648F8EE8EE5E8F9FB7DF03311BA90310B8AFC2A035572B3FA"
     },
     {
       "file": "crossplatform/ios/FreeNetHub/ContentView.swift",
@@ -180,8 +185,8 @@
     },
     {
       "file": "crossplatform/ios/README_FA.md",
-      "bytes": 192,
-      "sha256": "FAB1BD4A091689363A399725132CF0A86BFAB858A37FCC0EA8D43EAD8EFC0176"
+      "bytes": 734,
+      "sha256": "6F13C4C81F3755358909617920BDB0B4F9CE1A7D55E5217FD82EC4FDEB9A76C4"
     },
     {
       "file": "crossplatform/ios/project.yml",
@@ -282,6 +287,11 @@
       "file": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
       "bytes": 1418,
       "sha256": "24103C4DC6457E0584DE59E27F59FE986C52C31270D3BDF75AD583740109AAB1"
+    },
+    {
+      "file": "evidence/IOS_420_STATIC_ACCEPTANCE.json",
+      "bytes": 765,
+      "sha256": "FF69E8EB3C8E9823865F102B7E594F7AF16234780A39903C299E1E5235E3614B"
     },
     {
       "file": "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",

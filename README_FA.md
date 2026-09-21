@@ -18,3 +18,7 @@ Tag و assetهای v4.2.0 تغییر نکرده‌اند. در `main`، Linux ر
 ## به‌روزرسانی Android/iOS روی main
 
 Android 4.2.0 با JDK 17، Gradle 8.9، SDK/Build Tools 35 clean-build شده و APK debug با versionCode=420 و امضای v2 معتبر دارد. با این حال forwarding core هنوز لینک نشده و runtime VPN ادعا نمی‌شود. iOS نیز از نظر metadata به 4.2.0 همگام شده ولی build/signing/device runtime هنوز gate خارجی است.
+
+## iOS static gate
+
+برای iOS، extension point و entitlement مربوط به Packet Tunnel تأیید شده‌اند و startTunnel تا قبل از اتصال forwarding core به‌صورت fail-closed رد می‌شود. build/signing/device runtime هنوز OPEN است.

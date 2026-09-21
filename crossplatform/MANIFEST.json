@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r5",
+  "version": "4.2.0-crossplatform-r6",
   "files": [
     {
       "file": "android/.kotlin/errors/errors-1789973121345.log",
@@ -54,8 +54,13 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 1660,
-      "sha256": "10E86C8DAE07FE6DDDDA6367B2958FD4009BAC1AE0C7FAB646BE542CDA211CFD"
+      "bytes": 1973,
+      "sha256": "590E64994D5034B8D38DAE20F363DB33937E23DC6CAA5FC1FAAB629885C6231C"
+    },
+    {
+      "file": "common/verify_fail_closed.py",
+      "bytes": 2626,
+      "sha256": "5DA9E240E451719648F8EE8EE5E8F9FB7DF03311BA90310B8AFC2A035572B3FA"
     },
     {
       "file": "ios/FreeNetHub/ContentView.swift",
@@ -94,8 +99,8 @@
     },
     {
       "file": "ios/README_FA.md",
-      "bytes": 192,
-      "sha256": "FAB1BD4A091689363A399725132CF0A86BFAB858A37FCC0EA8D43EAD8EFC0176"
+      "bytes": 734,
+      "sha256": "6F13C4C81F3755358909617920BDB0B4F9CE1A7D55E5217FD82EC4FDEB9A76C4"
     },
     {
       "file": "linux/bridges_obfs4.txt",
@@ -149,8 +154,8 @@
     },
     {
       "file": "README_FA.md",
-      "bytes": 1164,
-      "sha256": "DCFB11D522D5D03C58DE28A41E99418B33C5831F81F2F1B76D67A0213C49233E"
+      "bytes": 1231,
+      "sha256": "DEB22B6055DBA0C202E3E6DD9AA397FB0795BCA14D4F55116404581585594BB5"
     }
   ]
 }

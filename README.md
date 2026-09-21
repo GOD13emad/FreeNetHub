@@ -30,7 +30,7 @@ The v4.2.0 tag and release assets remain immutable. Current `main` contains a po
 
 On Ubuntu 24.04.4 under WSL, Linux static checks, source install, Tk UI smoke, and Tor runtime passed. Direct Tor, Snowflake, and obfs4 each reached bootstrap 100%, carried HTTPS through the managed local SOCKS path, and stopped cleanly. Stale FreeNet Hub-owned listeners are recovered only after executable + command-line ownership proof. Real bridge material is runtime-only and is not stored in the public source tree.
 
-Cloudflare WARP on a native Linux host remains a separate runtime gate; missing `warp-cli` fails closed. Android 4.2.0 now has an evidence-backed clean debug build with SDK 35/JDK 17/Gradle 8.9 and a valid v2 debug signature; its VpnService shell remains intentionally fail-closed because the packet-forwarding core is not linked, so this is not Android VPN runtime acceptance. iOS metadata is aligned to 4.2.0 but its forwarding core, Apple signing/entitlements, macOS build and device runtime remain open gates.
+Cloudflare WARP on a native Linux host remains a separate runtime gate; missing `warp-cli` fails closed. Android 4.2.0 now has an evidence-backed clean debug build with SDK 35/JDK 17/Gradle 8.9 and a valid v2 debug signature; its VpnService shell remains intentionally fail-closed because the packet-forwarding core is not linked, so this is not Android VPN runtime acceptance. iOS metadata is aligned to 4.2.0 and its static fail-closed gate passes: the Packet Tunnel extension point and entitlement are present, while startTunnel rejects with coreNotLinked and does not configure tunnel network settings. Its forwarding core, macOS/Xcode build, Apple signing/provisioning and device runtime remain open gates.
 
 ## Security boundary
 

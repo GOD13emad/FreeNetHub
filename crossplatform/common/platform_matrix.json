@@ -44,11 +44,17 @@
       "evidence": "evidence/ANDROID_420_BUILD_ACCEPTANCE.json"
     },
     "ios": {
-      "status": "BUILD_PACK_CORE_NOT_LINKED",
+      "status": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN",
       "framework": "NetworkExtension/NEPacketTunnelProvider",
-      "tunStartEnabled": false,
       "versionName": "4.2.0",
-      "buildNumber": 420
+      "buildNumber": 420,
+      "extensionPoint": "com.apple.networkextension.packet-tunnel",
+      "entitlement": "packet-tunnel-provider",
+      "forwardingCoreLinked": false,
+      "tunnelSettingsEnabled": false,
+      "macosBuildAccepted": false,
+      "deviceRuntimeAccepted": false,
+      "evidence": "evidence/IOS_420_STATIC_ACCEPTANCE.json"
     }
   }
 }

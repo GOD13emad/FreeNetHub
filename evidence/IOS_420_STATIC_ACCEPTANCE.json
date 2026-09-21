@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "utc": "2026-09-21T06:55:41.229Z",
+  "product": "FreeNet Hub",
+  "platform": "iOS",
+  "version": "4.2.0",
+  "buildNumber": 420,
+  "status": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN",
+  "static": {
+    "extensionPoint": "com.apple.networkextension.packet-tunnel",
+    "packetTunnelEntitlement": "PASS",
+    "appNetworkExtensionEntitlement": "PASS",
+    "startTunnelFailsClosedWith": "coreNotLinked",
+    "setTunnelNetworkSettingsEnabled": false,
+    "sharedMobileFailClosedRegression": "PASS"
+  },
+  "limitations": [
+    "No macOS/Xcode build acceptance in the current environment.",
+    "No Apple production signing/provisioning acceptance.",
+    "Packet-forwarding core is not linked.",
+    "No iOS device runtime VPN acceptance."
+  ]
+}
