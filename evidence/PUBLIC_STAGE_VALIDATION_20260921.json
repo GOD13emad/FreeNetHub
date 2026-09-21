@@ -18,7 +18,8 @@
     "gatewayTests": 9,
     "gatewayFailures": 0,
     "powerShellParse": "PASS",
-    "linuxStatic": "PASS"
+    "linuxStatic": "PASS",
+    "portableLineEndings": "LF_ENFORCED_BY_GITATTRIBUTES"
   },
-  "note": "Whitelist-built public staging. Physical console runtime, Authenticode signing, Linux provider runtime, Android runtime and iOS runtime remain separate gates."
+  "note": "Whitelist-built public staging; manifests are regenerated from LF-normalized public source bytes. Runtime/private material remains excluded."
 }

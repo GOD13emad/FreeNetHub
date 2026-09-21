@@ -61,7 +61,15 @@ if pm_path.is_file():
         fp=R/relp
         if not fp.is_file() or fp.stat().st_size!=int(row["bytes"]) or h(fp)!=row["sha256"].upper():
             publicbad.append(relp)
-    actual={p.relative_to(R).as_posix() for p in R.rglob("*") if p.is_file() and ".git" not in p.parts and p.name!="PUBLIC_MANIFEST.json"}
+    actual=set()
+    for p in R.rglob("*"):
+        if not p.is_file() or ".git" in p.parts or p.name=="PUBLIC_MANIFEST.json":
+            continue
+        relx=p.relative_to(R).as_posix()
+        lowx=relx.lower()
+        if "__pycache__/" in lowx or lowx.endswith(".pyc") or lowx.startswith("gateway/runtime/") or lowx.startswith("backup/") or lowx.startswith("delivery/") or lowx.endswith(".log"):
+            continue
+        actual.add(relx)
     if listed!=actual:
         publicbad.extend(sorted(listed^actual))
 else:

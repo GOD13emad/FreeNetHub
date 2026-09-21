@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.exe -text
+*.dll -text
+*.ico -text
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.zip -text
+*.pdf -text
+*.dat -text
+*.pdb -text
