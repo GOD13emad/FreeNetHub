@@ -22,9 +22,24 @@ for row in am["code"]:
         appbad.append(row["file"])
 ET.parse(R/"app"/"View.xaml")
 
+pm_path=R/"PUBLIC_MANIFEST.json"
+pm=json.loads(pm_path.read_text(encoding="utf-8-sig")) if pm_path.is_file() else {"files":[]}
+public_index={row["file"] for row in pm.get("files",[])}
+
 gm,gatewaybad=verify_manifest(R/"gateway",R/"gateway"/"manifest.json","files")
 cm,crossbad=verify_manifest(R/"crossplatform",R/"crossplatform"/"MANIFEST.json","files")
 wm,winbad=verify_manifest(R/"windows"/"standalone",R/"windows"/"standalone"/"MANIFEST.json","files")
+
+for row in gm["files"]:
+    rel="gateway/"+row.get("file",row.get("name"))
+    if rel not in public_index: gatewaybad.append(rel+":NOT_IN_PUBLIC_MANIFEST")
+for row in cm["files"]:
+    rel="crossplatform/"+row.get("file",row.get("name"))
+    if rel not in public_index: crossbad.append(rel+":NOT_IN_PUBLIC_MANIFEST")
+for row in wm["files"]:
+    rel="windows/standalone/"+row.get("file",row.get("name"))
+    if rel not in public_index: winbad.append(rel+":NOT_IN_PUBLIC_MANIFEST")
+
 rel=json.loads((R/"RELEASE.json").read_text(encoding="utf-8-sig"))
 checks={
  "engineSha256":R/"app"/"engine.py",
@@ -51,9 +66,7 @@ for p in R.rglob("*"):
     if low=="app/dependencies.json" or low.startswith("gateway/runtime/") or low.startswith("backup/") or low.startswith("delivery/") or (low.startswith("data/") and low!="data/.gitkeep") or (low.startswith("jobs/") and low!="jobs/.gitkeep"):
         forbidden.append(relp)
 publicbad=[]
-pm_path=R/"PUBLIC_MANIFEST.json"
 if pm_path.is_file():
-    pm=json.loads(pm_path.read_text(encoding="utf-8-sig"))
     listed=set()
     for row in pm["files"]:
         relp=row["file"]
@@ -67,7 +80,7 @@ if pm_path.is_file():
             continue
         relx=p.relative_to(R).as_posix()
         lowx=relx.lower()
-        if "__pycache__/" in lowx or lowx.endswith(".pyc") or lowx.startswith("gateway/runtime/") or lowx.startswith("backup/") or lowx.startswith("delivery/") or lowx.endswith(".log"):
+        if "__pycache__/" in lowx or "/.gradle/" in lowx or "/.kotlin/" in lowx or "/build/" in lowx or lowx.endswith(".pyc") or lowx.startswith("gateway/runtime/") or lowx.startswith("backup/") or lowx.startswith("delivery/") or lowx.endswith(".log"):
             continue
         actual.add(relx)
     if listed!=actual:

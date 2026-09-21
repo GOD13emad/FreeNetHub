@@ -35,3 +35,5 @@ crossplatform/ios/*.xcodeproj/
 DerivedData/
 evidence/UI*.png
 evidence/gui.json
+
+crossplatform/android/.kotlin/

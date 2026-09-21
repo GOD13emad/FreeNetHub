@@ -1,12 +1,7 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r6",
+  "version": "4.2.0-crossplatform-r7",
   "files": [
-    {
-      "file": "android/.kotlin/errors/errors-1789973121345.log",
-      "bytes": 185,
-      "sha256": "50283F80EF63011828658694D3ED4F5C438C870ABFAE6A6A62E9736A5A2E4630"
-    },
     {
       "file": "android/app/build.gradle.kts",
       "bytes": 434,

@@ -1,7 +1,7 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-main-r6",
+  "releaseRevision": "4.2.0-public-main-r7",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
@@ -13,7 +13,7 @@
   "viewSha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "63FDED4905DC80752451F0221B00F57B759E5E83AF736391095AC10A1FC0BC82",
-  "crossPlatformManifestSha256": "4CA58D7DAD47216B354AAB23E391FFC5AAFAA720E94828D5051214871FF979DD",
+  "crossPlatformManifestSha256": "0A325B8A9FE780EB6E199784194FAE2D4469434D81EAD3126EF868DD6289FA77",
   "installerSha256": "0642C5CBAD6A6447C1A7A2FCF3406755016A2B11D00DA884BAB6815A99DF4D85",
   "acceptanceEvidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
   "consolePhysicalFieldValidated": false,
@@ -35,6 +35,15 @@
     "nativeLinuxWarp": "OPEN",
     "v4.2.0TagAndAssetsImmutable": true,
     "iosStaticFailClosed": "PASS",
-    "mobileFailClosedRegression": "PASS"
+    "mobileFailClosedRegression": "PASS",
+    "publicManifestFreshCloneGuard": "ENFORCED",
+    "crossPlatformCacheExclusions": [
+      ".gradle",
+      ".kotlin",
+      "build",
+      "__pycache__",
+      "DerivedData",
+      "*.xcodeproj"
+    ]
   }
 }

@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r6",
+  "version": "4.2.0-public-main-r7",
   "source": "git-index-blobs",
   "files": [
     {
@@ -15,8 +15,8 @@
     },
     {
       "file": ".gitignore",
-      "bytes": 524,
-      "sha256": "9B5F50E92B5BEA52A13D20FC9C261355831852C3B47EDEEBFA2732DCC87FE298"
+      "bytes": 556,
+      "sha256": "948E30CD8ABCCD5590088D387836B1BB2CBA38A110C0D97E9ED3100679F1B41B"
     },
     {
       "file": "Install-Windows.ps1",
@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 1785,
-      "sha256": "2D2E75EE4BBA7384DC67CABB593EC36C325BC98F2BBF383A6F9BB28930212090"
+      "bytes": 1990,
+      "sha256": "EE44145BFF35CCE1A8ED24EF53B88D26475EB695DA1073C892B332CFEB9FB9D0"
     },
     {
       "file": "SECURITY.md",
@@ -90,8 +90,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 5140,
-      "sha256": "4CA58D7DAD47216B354AAB23E391FFC5AAFAA720E94828D5051214871FF979DD"
+      "bytes": 4959,
+      "sha256": "0A325B8A9FE780EB6E199784194FAE2D4469434D81EAD3126EF868DD6289FA77"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -450,8 +450,8 @@
     },
     {
       "file": "tests/verify_public_tree.py",
-      "bytes": 3923,
-      "sha256": "6049C23318F2249C58E0867A9C2AE2024734984B36649828B0B1E9CD7BF46140"
+      "bytes": 4564,
+      "sha256": "D0FF0529833314E6909019DC44C8FDC31DBD68C159859A24BD36D82B5D945CCB"
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
