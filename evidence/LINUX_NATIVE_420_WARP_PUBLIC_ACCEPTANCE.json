@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "utc": "2026-09-21T13:23:00+03:30",
+  "product": "FreeNet Hub",
+  "platform": "Linux",
+  "version": "4.2.0-linux.3",
+  "environment": "native Ubuntu 24.04.5 LTS",
+  "status": "ACCEPTED_NATIVE_LINUX_WARP_RUNTIME",
+  "checks": {
+    "preDisconnected": true,
+    "connectReturnedPass": true,
+    "duringWarpOn": true,
+    "duringYoutube": true,
+    "disconnectPass": true,
+    "postWarpOff": true,
+    "postDisconnected": true,
+    "routeRestored": true,
+    "dnsRestored": true
+  },
+  "observations": {
+    "preWarp": "off",
+    "duringWarp": "on",
+    "youtubeHttp": "204",
+    "postWarp": "off",
+    "routeRestored": true,
+    "dnsRestored": true,
+    "postDisconnected": true
+  },
+  "privacy": "Sanitized summary; no IP, registration, route, DNS or private bridge material included.",
+  "accepted": true
+}

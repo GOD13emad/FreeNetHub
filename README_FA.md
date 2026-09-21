@@ -13,7 +13,7 @@
 
 ## به‌روزرسانی Linux روی main
 
-Tag و assetهای v4.2.0 تغییر نکرده‌اند. در `main`، Linux روی Ubuntu 24.04.4/WSL برای نصب UI و Tor runtime پذیرش شده است: Direct، Snowflake و obfs4 هر سه bootstrap=100، HTTPS=PASS و Stop=PASS دارند. bridge واقعی در source نگهداری نمی‌شود. WARP روی Linux native هنوز gate جداگانه است.
+Tag و assetهای v4.2.0 تغییر نکرده‌اند. در `main`، Linux روی Ubuntu 24.04.4/WSL برای نصب UI و Tor runtime پذیرش شده است: Direct، Snowflake و obfs4 هر سه bootstrap=100، HTTPS=PASS و Stop=PASS دارند. bridge واقعی در source نگهداری نمی‌شود. WARP روی Ubuntu 24.04.5 native نیز runtime PASS است: warp=off → warp=on → YouTube 204 → disconnect و route/DNS/status restore.
 
 ## به‌روزرسانی Android/iOS روی main
 

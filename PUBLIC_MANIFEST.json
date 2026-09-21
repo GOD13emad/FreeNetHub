@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r7",
+  "version": "4.2.0-public-main-r8",
   "source": "git-index-blobs",
   "files": [
     {
@@ -25,18 +25,18 @@
     },
     {
       "file": "README.md",
-      "bytes": 3214,
-      "sha256": "0003BA32EE5EB01E765F8CD3E4965EE2C300AA29CEC381758E55CA4794760F97"
+      "bytes": 3393,
+      "sha256": "710D68ABADD170EEDDFEE2F5A6CA21AEA8E831ADADAD0631B7690A68A326303A"
     },
     {
       "file": "README_FA.md",
-      "bytes": 2114,
-      "sha256": "3B6FE68CFEEAD87C437A4BF4CC7E5C5DFA253136C6429A6699DEEA658F118206"
+      "bytes": 2195,
+      "sha256": "C9C4BCEBEF6C15F027DAD689D3B90A2A5DF00050954164D2BECF5D498EED63BE"
     },
     {
       "file": "RELEASE.json",
-      "bytes": 1990,
-      "sha256": "EE44145BFF35CCE1A8ED24EF53B88D26475EB695DA1073C892B332CFEB9FB9D0"
+      "bytes": 2310,
+      "sha256": "5E414116EB17ED4C83A882724A4070C78C242FE97E919B30955BF08B2C3E5682"
     },
     {
       "file": "SECURITY.md",
@@ -91,12 +91,12 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 4959,
-      "sha256": "0A325B8A9FE780EB6E199784194FAE2D4469434D81EAD3126EF868DD6289FA77"
+      "sha256": "329ACE2AE504F843F902F9BB2B2F44E8C1CC09616B025152CF088691845487DF"
     },
     {
       "file": "crossplatform/README_FA.md",
-      "bytes": 1231,
-      "sha256": "DEB22B6055DBA0C202E3E6DD9AA397FB0795BCA14D4F55116404581585594BB5"
+      "bytes": 1437,
+      "sha256": "71666649E30714E3367957F489664B82E41450AE3E04648B77A87C8213324EC6"
     },
     {
       "file": "crossplatform/android/README_FA.md",
@@ -145,8 +145,8 @@
     },
     {
       "file": "crossplatform/common/platform_matrix.json",
-      "bytes": 1973,
-      "sha256": "590E64994D5034B8D38DAE20F363DB33937E23DC6CAA5FC1FAAB629885C6231C"
+      "bytes": 2366,
+      "sha256": "03799A5D495ED0F3458DCCC6FAB46F6859E91EB19D93964CF085BB4C4FBC3FA8"
     },
     {
       "file": "crossplatform/common/verify_fail_closed.py",
@@ -200,8 +200,8 @@
     },
     {
       "file": "crossplatform/linux/README_FA.md",
-      "bytes": 1434,
-      "sha256": "6554B95525B7867C626899520822876A9D69AFFFF72D57D96DD7C23066A14A39"
+      "bytes": 1539,
+      "sha256": "F10CE72904014751BDCA1D94A1EF694618795266AC127F14A8A98740BED90B98"
     },
     {
       "file": "crossplatform/linux/bridges_obfs4.txt",
@@ -292,6 +292,11 @@
       "file": "evidence/IOS_420_STATIC_ACCEPTANCE.json",
       "bytes": 765,
       "sha256": "FF69E8EB3C8E9823865F102B7E594F7AF16234780A39903C299E1E5235E3614B"
+    },
+    {
+      "file": "evidence/LINUX_NATIVE_420_WARP_PUBLIC_ACCEPTANCE.json",
+      "bytes": 826,
+      "sha256": "A212354E9DE6BB8391B691B4816D29905783829BBA3D029FEA45000B6BDCFA1C"
     },
     {
       "file": "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",

@@ -14,19 +14,34 @@
       "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "WSL_TOR_RUNTIME_PASS_NATIVE_WARP_OPEN",
-      "environment": "Ubuntu 24.04.4 LTS on WSL",
+      "status": "ACCEPTED_WSL_TOR_AND_NATIVE_WARP_RUNTIME",
+      "environments": {
+        "tor": "Ubuntu 24.04.4 LTS on WSL",
+        "warp": "Ubuntu 24.04.5 LTS native Linux"
+      },
       "providers": {
         "DIRECT_HTTPS": "PASS",
         "TOR_DIRECT": "PASS",
         "TOR_SNOWFLAKE": "PASS",
         "TOR_OBFS4": "PASS",
-        "CLOUDFLARE_WARP_SYSTEM": "OPEN_NATIVE_LINUX_RUNTIME"
+        "CLOUDFLARE_WARP_SYSTEM": "PASS_NATIVE_RUNTIME"
+      },
+      "nativeWarp": {
+        "preWarp": "off",
+        "duringWarp": "on",
+        "youtubeHttp": "204",
+        "disconnect": "PASS",
+        "routeRestored": true,
+        "dnsRestored": true,
+        "statusRestored": true
       },
       "installUiSmoke": "PASS",
       "privateBridgeFilesPublished": false,
       "networkOnLaunch": false,
-      "evidence": "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json"
+      "evidence": [
+        "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",
+        "evidence/LINUX_NATIVE_420_WARP_PUBLIC_ACCEPTANCE.json"
+      ]
     },
     "android": {
       "status": "BUILD_ACCEPTED_CORE_NOT_LINKED",

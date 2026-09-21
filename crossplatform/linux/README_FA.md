@@ -10,4 +10,6 @@
 - نصب مجدد bridgeهای خصوصی موجود را overwrite نمی‌کند.
 - WARP فقط با اقدام صریح کاربر و `warp-cli` رسمی وصل می‌شود. اتصال WARP با anti-lockout guard محدود شروع می‌شود و اگر Keep تأیید نشود auto-disconnect می‌شود.
 - فرمان recovery محلی: `freenethub-recover`.
-- Runtime acceptance فعلی روی WSL/Ubuntu: UI dependency و Tor start→HTTPS→stop PASS. WARP runtime روی Linux native هنوز gate جداگانه است و از WSL به Linux واقعی تعمیم داده نمی‌شود.
+- WSL acceptance: UI dependency و Tor Direct/Snowflake/obfs4 start→HTTPS→stop PASS.
+- Native Linux acceptance روی Ubuntu 24.04.5: WARP baseline `off`، connect `on`، YouTube 204، disconnect PASS و route/DNS/status به baseline برگشته‌اند.
+- evidence عمومی: `evidence/LINUX_NATIVE_420_WARP_PUBLIC_ACCEPTANCE.json`.

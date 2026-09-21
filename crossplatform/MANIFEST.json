@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r7",
+  "version": "4.2.0-crossplatform-r8",
   "files": [
     {
       "file": "android/app/build.gradle.kts",
@@ -49,8 +49,8 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 1973,
-      "sha256": "590E64994D5034B8D38DAE20F363DB33937E23DC6CAA5FC1FAAB629885C6231C"
+      "bytes": 2366,
+      "sha256": "03799A5D495ED0F3458DCCC6FAB46F6859E91EB19D93964CF085BB4C4FBC3FA8"
     },
     {
       "file": "common/verify_fail_closed.py",
@@ -129,8 +129,8 @@
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 1434,
-      "sha256": "6554B95525B7867C626899520822876A9D69AFFFF72D57D96DD7C23066A14A39"
+      "bytes": 1539,
+      "sha256": "F10CE72904014751BDCA1D94A1EF694618795266AC127F14A8A98740BED90B98"
     },
     {
       "file": "linux/recover_warp_remote.sh",
@@ -149,8 +149,8 @@
     },
     {
       "file": "README_FA.md",
-      "bytes": 1231,
-      "sha256": "DEB22B6055DBA0C202E3E6DD9AA397FB0795BCA14D4F55116404581585594BB5"
+      "bytes": 1437,
+      "sha256": "71666649E30714E3367957F489664B82E41450AE3E04648B77A87C8213324EC6"
     }
   ]
 }
