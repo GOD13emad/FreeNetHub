@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-linux-r4",
+  "version": "4.2.0-public-main-r5",
   "source": "git-index-blobs",
   "files": [
     {
@@ -25,18 +25,18 @@
     },
     {
       "file": "README.md",
-      "bytes": 2770,
-      "sha256": "B6DB3EADF11161200BD7B71F8A17BEF20222CA200A70B57E6590F641ACF9A751"
+      "bytes": 3016,
+      "sha256": "037336B7DC7F8AEB742A4735421D40EDC456C3CD74157E2362C880B171C76D77"
     },
     {
       "file": "README_FA.md",
-      "bytes": 1395,
-      "sha256": "49D2AFB5FF967F96160847294E9E96ABCEBD22577B1E289B3A4C8E1C5345D890"
+      "bytes": 1832,
+      "sha256": "B95187FC5C1DC554A01C60D07D53302F66EC9780486BBC01A1840128939755F1"
     },
     {
       "file": "RELEASE.json",
-      "bytes": 1422,
-      "sha256": "793FA53786F333265BD187C89BDA5864416E4D0318047B8F5D64B631BE159C8F"
+      "bytes": 1700,
+      "sha256": "2C0E892F7114B731733F34C0AE4440816F3B0879B8C22604B2092F317BAE2A2E"
     },
     {
       "file": "SECURITY.md",
@@ -90,23 +90,23 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 4795,
-      "sha256": "B6C22C2F6032585C4FF7E13B8A7367F2AEBF63A722629ACE259CE8CB7402A3F1"
+      "bytes": 4977,
+      "sha256": "64117DF947119EBB76682F7FD293D475BE8487307B1803D8F98DB7536827B070"
     },
     {
       "file": "crossplatform/README_FA.md",
-      "bytes": 1113,
-      "sha256": "FAD40800031EA021D4B61C9F93E1D39DB5DEF105A1CF4551ABD16AE40EAA6BED"
+      "bytes": 1164,
+      "sha256": "DCFB11D522D5D03C58DE28A41E99418B33C5831F81F2F1B76D67A0213C49233E"
     },
     {
       "file": "crossplatform/android/README_FA.md",
-      "bytes": 197,
-      "sha256": "FC06873751CBF7C0EC12EA07C167109446532536039FCCF9F3DBFD5B7C4AA823"
+      "bytes": 1037,
+      "sha256": "9F9DC7E48041270195AA3E89BF3F330D94228E0F1ACAE7A689B96CF850A7534D"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
-      "bytes": 249,
-      "sha256": "CAB32A4F693DD21688EC373EF2C1E732C4BA6EB854B2E033217D5A23B183BE1B"
+      "bytes": 434,
+      "sha256": "88734089AC114EA96C9F723663BACD3DCEA60DE7D7E9E9C60DEED83D58193D75"
     },
     {
       "file": "crossplatform/android/app/src/main/AndroidManifest.xml",
@@ -121,7 +121,7 @@
     {
       "file": "crossplatform/android/app/src/main/java/com/freenethub/mobile/MainActivity.kt",
       "bytes": 1023,
-      "sha256": "82D1D7BE2710A66E06CF9592F4BEC380E897B1392DD7A908391EDCB583F06E07"
+      "sha256": "5E9CBB5016DEEF5B12BB8347DF862A65D3BA5225348C679AB67E04FAFF6C155E"
     },
     {
       "file": "crossplatform/android/build.gradle.kts",
@@ -135,8 +135,8 @@
     },
     {
       "file": "crossplatform/android/settings.gradle.kts",
-      "bytes": 270,
-      "sha256": "A6862C09AE206B823652DDC0EF59B1AF33C2D93B91A7F5D89AF539C3283DACBC"
+      "bytes": 490,
+      "sha256": "BA70A4A01D20D335AA1617B13135619EB42D5C708B6817BE460063349AB26B90"
     },
     {
       "file": "crossplatform/common/METHOD_EVIDENCE.md",
@@ -145,13 +145,13 @@
     },
     {
       "file": "crossplatform/common/platform_matrix.json",
-      "bytes": 1216,
-      "sha256": "7E4DF534FF03EB9AFE75E1D8471319D96C475C9C6851DA52D076BB03052CECEA"
+      "bytes": 1660,
+      "sha256": "10E86C8DAE07FE6DDDDA6367B2958FD4009BAC1AE0C7FAB646BE542CDA211CFD"
     },
     {
       "file": "crossplatform/ios/FreeNetHub/ContentView.swift",
       "bytes": 351,
-      "sha256": "C2E9ED29CD8DD9C5161F2513B09EDACF4B0DAAC8EBE059E91477F3B31219302D"
+      "sha256": "D35A55025E2B68185F4FE2787B196BCABD238C4B9D4DEFE294AF4750992FB021"
     },
     {
       "file": "crossplatform/ios/FreeNetHub/FreeNetHub.entitlements",
@@ -185,8 +185,8 @@
     },
     {
       "file": "crossplatform/ios/project.yml",
-      "bytes": 664,
-      "sha256": "E3C3DCAE3A125EADEC21A047CD6009D223F76AA6A15ED8C05A857CC489FA17D7"
+      "bytes": 796,
+      "sha256": "A2CEA96CBAD18F48C8D399C672F1A679BF43ACAABC32F65A486B37EBB21049C9"
     },
     {
       "file": "crossplatform/linux/FreeNetHub.svg",
@@ -272,6 +272,11 @@
       "file": "docs/research.json",
       "bytes": 13368,
       "sha256": "28BAE0266D1330CA0FC1997AA5E9A3DCD8486CC090FE9F2FD588FCFA18261DAC"
+    },
+    {
+      "file": "evidence/ANDROID_420_BUILD_ACCEPTANCE.json",
+      "bytes": 1526,
+      "sha256": "4A5CF7EBB16520CD3AED7A18CEAA2058D85CB9C06442141C3BF950704DC912E4"
     },
     {
       "file": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",

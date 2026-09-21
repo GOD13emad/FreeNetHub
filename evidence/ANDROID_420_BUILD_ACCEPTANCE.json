@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "utc": "2026-09-21T06:48:19.9047143+00:00",
+  "product": "FreeNet Hub",
+  "platform": "Android",
+  "version": "4.2.0",
+  "status": "BUILD_ACCEPTED_CORE_NOT_LINKED",
+  "build": {
+    "cleanAssembleDebug": "PASS",
+    "gradle": "8.9",
+    "jdk": "17",
+    "compileSdk": 35,
+    "targetSdk": 35,
+    "buildTools": "35.0.0"
+  },
+  "apk": {
+    "path": "crossplatform/android/app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 814821,
+    "sha256": "196450EF7B14884B1D1436B12398D90BC1CE3AA61AC3BBBF176509CF9CC7C655",
+    "package": "com.freenethub.mobile",
+    "versionCode": "420",
+    "versionName": "4.2.0",
+    "v2Signed": true,
+    "debugCertificate": true
+  },
+  "vpnSafety": {
+    "vpnServiceDeclared": true,
+    "bindVpnServicePermission": true,
+    "providerCoreReadyFalse": true,
+    "builderEstablishExecutable": false,
+    "runtimeVpnAccepted": false
+  },
+  "toolchain": {
+    "androidCliSha256": "90AE805D20434428BFFCB699C290860F19BB5F66A67E6B330067E3DE801FB04A",
+    "platform35Sha1": "0BB560A90A7A2CBD0DD8348224D518B638FE7949",
+    "buildTools35Sha1": "AF059BB67CF7786F45EE0DB85E2D24985DF1B4B6",
+    "platformToolsSha1": "E03E78B1D80B396F1C3358E31251CB31740E1110",
+    "source": "Official Google Android repository metadata + Adoptium JDK 17 + Gradle 8.9"
+  },
+  "limitations": [
+    "Packet-forwarding core is intentionally not linked.",
+    "No Android device runtime VPN acceptance has been performed.",
+    "APK is debug-signed, not production release-signed."
+  ],
+  "accepted": true
+}

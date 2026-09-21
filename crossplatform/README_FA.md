@@ -1,9 +1,9 @@
 # FreeNet Hub 4.2.0 - Cross-platform
 
 - Windows: release 4.2.0 software-accepted for Browser/Proxy + WARP PC_TUNNEL + Console Gateway software path. Physical console/game field validation remains separate.
-- Linux/WSL: source/static, installer/UI smoke, and Tor runtime are accepted on Ubuntu 24.04.4 WSL. Direct Tor, Snowflake and obfs4 each reached bootstrap 100%, passed HTTPS through the local SOCKS path, and stopped cleanly. Private bridge files are runtime-only and excluded from source/public release material.
-- Linux WARP: remains a separate native-Linux runtime gate. In the current WSL acceptance environment `warp-cli` is absent and the app fails closed without network mutation.
-- Android: native VpnService integration/build pack remains fail-closed because the packet-forwarding core is not linked.
-- iOS: native NEPacketTunnelProvider integration/build pack remains fail-closed until forwarding core, entitlements/signing and runtime validation are completed.
+- Linux/WSL: source/static, installer/UI smoke, and Tor runtime are accepted on Ubuntu 24.04.4 WSL. Direct Tor، Snowflake و obfs4 هر سه bootstrap=100، HTTPS=PASS و Stop=PASS دارند. bridgeهای واقعی runtime-only و خارج از source/public release هستند.
+- Linux WARP: gate جداگانهٔ native-Linux است. در محیط WSL فعلی `warp-cli` وجود ندارد و برنامه fail-closed می‌ماند.
+- Android: clean debug build برای 4.2.0 **PASS** است؛ VpnService declaration/permission و fail-closed shell تأیید شده‌اند. packet-forwarding core و device runtime/production signing هنوز OPEN هستند.
+- iOS: metadata روی 4.2.0 همگام شده؛ NEPacketTunnelProvider integration pack همچنان تا forwarding core، entitlement/signing و macOS/device runtime fail-closed است.
 
-Static/build success is never promoted to runtime VPN acceptance, and WSL results are not represented as native-Linux WARP acceptance.
+Static/build success هرگز به runtime VPN acceptance ارتقا داده نمی‌شود.

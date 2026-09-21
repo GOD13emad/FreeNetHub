@@ -14,3 +14,7 @@
 ## به‌روزرسانی Linux روی main
 
 Tag و assetهای v4.2.0 تغییر نکرده‌اند. در `main`، Linux روی Ubuntu 24.04.4/WSL برای نصب UI و Tor runtime پذیرش شده است: Direct، Snowflake و obfs4 هر سه bootstrap=100، HTTPS=PASS و Stop=PASS دارند. bridge واقعی در source نگهداری نمی‌شود. WARP روی Linux native هنوز gate جداگانه است.
+
+## به‌روزرسانی Android/iOS روی main
+
+Android 4.2.0 با JDK 17، Gradle 8.9، SDK/Build Tools 35 clean-build شده و APK debug با versionCode=420 و امضای v2 معتبر دارد. با این حال forwarding core هنوز لینک نشده و runtime VPN ادعا نمی‌شود. iOS نیز از نظر metadata به 4.2.0 همگام شده ولی build/signing/device runtime هنوز gate خارجی است.

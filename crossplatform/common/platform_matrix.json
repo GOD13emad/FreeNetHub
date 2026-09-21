@@ -29,14 +29,26 @@
       "evidence": "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json"
     },
     "android": {
-      "status": "BUILD_PACK_CORE_NOT_LINKED",
+      "status": "BUILD_ACCEPTED_CORE_NOT_LINKED",
       "framework": "android.net.VpnService",
-      "tunEstablishEnabled": false
+      "versionCode": 420,
+      "versionName": "4.2.0",
+      "compileSdk": 35,
+      "targetSdk": 35,
+      "buildTools": "35.0.0",
+      "cleanAssembleDebug": "PASS",
+      "apkSha256": "196450EF7B14884B1D1436B12398D90BC1CE3AA61AC3BBBF176509CF9CC7C655",
+      "v2SignedDebug": true,
+      "tunEstablishEnabled": false,
+      "runtimeVpnAccepted": false,
+      "evidence": "evidence/ANDROID_420_BUILD_ACCEPTANCE.json"
     },
     "ios": {
       "status": "BUILD_PACK_CORE_NOT_LINKED",
       "framework": "NetworkExtension/NEPacketTunnelProvider",
-      "tunStartEnabled": false
+      "tunStartEnabled": false,
+      "versionName": "4.2.0",
+      "buildNumber": 420
     }
   }
 }
