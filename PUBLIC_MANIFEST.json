@@ -1,7 +1,7 @@
 {
-  "schema": 2,
-  "version": "4.2.0-public-final-r1",
-  "source": "git-index",
+  "schema": 3,
+  "version": "4.2.0-public-final-r2",
+  "source": "git-index-blobs",
   "files": [
     {
       "file": ".gitattributes",
@@ -265,8 +265,8 @@
     },
     {
       "file": "evidence/unit_tests.json",
-      "bytes": 228,
-      "sha256": "550FF4B411BFDAD85EF69CE4590AE176EE3FCD329836C40E29051ABC62B0EABF"
+      "bytes": 220,
+      "sha256": "544606E62915D883919898FB8CEC709CF06E5E6C7D47D0587499BDE91FD00340"
     },
     {
       "file": "gateway/README_FA.md",
