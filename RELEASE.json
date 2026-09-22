@@ -1,7 +1,7 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-main-r10",
+  "releaseRevision": "4.2.0-public-main-r11",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
@@ -13,7 +13,7 @@
   "viewSha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "63FDED4905DC80752451F0221B00F57B759E5E83AF736391095AC10A1FC0BC82",
-  "crossPlatformManifestSha256": "89D1EA6EE81EF2392E20B0FB710C47DE8389D38A4D3F78CBD054E8B64E9FEE0D",
+  "crossPlatformManifestSha256": "27FC883E001FFF06647228008F3835A9DA645BFCD612BE9C2C101054F7387AA6",
   "installerSha256": "0642C5CBAD6A6447C1A7A2FCF3406755016A2B11D00DA884BAB6815A99DF4D85",
   "acceptanceEvidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
   "consolePhysicalFieldValidated": false,
@@ -74,6 +74,7 @@
     "nativeLinuxLegacyProfileMigration": "PASS_EXACT_FINGERPRINT_ONLY",
     "nativeLinuxUninstaller": "PASS_OWNED_UUID_SCOPE_PRIVATE_STATE_PRESERVED",
     "nativeLinuxDirectCurrentProbe": "NETWORK_TRANSIENT_BOOTSTRAP_55_PERCENT_AT_90S",
-    "nativeLinuxWarpInstaller": "OFFICIAL_REPO_VERSION_CODENAME"
+    "nativeLinuxWarpInstaller": "OFFICIAL_REPO_VERSION_CODENAME",
+    "platformMatrixLinuxAligned": true
   }
 }

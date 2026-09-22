@@ -14,32 +14,39 @@
       "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "ACCEPTED_WSL_TOR_AND_NATIVE_WARP_RUNTIME",
+      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R5",
+      "version": "4.2.0-linux.5",
       "environments": {
-        "tor": "Ubuntu 24.04.4 LTS on WSL",
-        "warp": "Ubuntu 24.04.5 LTS native Linux"
+        "wsl": "Ubuntu 24.04.4 LTS",
+        "native": "Ubuntu 24.04.5 LTS"
       },
       "providers": {
         "DIRECT_HTTPS": "PASS",
-        "TOR_DIRECT": "PASS",
-        "TOR_SNOWFLAKE": "PASS",
+        "TOR_DIRECT": "SUPPORTED_BOUNDED_TRANSIENT_POSSIBLE",
+        "TOR_AUTO_FALLBACK": "PASS",
         "TOR_OBFS4": "PASS",
+        "TOR_SNOWFLAKE": "FAIL_CLOSED_WITHOUT_PRIVATE_RUNTIME_BRIDGE",
         "CLOUDFLARE_WARP_SYSTEM": "PASS_NATIVE_RUNTIME"
       },
-      "nativeWarp": {
-        "preWarp": "off",
-        "duringWarp": "on",
-        "youtubeHttp": "204",
-        "disconnect": "PASS",
-        "routeRestored": true,
-        "dnsRestored": true,
-        "statusRestored": true
+      "desktop": {
+        "toolkit": "GTK4+Libadwaita",
+        "singleInstance": true,
+        "nativeWindowControls": true,
+        "networkOnLaunch": false,
+        "integrityLauncher": true,
+        "installUninstallLifecycle": "PASS"
       },
-      "installUiSmoke": "PASS",
+      "consoleGateway": {
+        "software": "PASS",
+        "networkManagerUuidOwnership": true,
+        "legacyMigration": "EXACT_MATCH_ONLY",
+        "rollback": "PASS",
+        "physicalConsoleValidated": false
+      },
       "privateBridgeFilesPublished": false,
-      "networkOnLaunch": false,
       "evidence": [
         "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",
+        "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
         "evidence/LINUX_NATIVE_420_WARP_PUBLIC_ACCEPTANCE.json"
       ]
     },

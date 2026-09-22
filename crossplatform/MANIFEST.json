@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r10",
+  "version": "4.2.0-crossplatform-r11",
   "files": [
     {
       "file": "README_FA.md",
@@ -54,8 +54,8 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 2366,
-      "sha256": "03799A5D495ED0F3458DCCC6FAB46F6859E91EB19D93964CF085BB4C4FBC3FA8"
+      "bytes": 2728,
+      "sha256": "798FADE16A85A999C4B51AA247283E67EC92CDB8D2BC5EECE6FCA4B58135545E"
     },
     {
       "file": "common/verify_fail_closed.py",

@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r10",
+  "version": "4.2.0-public-main-r11",
   "source": "git-index-blobs",
   "files": [
     {
@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 3540,
-      "sha256": "5812F750F9C05D33AC3F3EAED890793223950F3F09770A0127F9B2C973E3DEDE"
+      "bytes": 3580,
+      "sha256": "9CAD1786A747D7464043A2A6B5020AFC391AB6B7D248898A95CC3A961FDE0699"
     },
     {
       "file": "SECURITY.md",
@@ -96,7 +96,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 5441,
-      "sha256": "89D1EA6EE81EF2392E20B0FB710C47DE8389D38A4D3F78CBD054E8B64E9FEE0D"
+      "sha256": "27FC883E001FFF06647228008F3835A9DA645BFCD612BE9C2C101054F7387AA6"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -150,8 +150,8 @@
     },
     {
       "file": "crossplatform/common/platform_matrix.json",
-      "bytes": 2366,
-      "sha256": "03799A5D495ED0F3458DCCC6FAB46F6859E91EB19D93964CF085BB4C4FBC3FA8"
+      "bytes": 2728,
+      "sha256": "798FADE16A85A999C4B51AA247283E67EC92CDB8D2BC5EECE6FCA4B58135545E"
     },
     {
       "file": "crossplatform/common/verify_fail_closed.py",
