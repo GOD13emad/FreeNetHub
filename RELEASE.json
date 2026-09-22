@@ -1,7 +1,7 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-main-r12",
+  "releaseRevision": "4.2.0-public-main-r13",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
@@ -80,6 +80,11 @@
     "nativeLinuxConsoleCredentialStability": "PASS_REPEATED_PREPARE_PRESERVES_OWNED_PSK",
     "nativeLinuxConsoleStartPolicy": "PASS_REENFORCES_CURRENT_WIFI_POLICY",
     "nativeLinuxDesktopEntry": "PASS_SINGLE_MAIN_CATEGORY_VALIDATED",
-    "nativeLinuxPrivateState": "PASS_DIRS_0700_SENSITIVE_FILES_0600_UPGRADE_REMEDIATION"
+    "nativeLinuxPrivateState": "PASS_DIRS_0700_SENSITIVE_FILES_0600_UPGRADE_REMEDIATION",
+    "ciUbuntuRunnerPin": {
+      "linuxStatic": "ubuntu-24.04",
+      "androidBuild": "ubuntu-24.04",
+      "reason": "GitHub notice: ubuntu-latest migrates to Ubuntu 26 on 2026-10-19"
+    }
   }
 }
