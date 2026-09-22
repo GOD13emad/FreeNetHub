@@ -1,6 +1,4 @@
-# FreeNet Hub private obfs4 bridge file template.
-# Do not commit real bridge lines.
-# Add private bridge lines only to:
-#   ~/.local/share/FreeNetHub/bridges_obfs4.txt
-# Expected form:
-#   obfs4 <host>:<port> <fingerprint> cert=<certificate> iat-mode=0
+# FreeNet Hub obfs4 bridge template.
+# Runtime/private bridge lines are intentionally not packaged.
+# Import valid complete bridge lines through the UI or place them in:
+# ~/.local/share/FreeNetHub/bridges_obfs4.txt

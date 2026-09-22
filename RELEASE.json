@@ -13,12 +13,12 @@
   "viewSha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "63FDED4905DC80752451F0221B00F57B759E5E83AF736391095AC10A1FC0BC82",
-  "crossPlatformManifestSha256": "329ACE2AE504F843F902F9BB2B2F44E8C1CC09616B025152CF088691845487DF",
+  "crossPlatformManifestSha256": "7B8A646D59DB6EC59EC7B580E7BF2439992B73441A3D245CD07F848A65C6059D",
   "installerSha256": "0642C5CBAD6A6447C1A7A2FCF3406755016A2B11D00DA884BAB6815A99DF4D85",
   "acceptanceEvidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "ACCEPTED_WSL_TOR_AND_NATIVE_WARP_RUNTIME",
+    "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE",
     "android": "BUILD_ACCEPTED_CORE_NOT_LINKED",
     "ios": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN"
   },
@@ -32,8 +32,8 @@
     "iosMetadataVersion": "4.2.0",
     "iosRuntimeVpn": "OPEN_CORE_SIGNING_RUNTIME",
     "privateBridgeMaterialInSource": false,
-    "nativeLinuxWarp": "PASS",
-    "v4.2.0TagAndAssetsImmutable": true,
+    "nativeLinuxWarp": "PASS_SAFE_TRIAL_TOKEN_GUARD_OWNERSHIP_ROLLBACK",
+    "v4.2.0TagAndAssetsImmutable": false,
     "iosStaticFailClosed": "PASS",
     "mobileFailClosedRegression": "PASS",
     "publicManifestFreshCloneGuard": "ENFORCED",
@@ -60,6 +60,15 @@
       "permissions": "contents: read",
       "actionsPinnedToVerifiedTagCommits": true,
       "sourceCommit": "3a6491dc4e980d27c0e89032d6ede3693b0d9df7"
-    }
+    },
+    "nativeLinuxDesktop": "PASS_GTK4_LIBADWAITA_SINGLE_INSTANCE_WINDOW_CONTROLS",
+    "nativeLinuxTor": "PASS_DIRECT_OBFS4",
+    "nativeLinuxSnowflake": "PROVIDER_RETAINED_FAIL_CLOSED_WITHOUT_RUNTIME_BRIDGE",
+    "nativeLinuxFirefox": "PASS_ISOLATED_PROFILE_REMOTE_DNS",
+    "nativeLinuxConsoleGateway": "SOFTWARE_PASS_PHYSICAL_CONSOLE_FIELD_GATE_OPEN",
+    "nativeLinuxIntegrityLauncher": "PASS",
+    "nativeLinuxAcceptanceEvidence": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
+    "v4.2.0PublishedReleaseAuthority": true,
+    "githubReleaseImmutableObserved": false
   }
 }

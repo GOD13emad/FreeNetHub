@@ -1,9 +1,13 @@
 [Desktop Entry]
 Type=Application
+Version=1.0
 Name=FreeNet Hub
-Comment=Explicit connection control centre
+GenericName=Network Control Center
+Comment=WARP, Tor, resilience and console gateway control
 Exec=__HOME__/.local/bin/freenethub
 Icon=freenethub
 Terminal=false
 Categories=Network;Utility;
 StartupNotify=true
+StartupWMClass=local.freenethub
+DBusActivatable=false

@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "utc": "2026-09-21T18:45:00+03:30",
+  "product": "FreeNet Hub",
+  "platform": "Linux",
+  "version": "4.2.0-linux.4",
+  "environment": "native Ubuntu 24.04.5 LTS",
+  "status": "ACCEPTED_LINUX_4.2_SOFTWARE_RELEASE",
+  "checks": {
+    "sourceInstallIntegrity": true,
+    "gtk4LibadwaitaUi": true,
+    "singleInstance": true,
+    "windowMinimizeMaximizeClose": true,
+    "warpConnectOn": true,
+    "warpDisconnectRestore": true,
+    "warpOwnershipSafety": true,
+    "warpTokenScopedGuard": true,
+    "staleGuardNoAction": true,
+    "torDirectBootstrapHttps": true,
+    "torObfs4BootstrapHttps": true,
+    "snowflakeProviderRetained": true,
+    "snowflakeWithoutRuntimeBridgeFailsClosed": true,
+    "foreignSocksListenerNotKilled": true,
+    "isolatedFirefoxProfile": true,
+    "consoleGatewaySoftware": true,
+    "consoleRollback": true,
+    "finalBaselineRestored": true
+  },
+  "openGates": [
+    "PHYSICAL_CONSOLE_DHCP_UDP_GAME_COUNTRY_E2E"
+  ],
+  "physicalConsoleValidated": false,
+  "sourceHashes": {
+    "core": "D2F4A10BAB21858A355AB3C23A105A94146CFB6F4B658A2BBE310DF9A0368C9E",
+    "ui": "3BAA7441DF376057003EB913A5BBF8F333ACFDDA65B317CC3A795BDEFEE427D4",
+    "guard": "D90776784226C92A621D26F9AA217D35D5A3827C22815AB744886C7CEED76726"
+  },
+  "privacy": "Sanitized summary; no IP, hostname, credentials, route addresses, registration data or private bridge material included.",
+  "accepted": true
+}

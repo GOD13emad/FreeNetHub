@@ -40,9 +40,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Linux static checks
         run: |
-          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/selftest.py
+          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py
           python3 crossplatform/linux/selftest.py
-          bash -n crossplatform/linux/install.sh
+          bash -n crossplatform/linux/install.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/recover_warp_remote.sh
   android-build:
     runs-on: ubuntu-latest
     steps:

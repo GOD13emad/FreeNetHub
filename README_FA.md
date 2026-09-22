@@ -13,7 +13,9 @@
 
 ## به‌روزرسانی Linux روی main
 
-Tag و assetهای v4.2.0 تغییر نکرده‌اند. در `main`، Linux روی Ubuntu 24.04.4/WSL برای نصب UI و Tor runtime پذیرش شده است: Direct، Snowflake و obfs4 هر سه bootstrap=100، HTTPS=PASS و Stop=PASS دارند. bridge واقعی در source نگهداری نمی‌شود. WARP روی Ubuntu 24.04.5 native نیز runtime PASS است: warp=off → warp=on → YouTube 204 → disconnect و route/DNS/status restore.
+Tag و assetهای v4.2.0 تغییر نکرده‌اند. نسخهٔ native Linux `4.2.0-linux.4` روی Ubuntu 24.04.5 software-accepted است: UI بومی GTK4/Libadwaita، single-instance، دکمه‌های minimize/maximize/close، WARP safe-trial و rollback توکن‌محور، ownership safety، Tor Direct/obfs4، Firefox profile جدا، integrity launcher و Console Gateway software path همگی runtime PASS دارند.
+
+Snowflake حفظ شده و بدون bridge runtime معتبر fail-closed می‌شود؛ bridgeهای واقعی obfs4/Snowflake در source عمومی نگهداری نمی‌شوند. WSL evidence قبلی Direct/Snowflake/obfs4 نیز حفظ شده است. گیت باز Linux فقط اعتبارسنجی DHCP/UDP/game/country با کنسول فیزیکی است؛ software gateway خودش پذیرفته شده است.
 
 ## به‌روزرسانی Android/iOS روی main
 

@@ -1,0 +1,4 @@
+# FreeNet Hub Snowflake bridge template.
+# Runtime/private bridge lines are intentionally not packaged.
+# Import valid complete Snowflake bridge lines through the UI or place them in:
+# ~/.local/share/FreeNetHub/bridges_snowflake.txt
