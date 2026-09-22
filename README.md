@@ -37,3 +37,10 @@ Android 4.2.0 has an evidence-backed clean debug build with SDK 35/JDK 17/Gradle
 ## Security boundary
 
 Runtime identities, private profiles/keys, bridge files, browser state, local dependency paths and raw private evidence are excluded from Git history by construction. See SECURITY.md.
+
+
+## Licensing and third-party components
+
+This repository currently does not declare a project-wide software license. No license should be inferred from repository visibility alone.
+
+Third-party software retains its own license terms. In particular, the Console Gateway setup can download the pinned upstream sing-box 1.14.0 release at setup time after SHA-256 verification; the sing-box binary is not embedded in the FreeNet Hub installer. See `THIRD_PARTY_NOTICES.md`.
