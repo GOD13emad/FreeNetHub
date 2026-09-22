@@ -7,11 +7,11 @@ required=[
  "connect_mode","stop_all","warp_connect_safe","warp_keep","warp_disconnect",
  "start_tor","stop_tor","open_browser","console_prepare","console_start","console_stop",
  "doctor","speed_sample","export_report","inventory","import_snowflake","recover_stale_project_listener",
- "nm_connection_uuids","console_owned_uuid","nm_connection_profile","migrate_legacy_console_profile","valid_console_password","apply_console_profile_policy"
+ "nm_connection_uuids","console_owned_uuid","nm_connection_profile","migrate_legacy_console_profile","valid_console_password","apply_console_profile_policy","firefox_profile_root","project_firefox_pids","process_live","stop_project_firefox"
 ]
 missing=[x for x in required if not callable(getattr(m,x,None))]
 assert not missing, missing
-assert m.VERSION=="4.2.0-linux.6"
+assert m.VERSION=="4.2.0-linux.7"
 assert m.WARP_GUARD_SECONDS==60
 assert m.TOR_DIRECT_TIMEOUT>=90
 assert 15 <= m.TOR_AUTO_DIRECT_TIMEOUT <= 45

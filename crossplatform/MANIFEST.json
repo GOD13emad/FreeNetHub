@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r12",
+  "version": "4.2.0-crossplatform-r14",
   "files": [
     {
       "file": "README_FA.md",
@@ -54,8 +54,8 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 3057,
-      "sha256": "4FA6C1C4BACE3538A2388841FF672DA09080F5F453C99E49CA24632AEE2E37B3"
+      "bytes": 3200,
+      "sha256": "FD3FCAEB6D679C5577642F01B18D4C07ED504E94EC468D8C548FC0E10BBF7B54"
     },
     {
       "file": "common/verify_fail_closed.py",
@@ -109,8 +109,8 @@
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 4329,
-      "sha256": "0FAF5226587B6F51DA2BB542408387BBC91D46B9F6E980C1CF149AD3E086B6D9"
+      "bytes": 5124,
+      "sha256": "1C3A102115238FD4E4C004C3F3CC73A1E180959BBD925DA0B97AA844DD71453C"
     },
     {
       "file": "linux/bridges_obfs4.txt",
@@ -124,8 +124,8 @@
     },
     {
       "file": "linux/freenet_hub_linux.py",
-      "bytes": 38262,
-      "sha256": "2B111A9A55D3C32D19998EE31569CA1AD873CCCF1DC972E37B65BA18BE2012CF"
+      "bytes": 41333,
+      "sha256": "C393C58686B4C976A9BB6F765FE3D58F9CDEB5B14BE3853C84C7FCDBF959C9F0"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
@@ -139,8 +139,8 @@
     },
     {
       "file": "linux/install.sh",
-      "bytes": 4055,
-      "sha256": "27BFD9ABCDFAC33514DF09E21233A981D0FA311D327F04757DFB8779526D77AF"
+      "bytes": 5206,
+      "sha256": "FD40FA3D2E3EAFE89C70A79D7DFDC1B1B9DE876C21E1464E338433BA70CC082E"
     },
     {
       "file": "linux/install_warp_official.sh",
@@ -154,8 +154,13 @@
     },
     {
       "file": "linux/selftest.py",
-      "bytes": 1740,
-      "sha256": "74E9FC4E5D69338A89399B8203AEA3D62B3E029B69D26D3134335D2E585F5C9B"
+      "bytes": 1824,
+      "sha256": "7AD8158FC0A06C854305DACA6345FCBC08036BB66714060BCD4FEB73D278FB72"
+    },
+    {
+      "file": "linux/test_browser_profile.py",
+      "bytes": 652,
+      "sha256": "DA42B01B8D1092AC0BEF0D74B7FD5182CADB9E6DC61222A7CB8874FA9171BAC4"
     },
     {
       "file": "linux/test_console_policy.py",

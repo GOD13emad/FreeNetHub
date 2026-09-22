@@ -16,7 +16,7 @@ import uuid
 import zipfile
 
 APP = "FreeNet Hub"
-VERSION = "4.2.0-linux.6"
+VERSION = "4.2.0-linux.7"
 STATE = pathlib.Path.home() / ".local" / "share" / "FreeNetHub"
 EVIDENCE = STATE / "evidence"
 TOR_STATE = STATE / "tor"
@@ -576,9 +576,27 @@ def stop_all():
 def verify_current():
     return current_status()
 
+def firefox_profile_root():
+    snap_common = pathlib.Path.home() / "snap" / "firefox" / "common"
+    if snap_common.is_dir() and pathlib.Path("/snap/firefox/current").exists():
+        root = snap_common / "FreeNetHub"
+    else:
+        root = STATE
+    root.mkdir(parents=True, exist_ok=True)
+    try:
+        os.chmod(root, 0o700)
+    except OSError:
+        pass
+    return root
+
+
 def firefox_profile(proxy=False):
-    base = STATE / "firefox-tunneled"
+    base = firefox_profile_root() / "firefox-tunneled"
     base.mkdir(parents=True, exist_ok=True)
+    try:
+        os.chmod(base, 0o700)
+    except OSError:
+        pass
     prefs = [
         'user_pref("browser.shell.checkDefaultBrowser", false);',
         'user_pref("browser.startup.homepage", "about:blank");',
@@ -596,8 +614,73 @@ def firefox_profile(proxy=False):
         ]
     else:
         prefs += ['user_pref("network.proxy.type", 0);']
-    (base / "user.js").write_text("\n".join(prefs) + "\n", encoding="utf-8")
+    user_js = base / "user.js"
+    user_js.write_text("\n".join(prefs) + "\n", encoding="utf-8")
+    try:
+        os.chmod(user_js, 0o600)
+    except OSError:
+        pass
     return base
+
+
+def project_firefox_pids(profile):
+    want = str(pathlib.Path(profile))
+    rows = []
+    for p in pathlib.Path("/proc").iterdir():
+        if not p.name.isdigit():
+            continue
+        try:
+            args = [x.decode(errors="replace") for x in (p / "cmdline").read_bytes().split(b"\0") if x]
+        except Exception:
+            continue
+        if not args:
+            continue
+        if want in args and pathlib.Path(args[0]).name == "firefox":
+            rows.append(int(p.name))
+    return rows
+
+
+def process_live(pid):
+    stat = pathlib.Path(f"/proc/{int(pid)}/stat")
+    if not stat.exists():
+        return False
+    try:
+        parts = stat.read_text(encoding="utf-8", errors="replace").split()
+        return len(parts) > 2 and parts[2] != "Z"
+    except Exception:
+        return False
+
+
+def stop_project_firefox(profile):
+    pids = project_firefox_pids(profile)
+    for pid in pids:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except (ProcessLookupError, PermissionError):
+            pass
+    end = time.time() + 5
+    while time.time() < end:
+        alive = [pid for pid in pids if process_live(pid)]
+        if not alive:
+            return {"ok": True, "stopped": pids, "forced": []}
+        time.sleep(0.15)
+    alive = [pid for pid in pids if process_live(pid)]
+    forced = []
+    for pid in alive:
+        try:
+            os.kill(pid, signal.SIGKILL)
+            forced.append(pid)
+        except (ProcessLookupError, PermissionError):
+            pass
+    end = time.time() + 2
+    while time.time() < end:
+        still = [pid for pid in alive if process_live(pid)]
+        if not still:
+            return {"ok": True, "stopped": pids, "forced": forced}
+        time.sleep(0.1)
+    still = [pid for pid in alive if process_live(pid)]
+    return {"ok": not still, "stopped": [pid for pid in pids if pid not in still], "forced": forced, "busy": still}
+
 
 def open_browser(url="https://www.cloudflare.com/cdn-cgi/trace"):
     firefox = executable("firefox")
@@ -613,10 +696,18 @@ def open_browser(url="https://www.cloudflare.com/cdn-cgi/trace"):
         if not ts.get("ok"):
             return {"ok": False, "error": "TOR_NOT_READY", "tor": ts}
     if mode in ("WARP", "WARP_TRIAL", "WARP_EXTERNAL"):
-        t = trace(timeout=10)
-        if not (t.get("ok") and (t.get("trace") or {}).get("warp") == "on"):
-            return {"ok": False, "error": "WARP_NOT_READY", "trace": t}
+        tr = trace(timeout=10)
+        if not (tr.get("ok") and (tr.get("trace") or {}).get("warp") == "on"):
+            return {"ok": False, "error": "WARP_NOT_READY", "trace": tr}
     prof = firefox_profile(proxy=proxy)
+    legacy = STATE / "firefox-tunneled"
+    if legacy != prof:
+        old = stop_project_firefox(legacy)
+        if not old.get("ok"):
+            return {"ok": False, "error": "LEGACY_BROWSER_BUSY", "pids": old.get("busy", [])}
+    stopped = stop_project_firefox(prof)
+    if not stopped.get("ok"):
+        return {"ok": False, "error": "BROWSER_BUSY_CLOSE_REQUIRED", "pids": stopped.get("busy", [])}
     env = os.environ.copy()
     subprocess.Popen(
         [firefox, "--no-remote", "--new-instance", "--profile", str(prof), url],
@@ -627,7 +718,8 @@ def open_browser(url="https://www.cloudflare.com/cdn-cgi/trace"):
         start_new_session=True,
         close_fds=True,
     )
-    return {"ok": True, "browser": "firefox", "profile": str(prof), "mode": mode, "proxy": proxy}
+    atomic_json(STATE / "browser_route.json", {"schema": 1, "mode": mode, "proxy": proxy, "profile": str(prof), "launched": time.time()})
+    return {"ok": True, "browser": "firefox", "profile": str(prof), "mode": mode, "proxy": proxy, "restarted": bool(stopped.get("stopped"))}
 
 def default_route():
     p = run([executable("ip") or "ip", "route", "show", "default"], 5)

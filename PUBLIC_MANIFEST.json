@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r13",
+  "version": "4.2.0-public-main-r14",
   "source": "git-index-blobs",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 3555,
-      "sha256": "2AED8ACB95793EDA39C5240DF8E3821845A45F8446BCE6B07842C050872F1F31"
+      "bytes": 3617,
+      "sha256": "725B8247425C557E662A4DAD437E7C68DB0E46185AEFE7A335B12FF9CC06BA62"
     },
     {
       "file": ".gitignore",
@@ -30,13 +30,13 @@
     },
     {
       "file": "README_FA.md",
-      "bytes": 3283,
-      "sha256": "09F7012D935B5F1538F2B30B7F919EAC0881FF70F6B1A794E3EF7D478B699D73"
+      "bytes": 3432,
+      "sha256": "DCF4DBCD6D3B6F73DF59C98D94FAB52B6DA711076EB245E9C2291EC96DC4DE20"
     },
     {
       "file": "RELEASE.json",
-      "bytes": 4185,
-      "sha256": "EA4309E074948A9A47909C2138FFE8E141BA1F6936CC963ED1E000BC4094000C"
+      "bytes": 4386,
+      "sha256": "6743CF12F6B34B44A58A8A938ADC2CF2EEA2202C785156DBB6EE431891DD61D9"
     },
     {
       "file": "SECURITY.md",
@@ -95,8 +95,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 5778,
-      "sha256": "5A27037DE47C7276DBACE3E3F399B147B059592EEF36960B60DB22F4CC1C80E8"
+      "bytes": 5941,
+      "sha256": "39BDB2485A698AF787F985300DCB4529C9DDA1B17A3D586C6A5AACF09DF50EA8"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -150,8 +150,8 @@
     },
     {
       "file": "crossplatform/common/platform_matrix.json",
-      "bytes": 3057,
-      "sha256": "4FA6C1C4BACE3538A2388841FF672DA09080F5F453C99E49CA24632AEE2E37B3"
+      "bytes": 3200,
+      "sha256": "FD3FCAEB6D679C5577642F01B18D4C07ED504E94EC468D8C548FC0E10BBF7B54"
     },
     {
       "file": "crossplatform/common/verify_fail_closed.py",
@@ -205,8 +205,8 @@
     },
     {
       "file": "crossplatform/linux/README_FA.md",
-      "bytes": 4329,
-      "sha256": "0FAF5226587B6F51DA2BB542408387BBC91D46B9F6E980C1CF149AD3E086B6D9"
+      "bytes": 5124,
+      "sha256": "1C3A102115238FD4E4C004C3F3CC73A1E180959BBD925DA0B97AA844DD71453C"
     },
     {
       "file": "crossplatform/linux/bridges_obfs4.txt",
@@ -220,8 +220,8 @@
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
-      "bytes": 38262,
-      "sha256": "2B111A9A55D3C32D19998EE31569CA1AD873CCCF1DC972E37B65BA18BE2012CF"
+      "bytes": 41333,
+      "sha256": "C393C58686B4C976A9BB6F765FE3D58F9CDEB5B14BE3853C84C7FCDBF959C9F0"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
@@ -235,8 +235,8 @@
     },
     {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 4055,
-      "sha256": "27BFD9ABCDFAC33514DF09E21233A981D0FA311D327F04757DFB8779526D77AF"
+      "bytes": 5206,
+      "sha256": "FD40FA3D2E3EAFE89C70A79D7DFDC1B1B9DE876C21E1464E338433BA70CC082E"
     },
     {
       "file": "crossplatform/linux/install_warp_official.sh",
@@ -250,8 +250,13 @@
     },
     {
       "file": "crossplatform/linux/selftest.py",
-      "bytes": 1740,
-      "sha256": "74E9FC4E5D69338A89399B8203AEA3D62B3E029B69D26D3134335D2E585F5C9B"
+      "bytes": 1824,
+      "sha256": "7AD8158FC0A06C854305DACA6345FCBC08036BB66714060BCD4FEB73D278FB72"
+    },
+    {
+      "file": "crossplatform/linux/test_browser_profile.py",
+      "bytes": 652,
+      "sha256": "DA42B01B8D1092AC0BEF0D74B7FD5182CADB9E6DC61222A7CB8874FA9171BAC4"
     },
     {
       "file": "crossplatform/linux/test_console_policy.py",
@@ -322,6 +327,11 @@
       "file": "evidence/IOS_420_STATIC_ACCEPTANCE.json",
       "bytes": 765,
       "sha256": "FF69E8EB3C8E9823865F102B7E594F7AF16234780A39903C299E1E5235E3614B"
+    },
+    {
+      "file": "evidence/LINUX_BROWSER_SNAP_HOTFIX_PUBLIC_ACCEPTANCE.json",
+      "bytes": 912,
+      "sha256": "E02FEB4832EB0FE216CF643EE8F8B82A8BB6936CC74E2F43D5EDDA7BF9D71E2E"
     },
     {
       "file": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",

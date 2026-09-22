@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "date": "2026-09-22",
+  "product": "FreeNet Hub",
+  "platform": "Linux",
+  "version": "4.2.0-linux.7",
+  "status": "ACCEPTED_LINUX_BROWSER_HOTFIX_R7",
+  "rootCause": {
+    "snapFirefoxLegacyProfile": "AppArmor denied lock creation under ~/.local/share/FreeNetHub/firefox-tunneled",
+    "staleUi": "long-running GTK process retained pre-hotfix core in memory"
+  },
+  "checks": {
+    "snapWritableProfileInitialized": true,
+    "apparmorDenialsOnNewProfile": false,
+    "firefoxDbusApplicationRegistered": true,
+    "torObfs4BrowserOpen": true,
+    "socksRemoteDnsPreference": true,
+    "browserOwnedProcessStop": true,
+    "staleUiReloadOnInstallerUpdate": true,
+    "networkMutationOnInstall": false
+  },
+  "profile": "~/snap/firefox/common/FreeNetHub/firefox-tunneled",
+  "privacy": "Sanitized: no IP, account, cookie, credential, Wi-Fi PSK or private bridge material.",
+  "accepted": true
+}

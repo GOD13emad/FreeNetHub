@@ -1,4 +1,4 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.6
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.7
 
 نسخهٔ Linux با UI بومی GTK4/Libadwaita و اتصال صریح (explicit-connect).
 
@@ -61,3 +61,10 @@ freenethub-uninstall
 ```
 
 uninstaller فقط profile کنسول را در صورتی حذف می‌کند که UUID ثبت‌شدهٔ همان profile با ownership پروژه تطبیق داشته باشد. Cloudflare WARP به‌عنوان package سیستمی خارجی حذف نمی‌شود. اسکریپت نصب WARP codename سیستم را از `/etc/os-release` می‌خواند و از repository رسمی Cloudflare استفاده می‌کند.
+
+## Browser hotfix R7
+
+- Firefox Snap دیگر profile تونلی را زیر `~/.local/share` نمی‌گیرد؛ برای عبور از confinement رسمی Snap از `~/snap/firefox/common/FreeNetHub/firefox-tunneled` استفاده می‌شود.
+- profile فقط متعلق به FreeNet Hub است و `network.proxy.socks_remote_dns=true` برای Tor حفظ می‌شود.
+- هنگام تعویض route فقط Firefox دقیق همین profile restart می‌شود؛ Firefox شخصی کاربر لمس نمی‌شود.
+- installer اگر UI قدیمی FreeNet Hub باز باشد، فقط همان process دقیق را قبل از update می‌بندد و پس از نصب دوباره launcher واقعی desktop را اجرا می‌کند تا کد stale در حافظه نماند.

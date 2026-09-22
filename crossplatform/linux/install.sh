@@ -9,6 +9,38 @@ DESKTOP_HOME="$HOME/.local/share/applications"
 ICON_HOME="$HOME/.local/share/icons/hicolor/scalable/apps"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 BACKUP_HOME="$APP_HOME/backup/$STAMP"
+UI_PATH="$APP_HOME/freenet_hub_linux_gtk.py"
+RESTART_UI=0
+
+if [ -f "$UI_PATH" ]; then
+  RESTART_UI="$(python3 - "$UI_PATH" <<'PY'
+from pathlib import Path
+import pathlib,os,signal,sys,time
+want=str(Path(sys.argv[1]).resolve())
+pids=[]
+for p in Path('/proc').iterdir():
+    if not p.name.isdigit():
+        continue
+    try:
+        args=[x.decode(errors='replace') for x in (p/'cmdline').read_bytes().split(b'\0') if x]
+    except Exception:
+        continue
+    if len(args) >= 2 and pathlib.Path(args[1]).resolve() == pathlib.Path(want):
+        pids.append(int(p.name))
+for pid in pids:
+    try: os.kill(pid,signal.SIGTERM)
+    except (ProcessLookupError,PermissionError): pass
+end=time.time()+5
+while time.time()<end and any(Path(f'/proc/{pid}').exists() for pid in pids):
+    time.sleep(.15)
+for pid in pids:
+    if Path(f'/proc/{pid}').exists():
+        try: os.kill(pid,signal.SIGKILL)
+        except (ProcessLookupError,PermissionError): pass
+print(1 if pids else 0)
+PY
+)"
+fi
 
 for cmd in python3 sha256sum; do
   command -v "$cmd" >/dev/null 2>&1 || { echo "Required command missing: $cmd" >&2; exit 3; }
@@ -56,8 +88,8 @@ import json,pathlib,sys,time
 p=pathlib.Path(sys.argv[1])
 p.write_text(json.dumps({
   "schema":1,
-  "version":"4.2.0-linux.6",
-  "release":"LINUX_4.2.0_R6",
+  "version":"4.2.0-linux.7",
+  "release":"LINUX_4.2.0_R7",
   "installed_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
   "network_mutation_on_install":False,
   "integrity_manifest":"INSTALL.sha256"
@@ -94,5 +126,8 @@ command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$
 command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true
 
 (cd "$APP_HOME" && sha256sum -c INSTALL.sha256)
-echo "Installed FreeNet Hub Linux 4.2.0-linux.6"
+if [ "$RESTART_UI" = "1" ] && command -v gtk-launch >/dev/null 2>&1 && [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
+  gtk-launch local.freenethub >/dev/null 2>&1 &
+fi
+echo "Installed FreeNet Hub Linux 4.2.0-linux.7"
 echo "No network connection was started."
