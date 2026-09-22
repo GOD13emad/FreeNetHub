@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 5048,
-      "sha256": "0A2B8A4160F4D47351CB156BD1A134259C5BBAE2D9D7877A5F319671151CCDE4"
+      "bytes": 5127,
+      "sha256": "C1914614288ED435B9ED60F18D4C849F58678CF8245E36989B0C3D7A721DDE23"
     },
     {
       "file": "SECURITY.md",
@@ -360,8 +360,8 @@
     },
     {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
-      "bytes": 1877,
-      "sha256": "EBED59532510E2EA37A9825D84EB4A8DD44AD4897FC1DF708928107A3C9024BB"
+      "bytes": 2126,
+      "sha256": "FE39F0868C138A3A3CDB57548BCD7AEB562B0BCB72328590D91ACDC0EB6B2D41"
     },
     {
       "file": "evidence/unit_tests.json",

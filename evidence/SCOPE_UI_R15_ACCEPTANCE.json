@@ -25,7 +25,14 @@
     },
     "consolePagePcControlPresent": false,
     "consoleStopIsolation": "PASS_STATIC_REGRESSION",
-    "sourceTests": "PASS"
+    "sourceTests": "PASS",
+    "installer": {
+      "status": "BUILT_VERIFIED_HASH",
+      "asset": "FreeNetHub_4.2.0_R15_Setup.exe",
+      "bytes": 2217329,
+      "sha256": "F0F25773E79EF716BA5DAC60CD559FC9A63BFE7E37BE6397E00F0CE42E11EFF6",
+      "desktopMatch": true
+    }
   },
   "linux": {
     "version": "4.2.0-linux.8",

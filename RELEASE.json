@@ -14,7 +14,7 @@
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "348376ADDA3701052C199793A8AB142C2452B2044780842908DC50F556339AD2",
   "crossPlatformManifestSha256": "204B56AA50B939D8CA61106C8542D5926DB1CC186127D07051E3D02483237636",
-  "installerSha256": "0642C5CBAD6A6447C1A7A2FCF3406755016A2B11D00DA884BAB6815A99DF4D85",
+  "installerSha256": "F0F25773E79EF716BA5DAC60CD559FC9A63BFE7E37BE6397E00F0CE42E11EFF6",
   "acceptanceEvidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
@@ -104,8 +104,10 @@
       "linuxFullSystemRollback": "PASS_ROUTE_DNS_SESSION",
       "linuxWarpBrowserOnly": "FAIL_CLOSED_LOCAL_PROXY_UNAVAILABLE",
       "rejectedDependency": "warp-plus runtime unavailable on this network",
-      "installerState": "REBUILD_REQUIRED_BEFORE_RELEASE",
-      "publicEvidence": "evidence/SCOPE_UI_R15_ACCEPTANCE.json"
+      "installerState": "BUILT_VERIFIED_HASH",
+      "publicEvidence": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
+      "installerAsset": "FreeNetHub_4.2.0_R15_Setup.exe",
+      "installerBytes": 2217329
     }
   }
 }
