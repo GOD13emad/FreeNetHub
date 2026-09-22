@@ -1,7 +1,7 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-main-r11",
+  "releaseRevision": "4.2.0-public-main-r12",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
@@ -13,12 +13,12 @@
   "viewSha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "63FDED4905DC80752451F0221B00F57B759E5E83AF736391095AC10A1FC0BC82",
-  "crossPlatformManifestSha256": "27FC883E001FFF06647228008F3835A9DA645BFCD612BE9C2C101054F7387AA6",
+  "crossPlatformManifestSha256": "5A27037DE47C7276DBACE3E3F399B147B059592EEF36960B60DB22F4CC1C80E8",
   "installerSha256": "0642C5CBAD6A6447C1A7A2FCF3406755016A2B11D00DA884BAB6815A99DF4D85",
   "acceptanceEvidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R5",
+    "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R6",
     "android": "BUILD_ACCEPTED_CORE_NOT_LINKED",
     "ios": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN"
   },
@@ -65,16 +65,21 @@
     "nativeLinuxTor": "AUTO_PASS_DIRECT_30S_THEN_OBFS4_100_PERCENT_HTTPS",
     "nativeLinuxSnowflake": "PROVIDER_RETAINED_FAIL_CLOSED_WITHOUT_RUNTIME_BRIDGE",
     "nativeLinuxFirefox": "PASS_ISOLATED_PROFILE_REMOTE_DNS",
-    "nativeLinuxConsoleGateway": "PASS_UUID_OWNED_IDEMPOTENT_STOP_PHYSICAL_FIELD_GATE_OPEN",
+    "nativeLinuxConsoleGateway": "PASS_UUID_OWNED_WPA2_RSN_PMF_DISABLED_IDEMPOTENT_STOP_PHYSICAL_FIELD_GATE_OPEN",
     "nativeLinuxIntegrityLauncher": "PASS",
     "nativeLinuxAcceptanceEvidence": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
     "v4.2.0PublishedReleaseAuthority": true,
     "githubReleaseImmutableObserved": false,
-    "nativeLinuxVersion": "4.2.0-linux.5",
+    "nativeLinuxVersion": "4.2.0-linux.6",
     "nativeLinuxLegacyProfileMigration": "PASS_EXACT_FINGERPRINT_ONLY",
     "nativeLinuxUninstaller": "PASS_OWNED_UUID_SCOPE_PRIVATE_STATE_PRESERVED",
     "nativeLinuxDirectCurrentProbe": "NETWORK_TRANSIENT_BOOTSTRAP_55_PERCENT_AT_90S",
     "nativeLinuxWarpInstaller": "OFFICIAL_REPO_VERSION_CODENAME",
-    "platformMatrixLinuxAligned": true
+    "platformMatrixLinuxAligned": true,
+    "nativeLinuxConsoleWifiPolicy": "WPA2_PSK_RSN_PMF_DISABLED",
+    "nativeLinuxConsoleCredentialStability": "PASS_REPEATED_PREPARE_PRESERVES_OWNED_PSK",
+    "nativeLinuxConsoleStartPolicy": "PASS_REENFORCES_CURRENT_WIFI_POLICY",
+    "nativeLinuxDesktopEntry": "PASS_SINGLE_MAIN_CATEGORY_VALIDATED",
+    "nativeLinuxPrivateState": "PASS_DIRS_0700_SENSITIVE_FILES_0600_UPGRADE_REMEDIATION"
   }
 }

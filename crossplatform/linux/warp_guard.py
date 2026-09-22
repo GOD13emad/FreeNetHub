@@ -6,6 +6,12 @@ import subprocess
 import sys
 import time
 
+os.umask(0o077)
+
+def private_write(path, text):
+    path.write_text(text, encoding="utf-8")
+    os.chmod(path, 0o600)
+
 token = sys.argv[1]
 seconds = int(sys.argv[2])
 keep = pathlib.Path(sys.argv[3])
@@ -28,20 +34,21 @@ def clear_trial_session():
         if not trial_is_current():
             return
         tmp = session_path.with_suffix(".json.tmp")
-        tmp.write_text(json.dumps({
+        private_write(tmp, json.dumps({
             "mode": None,
             "provider": None,
             "detail": {},
             "updated": time.time(),
-        }, indent=2) + "\n", encoding="utf-8")
+        }, indent=2) + "\n")
         os.replace(tmp, session_path)
+        os.chmod(session_path, 0o600)
     except Exception:
         pass
 
 time.sleep(seconds)
 
 if keep.exists():
-    log.write_text("KEEP " + token + "\n", encoding="utf-8")
+    private_write(log, "KEEP " + token + "\n")
     try:
         keep.unlink()
     except Exception:
@@ -49,7 +56,7 @@ if keep.exists():
     raise SystemExit(0)
 
 if not trial_is_current():
-    log.write_text("STALE_NO_ACTION " + token + "\n", encoding="utf-8")
+    private_write(log, "STALE_NO_ACTION " + token + "\n")
     raise SystemExit(0)
 
 try:
@@ -62,6 +69,6 @@ try:
         timeout=20,
     )
     clear_trial_session()
-    log.write_text(f"AUTO_DISCONNECT rc={p.returncode}\n{p.stdout}", encoding="utf-8")
+    private_write(log, f"AUTO_DISCONNECT rc={p.returncode}\n{p.stdout}")
 except Exception as e:
-    log.write_text("AUTO_DISCONNECT_ERROR " + repr(e) + "\n", encoding="utf-8")
+    private_write(log, "AUTO_DISCONNECT_ERROR " + repr(e) + "\n")

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+umask 077
 HERE="$(cd "$(dirname "$0")" && pwd)"
 SRC="$HERE"
 APP_HOME="$HOME/.local/share/FreeNetHub"
@@ -19,7 +20,13 @@ gi.require_version("Adw","1")
 from gi.repository import Gtk,Adw
 PY
 
-mkdir -p "$APP_HOME" "$BIN_HOME" "$DESKTOP_HOME" "$ICON_HOME"
+mkdir -p "$APP_HOME" "$APP_HOME/evidence" "$APP_HOME/tor" "$BIN_HOME" "$DESKTOP_HOME" "$ICON_HOME"
+chmod 0700 "$APP_HOME" "$APP_HOME/evidence" "$APP_HOME/tor"
+for f in "$APP_HOME/session.json" "$APP_HOME/console.json" "$APP_HOME/bridges_obfs4.txt" "$APP_HOME/bridges_snowflake.txt"; do
+  [ -f "$f" ] && chmod 0600 "$f"
+done
+find "$APP_HOME/evidence" "$APP_HOME/tor" -type f -exec chmod 0600 {} + 2>/dev/null || true
+find "$APP_HOME" -maxdepth 1 -type f \( -name 'warp_guard_*.log' -o -name 'warp_keep_*.ok' \) -exec chmod 0600 {} + 2>/dev/null || true
 if [ -f "$APP_HOME/freenet_hub_linux.py" ]; then
   mkdir -p "$BACKUP_HOME"
   for f in freenet_hub_linux.py freenet_hub_linux_gtk.py warp_guard.py recover_warp_remote.sh uninstall.sh INSTALL.sha256 INSTALL.json; do
@@ -49,8 +56,8 @@ import json,pathlib,sys,time
 p=pathlib.Path(sys.argv[1])
 p.write_text(json.dumps({
   "schema":1,
-  "version":"4.2.0-linux.5",
-  "release":"LINUX_4.2.0_R5",
+  "version":"4.2.0-linux.6",
+  "release":"LINUX_4.2.0_R6",
   "installed_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
   "network_mutation_on_install":False,
   "integrity_manifest":"INSTALL.sha256"
@@ -87,5 +94,5 @@ command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$
 command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true
 
 (cd "$APP_HOME" && sha256sum -c INSTALL.sha256)
-echo "Installed FreeNet Hub Linux 4.2.0-linux.5"
+echo "Installed FreeNet Hub Linux 4.2.0-linux.6"
 echo "No network connection was started."

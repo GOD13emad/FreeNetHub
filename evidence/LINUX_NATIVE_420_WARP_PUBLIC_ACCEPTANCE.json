@@ -3,7 +3,7 @@
   "date": "2026-09-22",
   "product": "FreeNet Hub",
   "platform": "Linux",
-  "version": "4.2.0-linux.5",
+  "version": "4.2.0-linux.6",
   "status": "ACCEPTED_NATIVE_LINUX_WARP_RUNTIME",
   "checks": {
     "preDisconnected": true,
@@ -14,7 +14,10 @@
     "disconnectPass": true,
     "postWarpOff": true,
     "routeRestored": true,
-    "consoleStopIdempotent": true
+    "consoleStopIdempotent": true,
+    "consoleWifiWpa2RsnPolicy": true,
+    "consoleCredentialStableAcrossPrepare": true,
+    "guardStatePrivatePermissions": true
   },
   "privacy": "Sanitized summary; no IP, registration, route, DNS, password or private bridge material included.",
   "accepted": true

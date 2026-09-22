@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r11",
+  "version": "4.2.0-crossplatform-r12",
   "files": [
     {
       "file": "README_FA.md",
-      "bytes": 1580,
-      "sha256": "B195B17EEA2ADCD35363D86FD4165CB8034A0D33DB28489327CC34DB354D093B"
+      "bytes": 1681,
+      "sha256": "05EC8BB40AF2D0A48A50D2601626989284009403D9AA0B1511C6AA91DF707435"
     },
     {
       "file": "android/README_FA.md",
@@ -54,8 +54,8 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 2728,
-      "sha256": "798FADE16A85A999C4B51AA247283E67EC92CDB8D2BC5EECE6FCA4B58135545E"
+      "bytes": 3057,
+      "sha256": "4FA6C1C4BACE3538A2388841FF672DA09080F5F453C99E49CA24632AEE2E37B3"
     },
     {
       "file": "common/verify_fail_closed.py",
@@ -109,8 +109,8 @@
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 3556,
-      "sha256": "FB0750790427C76853DD93B39CA81FA70905CA1A8618BE7D733338417D391AA1"
+      "bytes": 4329,
+      "sha256": "0FAF5226587B6F51DA2BB542408387BBC91D46B9F6E980C1CF149AD3E086B6D9"
     },
     {
       "file": "linux/bridges_obfs4.txt",
@@ -124,8 +124,8 @@
     },
     {
       "file": "linux/freenet_hub_linux.py",
-      "bytes": 36859,
-      "sha256": "BCA37E46C9493D6320846EF3E3CB48C065361153524026DBCA3AC87A9CA5737D"
+      "bytes": 38262,
+      "sha256": "2B111A9A55D3C32D19998EE31569CA1AD873CCCF1DC972E37B65BA18BE2012CF"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
@@ -134,13 +134,13 @@
     },
     {
       "file": "linux/freenethub.desktop",
-      "bytes": 323,
-      "sha256": "80A765DE99F7122DA5945114DA2EDCC311903097EF8B0D1BC9FBDEBA275E114C"
+      "bytes": 315,
+      "sha256": "103C54EF2EC85DF7911CD685626C184F9E75D12B172347B9105093311384CEE6"
     },
     {
       "file": "linux/install.sh",
-      "bytes": 3555,
-      "sha256": "DCCD98C5926DCB82BE629742B34FDA85BC13BB53344C25B0C5B55C7F258A1F31"
+      "bytes": 4055,
+      "sha256": "27BFD9ABCDFAC33514DF09E21233A981D0FA311D327F04757DFB8779526D77AF"
     },
     {
       "file": "linux/install_warp_official.sh",
@@ -154,8 +154,18 @@
     },
     {
       "file": "linux/selftest.py",
-      "bytes": 1612,
-      "sha256": "7FD35C3C8A66A66E9A127560076C2C2CB10C2DA3CFDB090BAD922AD3F785D50B"
+      "bytes": 1740,
+      "sha256": "74E9FC4E5D69338A89399B8203AEA3D62B3E029B69D26D3134335D2E585F5C9B"
+    },
+    {
+      "file": "linux/test_console_policy.py",
+      "bytes": 2677,
+      "sha256": "459BCBECB6697E8195C9736273DF807E56C2FF762C2EDDE1AE9FED178A77EC59"
+    },
+    {
+      "file": "linux/test_private_state_permissions.py",
+      "bytes": 1764,
+      "sha256": "75463F5D71041AEBF94CD3741081DA7B17E09F415A16A4FA32A90281CD26349E"
     },
     {
       "file": "linux/uninstall.sh",
@@ -164,8 +174,8 @@
     },
     {
       "file": "linux/warp_guard.py",
-      "bytes": 1756,
-      "sha256": "D90776784226C92A621D26F9AA217D35D5A3827C22815AB744886C7CEED76726"
+      "bytes": 1843,
+      "sha256": "465AE0C8807BCE4488A2826D3E230E90EF40CCBEE9695C844A60A9A5061C7ABE"
     }
   ]
 }

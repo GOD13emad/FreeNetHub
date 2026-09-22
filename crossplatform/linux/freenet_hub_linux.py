@@ -16,7 +16,7 @@ import uuid
 import zipfile
 
 APP = "FreeNet Hub"
-VERSION = "4.2.0-linux.5"
+VERSION = "4.2.0-linux.6"
 STATE = pathlib.Path.home() / ".local" / "share" / "FreeNetHub"
 EVIDENCE = STATE / "evidence"
 TOR_STATE = STATE / "tor"
@@ -30,12 +30,18 @@ SOCKS_PORT = 9909
 TOR_DIRECT_TIMEOUT = 90
 TOR_AUTO_DIRECT_TIMEOUT = 30
 TOR_TRANSPORT_TIMEOUT = 120
+CONSOLE_WIFI_PROTO = "rsn"
+CONSOLE_WIFI_PMF = "disable"
 WARP_GUARD_SECONDS = 60
 CONSOLE_NAME = "FreeNetHub-Console"
 
 def ensure_dirs():
     for p in (STATE, EVIDENCE, TOR_STATE):
         p.mkdir(parents=True, exist_ok=True)
+        try:
+            os.chmod(p, 0o700)
+        except OSError:
+            pass
 
 def executable(name: str):
     p = shutil.which(name)
@@ -67,7 +73,9 @@ def atomic_json(path: pathlib.Path, value):
     ensure_dirs()
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.chmod(tmp, 0o600)
     os.replace(tmp, path)
+    os.chmod(path, 0o600)
 
 def load_json(path: pathlib.Path, default=None):
     try:
@@ -814,6 +822,40 @@ def console_status():
     }
 
 
+def valid_console_password(value):
+    return isinstance(value, str) and 8 <= len(value) <= 63
+
+
+def apply_console_profile_policy(uuid, cfg):
+    nmcli = executable("nmcli")
+    if not nmcli or not uuid or not cfg:
+        return {"ok": False, "error": "CONSOLE_PROFILE_CONFIG_MISSING"}
+    password = str(cfg.get("password") or "")
+    if not valid_console_password(password):
+        return {"ok": False, "error": "CONSOLE_PASSWORD_INVALID"}
+    dev = str(cfg.get("device") or "")
+    ssid = str(cfg.get("ssid") or CONSOLE_NAME)
+    if not dev:
+        return {"ok": False, "error": "CONSOLE_DEVICE_MISSING"}
+    p = run([
+        nmcli, "connection", "modify", "uuid", uuid,
+        "connection.interface-name", dev,
+        "connection.autoconnect", "no",
+        "802-11-wireless.ssid", ssid,
+        "802-11-wireless.mode", "ap",
+        "ipv4.method", "shared",
+        "ipv4.addresses", "192.168.77.1/24",
+        "wifi-sec.key-mgmt", "wpa-psk",
+        "wifi-sec.proto", CONSOLE_WIFI_PROTO,
+        "wifi-sec.pmf", CONSOLE_WIFI_PMF,
+        "wifi-sec.psk", password,
+        "ipv6.method", "disabled",
+    ], 20)
+    if p.returncode:
+        return {"ok": False, "error": (p.stdout + p.stderr).strip()}
+    return {"ok": True, "connection_uuid": uuid}
+
+
 def console_prepare():
     nmcli = executable("nmcli")
     if not nmcli:
@@ -838,7 +880,8 @@ def console_prepare():
     if existing and not owned_uuid:
         return {"ok": False, "error": "CONSOLE_PROFILE_NAME_OCCUPIED_UNOWNED", "connection_count": len(existing)}
     alphabet = string.ascii_letters + string.digits
-    password = "".join(secrets.choice(alphabet) for _ in range(14))
+    existing_password = old_cfg.get("password") if owned_uuid else None
+    password = existing_password if valid_console_password(existing_password) else "".join(secrets.choice(alphabet) for _ in range(14))
     ssid = CONSOLE_NAME
     created = False
     if not owned_uuid:
@@ -854,22 +897,16 @@ def console_prepare():
             return {"ok": False, "error": "CONSOLE_PROFILE_UUID_UNPROVEN", "new_profile_count": len(new)}
         owned_uuid = new[0]
         created = True
-    p = run([
-        nmcli, "connection", "modify", "uuid", owned_uuid,
-        "connection.interface-name", dev,
-        "connection.autoconnect", "no",
-        "802-11-wireless.ssid", ssid,
-        "802-11-wireless.mode", "ap",
-        "ipv4.method", "shared",
-        "ipv4.addresses", "192.168.77.1/24",
-        "wifi-sec.key-mgmt", "wpa-psk",
-        "wifi-sec.psk", password,
-        "ipv6.method", "disabled",
-    ], 20)
-    if p.returncode:
+    policy_cfg = {
+        "device": dev,
+        "ssid": ssid,
+        "password": password,
+    }
+    policy = apply_console_profile_policy(owned_uuid, policy_cfg)
+    if not policy.get("ok"):
         if created:
             run([nmcli, "connection", "delete", "uuid", owned_uuid], 10)
-        return {"ok": False, "error": (p.stdout + p.stderr).strip()}
+        return policy
     cfg = {
         "created_by": APP,
         "connection_name": CONSOLE_NAME,
@@ -906,6 +943,9 @@ def console_start():
     if not owned_uuid:
         return {"ok": False, "error": "CONSOLE_PROFILE_NOT_OWNED"}
     cfg = load_json(CONSOLE, {})
+    policy = apply_console_profile_policy(owned_uuid, cfg)
+    if not policy.get("ok"):
+        return policy
     t = trace(timeout=10)
     if not (t.get("ok") and (t.get("trace") or {}).get("warp") == "on"):
         return {"ok": False, "error": "PC_WARP_NOT_ON", "trace": t}

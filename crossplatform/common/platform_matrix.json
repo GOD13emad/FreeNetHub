@@ -14,8 +14,8 @@
       "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R5",
-      "version": "4.2.0-linux.5",
+      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R6",
+      "version": "4.2.0-linux.6",
       "environments": {
         "wsl": "Ubuntu 24.04.4 LTS",
         "native": "Ubuntu 24.04.5 LTS"
@@ -41,14 +41,23 @@
         "networkManagerUuidOwnership": true,
         "legacyMigration": "EXACT_MATCH_ONLY",
         "rollback": "PASS",
-        "physicalConsoleValidated": false
+        "physicalConsoleValidated": false,
+        "wifiSecurity": "WPA2_PSK_RSN",
+        "pmf": "DISABLED_FOR_CONSOLE_COMPATIBILITY",
+        "stableCredentialAcrossPrepare": true,
+        "startReenforcesProfilePolicy": true
       },
       "privateBridgeFilesPublished": false,
       "evidence": [
         "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",
         "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
         "evidence/LINUX_NATIVE_420_WARP_PUBLIC_ACCEPTANCE.json"
-      ]
+      ],
+      "privateState": {
+        "directoriesMode": "0700",
+        "sensitiveFilesMode": "0600",
+        "upgradeRemediation": "PASS"
+      }
     },
     "android": {
       "status": "BUILD_ACCEPTED_CORE_NOT_LINKED",

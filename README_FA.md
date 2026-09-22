@@ -13,9 +13,13 @@
 
 ## به‌روزرسانی Linux روی main
 
-نسخهٔ native Linux 4.2.0-linux.5 روی Ubuntu 24.04.5 software-accepted است: UI بومی GTK4/Libadwaita، single-instance، دکمه‌های minimize/maximize/close، WARP safe-trial و rollback توکن‌محور، مالکیت Console Gateway بر اساس UUID، migration سخت‌گیرانهٔ profile قدیمی، Firefox profile جدا، integrity launcher و uninstaller محدود به منابع owned همگی تأیید شده‌اند.
+نسخهٔ native Linux 4.2.0-linux.6 روی Ubuntu 24.04.5 software-accepted است: UI بومی GTK4/Libadwaita، single-instance، دکمه‌های minimize/maximize/close، WARP safe-trial و rollback توکن‌محور، مالکیت Console Gateway بر اساس UUID، migration سخت‌گیرانهٔ profile قدیمی، Firefox profile جدا، integrity launcher و uninstaller محدود به منابع owned همگی تأیید شده‌اند.
 
 در شبکهٔ پذیرش نهایی، Direct Tor در پنجرهٔ دستی ۹۰ ثانیه تا bootstrap 55% رسید؛ AUTO فقط ۳۰ ثانیه Direct را probe کرد و سپس به obfs4 رفت و در مجموع 38.91 ثانیه به bootstrap 100% و HTTPS egress رسید. Snowflake بدون bridge runtime معتبر fail-closed می‌ماند. bridgeهای واقعی در source عمومی ذخیره نمی‌شوند.
+
+برای سازگاری کنسول، Hotspot به‌صورت صریح WPA2/RSN با PMF غیرفعال تنظیم می‌شود و برای profile owned، PSK در Prepareهای تکراری بدون درخواست کاربر تغییر نمی‌کند.
+
+state خصوصی Linux نیز harden شده است: directoryهای app/evidence/tor برابر 700 و state/guard files حساس برابر 600 هستند و upgrade فایل‌های قدیمی را migrate می‌کند.
 
 گیت باز Linux فقط اعتبارسنجی DHCP/UDP/game/country با کنسول فیزیکی است؛ software gateway خودش پذیرفته شده است.
 

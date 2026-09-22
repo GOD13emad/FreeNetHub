@@ -1,4 +1,4 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.5
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.6
 
 نسخهٔ Linux با UI بومی GTK4/Libadwaita و اتصال صریح (explicit-connect).
 
@@ -10,9 +10,12 @@
 - Snowflake: provider و UI حفظ شده‌اند؛ بدون bridge runtime معتبر fail-closed می‌شود. bridge خصوصی در Git ذخیره نمی‌شود.
 - Firefox اختصاصی: پروفایل جداگانه با SOCKS remote-DNS؛ پروفایل اصلی Firefox تغییر نمی‌کند.
 - Console Gateway: Hotspot نرم‌افزاری روی آداپتور ثانویه با WARP، IPv4 forwarding و rollback تأیید شده است.
+- سازگاری Wi-Fi کنسول: profile Hotspot به‌صورت صریح WPA2/RSN با PMF غیرفعال ساخته/به‌روزرسانی می‌شود؛ cipherها برای سازگاری بیشتر به انتخاب NetworkManager سپرده می‌شوند.
+- پایداری credential: در profile owned، Prepare مجدد PSK معتبر قبلی را حفظ می‌کند و Start نیز policy امنیتی فعلی را قبل از activation enforce می‌کند.
 - مالکیت پروفایل Console Gateway با UUID پایدار NetworkManager کنترل می‌شود؛ profile هم‌نامِ بدون ownership هرگز حذف یا فعال نمی‌شود. ارتقا از profile قدیمی فقط وقتی migrate می‌شود که یک profile واحد با device/SSID/AP/WPA-PSK/PSK/IPv4/IPv6 ثبت‌شده دقیقاً تطبیق داشته باشد.
 - Window UX: single-instance، icon، `Terminal=false` و دکمه‌های minimize/maximize/close تأیید شده‌اند.
 - Integrity: launcher قبل از اجرا SHA-256 فایل‌های نصب‌شده را بررسی می‌کند.
+- حریم خصوصی state: directoryهای runtime/evidence/tor با mode 700 و state JSON/guard logs با mode 600 نگه‌داری می‌شوند؛ installer روی upgrade فایل‌های قدیمی را نیز بدون حذف به permissionهای خصوصی migrate می‌کند.
 
 گیت باز: اعتبارسنجی فیزیکی DHCP/UDP/game/country با یک کنسول واقعی هنوز جداگانه لازم است؛ این مانع پذیرش software gateway نیست.
 

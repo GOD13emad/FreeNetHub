@@ -3,40 +3,54 @@
   "date": "2026-09-22",
   "product": "FreeNet Hub",
   "platform": "Linux",
-  "version": "4.2.0-linux.5",
-  "status": "ACCEPTED_LINUX_4.2_SOFTWARE_RELEASE_R5",
+  "version": "4.2.0-linux.6",
+  "status": "ACCEPTED_LINUX_4.2_SOFTWARE_RELEASE_R6",
   "accepted": true,
   "checks": {
     "sourceInstallIntegrity": true,
     "networkNeutralInstallAndFinalState": true,
     "gtk4LibadwaitaUi": true,
     "windowControls": true,
+    "desktopEntryValidation": true,
     "passwordExcludedFromActionDetails": true,
     "warpConsoleRuntime": true,
     "consoleUuidOwnership": true,
     "consoleStopIdempotent": true,
     "legacyProfileMigrationExactMatchOnly": true,
     "unownedProfileFailsClosed": true,
+    "consoleWifiWpa2RsnCompatibilityPolicy": true,
+    "consolePmfDisabledForCompatibility": true,
+    "stableConsolePasswordAcrossPrepare": true,
+    "consoleStartReenforcesCurrentProfilePolicy": true,
     "uninstallerOwnedUuidScopeAndPrivateStatePreservation": true,
     "torAutoFallbackRuntime": true,
     "torObfs4BootstrapHttps": true,
     "snowflakeWithoutRuntimeBridgeFailsClosed": true,
     "foreignSocksListenerNotKilled": true,
-    "remoteControlStayedReachable": true
+    "remoteControlStayedReachable": true,
+    "privateStateDirectories0700": true,
+    "sensitiveStateFiles0600": true,
+    "legacyPermissionUpgradeRemediation": true,
+    "warpGuardLog0600": true,
+    "globalRuntimeUmaskNotForced": true
   },
   "observations": {
     "torAutoSelected": "obfs4",
     "torAutoElapsedSeconds": 38.91,
-    "directCurrentProbe": "bootstrap timeout under current network; AUTO fell back to obfs4"
+    "directCurrentProbe": "bootstrap timeout under current network; AUTO fell back to obfs4",
+    "consoleWifiPolicy": "wpa-psk + rsn + pmf=disable; pairwise/group left unset for NetworkManager compatibility defaults"
   },
   "sourceHashes": {
-    "core": "BCA37E46C9493D6320846EF3E3CB48C065361153524026DBCA3AC87A9CA5737D",
+    "core": "2B111A9A55D3C32D19998EE31569CA1AD873CCCF1DC972E37B65BA18BE2012CF",
     "ui": "E2EF8CF687403397742783FD9D05189E66F1A7195F56F335AAE92DDC69E880F7",
-    "installer": "DCCD98C5926DCB82BE629742B34FDA85BC13BB53344C25B0C5B55C7F258A1F31",
+    "installer": "27BFD9ABCDFAC33514DF09E21233A981D0FA311D327F04757DFB8779526D77AF",
     "uninstaller": "5F22894AF269D6DE6C2A9C05E2D5D163E55DBAE07784DE09A7A16FF935F9DA64",
     "warp_installer": "71D919FC23EDAB5F9493773B91123C0941C169F5DBBA0803C8904783E2471A43",
-    "guard": "D90776784226C92A621D26F9AA217D35D5A3827C22815AB744886C7CEED76726",
-    "selftest": "7FD35C3C8A66A66E9A127560076C2C2CB10C2DA3CFDB090BAD922AD3F785D50B"
+    "guard": "465AE0C8807BCE4488A2826D3E230E90EF40CCBEE9695C844A60A9A5061C7ABE",
+    "selftest": "74E9FC4E5D69338A89399B8203AEA3D62B3E029B69D26D3134335D2E585F5C9B",
+    "console_policy_test": "459BCBECB6697E8195C9736273DF807E56C2FF762C2EDDE1AE9FED178A77EC59",
+    "private_state_test": "75463F5D71041AEBF94CD3741081DA7B17E09F415A16A4FA32A90281CD26349E",
+    "desktop": "103C54EF2EC85DF7911CD685626C184F9E75D12B172347B9105093311384CEE6"
   },
   "openGates": [
     "PHYSICAL_CONSOLE_DHCP_UDP_GAME_COUNTRY_E2E"
