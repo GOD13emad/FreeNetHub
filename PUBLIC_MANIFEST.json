@@ -9,11 +9,6 @@
       "sha256": "29CC4BDC163820CAA43B056FB243EB536CE4EE092B7042255FCD166DEA989045"
     },
     {
-      "file": ".github/dependabot.yml",
-      "bytes": 201,
-      "sha256": "FE58B2C3F9CFEB285EC9FFBA491A2AE4CF43E25ACF63A14FF16EDB5F5CABAEE4"
-    },
-    {
       "file": ".github/workflows/ci.yml",
       "bytes": 3294,
       "sha256": "B64A3A73A142A539ABF3F1B6B25E039D222F6C098CDD07265CD68892D9DDAB6D"
@@ -435,8 +430,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 3849,
-      "sha256": "49FE112A10A4F6757035A85D72FB1F56317B634AD8DBB8D19200292B50EDA65E"
+      "bytes": 4282,
+      "sha256": "83909156185A0236376474DBF56E5570F6F19D580467F10457D00BF4BF48005E"
     },
     {
       "file": "README_FA.md",
@@ -472,6 +467,11 @@
       "file": "tests/verify_public_tree.py",
       "bytes": 4564,
       "sha256": "D0FF0529833314E6909019DC44C8FDC31DBD68C159859A24BD36D82B5D945CCB"
+    },
+    {
+      "file": "THIRD_PARTY_NOTICES.md",
+      "bytes": 1106,
+      "sha256": "E4A83B48F8309BC3667ED1C70B6B8C194FEC9B6AC40D2D46A2244C289915FE7D"
     },
     {
       "file": "Uninstall-FreeNetHub.ps1",
