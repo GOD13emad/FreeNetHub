@@ -1,7 +1,7 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-main-r8",
+  "releaseRevision": "4.2.0-public-main-r9",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
@@ -54,6 +54,12 @@
       "routeRestored": true,
       "dnsRestored": true,
       "statusRestored": true
+    },
+    "ciSupplyChainHardening": {
+      "status": "PASS",
+      "permissions": "contents: read",
+      "actionsPinnedToVerifiedTagCommits": true,
+      "sourceCommit": "3a6491dc4e980d27c0e89032d6ede3693b0d9df7"
     }
   }
 }

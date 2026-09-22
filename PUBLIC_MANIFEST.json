@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r8",
+  "version": "4.2.0-public-main-r9",
   "source": "git-index-blobs",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 2747,
-      "sha256": "690757EFB73CC9AADF478C2C053037A74F6C3EBE267A9813E70CA7ED96FD6910"
+      "bytes": 3127,
+      "sha256": "4A94BD033E0953B466267330534C37677BC8A38EF959F2409234D26D6C29C9DA"
     },
     {
       "file": ".gitignore",
@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 2310,
-      "sha256": "5E414116EB17ED4C83A882724A4070C78C242FE97E919B30955BF08B2C3E5682"
+      "bytes": 2526,
+      "sha256": "58226C0DCC3A88ADB134FA45BFE6B2E735693767CBF455DFFCD4BB362F6D4088"
     },
     {
       "file": "SECURITY.md",
