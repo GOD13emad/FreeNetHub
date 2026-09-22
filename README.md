@@ -26,7 +26,7 @@ For source installation:
 
 ## Cross-platform source
 
-The v4.2.0 tag and release assets remain immutable. Current `main` contains a post-release Linux hardening delta.
+The v4.2.0 tag and published release remain the accepted release authority, but GitHub currently reports the release as `immutable=false`; do not treat server-enforced release immutability as proven. Current `main` contains post-release hardening changes.
 
 On Ubuntu 24.04.4 under WSL, Linux static checks, source install, Tk UI smoke, and Tor runtime passed. Direct Tor, Snowflake, and obfs4 each reached bootstrap 100%, carried HTTPS through the managed local SOCKS path, and stopped cleanly. Stale FreeNet Hub-owned listeners are recovered only after executable + command-line ownership proof. Real bridge material is runtime-only and is not stored in the public source tree.
 
