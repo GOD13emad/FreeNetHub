@@ -1,4 +1,4 @@
-# FreeNet Hub 4.2.0 — Linux
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.5
 
 نسخهٔ Linux با UI بومی GTK4/Libadwaita و اتصال صریح (explicit-connect).
 
@@ -6,10 +6,11 @@
 
 - WARP رسمی: اتصال `warp=on`، حفظ کانال کنترل، disconnect و بازگشت baseline تأیید شده است.
 - WARP safe-trial: watchdog توکن‌محور، stale-guard و ownership safety تست شده‌اند.
-- Tor Direct و obfs4: bootstrap 100% و HTTPS egress تأیید شده‌اند.
+- Tor Direct و obfs4 پشتیبانی می‌شوند؛ Direct دستی تا ۹۰ ثانیه فرصت bootstrap دارد و AUTO پس از ۳۰ ثانیه Direct ناموفق به transport مقاوم‌تر fallback می‌کند. obfs4 در acceptance نهایی bootstrap 100% و HTTPS egress داشته است.
 - Snowflake: provider و UI حفظ شده‌اند؛ بدون bridge runtime معتبر fail-closed می‌شود. bridge خصوصی در Git ذخیره نمی‌شود.
 - Firefox اختصاصی: پروفایل جداگانه با SOCKS remote-DNS؛ پروفایل اصلی Firefox تغییر نمی‌کند.
 - Console Gateway: Hotspot نرم‌افزاری روی آداپتور ثانویه با WARP، IPv4 forwarding و rollback تأیید شده است.
+- مالکیت پروفایل Console Gateway با UUID پایدار NetworkManager کنترل می‌شود؛ profile هم‌نامِ بدون ownership هرگز حذف یا فعال نمی‌شود. ارتقا از profile قدیمی فقط وقتی migrate می‌شود که یک profile واحد با device/SSID/AP/WPA-PSK/PSK/IPv4/IPv6 ثبت‌شده دقیقاً تطبیق داشته باشد.
 - Window UX: single-instance، icon، `Terminal=false` و دکمه‌های minimize/maximize/close تأیید شده‌اند.
 - Integrity: launcher قبل از اجرا SHA-256 فایل‌های نصب‌شده را بررسی می‌کند.
 
@@ -46,3 +47,14 @@ bash crossplatform/linux/install_warp_official.sh
 ```
 
 این فرمان WARP را disconnect می‌کند و در صورت وجود، سرویس Remote Commander کاربر را restart می‌کند.
+
+
+## حذف برنامه
+
+برای حذف فایل‌های برنامه بدون حذف bridge/evidence خصوصی:
+
+```bash
+freenethub-uninstall
+```
+
+uninstaller فقط profile کنسول را در صورتی حذف می‌کند که UUID ثبت‌شدهٔ همان profile با ownership پروژه تطبیق داشته باشد. Cloudflare WARP به‌عنوان package سیستمی خارجی حذف نمی‌شود. اسکریپت نصب WARP codename سیستم را از `/etc/os-release` می‌خواند و از repository رسمی Cloudflare استفاده می‌کند.

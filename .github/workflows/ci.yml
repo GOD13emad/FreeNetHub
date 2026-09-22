@@ -42,7 +42,7 @@ jobs:
         run: |
           python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py
           python3 crossplatform/linux/selftest.py
-          bash -n crossplatform/linux/install.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/recover_warp_remote.sh
+          bash -n crossplatform/linux/install.sh crossplatform/linux/uninstall.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/recover_warp_remote.sh
   android-build:
     runs-on: ubuntu-latest
     steps:

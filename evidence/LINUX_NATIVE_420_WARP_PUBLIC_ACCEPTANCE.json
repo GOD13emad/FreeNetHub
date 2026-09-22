@@ -1,24 +1,21 @@
 {
   "schema": 1,
-  "utc": "2026-09-21T18:45:00+03:30",
+  "date": "2026-09-22",
   "product": "FreeNet Hub",
   "platform": "Linux",
-  "version": "4.2.0-linux.4",
-  "environment": "native Ubuntu 24.04.5 LTS",
+  "version": "4.2.0-linux.5",
   "status": "ACCEPTED_NATIVE_LINUX_WARP_RUNTIME",
   "checks": {
     "preDisconnected": true,
     "connectReturnedPass": true,
     "duringWarpOn": true,
     "remoteControlStayedReachable": true,
-    "ownershipSafety": true,
-    "staleGuardNoAction": true,
-    "tokenGuardAutoRollback": true,
+    "consoleGatewayOwnedUuidPass": true,
     "disconnectPass": true,
     "postWarpOff": true,
     "routeRestored": true,
-    "statusRestored": true
+    "consoleStopIdempotent": true
   },
-  "privacy": "Sanitized summary; no IP, registration, route, DNS or private bridge material included.",
+  "privacy": "Sanitized summary; no IP, registration, route, DNS, password or private bridge material included.",
   "accepted": true
 }

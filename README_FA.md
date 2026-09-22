@@ -13,9 +13,11 @@
 
 ## به‌روزرسانی Linux روی main
 
-Tag و assetهای v4.2.0 تغییر نکرده‌اند. نسخهٔ native Linux `4.2.0-linux.4` روی Ubuntu 24.04.5 software-accepted است: UI بومی GTK4/Libadwaita، single-instance، دکمه‌های minimize/maximize/close، WARP safe-trial و rollback توکن‌محور، ownership safety، Tor Direct/obfs4، Firefox profile جدا، integrity launcher و Console Gateway software path همگی runtime PASS دارند.
+نسخهٔ native Linux 4.2.0-linux.5 روی Ubuntu 24.04.5 software-accepted است: UI بومی GTK4/Libadwaita، single-instance، دکمه‌های minimize/maximize/close، WARP safe-trial و rollback توکن‌محور، مالکیت Console Gateway بر اساس UUID، migration سخت‌گیرانهٔ profile قدیمی، Firefox profile جدا، integrity launcher و uninstaller محدود به منابع owned همگی تأیید شده‌اند.
 
-Snowflake حفظ شده و بدون bridge runtime معتبر fail-closed می‌شود؛ bridgeهای واقعی obfs4/Snowflake در source عمومی نگهداری نمی‌شوند. WSL evidence قبلی Direct/Snowflake/obfs4 نیز حفظ شده است. گیت باز Linux فقط اعتبارسنجی DHCP/UDP/game/country با کنسول فیزیکی است؛ software gateway خودش پذیرفته شده است.
+در شبکهٔ پذیرش نهایی، Direct Tor در پنجرهٔ دستی ۹۰ ثانیه تا bootstrap 55% رسید؛ AUTO فقط ۳۰ ثانیه Direct را probe کرد و سپس به obfs4 رفت و در مجموع 38.91 ثانیه به bootstrap 100% و HTTPS egress رسید. Snowflake بدون bridge runtime معتبر fail-closed می‌ماند. bridgeهای واقعی در source عمومی ذخیره نمی‌شوند.
+
+گیت باز Linux فقط اعتبارسنجی DHCP/UDP/game/country با کنسول فیزیکی است؛ software gateway خودش پذیرفته شده است.
 
 ## به‌روزرسانی Android/iOS روی main
 

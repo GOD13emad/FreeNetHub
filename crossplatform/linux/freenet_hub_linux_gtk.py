@@ -567,8 +567,10 @@ class FreeNetHub(Adw.Application):
             return
         if result.get("config") and result.get("state") == "prepared":
             c = result["config"]
+            private_cfg = core.load_json(core.CONSOLE, {})
+            password = private_cfg.get("password") or "ناموجود"
             self.gateway_state.set_text(
-                f"آماده: SSID={c.get('ssid')} · Password={c.get('password')} · Gateway={c.get('gateway')} · "
+                f"آماده: SSID={c.get('ssid')} · Password={password} · Gateway={c.get('gateway')} · "
                 "اعتبارسنجی فیزیکی هنوز باز است."
             )
         elif result.get("state") == "hotspot-up":

@@ -16,7 +16,7 @@ import uuid
 import zipfile
 
 APP = "FreeNet Hub"
-VERSION = "4.2.0-linux.4"
+VERSION = "4.2.0-linux.5"
 STATE = pathlib.Path.home() / ".local" / "share" / "FreeNetHub"
 EVIDENCE = STATE / "evidence"
 TOR_STATE = STATE / "tor"
@@ -27,7 +27,11 @@ SNOWFLAKE_BRIDGES = STATE / "bridges_snowflake.txt"
 SESSION = STATE / "session.json"
 CONSOLE = STATE / "console.json"
 SOCKS_PORT = 9909
+TOR_DIRECT_TIMEOUT = 90
+TOR_AUTO_DIRECT_TIMEOUT = 30
+TOR_TRANSPORT_TIMEOUT = 120
 WARP_GUARD_SECONDS = 60
+CONSOLE_NAME = "FreeNetHub-Console"
 
 def ensure_dirs():
     for p in (STATE, EVIDENCE, TOR_STATE):
@@ -324,7 +328,11 @@ def start_tor(force_mode=None):
         modes = ([preferred] + [m for m in available if m != preferred]) if preferred in available else available
     attempts = []
     for mode in modes:
-        x = launch_tor(mode, 22 if mode == "direct" else 120)
+        if mode == "direct":
+            timeout = TOR_DIRECT_TIMEOUT if force_mode == "direct" else TOR_AUTO_DIRECT_TIMEOUT
+        else:
+            timeout = TOR_TRANSPORT_TIMEOUT
+        x = launch_tor(mode, timeout)
         attempts.append({k: v for k, v in x.items() if k != "log_tail"})
         if x.get("ok"):
             t = trace(x["proxy"], 20)
@@ -685,6 +693,91 @@ def update_status():
     p = run(["apt-cache", "policy", "cloudflare-warp", "tor", "obfs4proxy"], 15)
     return {"ok": p.returncode == 0, "text": p.stdout.strip()}
 
+def nm_connection_uuids(name=CONSOLE_NAME):
+    nmcli = executable("nmcli")
+    if not nmcli:
+        return []
+    p = run([nmcli, "-t", "-f", "NAME,UUID", "connection", "show"], 8)
+    if p.returncode:
+        return []
+    out = []
+    for line in p.stdout.splitlines():
+        parts = line.rsplit(":", 1)
+        if len(parts) == 2 and parts[0] == name and parts[1]:
+            out.append(parts[1])
+    return out
+
+
+def console_owned_uuid(cfg=None):
+    cfg = load_json(CONSOLE, {}) if cfg is None else cfg
+    expected = str(cfg.get("connection_uuid") or "")
+    return expected if expected and expected in nm_connection_uuids(str(cfg.get("connection_name") or CONSOLE_NAME)) else None
+
+
+def nm_connection_profile(uuid):
+    nmcli = executable("nmcli")
+    if not nmcli or not uuid:
+        return None
+    fields = [
+        "connection.id",
+        "connection.interface-name",
+        "802-11-wireless.mode",
+        "802-11-wireless.ssid",
+        "802-11-wireless-security.key-mgmt",
+        "802-11-wireless-security.psk",
+        "ipv4.method",
+        "ipv4.addresses",
+        "ipv6.method",
+    ]
+    p = run([nmcli, "--show-secrets", "-g", ",".join(fields), "connection", "show", "uuid", uuid], 8)
+    if p.returncode:
+        return None
+    values = p.stdout.rstrip("\n").splitlines()
+    if len(values) != len(fields):
+        return None
+    return dict(zip(fields, values))
+
+
+def migrate_legacy_console_profile(cfg=None):
+    cfg = load_json(CONSOLE, {}) if cfg is None else dict(cfg)
+    if not cfg or cfg.get("connection_uuid"):
+        return console_owned_uuid(cfg)
+    existing = nm_connection_uuids(CONSOLE_NAME)
+    if len(existing) != 1:
+        return None
+    uuid = existing[0]
+    profile = nm_connection_profile(uuid)
+    if not profile:
+        return None
+    expected = {
+        "connection.id": CONSOLE_NAME,
+        "connection.interface-name": str(cfg.get("device") or ""),
+        "802-11-wireless.mode": "ap",
+        "802-11-wireless.ssid": str(cfg.get("ssid") or CONSOLE_NAME),
+        "802-11-wireless-security.key-mgmt": "wpa-psk",
+        "802-11-wireless-security.psk": str(cfg.get("password") or ""),
+        "ipv4.method": "shared",
+        "ipv6.method": "disabled",
+    }
+    if not expected["connection.interface-name"] or not expected["802-11-wireless-security.psk"]:
+        return None
+    if any(profile.get(k) != v for k, v in expected.items()):
+        return None
+    if "192.168.77.1/24" not in profile.get("ipv4.addresses", ""):
+        return None
+    cfg.update({
+        "created_by": APP,
+        "connection_name": CONSOLE_NAME,
+        "connection_uuid": uuid,
+    })
+    atomic_json(CONSOLE, cfg)
+    try:
+        os.chmod(CONSOLE, 0o600)
+    except Exception:
+        pass
+    return uuid
+
+
 def console_status():
     nmcli = executable("nmcli")
     if not nmcli:
@@ -705,6 +798,8 @@ def console_status():
             pass
     candidates = [r for r in rows if r["device"] != uplink and r["type"] in ("wifi", "ethernet") and not r["device"].startswith("p2p-")]
     cfg = load_json(CONSOLE, {})
+    uuids = nm_connection_uuids()
+    owned_uuid = console_owned_uuid(cfg)
     return {
         "ok": True,
         "uplink": uplink,
@@ -712,8 +807,12 @@ def console_status():
         "candidates": candidates,
         "configured": bool(cfg),
         "config": {k: v for k, v in cfg.items() if k != "password"},
-        "connection_exists": run([nmcli, "-t", "-f", "NAME", "connection", "show"], 8).stdout.splitlines().count("FreeNetHub-Console") > 0,
+        "connection_exists": bool(uuids),
+        "connection_count": len(uuids),
+        "connection_owned": bool(owned_uuid),
+        "connection_uuid": owned_uuid,
     }
+
 
 def console_prepare():
     nmcli = executable("nmcli")
@@ -727,20 +826,39 @@ def console_prepare():
     typ = candidate["type"]
     if typ != "wifi":
         return {"ok": False, "error": "ONLY_WIFI_HOTSPOT_AUTOMATION_AVAILABLE", "candidate": candidate}
+    old_cfg = load_json(CONSOLE, {})
+    existing = nm_connection_uuids()
+    owned_uuid = console_owned_uuid(old_cfg)
+    migrated = False
+    if existing and not owned_uuid:
+        owned_uuid = migrate_legacy_console_profile(old_cfg)
+        migrated = bool(owned_uuid)
+        if migrated:
+            old_cfg = load_json(CONSOLE, {})
+    if existing and not owned_uuid:
+        return {"ok": False, "error": "CONSOLE_PROFILE_NAME_OCCUPIED_UNOWNED", "connection_count": len(existing)}
     alphabet = string.ascii_letters + string.digits
     password = "".join(secrets.choice(alphabet) for _ in range(14))
-    ssid = "FreeNetHub-Console"
-    existing = run([nmcli, "-t", "-f", "NAME", "connection", "show"], 8).stdout.splitlines()
-    if "FreeNetHub-Console" in existing:
-        run([nmcli, "connection", "delete", "FreeNetHub-Console"], 15)
+    ssid = CONSOLE_NAME
+    created = False
+    if not owned_uuid:
+        p = run([
+            nmcli, "connection", "add", "type", "wifi", "ifname", dev,
+            "con-name", CONSOLE_NAME, "autoconnect", "no", "ssid", ssid,
+        ], 20)
+        if p.returncode:
+            return {"ok": False, "error": (p.stdout + p.stderr).strip()}
+        after = nm_connection_uuids()
+        new = [u for u in after if u not in existing]
+        if len(new) != 1:
+            return {"ok": False, "error": "CONSOLE_PROFILE_UUID_UNPROVEN", "new_profile_count": len(new)}
+        owned_uuid = new[0]
+        created = True
     p = run([
-        nmcli, "connection", "add", "type", "wifi", "ifname", dev,
-        "con-name", "FreeNetHub-Console", "autoconnect", "no", "ssid", ssid,
-    ], 20)
-    if p.returncode:
-        return {"ok": False, "error": (p.stdout + p.stderr).strip()}
-    p = run([
-        nmcli, "connection", "modify", "FreeNetHub-Console",
+        nmcli, "connection", "modify", "uuid", owned_uuid,
+        "connection.interface-name", dev,
+        "connection.autoconnect", "no",
+        "802-11-wireless.ssid", ssid,
         "802-11-wireless.mode", "ap",
         "ipv4.method", "shared",
         "ipv4.addresses", "192.168.77.1/24",
@@ -749,25 +867,49 @@ def console_prepare():
         "ipv6.method", "disabled",
     ], 20)
     if p.returncode:
-        run([nmcli, "connection", "delete", "FreeNetHub-Console"], 10)
+        if created:
+            run([nmcli, "connection", "delete", "uuid", owned_uuid], 10)
         return {"ok": False, "error": (p.stdout + p.stderr).strip()}
-    cfg = {"device": dev, "type": typ, "ssid": ssid, "password": password, "gateway": "192.168.77.1", "client_ip": "192.168.77.2", "subnet": "192.168.77.0/24"}
+    cfg = {
+        "created_by": APP,
+        "connection_name": CONSOLE_NAME,
+        "connection_uuid": owned_uuid,
+        "device": dev,
+        "type": typ,
+        "ssid": ssid,
+        "password": password,
+        "gateway": "192.168.77.1",
+        "client_ip": "192.168.77.2",
+        "subnet": "192.168.77.0/24",
+    }
     atomic_json(CONSOLE, cfg)
     try:
         os.chmod(CONSOLE, 0o600)
     except Exception:
         pass
-    return {"ok": True, "state": "prepared", "config": cfg, "physical_validation": False}
+    return {
+        "ok": True,
+        "state": "prepared",
+        "config": {k: v for k, v in cfg.items() if k != "password"},
+        "physical_validation": False,
+        "connection_owned": True,
+        "legacy_profile_migrated": migrated,
+    }
+
 
 def console_start():
     nmcli = executable("nmcli")
     cfg = load_json(CONSOLE, {})
     if not nmcli or not cfg:
         return {"ok": False, "error": "CONSOLE_NOT_PREPARED"}
+    owned_uuid = console_owned_uuid(cfg) or migrate_legacy_console_profile(cfg)
+    if not owned_uuid:
+        return {"ok": False, "error": "CONSOLE_PROFILE_NOT_OWNED"}
+    cfg = load_json(CONSOLE, {})
     t = trace(timeout=10)
     if not (t.get("ok") and (t.get("trace") or {}).get("warp") == "on"):
         return {"ok": False, "error": "PC_WARP_NOT_ON", "trace": t}
-    p = run([nmcli, "connection", "up", "FreeNetHub-Console"], 30)
+    p = run([nmcli, "connection", "up", "uuid", owned_uuid], 30)
     if p.returncode:
         return {"ok": False, "error": (p.stdout + p.stderr).strip()}
     time.sleep(2)
@@ -775,23 +917,42 @@ def console_start():
     detail = run([nmcli, "-g", "GENERAL.STATE,GENERAL.CONNECTION,IP4.ADDRESS", "device", "show", dev], 8)
     forward = pathlib.Path("/proc/sys/net/ipv4/ip_forward").read_text().strip() if pathlib.Path("/proc/sys/net/ipv4/ip_forward").exists() else "unknown"
     detail_text = (detail.stdout + detail.stderr).strip()
-    ready = detail.returncode == 0 and "FreeNetHub-Console" in detail_text and "192.168.77.1/24" in detail_text and forward == "1"
+    ready = detail.returncode == 0 and CONSOLE_NAME in detail_text and "192.168.77.1/24" in detail_text and forward == "1"
     return {
         "ok": ready,
         "state": "hotspot-up" if ready else "hotspot-unverified",
-        "config": cfg,
+        "config": {k: v for k, v in cfg.items() if k != "password"},
         "network_manager": detail_text,
         "ipv4_forward": forward,
         "physical_validation": False,
         "warning": "Physical console DHCP/UDP/country validation remains required.",
     }
 
+
 def console_stop():
     nmcli = executable("nmcli")
+    cfg = load_json(CONSOLE, {})
     if not nmcli:
         return {"ok": False, "error": "nmcli missing"}
-    p = run([nmcli, "connection", "down", "FreeNetHub-Console"], 20)
-    return {"ok": p.returncode == 0 or "not active" in (p.stdout + p.stderr).lower(), "text": (p.stdout + p.stderr).strip()}
+    if not cfg:
+        return {"ok": True, "state": "not-prepared"}
+    owned_uuid = console_owned_uuid(cfg) or migrate_legacy_console_profile(cfg)
+    if not owned_uuid:
+        return {"ok": False, "error": "CONSOLE_PROFILE_NOT_OWNED"}
+    p = run([nmcli, "connection", "down", "uuid", owned_uuid], 20)
+    text = (p.stdout + p.stderr).strip()
+    low = text.lower()
+    already_inactive = (
+        "not active" in low
+        or "not an active connection" in low
+        or "no active connection provided" in low
+    )
+    return {
+        "ok": p.returncode == 0 or already_inactive,
+        "state": "stopped" if p.returncode == 0 else ("already-inactive" if already_inactive else "stop-failed"),
+        "text": text,
+        "connection_uuid": owned_uuid,
+    }
 
 def export_report():
     ensure_dirs()

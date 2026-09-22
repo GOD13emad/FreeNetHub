@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r9",
+  "version": "4.2.0-public-main-r10",
   "source": "git-index-blobs",
   "files": [
     {
@@ -10,13 +10,63 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 3294,
-      "sha256": "B64A3A73A142A539ABF3F1B6B25E039D222F6C098CDD07265CD68892D9DDAB6D"
+      "bytes": 3327,
+      "sha256": "52C47F93C45F177D793F92D3FDAEE91702149936A181C9B562A85FB7621FBFD9"
     },
     {
       "file": ".gitignore",
       "bytes": 556,
       "sha256": "948E30CD8ABCCD5590088D387836B1BB2CBA38A110C0D97E9ED3100679F1B41B"
+    },
+    {
+      "file": "Install-Windows.ps1",
+      "bytes": 2987,
+      "sha256": "243AD7F4543B9A55DD4B2906C61DF4497F48FC2C270D083D9FA3A02F9BFE6F68"
+    },
+    {
+      "file": "README.md",
+      "bytes": 4484,
+      "sha256": "B24EBF2B042E3191EFE269BB73B0E89F064BB59EB3FE349D58346285065D669D"
+    },
+    {
+      "file": "README_FA.md",
+      "bytes": 2802,
+      "sha256": "2D6CD8A538C6923BCE3A9271468275065F62A360C4C57D5229FC852875EEE519"
+    },
+    {
+      "file": "RELEASE.json",
+      "bytes": 3540,
+      "sha256": "5812F750F9C05D33AC3F3EAED890793223950F3F09770A0127F9B2C973E3DEDE"
+    },
+    {
+      "file": "SECURITY.md",
+      "bytes": 707,
+      "sha256": "897B0EF328D99A5E45046DD381C24689F32C1395C47C5E3C7106C7D9FA5FCC50"
+    },
+    {
+      "file": "Setup-WindowsDependencies.ps1",
+      "bytes": 6487,
+      "sha256": "1726C4C14B10B2F1A7812DB3DCB1283F80D8FA37D0FB67CCD425E2A7E3DFFA30"
+    },
+    {
+      "file": "THIRD_PARTY_NOTICES.md",
+      "bytes": 1106,
+      "sha256": "E4A83B48F8309BC3667ED1C70B6B8C194FEC9B6AC40D2D46A2244C289915FE7D"
+    },
+    {
+      "file": "Uninstall-FreeNetHub.ps1",
+      "bytes": 2992,
+      "sha256": "4526A434C876F7DF458105D9B7673047DFBD678AF967B6DE5663A763D8267940"
+    },
+    {
+      "file": "app/FreeNetHub.ps1",
+      "bytes": 34905,
+      "sha256": "1731B36AFEE9118CAA94ED9CD0DDAB7C08400BFB9DD71020254D46C600916E5B"
+    },
+    {
+      "file": "app/View.xaml",
+      "bytes": 21489,
+      "sha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2"
     },
     {
       "file": "app/assets/FreeNetHub.ico",
@@ -39,19 +89,24 @@
       "sha256": "7DFCD72F2FBC9FCD6965E5FEE3CA1F319D96101F9849D31E1CF428A4D8BE723C"
     },
     {
-      "file": "app/FreeNetHub.ps1",
-      "bytes": 34905,
-      "sha256": "1731B36AFEE9118CAA94ED9CD0DDAB7C08400BFB9DD71020254D46C600916E5B"
-    },
-    {
       "file": "app/manifest.json",
       "bytes": 716,
       "sha256": "940BD89DE6C41C5EFC92617383E67C153BCA2D669455AD47CE78F16669A57609"
     },
     {
-      "file": "app/View.xaml",
-      "bytes": 21489,
-      "sha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2"
+      "file": "crossplatform/MANIFEST.json",
+      "bytes": 5441,
+      "sha256": "89D1EA6EE81EF2392E20B0FB710C47DE8389D38A4D3F78CBD054E8B64E9FEE0D"
+    },
+    {
+      "file": "crossplatform/README_FA.md",
+      "bytes": 1580,
+      "sha256": "B195B17EEA2ADCD35363D86FD4165CB8034A0D33DB28489327CC34DB354D093B"
+    },
+    {
+      "file": "crossplatform/android/README_FA.md",
+      "bytes": 1037,
+      "sha256": "9F9DC7E48041270195AA3E89BF3F330D94228E0F1ACAE7A689B96CF850A7534D"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -82,11 +137,6 @@
       "file": "crossplatform/android/gradle.properties",
       "bytes": 73,
       "sha256": "198CFB414A6067FC813BA6DD9D8D927A5D9BD005567DC4BBA8784A8DEEC518B9"
-    },
-    {
-      "file": "crossplatform/android/README_FA.md",
-      "bytes": 1037,
-      "sha256": "9F9DC7E48041270195AA3E89BF3F330D94228E0F1ACAE7A689B96CF850A7534D"
     },
     {
       "file": "crossplatform/android/settings.gradle.kts",
@@ -139,14 +189,24 @@
       "sha256": "D93CD3AD5320DCED462E8123319778720F7310A44CFA6931DBF010821BB7CFD6"
     },
     {
+      "file": "crossplatform/ios/README_FA.md",
+      "bytes": 734,
+      "sha256": "6F13C4C81F3755358909617920BDB0B4F9CE1A7D55E5217FD82EC4FDEB9A76C4"
+    },
+    {
       "file": "crossplatform/ios/project.yml",
       "bytes": 796,
       "sha256": "A2CEA96CBAD18F48C8D399C672F1A679BF43ACAABC32F65A486B37EBB21049C9"
     },
     {
-      "file": "crossplatform/ios/README_FA.md",
-      "bytes": 734,
-      "sha256": "6F13C4C81F3755358909617920BDB0B4F9CE1A7D55E5217FD82EC4FDEB9A76C4"
+      "file": "crossplatform/linux/FreeNetHub.svg",
+      "bytes": 420,
+      "sha256": "B0D6A4B0F9181E13BB18E0EFAE83392419C83D0F3427FD9D40048E52ECBC1A7C"
+    },
+    {
+      "file": "crossplatform/linux/README_FA.md",
+      "bytes": 3556,
+      "sha256": "FB0750790427C76853DD93B39CA81FA70905CA1A8618BE7D733338417D391AA1"
     },
     {
       "file": "crossplatform/linux/bridges_obfs4.txt",
@@ -160,13 +220,13 @@
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
-      "bytes": 31781,
-      "sha256": "D2F4A10BAB21858A355AB3C23A105A94146CFB6F4B658A2BBE310DF9A0368C9E"
+      "bytes": 36859,
+      "sha256": "BCA37E46C9493D6320846EF3E3CB48C065361153524026DBCA3AC87A9CA5737D"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
-      "bytes": 29968,
-      "sha256": "3BAA7441DF376057003EB913A5BBF8F333ACFDDA65B317CC3A795BDEFEE427D4"
+      "bytes": 30089,
+      "sha256": "E2EF8CF687403397742783FD9D05189E66F1A7195F56F335AAE92DDC69E880F7"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -174,24 +234,14 @@
       "sha256": "80A765DE99F7122DA5945114DA2EDCC311903097EF8B0D1BC9FBDEBA275E114C"
     },
     {
-      "file": "crossplatform/linux/FreeNetHub.svg",
-      "bytes": 420,
-      "sha256": "B0D6A4B0F9181E13BB18E0EFAE83392419C83D0F3427FD9D40048E52ECBC1A7C"
-    },
-    {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 3054,
-      "sha256": "90E93CD175DFC658A9592A963B145AF9B299EAD638557578311553F5DA0943FE"
+      "bytes": 3555,
+      "sha256": "DCCD98C5926DCB82BE629742B34FDA85BC13BB53344C25B0C5B55C7F258A1F31"
     },
     {
       "file": "crossplatform/linux/install_warp_official.sh",
-      "bytes": 801,
-      "sha256": "B44FF416FE4E0D7B93731F9FA730673256826FBD576B75CF5C7308665CC2A610"
-    },
-    {
-      "file": "crossplatform/linux/README_FA.md",
-      "bytes": 2317,
-      "sha256": "C5E3C28A8625295F04E7081EDA0F51B54BB2A9A96AB42B222DF9F1CA190AEC64"
+      "bytes": 946,
+      "sha256": "71D919FC23EDAB5F9493773B91123C0941C169F5DBBA0803C8904783E2471A43"
     },
     {
       "file": "crossplatform/linux/recover_warp_remote.sh",
@@ -200,23 +250,18 @@
     },
     {
       "file": "crossplatform/linux/selftest.py",
-      "bytes": 1341,
-      "sha256": "295E8FDE30BD46C4EAC0DBF77D6B5CD98AF507D998F16ADC094E7509D577BA7E"
+      "bytes": 1612,
+      "sha256": "7FD35C3C8A66A66E9A127560076C2C2CB10C2DA3CFDB090BAD922AD3F785D50B"
+    },
+    {
+      "file": "crossplatform/linux/uninstall.sh",
+      "bytes": 3382,
+      "sha256": "5F22894AF269D6DE6C2A9C05E2D5D163E55DBAE07784DE09A7A16FF935F9DA64"
     },
     {
       "file": "crossplatform/linux/warp_guard.py",
       "bytes": 1756,
       "sha256": "D90776784226C92A621D26F9AA217D35D5A3827C22815AB744886C7CEED76726"
-    },
-    {
-      "file": "crossplatform/MANIFEST.json",
-      "bytes": 5287,
-      "sha256": "7B8A646D59DB6EC59EC7B580E7BF2439992B73441A3D245CD07F848A65C6059D"
-    },
-    {
-      "file": "crossplatform/README_FA.md",
-      "bytes": 1472,
-      "sha256": "0CB83DB27D92C84578CA53A194425DB47CFF5DD9922A229FB6F1B61D4A7320C1"
     },
     {
       "file": "data/.gitkeep",
@@ -270,13 +315,13 @@
     },
     {
       "file": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
-      "bytes": 1421,
-      "sha256": "03A2C8CA9F62CAD3F644450DA593F34B3D8A90903F5F99EA0BB991520137ED60"
+      "bytes": 1911,
+      "sha256": "B6AB71EE72F3EDF8AEA4F3DF3A0E9F20446D2928A2CA63525FDBDEE6B63D753D"
     },
     {
       "file": "evidence/LINUX_NATIVE_420_WARP_PUBLIC_ACCEPTANCE.json",
-      "bytes": 710,
-      "sha256": "34EFBED33B2FAA0625ADEEB2C6AAC51D2D2943A2886DBB1B09A4A100D1F13976"
+      "bytes": 611,
+      "sha256": "BC8B0DAC0E96CB9AEDD940103C6D33CE6FD4E07E1A26464DB2229D86536D7F52"
     },
     {
       "file": "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",
@@ -292,6 +337,31 @@
       "file": "evidence/unit_tests.json",
       "bytes": 220,
       "sha256": "544606E62915D883919898FB8CEC709CF06E5E6C7D47D0587499BDE91FD00340"
+    },
+    {
+      "file": "gateway/README_FA.md",
+      "bytes": 4489,
+      "sha256": "608389E9153A1DAAE3D28B99D50E4507BEB1FF7979F8B8FE628711FB6ABFBF30"
+    },
+    {
+      "file": "gateway/Setup-ConsoleGateway.ps1",
+      "bytes": 12277,
+      "sha256": "1F642B9479DD6EF00D9F5296ACE6311602C12E55798D48C5F6CFDD76AFFBD6D9"
+    },
+    {
+      "file": "gateway/Setup-GatewayCore.ps1",
+      "bytes": 4086,
+      "sha256": "958F7C43794683F3F9319879FBF5BE4CB5B3FD7534BE458667A7AD43733FF4ED"
+    },
+    {
+      "file": "gateway/Start-Gateway.ps1",
+      "bytes": 3002,
+      "sha256": "BD93E217DE54319DE496DFB51A26949B023561BC96D4DB902734A15F7BB8311C"
+    },
+    {
+      "file": "gateway/Stop-Gateway.ps1",
+      "bytes": 1357,
+      "sha256": "270E9038DC8C136F89B89C85AB3E4FBDF32BB00178C38F7F408E43A0EAA4221E"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -349,39 +419,14 @@
       "sha256": "C44CCCE5C17A86C75130C295B0648B1127035251969C22AD468A6FC6CAB67F2B"
     },
     {
-      "file": "gateway/README_FA.md",
-      "bytes": 4489,
-      "sha256": "608389E9153A1DAAE3D28B99D50E4507BEB1FF7979F8B8FE628711FB6ABFBF30"
-    },
-    {
       "file": "gateway/runtime_config.ps1",
       "bytes": 4090,
       "sha256": "1037D64077F0DA0149D986D4F90B8A8612E76E2CA5D11551AFC754C7B9CC57B9"
     },
     {
-      "file": "gateway/Setup-ConsoleGateway.ps1",
-      "bytes": 12277,
-      "sha256": "1F642B9479DD6EF00D9F5296ACE6311602C12E55798D48C5F6CFDD76AFFBD6D9"
-    },
-    {
-      "file": "gateway/Setup-GatewayCore.ps1",
-      "bytes": 4086,
-      "sha256": "958F7C43794683F3F9319879FBF5BE4CB5B3FD7534BE458667A7AD43733FF4ED"
-    },
-    {
       "file": "gateway/socks_udp_probe.py",
       "bytes": 1935,
       "sha256": "90FC2D4A16BA477437311FEDB46BEBE89ADA88C61BB7F0CF287075EFB8E5A811"
-    },
-    {
-      "file": "gateway/Start-Gateway.ps1",
-      "bytes": 3002,
-      "sha256": "BD93E217DE54319DE496DFB51A26949B023561BC96D4DB902734A15F7BB8311C"
-    },
-    {
-      "file": "gateway/Stop-Gateway.ps1",
-      "bytes": 1357,
-      "sha256": "270E9038DC8C136F89B89C85AB3E4FBDF32BB00178C38F7F408E43A0EAA4221E"
     },
     {
       "file": "gateway/stop_elevated.ps1",
@@ -419,39 +464,9 @@
       "sha256": "C047DCAA82C069890462532B975C11D62223B0CDA77B8072A2405353EF958E68"
     },
     {
-      "file": "Install-Windows.ps1",
-      "bytes": 2987,
-      "sha256": "243AD7F4543B9A55DD4B2906C61DF4497F48FC2C270D083D9FA3A02F9BFE6F68"
-    },
-    {
       "file": "jobs/.gitkeep",
       "bytes": 0,
       "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
-    },
-    {
-      "file": "README.md",
-      "bytes": 4282,
-      "sha256": "83909156185A0236376474DBF56E5570F6F19D580467F10457D00BF4BF48005E"
-    },
-    {
-      "file": "README_FA.md",
-      "bytes": 2599,
-      "sha256": "274034A53BD1643545A3C2D56C0EB1947FCCDBFF839E78515ADF45174E5E1075"
-    },
-    {
-      "file": "RELEASE.json",
-      "bytes": 3222,
-      "sha256": "9951940C95BD3589B69F12C2EABF29A5E5B9D9260BCFAA1C1935A9C6A3A266A9"
-    },
-    {
-      "file": "SECURITY.md",
-      "bytes": 707,
-      "sha256": "897B0EF328D99A5E45046DD381C24689F32C1395C47C5E3C7106C7D9FA5FCC50"
-    },
-    {
-      "file": "Setup-WindowsDependencies.ps1",
-      "bytes": 6487,
-      "sha256": "1726C4C14B10B2F1A7812DB3DCB1283F80D8FA37D0FB67CCD425E2A7E3DFFA30"
     },
     {
       "file": "tests/security_scan_public.py",
@@ -467,16 +482,6 @@
       "file": "tests/verify_public_tree.py",
       "bytes": 4564,
       "sha256": "D0FF0529833314E6909019DC44C8FDC31DBD68C159859A24BD36D82B5D945CCB"
-    },
-    {
-      "file": "THIRD_PARTY_NOTICES.md",
-      "bytes": 1106,
-      "sha256": "E4A83B48F8309BC3667ED1C70B6B8C194FEC9B6AC40D2D46A2244C289915FE7D"
-    },
-    {
-      "file": "Uninstall-FreeNetHub.ps1",
-      "bytes": 2992,
-      "sha256": "4526A434C876F7DF458105D9B7673047DFBD678AF967B6DE5663A763D8267940"
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
@@ -534,14 +539,14 @@
       "sha256": "F58FBBE8FD1616A2B1064DD0573283D1E3DD5CB329232FA4FEF47792587B6A9D"
     },
     {
-      "file": "windows/standalone/Rollback-FreeNetHubShell.ps1",
-      "bytes": 1041,
-      "sha256": "B851F60BDD759E068359E51003F41529E6D911321D8B1F896BFFCBDC4182B9E1"
-    },
-    {
       "file": "windows/standalone/RUNTIME_ACCEPTANCE.json",
       "bytes": 655,
       "sha256": "FDAFAD666EC639E0FD9102FDBF15C8DBF4F0ADC872649D2D6F9EF44328FB4826"
+    },
+    {
+      "file": "windows/standalone/Rollback-FreeNetHubShell.ps1",
+      "bytes": 1041,
+      "sha256": "B851F60BDD759E068359E51003F41529E6D911321D8B1F896BFFCBDC4182B9E1"
     },
     {
       "file": "windows/standalone/Test-FreeNetHubShell42.ps1",

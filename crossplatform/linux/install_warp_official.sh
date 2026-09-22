@@ -10,11 +10,14 @@ cat > "$tmp" <<'SH'
 set -euo pipefail
 KEY=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
 LIST=/etc/apt/sources.list.d/cloudflare-client.list
+. /etc/os-release
+CODENAME="${VERSION_CODENAME:-}"
+[ -n "$CODENAME" ] || { echo "VERSION_CODENAME missing in /etc/os-release" >&2; exit 3; }
 keytmp="$(mktemp)"
 trap 'rm -f "$keytmp"' EXIT
 curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg -o "$keytmp"
 gpg --yes --dearmor --output "$KEY" "$keytmp"
-printf '%s\n' 'deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ noble main' > "$LIST"
+printf 'deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ %s main\n' "$CODENAME" > "$LIST"
 apt-get update
 apt-get install -y cloudflare-warp
 systemctl enable --now warp-svc

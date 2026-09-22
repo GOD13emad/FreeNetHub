@@ -6,12 +6,17 @@ s=importlib.util.spec_from_file_location("fnh",p);m=importlib.util.module_from_s
 required=[
  "connect_mode","stop_all","warp_connect_safe","warp_keep","warp_disconnect",
  "start_tor","stop_tor","open_browser","console_prepare","console_start","console_stop",
- "doctor","speed_sample","export_report","inventory","import_snowflake","recover_stale_project_listener"
+ "doctor","speed_sample","export_report","inventory","import_snowflake","recover_stale_project_listener",
+ "nm_connection_uuids","console_owned_uuid","nm_connection_profile","migrate_legacy_console_profile"
 ]
 missing=[x for x in required if not callable(getattr(m,x,None))]
 assert not missing, missing
-assert m.VERSION=="4.2.0-linux.4"
+assert m.VERSION=="4.2.0-linux.5"
 assert m.WARP_GUARD_SECONDS==60
+assert m.TOR_DIRECT_TIMEOUT>=90
+assert 15 <= m.TOR_AUTO_DIRECT_TIMEOUT <= 45
+assert m.TOR_AUTO_DIRECT_TIMEOUT < m.TOR_DIRECT_TIMEOUT
+assert m.TOR_TRANSPORT_TIMEOUT>=120
 def public_bridge_lines(name):
     p=root/name
     return [x.strip() for x in p.read_text(encoding="utf-8").splitlines() if x.strip() and not x.lstrip().startswith("#")]
