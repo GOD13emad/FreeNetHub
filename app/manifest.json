@@ -1,21 +1,21 @@
 {
   "version": "4.2.0",
-  "scope": "BROWSER_PROXY+PC_TUNNEL+CONSOLE_GATEWAY",
+  "scope": "BROWSER_PROXY_DEFAULT+OPTIONAL_PC_TUNNEL+CONSOLE_GATEWAY",
   "code": [
     {
       "file": "engine.py",
-      "sha256": "7DFCD72F2FBC9FCD6965E5FEE3CA1F319D96101F9849D31E1CF428A4D8BE723C",
-      "bytes": 27919
+      "sha256": "801F569388ED3AF9F474DEA28F2E4C15E324C4C2EFD7020B40E6C94257559C2A",
+      "bytes": 33282
     },
     {
       "file": "FreeNetHub.ps1",
-      "sha256": "1731B36AFEE9118CAA94ED9CD0DDAB7C08400BFB9DD71020254D46C600916E5B",
-      "bytes": 34905
+      "sha256": "3629EFEFEC8F3B3E67AAD1D83B80C2D30370163A6E6DE7641E14EBADD416F7EE",
+      "bytes": 38154
     },
     {
       "file": "View.xaml",
-      "sha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2",
-      "bytes": 21489
+      "sha256": "8B0E9D9C84423B78769FD4DAD3000B8EB23C7072E3FCDAEDE61DB62FBA655D2F",
+      "bytes": 22693
     },
     {
       "file": "assets/FreeNetHub.ico",
@@ -23,5 +23,5 @@
       "bytes": 45853
     }
   ],
-  "coreVersion": "4.0"
+  "coreVersion": "4.0-scope-ui3"
 }

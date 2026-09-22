@@ -45,7 +45,16 @@ def clear_trial_session():
     except Exception:
         pass
 
-time.sleep(seconds)
+deadline = time.monotonic() + seconds
+while time.monotonic() < deadline:
+    if keep.exists():
+        private_write(log, "KEEP " + token + "\n")
+        try:
+            keep.unlink()
+        except Exception:
+            pass
+        raise SystemExit(0)
+    time.sleep(min(0.25, max(0.0, deadline - time.monotonic())))
 
 if keep.exists():
     private_write(log, "KEEP " + token + "\n")

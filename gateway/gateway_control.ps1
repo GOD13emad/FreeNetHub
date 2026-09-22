@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
- [Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','Status')][string]$Action,
+ [Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','Status')][string]$Action,
  [string]$ResultPath=''
 )
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
@@ -109,6 +109,17 @@ try{
   if($s -and [string]$s.mode -eq 'PC_TUNNEL' -and -not [bool]$s.providerPreexisting){Run-Engine 'StopOne' 'WARP' 60|Out-Null}
   Remove-Item $Session -Force -ErrorAction SilentlyContinue;$out.exit=0;$out.result=Get-Status
  }
+ elseif($Action -eq 'StopConsole'){
+  Require-Admin
+  $ws=$null;try{$ws=Run-WslConsole 'Status'}catch{}
+  if($ws -and $ws.exit -eq 0 -and [bool]$ws.record.result.running){
+   $stop=Run-WslConsole 'Stop';Assert ($stop.exit -eq 0) 'WSL_CONSOLE_STOP_FAIL'
+  }
+  $s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
+  if($s -and [string]$s.mode -eq 'CONSOLE_ONLY'){Remove-Item $Session -Force -ErrorAction SilentlyContinue}
+  $out.exit=0;$out.result=Get-Status
+ }
+
  else{
   Require-Admin;$st=Get-Status;Assert (-not [bool]$st.running) 'GATEWAY_ALREADY_RUNNING'
   if(Test-Path $Owner){Remove-Item $Owner -Force -ErrorAction SilentlyContinue}

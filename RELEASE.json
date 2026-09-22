@@ -1,24 +1,24 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-main-r14",
+  "releaseRevision": "4.2.0-public-main-r15",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
     "CONSOLE_GATEWAY_SOFTWARE"
   ],
-  "engineSha256": "7DFCD72F2FBC9FCD6965E5FEE3CA1F319D96101F9849D31E1CF428A4D8BE723C",
-  "uiSha256": "1731B36AFEE9118CAA94ED9CD0DDAB7C08400BFB9DD71020254D46C600916E5B",
-  "viewSha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2",
+  "engineSha256": "801F569388ED3AF9F474DEA28F2E4C15E324C4C2EFD7020B40E6C94257559C2A",
+  "uiSha256": "3629EFEFEC8F3B3E67AAD1D83B80C2D30370163A6E6DE7641E14EBADD416F7EE",
+  "viewSha256": "8B0E9D9C84423B78769FD4DAD3000B8EB23C7072E3FCDAEDE61DB62FBA655D2F",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
-  "gatewayManifestSha256": "63FDED4905DC80752451F0221B00F57B759E5E83AF736391095AC10A1FC0BC82",
-  "crossPlatformManifestSha256": "39BDB2485A698AF787F985300DCB4529C9DDA1B17A3D586C6A5AACF09DF50EA8",
+  "gatewayManifestSha256": "348376ADDA3701052C199793A8AB142C2452B2044780842908DC50F556339AD2",
+  "crossPlatformManifestSha256": "204B56AA50B939D8CA61106C8542D5926DB1CC186127D07051E3D02483237636",
   "installerSha256": "0642C5CBAD6A6447C1A7A2FCF3406755016A2B11D00DA884BAB6815A99DF4D85",
   "acceptanceEvidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R7",
+    "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
     "android": "BUILD_ACCEPTED_CORE_NOT_LINKED",
     "ios": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN"
   },
@@ -70,7 +70,7 @@
     "nativeLinuxAcceptanceEvidence": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
     "v4.2.0PublishedReleaseAuthority": true,
     "githubReleaseImmutableObserved": false,
-    "nativeLinuxVersion": "4.2.0-linux.6",
+    "nativeLinuxVersion": "4.2.0-linux.8",
     "nativeLinuxLegacyProfileMigration": "PASS_EXACT_FINGERPRINT_ONLY",
     "nativeLinuxUninstaller": "PASS_OWNED_UUID_SCOPE_PRIVATE_STATE_PRESERVED",
     "nativeLinuxDirectCurrentProbe": "NETWORK_TRANSIENT_BOOTSTRAP_55_PERCENT_AT_90S",
@@ -92,6 +92,20 @@
       "snapFirefoxProfile": "PASS",
       "staleUiReload": "PASS",
       "legacyAppArmorProfile": "RETIRED"
+    },
+    "scopeUiR15": {
+      "defaultScope": "BROWSER_ONLY",
+      "fullSystemToggle": "WARP_ONLY_EXPLICIT_DEFAULT_OFF",
+      "consolePage": "CONSOLE_ONLY",
+      "windowsScopeUi": "PASS_SMOKE",
+      "windowsBrowserIdentity": "PASS_STABLE_PROFILE",
+      "windowsConsoleStopIsolation": "PASS",
+      "linuxScopePolicy": "PASS",
+      "linuxFullSystemRollback": "PASS_ROUTE_DNS_SESSION",
+      "linuxWarpBrowserOnly": "FAIL_CLOSED_LOCAL_PROXY_UNAVAILABLE",
+      "rejectedDependency": "warp-plus runtime unavailable on this network",
+      "installerState": "REBUILD_REQUIRED_BEFORE_RELEASE",
+      "publicEvidence": "evidence/SCOPE_UI_R15_ACCEPTANCE.json"
     }
   }
 }

@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "date": "2026-09-22",
+  "product": "FreeNet Hub",
+  "revision": "4.2.0-public-main-r15",
+  "scopePolicy": {
+    "default": "BROWSER_ONLY",
+    "fullSystemToggle": {
+      "default": false,
+      "provider": "WARP_ONLY",
+      "explicit": true
+    },
+    "console": "DEDICATED_CONSOLE_ONLY_PAGE"
+  },
+  "windows": {
+    "status": "PASS",
+    "browserIdentity": "STABLE_EXISTING_PROFILE_ACROSS_VPN_MODES",
+    "chromiumProxyScheme": "socks5",
+    "uiSmoke": {
+      "pass": true,
+      "networkRequested": false,
+      "fullSystem": false,
+      "scopeSelection": "BROWSER",
+      "controls": 58
+    },
+    "consolePagePcControlPresent": false,
+    "consoleStopIsolation": "PASS_STATIC_REGRESSION",
+    "sourceTests": "PASS"
+  },
+  "linux": {
+    "version": "4.2.0-linux.8",
+    "status": "PASS_WITH_WARP_BROWSER_ONLY_UNAVAILABLE",
+    "browserOnlyAuto": "TOR_FAMILY_ONLY",
+    "browserOnlyProviders": [
+      "TOR",
+      "OBFS4",
+      "SNOWFLAKE",
+      "DIRECT"
+    ],
+    "warpBrowserOnly": {
+      "status": "FAIL_CLOSED_RUNTIME_UNAVAILABLE",
+      "officialLocalProxyMasque": "FAILED_HAPPY_EYEBALLS",
+      "officialLocalProxyWireGuard": "FAILED_OR_NO_USABLE_PROXY_LISTENER",
+      "alternateWarpPlus": "REJECTED_RUNTIME_UNAVAILABLE",
+      "dependencyAdded": false
+    },
+    "fullSystemWarp": {
+      "status": "PASS",
+      "explicitToggleOnly": true,
+      "connectSafeTrial": true,
+      "disableOnToggleOff": true,
+      "routeRestored": true,
+      "dnsRestored": true,
+      "sessionCleared": true
+    },
+    "warpGuardImmediateCancellation": "PASS",
+    "consolePage": "CONSOLE_ONLY",
+    "sourceTests": "PASS"
+  },
+  "externalOpenGate": "Physical console DHCP/UDP/game/country E2E still requires a real console client.",
+  "privacy": "Sanitized: no IP addresses, credentials, cookies, account identifiers, bridge material or Wi-Fi secrets."
+}

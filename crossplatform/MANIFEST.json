@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r14",
+  "version": "4.2.0-crossplatform-r15",
   "files": [
     {
       "file": "README_FA.md",
@@ -54,8 +54,8 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 3200,
-      "sha256": "FD3FCAEB6D679C5577642F01B18D4C07ED504E94EC468D8C548FC0E10BBF7B54"
+      "bytes": 3409,
+      "sha256": "66722CFC5B6CFBF267349AE4E342B0B05B664FC3DFAE02BCC413EEFA906A5436"
     },
     {
       "file": "common/verify_fail_closed.py",
@@ -110,7 +110,7 @@
     {
       "file": "linux/README_FA.md",
       "bytes": 5124,
-      "sha256": "1C3A102115238FD4E4C004C3F3CC73A1E180959BBD925DA0B97AA844DD71453C"
+      "sha256": "B89A47EC7FA46852FF39EC91E3E1E415BECF29AC7EAE9FBCE2D10B501189ADAF"
     },
     {
       "file": "linux/bridges_obfs4.txt",
@@ -124,13 +124,13 @@
     },
     {
       "file": "linux/freenet_hub_linux.py",
-      "bytes": 41333,
-      "sha256": "C393C58686B4C976A9BB6F765FE3D58F9CDEB5B14BE3853C84C7FCDBF959C9F0"
+      "bytes": 42635,
+      "sha256": "E386A8D1A738AD4748B4F15CB2537DB19389D2DBBA6A004B23AF69CAD15495B7"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
-      "bytes": 30089,
-      "sha256": "E2EF8CF687403397742783FD9D05189E66F1A7195F56F335AAE92DDC69E880F7"
+      "bytes": 33056,
+      "sha256": "B6AD89214E6DAA92F51BAFEB8F1ECB44EDDFE04F2D1FB9F7C3FF74C7184ED434"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -140,7 +140,7 @@
     {
       "file": "linux/install.sh",
       "bytes": 5206,
-      "sha256": "FD40FA3D2E3EAFE89C70A79D7DFDC1B1B9DE876C21E1464E338433BA70CC082E"
+      "sha256": "8FA05E56857746856A9A0FBD212BC395A1E9EFD459D9E86110359CD5E8CFC24B"
     },
     {
       "file": "linux/install_warp_official.sh",
@@ -155,7 +155,7 @@
     {
       "file": "linux/selftest.py",
       "bytes": 1824,
-      "sha256": "7AD8158FC0A06C854305DACA6345FCBC08036BB66714060BCD4FEB73D278FB72"
+      "sha256": "BE544F7A32E54607CDAED5C7954EFBC75E4F55B34596C47E61C36DB8BC40A308"
     },
     {
       "file": "linux/test_browser_profile.py",
@@ -173,14 +173,19 @@
       "sha256": "75463F5D71041AEBF94CD3741081DA7B17E09F415A16A4FA32A90281CD26349E"
     },
     {
+      "file": "linux/test_scope_policy.py",
+      "bytes": 1381,
+      "sha256": "AEC97B7DC1A15ABDB54B58EA9F8225DE2032EA445255CE3B56A893F3B8832282"
+    },
+    {
       "file": "linux/uninstall.sh",
       "bytes": 3382,
       "sha256": "5F22894AF269D6DE6C2A9C05E2D5D163E55DBAE07784DE09A7A16FF935F9DA64"
     },
     {
       "file": "linux/warp_guard.py",
-      "bytes": 1843,
-      "sha256": "465AE0C8807BCE4488A2826D3E230E90EF40CCBEE9695C844A60A9A5061C7ABE"
+      "bytes": 2144,
+      "sha256": "917FF14DF70BB5A859598483E52F36AC12937E551E404990930FD87069503F02"
     }
   ]
 }

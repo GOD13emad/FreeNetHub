@@ -11,7 +11,7 @@ required=[
 ]
 missing=[x for x in required if not callable(getattr(m,x,None))]
 assert not missing, missing
-assert m.VERSION=="4.2.0-linux.7"
+assert m.VERSION=="4.2.0-linux.8"
 assert m.WARP_GUARD_SECONDS==60
 assert m.TOR_DIRECT_TIMEOUT>=90
 assert 15 <= m.TOR_AUTO_DIRECT_TIMEOUT <= 45

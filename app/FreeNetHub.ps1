@@ -7,8 +7,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 
 $script:Root=Split-Path $PSScriptRoot -Parent
+New-Item -ItemType Directory -Path (Join-Path $script:Root 'logs'),(Join-Path $script:Root 'jobs'),(Join-Path $script:Root 'evidence') -Force|Out-Null
 
-$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
+$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
 
 function Read-Json([string]$p){if(!(Test-Path -LiteralPath $p)){return $null};if((Get-Item $p).Length -gt 4194304){throw 'RESULT_TOO_LARGE'};Get-Content -LiteralPath $p -Raw -Encoding utf8|ConvertFrom-Json -AsHashtable}
 
@@ -66,7 +67,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  $stored=Read-Json (Join-Path $script:Root 'settings.json');if($stored){foreach($k in @($script:Settings.Keys)){if($stored.ContainsKey($k)){$script:Settings[$k]=$stored[$k]}}}
 
- $script:C.Home.Text=$script:Settings.home;$script:C.CustomProxy.Text=$script:Settings.localProxy;$script:C.ShowIp.IsChecked=$script:Settings.showIp;$script:C.TrayOption.IsChecked=$(if($script:ShellHosted){$true}else{$script:Settings.minimizeToTray});if($script:ShellHosted){$script:C.TrayOption.IsEnabled=$false;$script:C.TrayOption.ToolTip='Tray is managed by FreeNetHub.exe'};$script:C.Monitor.IsChecked=$script:Settings.monitor;$script:C.AutoRepair.IsChecked=$script:Settings.autoRepair
+ $script:C.Home.Text=$script:Settings.home;$script:C.CustomProxy.Text=$script:Settings.localProxy;$script:C.ShowIp.IsChecked=$script:Settings.showIp;$script:C.FullSystem.IsChecked=$false;$script:C.ScopeText.Text='خاموش · فقط مرورگر (پیش‌فرض)';$script:C.TrayOption.IsChecked=$(if($script:ShellHosted){$true}else{$script:Settings.minimizeToTray});if($script:ShellHosted){$script:C.TrayOption.IsEnabled=$false;$script:C.TrayOption.ToolTip='Tray is managed by FreeNetHub.exe'};$script:C.Monitor.IsChecked=$script:Settings.monitor;$script:C.AutoRepair.IsChecked=$script:Settings.autoRepair
 
  foreach($i in $script:C.Country.Items){if($i.Content -eq $script:Settings.country){$script:C.Country.SelectedItem=$i}}
 
@@ -84,7 +85,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','GatewayPcStart','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewayImportProfile')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewayImportProfile')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
 
@@ -113,6 +114,9 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
     return 'هیچ مسیر قابل‌قبولی برقرار نشد.'
 
    }
+
+   'ALL_CHATGPT_PATHS_FAILED'{if($h -and $h.ContainsKey('attempts')){$x=@($h.attempts|ForEach-Object{$_.mode+': '+$_.reason});if($x.Count){return 'هیچ مسیر فعلی به لبهٔ ChatGPT نرسید. '+($x -join ' | ')}};return 'هیچ مسیر فعلی به لبهٔ ChatGPT نرسید.'}
+   'CHATGPT_UNREACHABLE'{return 'تونل عمومی سالم است، اما لبه‌های ChatGPT/OpenAI از این مسیر در دسترس تأیید نشدند.'}
 
    'CONNECT_FIRST'{return 'این عملیات به یک مسیر فعال نیاز دارد. ابتدا اتصال را برقرار کنید.'}
 
@@ -231,7 +235,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
    $j=$raw|ConvertFrom-Json -AsHashtable;$g=$j.result
 
-   if($g.running){$script:C.GatewayState.Text=if($g.mode -eq 'PC_TUNNEL'){'تونل کل کامپیوتر فعال است'}else{'Gateway کنسول فعال است'};$script:C.GatewayDetail.Text='TUN: '+$g.tun.status+' · Mode: '+$g.mode}else{$script:C.GatewayState.Text='گیت‌وی خاموش است';$script:C.GatewayDetail.Text='هیچ TUN مدیریتی متعلق به FreeNetHub فعال نیست.'}
+   $script:FullSystemActive=[bool]($g.running -and [string]$g.mode -eq 'PC_TUNNEL');$script:C.FullSystem.IsChecked=$script:FullSystemActive;$script:C.ScopeText.Text=$(if($script:FullSystemActive){'روشن · WARP کل سیستم فعال'}else{'خاموش · فقط مرورگر (پیش‌فرض)'});if($g.running -and [string]$g.mode -eq 'CONSOLE_ONLY'){$script:C.GatewayState.Text='اتصال کنسول فعال است';$script:C.GatewayDetail.Text='Mode: CONSOLE_ONLY · مسیر میزبان جداگانه راستی‌آزمایی شده است.'}elseif($script:FullSystemActive){$script:C.GatewayState.Text='اتصال کنسول خاموش است';$script:C.GatewayDetail.Text='تونل کل سیستم از صفحهٔ اتصال فعال است؛ این صفحه فقط کنسول را مدیریت می‌کند.'}else{$script:C.GatewayState.Text='اتصال کنسول خاموش است';$script:C.GatewayDetail.Text='هیچ اتصال کنسول متعلق به FreeNetHub فعال نیست.'}
 
    $cs=[string]$g.console.status;$an=$(if([string]$g.console.description){[string]$g.console.description}else{'آداپتور اختصاصی کنسول'});$script:C.ConsoleLinkState.Text=$an+': '+$(if($cs -eq 'Up'){'لینک برقرار'}elseif($cs -eq 'Disconnected'){'کابل متصل نیست'}elseif($cs -eq 'Missing'){'پیکربندی/سخت‌افزار پیدا نشد'}else{$cs})
 
@@ -239,7 +243,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
    return $g
 
-  }catch{$script:C.GatewayState.Text='وضعیت Gateway قابل خواندن نیست';$script:C.GatewayDetail.Text=$_.Exception.Message;return $null}
+  }catch{$script:C.GatewayState.Text='وضعیت اتصال کنسول قابل خواندن نیست';$script:C.GatewayDetail.Text=$_.Exception.Message;return $null}
 
  }
 
@@ -270,11 +274,11 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  }
 
- $script:C.GatewayPcStart.Add_Click({Start-GatewayRequest 'StartPc'})
+
 
  $script:C.GatewayConsoleStart.Add_Click({Start-GatewayRequest 'StartConsole'})
 
- $script:C.GatewayStop.Add_Click({Start-GatewayRequest 'Stop'})
+ $script:C.GatewayStop.Add_Click({Start-GatewayRequest 'StopConsole'})
 
  $script:C.GatewayRefresh.Add_Click({[void](Gateway-Refresh)})
 
@@ -296,15 +300,35 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  })
 
- $script:C.QuickConnect.Add_Click({$script:DesiredMode='AUTO';Start-Work 'Connect' 'AUTO'})
+ function Scope-IsFullSystem{return [bool]$script:C.FullSystem.IsChecked}
 
- $script:C.Connect.Add_Click({$m=Selected;if($m -eq 'DIRECT' -and [Windows.MessageBox]::Show('این حالت IP اصلی را به سایت‌ها نشان می‌دهد و تونل نیست. ادامه؟','FreeNet Hub','YesNo','Warning') -ne 'Yes'){return};$script:DesiredMode=$m;$script:Repairs=0;Start-Work 'Connect' $m})
+$script:C.FullSystem.Add_Click({
+ $on=Scope-IsFullSystem
+ if($on){
+  $script:C.ScopeText.Text='روشن · اتصال بعدی WARP کل سیستم'
+  $m=Selected
+  if($m -notin @('AUTO','WARP')){$script:C.StatusTitle.Text='تونل کل سیستم فقط با WARP';$script:C.StatusDetail.Text='WARP یا AUTO را انتخاب کن؛ سایر providerها فقط مرورگر هستند.'}
+ }else{
+  if($script:FullSystemActive){
+   if([Windows.MessageBox]::Show('تونل کل سیستم اکنون فعال است. خاموش و rollback شود؟','FreeNet Hub · Full System','YesNo','Question') -eq 'Yes'){Start-GatewayRequest 'Stop'}else{$script:C.FullSystem.IsChecked=$true;$script:C.ScopeText.Text='روشن · WARP کل سیستم فعال';return}
+  }else{$script:C.ScopeText.Text='خاموش · فقط مرورگر (پیش‌فرض)'}
+ }
+})
+
+$script:C.QuickConnect.Add_Click({
+ if(Scope-IsFullSystem){$script:DesiredMode='WARP';Start-GatewayRequest 'StartPc'}
+ else{$script:DesiredMode='AUTO';Start-Work 'Connect' 'AUTO'}
+})
+
+ $script:C.Connect.Add_Click({$m=Selected;if(Scope-IsFullSystem){if($m -notin @('AUTO','WARP')){$script:C.StatusTitle.Text='تونل کل سیستم فقط با WARP';$script:C.StatusDetail.Text='سوییچ را خاموش کن یا WARP/AUTO را انتخاب کن.';return};$script:DesiredMode='WARP';$script:Repairs=0;Start-GatewayRequest 'StartPc';return};if($m -eq 'DIRECT' -and [Windows.MessageBox]::Show('این حالت IP اصلی را به سایت‌ها نشان می‌دهد و تونل نیست. ادامه؟','FreeNet Hub','YesNo','Warning') -ne 'Yes'){return};$script:DesiredMode=$m;$script:Repairs=0;Start-Work 'Connect' $m})
 
  $script:C.Verify.Add_Click({$m=Selected;if($m -eq 'AUTO'){$m=if($script:CurrentMode){$script:CurrentMode}else{$script:DesiredMode}};if(!$m -or $m -eq 'AUTO'){$script:C.StatusTitle.Text='مسیر فعالی برای بررسی نیست';$script:C.StatusDetail.Text='ابتدا «شروع اتصال» را بزنید یا یک مسیر مشخص انتخاب کنید.';return};Start-Work 'Verify' $m})
 
- $script:C.Browser.Add_Click({if(!$script:CurrentMode){$script:C.StatusTitle.Text='مرورگر باز نشد';$script:C.StatusDetail.Text=Friendly-Error 'CONNECT_FIRST';return};Start-Work 'Browser' $script:CurrentMode})
+ $script:C.EmergencyChatGPT.Add_Click({$script:DesiredMode='CHATGPT';$script:Repairs=0;Start-Work 'ChatGPT' 'AUTO'})
 
- $script:C.QuickStop.Add_Click({if([Windows.MessageBox]::Show('فقط پردازش‌های متعلق به FreeNet Hub 4 متوقف شوند؟ سایر VPNها و Firefox تغییر نمی‌کنند.','توقف محدود','YesNo','Question') -eq 'Yes'){Start-Work 'Stop'}})
+ $script:C.Browser.Add_Click({if($script:FullSystemActive){Start-Work 'Browser' 'DIRECT';return};if(!$script:CurrentMode){$script:C.StatusTitle.Text='مرورگر باز نشد';$script:C.StatusDetail.Text=Friendly-Error 'CONNECT_FIRST';return};Start-Work 'Browser' $script:CurrentMode})
+
+ $script:C.QuickStop.Add_Click({if($script:FullSystemActive){if([Windows.MessageBox]::Show('تونل کل سیستم متعلق به FreeNetHub خاموش و rollback شود؟','توقف محدود','YesNo','Question') -eq 'Yes'){Start-GatewayRequest 'Stop'};return};if([Windows.MessageBox]::Show('فقط مسیرهای مرورگر متعلق به FreeNet Hub متوقف شوند؟ سایر VPNها و Chrome شخصی تغییر نمی‌کنند.','توقف محدود','YesNo','Question') -eq 'Yes'){Start-Work 'Stop'}})
 
  $script:C.Cancel.Add_Click({Cancel-Work})
 
@@ -354,7 +378,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  }
 
- $script:Window.Add_Closing({param($s,$e)if($script:GatewayTask){$e.Cancel=$true;$script:C.GatewayDetail.Text='عملیات Gateway هنوز در حال اجراست؛ پس از پایان دوباره ببندید.';return};if($script:Task){$e.Cancel=$true;Cancel-Work;return};if(!$Smoke -and !$script:AllowClose -and $script:CurrentMode){$a=[Windows.MessageBox]::Show('بستن پنل، تونل را قطع نمی‌کند و پایش متوقف می‌شود. پنل بسته شود؟ برای حفظ پایش، Cancel و سپس Minimize را بزنید.','FreeNet Hub','OKCancel','Information');if($a -ne 'OK'){$e.Cancel=$true}}})
+ $script:Window.Add_Closing({param($s,$e)if($script:GatewayTask){$e.Cancel=$true;$script:C.GatewayDetail.Text='عملیات Gateway هنوز در حال اجراست؛ پس از پایان دوباره ببندید.';return};if($script:Task){$e.Cancel=$true;Cancel-Work;return};if(!$Smoke -and !$script:AllowClose -and ($script:CurrentMode -or $script:FullSystemActive)){$a=[Windows.MessageBox]::Show('بستن پنل، تونل را قطع نمی‌کند و پایش متوقف می‌شود. پنل بسته شود؟ برای حفظ پایش، Cancel و سپس Minimize را بزنید.','FreeNet Hub','OKCancel','Information');if($a -ne 'OK'){$e.Cancel=$true}}})
 
  $script:Timer=[Windows.Threading.DispatcherTimer]::new();$script:Timer.Interval=[TimeSpan]::FromMilliseconds(400);$script:NextCheck=[DateTime]::UtcNow.AddSeconds(45)
 
@@ -474,7 +498,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
     $encoder=[Windows.Media.Imaging.PngBitmapEncoder]::new();$encoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($b));$f=[IO.File]::Create((Join-Path $script:Root 'evidence\UI.png'));try{$encoder.Save($f)}finally{$f.Dispose()}
 
-    Write-Json (Join-Path $script:Root 'evidence\gui.json') @{utc=[DateTime]::UtcNow.ToString('o');visible=$script:Window.IsVisible;controls=$script:C.Count;width=$script:Window.ActualWidth;height=$script:Window.ActualHeight;ticks=$script:Tick;topmost=$script:Window.Topmost;networkRequested=$false;theme=$script:Settings.theme;workerAction=$(if($script:Last){$script:Last.action}else{''});workerExit=$(if($script:Last){$script:Last.exit}else{-1});currentMode=$script:CurrentMode;desiredMode=$script:DesiredMode;statusTitle=$script:C.StatusTitle.Text;statusDetail=$script:C.StatusDetail.Text;latency=$script:C.LatencyValue.Text;country=$script:C.CountryValue.Text;sidebarState=$script:C.SidebarState.Text;gatewayState=$script:C.GatewayState.Text;consoleLink=$script:C.ConsoleLinkState.Text};$script:AllowClose=$true;$script:Window.Close()
+    Write-Json (Join-Path $script:Root 'evidence\gui.json') @{utc=[DateTime]::UtcNow.ToString('o');visible=$script:Window.IsVisible;controls=$script:C.Count;width=$script:Window.ActualWidth;height=$script:Window.ActualHeight;ticks=$script:Tick;topmost=$script:Window.Topmost;networkRequested=$false;theme=$script:Settings.theme;workerAction=$(if($script:Last){$script:Last.action}else{''});workerExit=$(if($script:Last){$script:Last.exit}else{-1});currentMode=$script:CurrentMode;desiredMode=$script:DesiredMode;statusTitle=$script:C.StatusTitle.Text;statusDetail=$script:C.StatusDetail.Text;latency=$script:C.LatencyValue.Text;country=$script:C.CountryValue.Text;sidebarState=$script:C.SidebarState.Text;gatewayState=$script:C.GatewayState.Text;consoleLink=$script:C.ConsoleLinkState.Text;fullSystem=$script:FullSystemActive;scopeSelection=$(if($script:C.FullSystem.IsChecked){'SYSTEM'}else{'BROWSER'})};$script:AllowClose=$true;$script:Window.Close()
 
    }
 

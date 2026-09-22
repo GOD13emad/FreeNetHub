@@ -229,7 +229,7 @@ class FreeNetHub(Adw.Application):
 
         for text, page, icon in [
             ("اتصال", "connect", "network-vpn-symbolic"),
-            ("گیت‌وی", "gateway", "network-wired-symbolic"),
+            ("اتصال کنسول", "gateway", "network-wired-symbolic"),
             ("تاب‌آوری", "resilience", "security-high-symbolic"),
             ("ابزارها", "tools", "applications-system-symbolic"),
             ("درباره", "about", "help-about-symbolic"),
@@ -299,18 +299,35 @@ class FreeNetHub(Adw.Application):
         controls.append(label("حالت اتصال", "metric"))
         mode_row = hbox(10)
         self.mode = Gtk.DropDown.new_from_strings([
-            "AUTO · هوشمند",
-            "WARP · کل سیستم",
-            "TOR · مستقیم",
-            "OBFS4 · Tor مقاوم",
-            "SNOWFLAKE · Tor Snowflake",
-            "DIRECT · بدون تونل",
+            "AUTO · فقط مرورگر / Tor",
+            "WARP · با اسلایدر روشن: کل سیستم",
+            "TOR · فقط مرورگر",
+            "OBFS4 · فقط مرورگر / Tor مقاوم",
+            "SNOWFLAKE · فقط مرورگر / Tor Snowflake",
+            "DIRECT · مرورگر بدون تونل",
         ])
         self.mode.set_selected(0)
         self.mode.set_hexpand(True)
         mode_row.append(self.mode)
         mode_row.append(button("شروع اتصال", lambda *_: self.connect(self.selected_mode()), "primary"))
         controls.append(mode_row)
+
+        scope = hbox(12)
+        scope.append(label("تونل کل سیستم", "metric"))
+        self.system_switch = Gtk.Switch()
+        self.system_switch.set_active(False)
+        scope.append(self.system_switch)
+        self.scope_hint = label("خاموش · فقط مرورگر (پیش‌فرض)", "muted")
+        self.scope_hint.set_hexpand(True)
+        scope.append(self.scope_hint)
+        self.system_switch.connect("notify::active", self.scope_changed)
+        controls.append(scope)
+        controls.append(label(
+            "سوییچ خاموش: AUTO/Tor/obfs4/Snowflake فقط داخل مرورگر FreeNet Hub. "
+            "سوییچ روشن: فقط WARP مجاز است و کل سیستم تونل می‌شود. "
+            "در این شبکه، Local Proxy رسمی WARP در آزمون runtime پروکسی قابل‌استفاده ایجاد نکرد؛ بنابراین WARP مرورگر-only fail-closed است.",
+            "muted",
+        ))
 
         acts = hbox(8)
         acts.append(button("باز کردن مرورگر", lambda *_: self.run_async("Browser", core.open_browser)))
@@ -321,8 +338,8 @@ class FreeNetHub(Adw.Application):
         acts.append(button("توقف", lambda *_: self.run_async("Stop", core.stop_all), "danger"))
         controls.append(acts)
         controls.append(label(
-            "WARP ابتدا به‌صورت trial امن وصل می‌شود و اگر تأیید نشود خودکار قطع می‌شود. "
-            "Tor و obfs4 فقط پروکسی اختصاصی FreeNet Hub را مدیریت می‌کنند.", "muted"
+            "WARP کل سیستم فقط وقتی سوییچ «تونل کل سیستم» روشن باشد اجرا می‌شود و trial/rollback دارد. "
+            "در حالت پیش‌فرض خاموش، هیچ مسیر system-wide خودکار روشن نمی‌شود.", "muted"
         ))
         root.append(controls)
 
@@ -349,43 +366,37 @@ class FreeNetHub(Adw.Application):
         scroll.set_child(root)
 
         intro = card()
-        intro.append(label("گیت‌وی دوحالته", "title-big"))
+        intro.append(label("اتصال کنسول", "title-big"))
         intro.append(label(
-            "حالت اول تونل کل لپ‌تاپ با WARP است. حالت دوم یک شبکهٔ اختصاصی Wi‑Fi برای کنسول آماده می‌کند. "
-            "هیچ‌کدام هنگام بازشدن برنامه خودکار فعال نمی‌شوند.", "muted"
+            "این بخش فقط برای آماده‌سازی و اتصال کنسول است. کنترل «تونل کل سیستم» به صفحهٔ اتصال منتقل شده است. "
+            "آماده‌سازی profile کنسول به‌تنهایی شبکه را روشن نمی‌کند.",
+            "muted",
         ))
-
-        cards = hbox(12)
-        cards.set_homogeneous(True)
-
-        pc = vbox(10)
-        pc.add_css_class("soft")
-        pc.append(label("کل کامپیوتر", "metric"))
-        pc.append(label("تمام ترافیک میزبان از WARP عبور می‌کند؛ trial امن و rollback خودکار فعال است.", "muted"))
-        pc.append(button("روشن کردن تونل PC", lambda *_: self.connect("WARP"), "primary"))
-        pc.append(button("قطع تونل PC", lambda *_: self.run_async("WARP Stop", core.warp_disconnect)))
-        cards.append(pc)
 
         con = vbox(10)
         con.add_css_class("soft")
         con.append(label("کنسول / Hotspot", "metric"))
-        con.append(label("Wi‑Fi آزاد لپ‌تاپ به شبکهٔ 192.168.77.0/24 تبدیل می‌شود؛ WARP باید قبلاً تأیید شده باشد.", "muted"))
-        con.append(button("آماده‌سازی کنسول", self.confirm_console_prepare))
-        con.append(button("روشن کردن Hotspot", self.confirm_console_start, "primary"))
-        con.append(button("خاموش کردن Hotspot", lambda *_: self.run_async("Console Stop", core.console_stop)))
-        cards.append(con)
+        con.append(label(
+            "Wi‑Fi ثانویهٔ لپ‌تاپ به شبکهٔ 192.168.77.0/24 تبدیل می‌شود. "
+            "مسیر خروجی کنسول فقط پس از تأیید صریح فعال می‌شود و اعتبارسنجی فیزیکی دستگاه همچنان جداست.",
+            "muted",
+        ))
+        con.append(button("آماده‌سازی اتصال کنسول", self.confirm_console_prepare))
+        con.append(button("روشن کردن اتصال کنسول", self.confirm_console_start, "primary"))
+        con.append(button("خاموش کردن اتصال کنسول", lambda *_: self.run_async("Console Stop", core.console_stop)))
+        intro.append(con)
 
-        intro.append(cards)
         self.gateway_state = label("در حال بررسی…", "muted")
         intro.append(self.gateway_state)
-        intro.append(button("تازه‌سازی وضعیت", lambda *_: self.run_async("Gateway Status", core.console_status)))
+        intro.append(button("تازه‌سازی وضعیت کنسول", lambda *_: self.run_async("Gateway Status", core.console_status)))
         root.append(intro)
 
         safety = card()
         safety.append(label("اصل ایمنی", "metric"))
         safety.append(label(
-            "اگر WARP، route یا rollback تأیید نشود حالت فعال پذیرفته نمی‌شود. "
-            "اعتبارسنجی فیزیکی کنسول (DHCP/UDP/کشور بازی) فقط بعد از اتصال دستگاه واقعی PASS خواهد شد.", "muted"
+            "این صفحه دیگر کنترل تونل کل لپ‌تاپ ندارد. اگر route یا rollback کنسول تأیید نشود، اتصال کنسول فعال پذیرفته نمی‌شود. "
+            "اعتبارسنجی فیزیکی DHCP/UDP/کشور بازی فقط با دستگاه واقعی PASS می‌شود.",
+            "muted",
         ))
         root.append(safety)
         return scroll
@@ -504,6 +515,12 @@ class FreeNetHub(Adw.Application):
         ok = bool(result and result.get("ok"))
         self.sidebar_state.set_text("موفق" if ok else "نیاز به توجه")
         self.sidebar_detail.set_text(name)
+        if result and result.get("error") == "WARP_BROWSER_ONLY_UNAVAILABLE":
+            self.status_title.set_text("WARP مرورگر-only در این Linux تأیید نشد")
+            self.status_detail.set_text("سوییچ کل سیستم را روشن کن، یا برای فقط مرورگر از AUTO/Tor/obfs4 استفاده کن.")
+        elif result and result.get("error") == "FULL_SYSTEM_WARP_ONLY":
+            self.status_title.set_text("تونل کل سیستم فقط با WARP")
+            self.status_detail.set_text("سوییچ را خاموش کن یا WARP را انتخاب کن.")
         if result and result.get("guard", {}).get("token"):
             self.pending_warp_token = result["guard"]["token"]
             self.keep_btn.set_sensitive(True)
@@ -520,8 +537,29 @@ class FreeNetHub(Adw.Application):
             self.update_gateway_text(result)
         return False
 
+    def scope_changed(self, *_):
+        full = self.system_switch.get_active()
+        if full:
+            self.scope_hint.set_text("روشن · WARP کل سیستم")
+            if self.selected_mode() not in ("AUTO", "WARP"):
+                self.status_detail.set_text("تونل کل سیستم در این نسخه فقط با WARP پشتیبانی می‌شود.")
+        else:
+            self.scope_hint.set_text("خاموش · فقط مرورگر (پیش‌فرض)")
+            current = core.session()
+            if current.get("mode") in ("WARP", "WARP_TRIAL"):
+                self.scope_hint.set_text("خاموش · در حال قطع WARP کل سیستم…")
+                self.run_async("Full System Off", core.disable_full_system)
+
     def connect(self, mode):
-        self.run_async("Connect " + mode, lambda: core.connect_mode(mode))
+        full = self.system_switch.get_active()
+        if full and mode not in ("AUTO", "WARP"):
+            self.status_title.set_text("این provider فقط مرورگر است")
+            self.status_detail.set_text("برای تونل کل سیستم، WARP را انتخاب کن یا سوییچ را خاموش کن.")
+            return
+        self.run_async(
+            ("Connect SYSTEM " if full else "Connect BROWSER ") + mode,
+            lambda: core.connect_mode(mode, full_system=full),
+        )
 
     def keep_warp(self, *_):
         if not self.pending_warp_token:
@@ -541,6 +579,9 @@ class FreeNetHub(Adw.Application):
             provider = s.get("provider") or "—"
             country = s.get("country") or "—"
             warp = s.get("warp") or ("on" if mode in ("WARP", "WARP_TRIAL") and s.get("ok") else "off")
+            system_owned = mode in ("WARP", "WARP_TRIAL")
+            if self.system_switch.get_active() != system_owned:
+                self.system_switch.set_active(system_owned)
             self.route_value.set_text(provider)
             self.country_value.set_text("Tor / نامشخص" if country == "T1" else country)
             self.warp_value.set_text(warp)
@@ -549,7 +590,8 @@ class FreeNetHub(Adw.Application):
                 self.status_title.set_text("مسیر تأیید شد")
                 self.status_title.remove_css_class("status-warn")
                 self.status_title.add_css_class("status-good")
-                self.status_detail.set_text(f"حالت فعال: {mode} · Provider: {provider}")
+                scope = s.get("scope") or ("SYSTEM" if mode in ("WARP", "WARP_TRIAL", "WARP_EXTERNAL") else "BROWSER")
+                self.status_detail.set_text(f"حالت فعال: {mode} · Provider: {provider} · Scope: {scope}")
                 self.sidebar_state.set_text("متصل")
             elif not s.get("mode"):
                 self.status_title.set_text("آمادهٔ انتخاب مسیر")

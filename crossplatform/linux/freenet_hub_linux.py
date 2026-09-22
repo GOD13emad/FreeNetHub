@@ -16,7 +16,7 @@ import uuid
 import zipfile
 
 APP = "FreeNet Hub"
-VERSION = "4.2.0-linux.7"
+VERSION = "4.2.0-linux.8"
 STATE = pathlib.Path.home() / ".local" / "share" / "FreeNetHub"
 EVIDENCE = STATE / "evidence"
 TOR_STATE = STATE / "tor"
@@ -503,15 +503,16 @@ def current_status():
             "ok": bool(w.get("connected") and t.get("ok") and (t.get("trace") or {}).get("warp") == "on"),
             "mode": mode,
             "provider": "WARP",
+            "scope": "SYSTEM",
             "status": w,
             "trace": t,
         }
     if mode == "TOR":
         t = tor_status()
-        return {"ok": bool(t.get("ok")), "mode": mode, "provider": "TOR", "tor": t}
+        return {"ok": bool(t.get("ok")), "mode": mode, "provider": "TOR", "scope": "BROWSER", "tor": t}
     if mode == "DIRECT":
         t = trace(timeout=10)
-        return {"ok": bool(t.get("ok")), "mode": mode, "provider": "DIRECT", "trace": t}
+        return {"ok": bool(t.get("ok")), "mode": mode, "provider": "DIRECT", "scope": "BROWSER", "trace": t}
     return {
         "ok": True,
         "mode": None,
@@ -521,44 +522,86 @@ def current_status():
         "trace": trace(timeout=8),
     }
 
-def connect_mode(mode: str):
+def _disconnect_owned_system_warp():
+    current = session()
+    if current.get("mode") in ("WARP", "WARP_TRIAL"):
+        w = warp_status()
+        if w.get("connected"):
+            return warp_disconnect()
+        set_session()
+    return {"ok": True, "state": "no-owned-system-warp"}
+
+
+def disable_full_system():
+    """Turn off only FreeNet Hub-owned system WARP; never stop external WARP."""
+    return _disconnect_owned_system_warp()
+
+
+def connect_mode(mode: str, full_system: bool = False):
     mode = (mode or "AUTO").upper()
+
+    if full_system:
+        if mode not in ("AUTO", "WARP"):
+            return {
+                "ok": False,
+                "error": "FULL_SYSTEM_WARP_ONLY",
+                "selected": mode,
+                "scope": "SYSTEM",
+            }
+        stop_tor()
+        r = warp_connect_safe()
+        r["selected"] = "WARP"
+        r["scope"] = "SYSTEM"
+        return r
+
+    # Browser-only scope is the safe default. Never start system WARP here.
+    _disconnect_owned_system_warp()
+
     if mode == "DIRECT":
+        stop_tor()
         t = trace()
         if t.get("ok"):
-            set_session("DIRECT", "direct", {})
-        return {"ok": bool(t.get("ok")), "mode": "DIRECT", "trace": t}
+            set_session("DIRECT", "direct", {"scope": "BROWSER"})
+        return {"ok": bool(t.get("ok")), "mode": "DIRECT", "scope": "BROWSER", "trace": t}
+
+    if mode == "WARP":
+        return {
+            "ok": False,
+            "error": "WARP_BROWSER_ONLY_UNAVAILABLE",
+            "selected": "WARP",
+            "scope": "BROWSER",
+            "detail": (
+                "Cloudflare WARP Local Proxy did not establish a usable local proxy on this network. "
+                "Use AUTO/Tor/obfs4/Snowflake for browser-only, or enable Full System for WARP."
+            ),
+        }
+
     if mode == "TOR":
         r = start_tor("direct")
         r["selected"] = "TOR"
+        r["scope"] = "BROWSER"
         return r
+
     if mode == "OBFS4":
         r = start_tor("obfs4")
         r["selected"] = "OBFS4"
+        r["scope"] = "BROWSER"
         return r
+
     if mode == "SNOWFLAKE":
         r = start_tor("snowflake")
         r["selected"] = "SNOWFLAKE"
+        r["scope"] = "BROWSER"
         return r
-    if mode == "WARP":
-        r = warp_connect_safe()
-        r["selected"] = "WARP"
-        return r
+
     if mode == "AUTO":
-        attempts = []
-        if exists("warp-cli"):
-            w = warp_connect_safe()
-            attempts.append({"provider": "WARP", "ok": w.get("ok"), "stage": w.get("stage")})
-            if w.get("ok"):
-                w["selected"] = "WARP"
-                w["attempts"] = attempts
-                return w
         t = start_tor()
-        attempts.append({"provider": "TOR", "ok": t.get("ok"), "mode": t.get("mode")})
         t["selected"] = "TOR"
-        t["attempts"] = attempts
+        t["scope"] = "BROWSER"
+        t["attempts"] = [{"provider": "TOR", "ok": t.get("ok"), "mode": t.get("mode")}]
         return t
-    return {"ok": False, "error": f"unsupported mode: {mode}"}
+
+    return {"ok": False, "error": f"unsupported mode: {mode}", "scope": "BROWSER"}
 
 def stop_all():
     current = session()
@@ -718,7 +761,7 @@ def open_browser(url="https://www.cloudflare.com/cdn-cgi/trace"):
         start_new_session=True,
         close_fds=True,
     )
-    atomic_json(STATE / "browser_route.json", {"schema": 1, "mode": mode, "proxy": proxy, "profile": str(prof), "launched": time.time()})
+    atomic_json(STATE / "browser_route.json", {"schema": 1, "mode": mode, "scope": "SYSTEM" if mode in ("WARP", "WARP_TRIAL", "WARP_EXTERNAL") else "BROWSER", "proxy": proxy, "profile": str(prof), "launched": time.time()})
     return {"ok": True, "browser": "firefox", "profile": str(prof), "mode": mode, "proxy": proxy, "restarted": bool(stopped.get("stopped"))}
 
 def default_route():

@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r14",
+  "version": "4.2.0-public-main-r15",
   "source": "git-index-blobs",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 3617,
-      "sha256": "725B8247425C557E662A4DAD437E7C68DB0E46185AEFE7A335B12FF9CC06BA62"
+      "bytes": 3676,
+      "sha256": "418D26833180C06EBDD598575B1810A7F92CE56A8A60EB7134AF9A823F21FDA1"
     },
     {
       "file": ".gitignore",
@@ -31,12 +31,12 @@
     {
       "file": "README_FA.md",
       "bytes": 3432,
-      "sha256": "DCF4DBCD6D3B6F73DF59C98D94FAB52B6DA711076EB245E9C2291EC96DC4DE20"
+      "sha256": "C135D332773DA25B168DD7890C4271504E5E88A445AA28B5C607091D971821F0"
     },
     {
       "file": "RELEASE.json",
-      "bytes": 4386,
-      "sha256": "6743CF12F6B34B44A58A8A938ADC2CF2EEA2202C785156DBB6EE431891DD61D9"
+      "bytes": 5048,
+      "sha256": "0A2B8A4160F4D47351CB156BD1A134259C5BBAE2D9D7877A5F319671151CCDE4"
     },
     {
       "file": "SECURITY.md",
@@ -60,13 +60,13 @@
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 34905,
-      "sha256": "1731B36AFEE9118CAA94ED9CD0DDAB7C08400BFB9DD71020254D46C600916E5B"
+      "bytes": 38154,
+      "sha256": "3629EFEFEC8F3B3E67AAD1D83B80C2D30370163A6E6DE7641E14EBADD416F7EE"
     },
     {
       "file": "app/View.xaml",
-      "bytes": 21489,
-      "sha256": "D7A1FA2A28A0FA59458491C5D5250F78BAEF6529033834DDACFC74F25C903CE2"
+      "bytes": 22693,
+      "sha256": "8B0E9D9C84423B78769FD4DAD3000B8EB23C7072E3FCDAEDE61DB62FBA655D2F"
     },
     {
       "file": "app/assets/FreeNetHub.ico",
@@ -85,18 +85,18 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 27919,
-      "sha256": "7DFCD72F2FBC9FCD6965E5FEE3CA1F319D96101F9849D31E1CF428A4D8BE723C"
+      "bytes": 33282,
+      "sha256": "801F569388ED3AF9F474DEA28F2E4C15E324C4C2EFD7020B40E6C94257559C2A"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 716,
-      "sha256": "940BD89DE6C41C5EFC92617383E67C153BCA2D669455AD47CE78F16669A57609"
+      "bytes": 743,
+      "sha256": "B0246BABD1144C5AB1AB438F3333BA75ADF9A34FE5D4AA28C36986791B70A3B0"
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 5941,
-      "sha256": "39BDB2485A698AF787F985300DCB4529C9DDA1B17A3D586C6A5AACF09DF50EA8"
+      "bytes": 6102,
+      "sha256": "204B56AA50B939D8CA61106C8542D5926DB1CC186127D07051E3D02483237636"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -150,8 +150,8 @@
     },
     {
       "file": "crossplatform/common/platform_matrix.json",
-      "bytes": 3200,
-      "sha256": "FD3FCAEB6D679C5577642F01B18D4C07ED504E94EC468D8C548FC0E10BBF7B54"
+      "bytes": 3409,
+      "sha256": "66722CFC5B6CFBF267349AE4E342B0B05B664FC3DFAE02BCC413EEFA906A5436"
     },
     {
       "file": "crossplatform/common/verify_fail_closed.py",
@@ -206,7 +206,7 @@
     {
       "file": "crossplatform/linux/README_FA.md",
       "bytes": 5124,
-      "sha256": "1C3A102115238FD4E4C004C3F3CC73A1E180959BBD925DA0B97AA844DD71453C"
+      "sha256": "B89A47EC7FA46852FF39EC91E3E1E415BECF29AC7EAE9FBCE2D10B501189ADAF"
     },
     {
       "file": "crossplatform/linux/bridges_obfs4.txt",
@@ -220,13 +220,13 @@
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
-      "bytes": 41333,
-      "sha256": "C393C58686B4C976A9BB6F765FE3D58F9CDEB5B14BE3853C84C7FCDBF959C9F0"
+      "bytes": 42635,
+      "sha256": "E386A8D1A738AD4748B4F15CB2537DB19389D2DBBA6A004B23AF69CAD15495B7"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
-      "bytes": 30089,
-      "sha256": "E2EF8CF687403397742783FD9D05189E66F1A7195F56F335AAE92DDC69E880F7"
+      "bytes": 33056,
+      "sha256": "B6AD89214E6DAA92F51BAFEB8F1ECB44EDDFE04F2D1FB9F7C3FF74C7184ED434"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -236,7 +236,7 @@
     {
       "file": "crossplatform/linux/install.sh",
       "bytes": 5206,
-      "sha256": "FD40FA3D2E3EAFE89C70A79D7DFDC1B1B9DE876C21E1464E338433BA70CC082E"
+      "sha256": "8FA05E56857746856A9A0FBD212BC395A1E9EFD459D9E86110359CD5E8CFC24B"
     },
     {
       "file": "crossplatform/linux/install_warp_official.sh",
@@ -251,7 +251,7 @@
     {
       "file": "crossplatform/linux/selftest.py",
       "bytes": 1824,
-      "sha256": "7AD8158FC0A06C854305DACA6345FCBC08036BB66714060BCD4FEB73D278FB72"
+      "sha256": "BE544F7A32E54607CDAED5C7954EFBC75E4F55B34596C47E61C36DB8BC40A308"
     },
     {
       "file": "crossplatform/linux/test_browser_profile.py",
@@ -269,14 +269,19 @@
       "sha256": "75463F5D71041AEBF94CD3741081DA7B17E09F415A16A4FA32A90281CD26349E"
     },
     {
+      "file": "crossplatform/linux/test_scope_policy.py",
+      "bytes": 1381,
+      "sha256": "AEC97B7DC1A15ABDB54B58EA9F8225DE2032EA445255CE3B56A893F3B8832282"
+    },
+    {
       "file": "crossplatform/linux/uninstall.sh",
       "bytes": 3382,
       "sha256": "5F22894AF269D6DE6C2A9C05E2D5D163E55DBAE07784DE09A7A16FF935F9DA64"
     },
     {
       "file": "crossplatform/linux/warp_guard.py",
-      "bytes": 1843,
-      "sha256": "465AE0C8807BCE4488A2826D3E230E90EF40CCBEE9695C844A60A9A5061C7ABE"
+      "bytes": 2144,
+      "sha256": "917FF14DF70BB5A859598483E52F36AC12937E551E404990930FD87069503F02"
     },
     {
       "file": "data/.gitkeep",
@@ -354,6 +359,11 @@
       "sha256": "8367B940E343A94EA6F1BE01B9CEF09E759051E1E9E82C7558C6C2A49CC33191"
     },
     {
+      "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
+      "bytes": 1877,
+      "sha256": "EBED59532510E2EA37A9825D84EB4A8DD44AD4897FC1DF708928107A3C9024BB"
+    },
+    {
       "file": "evidence/unit_tests.json",
       "bytes": 220,
       "sha256": "544606E62915D883919898FB8CEC709CF06E5E6C7D47D0587499BDE91FD00340"
@@ -405,8 +415,8 @@
     },
     {
       "file": "gateway/gateway_control.ps1",
-      "bytes": 11344,
-      "sha256": "72BD5A6BE94FBF3FB7C5003BC321FC051C55DB9761B8F1B4D6614C4AEF0C425B"
+      "bytes": 11862,
+      "sha256": "65A16561F08189C9F522309E773CD0F39AE2AC970DD6FC3CFE7560C3DC2E63F8"
     },
     {
       "file": "gateway/gateway_defaults.json",
@@ -415,8 +425,8 @@
     },
     {
       "file": "gateway/gateway_request.ps1",
-      "bytes": 3072,
-      "sha256": "58D860B3EE64DB81E8ED7C90317BF8F1E6D48ECBF2434BEAF6406CA02493DC1D"
+      "bytes": 3086,
+      "sha256": "A7DE8B31734BE0597881B2C061E5ED7D9C69A7F5A81A5C47EA58A4A96969E32A"
     },
     {
       "file": "gateway/generate_config.py",
@@ -431,7 +441,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 2912,
-      "sha256": "63FDED4905DC80752451F0221B00F57B759E5E83AF736391095AC10A1FC0BC82"
+      "sha256": "348376ADDA3701052C199793A8AB142C2452B2044780842908DC50F556339AD2"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -472,6 +482,11 @@
       "file": "gateway/tests/test_gateway.py",
       "bytes": 3464,
       "sha256": "278C45A4EC24D0213483ECEF553B8851D4503593839F9BEBF2B90F6852EFAB5D"
+    },
+    {
+      "file": "gateway/tests/test_scope_ui_policy.py",
+      "bytes": 1236,
+      "sha256": "0AA5D9CC46623ADB7D762866C188331E254DDCB30D8DA78F16745C5201CF6A9E"
     },
     {
       "file": "gateway/validate_console_profile.ps1",

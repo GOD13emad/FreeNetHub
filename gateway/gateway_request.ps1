@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','SetupConsole')][string]$Action,[Parameter(Mandatory)][string]$Job)
+param([Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','SetupConsole')][string]$Action,[Parameter(Mandatory)][string]$Job)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $Root=(Resolve-Path "$PSScriptRoot\..").Path
 if($Job -notmatch '^[a-fA-F0-9]{32}$'){throw 'INVALID_JOB_ID'}

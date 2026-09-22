@@ -14,8 +14,8 @@
       "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R7",
-      "version": "4.2.0-linux.7",
+      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
+      "version": "4.2.0-linux.8",
       "environments": {
         "wsl": "Ubuntu 24.04.4 LTS",
         "native": "Ubuntu 24.04.5 LTS"
@@ -60,6 +60,12 @@
         "directoriesMode": "0700",
         "sensitiveFilesMode": "0600",
         "upgradeRemediation": "PASS"
+      },
+      "scopePolicy": {
+        "default": "BROWSER_ONLY",
+        "fullSystemToggle": "WARP_ONLY",
+        "console": "CONSOLE_ONLY_PAGE",
+        "warpBrowserOnly": "FAIL_CLOSED_RUNTIME_UNAVAILABLE"
       }
     },
     "android": {

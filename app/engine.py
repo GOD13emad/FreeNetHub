@@ -354,20 +354,113 @@ def ensure(mode):
   stop(mode)
  raise RuntimeError('PATH_NOT_VERIFIED_'+mode)
 
-def browser(mode):
- s=settings();proxy=local_proxy(s['localProxy']) if mode=='CUSTOM' else '' if mode=='DIRECT' else f'socks5://127.0.0.1:{PORTS[mode]}'
+def mode_proxy(mode):
+ return local_proxy(settings()['localProxy']) if mode=='CUSTOM' else '' if mode=='DIRECT' else f'socks5h://127.0.0.1:{PORTS[mode]}'
+
+def chatgpt_probe(mode):
+ proxy=mode_proxy(mode)
+ endpoints=('https://chatgpt.com/','https://auth.openai.com/','https://challenges.cloudflare.com/')
+ checks=[]
+ for url in endpoints:
+  r=curl(url,proxy,seconds=9,body=False)
+  code=int(r.get('code') or 0) if str(r.get('code','')).isdigit() else 0
+  reachable=bool(r.get('exit')==0 and 200<=code<500)
+  checks.append({'url':url,'code':r.get('code','000'),'exit':r.get('exit',1),'reachable':reachable})
+ good=checks[0]['reachable'] and any(x['reachable'] for x in checks[1:])
+ return {'healthy':good,'connected':True,'state':'CHATGPT_EDGE_REACHABLE' if good else 'CHATGPT_EDGE_UNREACHABLE','mode':mode,'scope':'CHATGPT_WEB_EDGE','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':checks,'countryPolicy':'','error':'' if good else 'CHATGPT_UNREACHABLE','applicationAcceptance':'EDGE_REACHABILITY_ONLY_NOT_LOGIN'}
+
+def emergency_candidates():
+ out=[]
+ for m in ('WEBTUNNEL','OBFS4'):
+  f=ROOT/'data'/('bridges_'+m.lower()+'.txt')
+  if f.exists() and f.stat().st_size>0:out.append(m)
+ for m in ('TOR',)+tuple(settings()['order']):
+  if m in PORTS and m not in out:out.append(m)
+ return out
+
+def browser_profile():
+ marker=ROOT/'data'/'browser_profile.json'
+ rec={}
+ with contextlib.suppress(Exception):rec=read(marker,{}) or {}
+ name=str(rec.get('profile') or '')
+ if re.fullmatch(r'Browser_[A-Za-z0-9_-]{1,64}',name):
+  p=ROOT/'data'/name
+  if p.exists():return p
+ legacy=ROOT/'data'/'Browser_WARP'
+ p=legacy if legacy.exists() else ROOT/'data'/'Browser_Primary'
+ p.mkdir(parents=True,exist_ok=True)
+ write(marker,{'schema':1,'profile':p.name,'legacyPreserved':bool(p==legacy),'created':now()})
+ return p
+
+def chrome_proxy(proxy):
+ if proxy.lower().startswith('socks5h://'):return 'socks5://'+proxy[len('socks5h://'):]
+ return proxy
+
+def project_browser_roots(browser_exe,profile):
+ pwsh=dep_path('pwsh')
+ if not pwsh:return []
+ e=str(pathlib.Path(browser_exe)).replace("'","''");p=str(pathlib.Path(profile)).replace("'","''")
+ cmd=f"$e='{e}';$p='{p}';@((Get-CimInstance Win32_Process -ErrorAction SilentlyContinue)|Where-Object {{$_.ExecutablePath -eq $e -and $_.CommandLine -like ('*'+$p+'*') -and $_.CommandLine -notmatch '--type='}}|Select-Object ProcessId,CommandLine)|ConvertTo-Json -Compress"
+ r=native([pwsh,'-NoProfile','-NonInteractive','-Command',cmd],7)
+ if r['exit']!=0 or not r['out'].strip():return []
+ try:j=json.loads(r['out'])
+ except ValueError:return []
+ if isinstance(j,dict):j=[j]
+ return [int(x['ProcessId']) for x in j if isinstance(x,dict) and str(x.get('ProcessId','')).isdigit()]
+
+def stop_project_browser(browser_exe,profile):
+ pids=project_browser_roots(browser_exe,profile)
+ if not pids:return {'stopped':[],'forced':[]}
+ pwsh=dep_path('pwsh')
+ if pwsh:
+  for pid in pids:
+   with contextlib.suppress(Exception):native([pwsh,'-NoProfile','-NonInteractive','-Command',f'$p=Get-Process -Id {int(pid)} -ErrorAction SilentlyContinue;if($p){{$null=$p.CloseMainWindow()}}'],5)
+ end=time.monotonic()+5
+ while time.monotonic()<end:
+  alive=[pid for pid in pids if identity(pid)]
+  if not alive:return {'stopped':pids,'forced':[]}
+  time.sleep(.15)
+ alive=[pid for pid in pids if identity(pid)]
+ for pid in alive:
+  with contextlib.suppress(Exception):native(['taskkill.exe','/PID',str(pid),'/T'],8)
+ end=time.monotonic()+3
+ while time.monotonic()<end:
+  alive=[pid for pid in alive if identity(pid)]
+  if not alive:return {'stopped':pids,'forced':[]}
+  time.sleep(.15)
+ alive=[pid for pid in alive if identity(pid)]
+ forced=[]
+ for pid in alive:
+  with contextlib.suppress(Exception):
+   native(['taskkill.exe','/F','/PID',str(pid),'/T'],8);forced.append(pid)
+ end=time.monotonic()+3
+ while time.monotonic()<end:
+  still=[pid for pid in alive if identity(pid)]
+  if not still:return {'stopped':pids,'forced':forced}
+  time.sleep(.15)
+ still=[pid for pid in alive if identity(pid)]
+ if still:raise ValueError('BROWSER_BUSY_CLOSE_REQUIRED')
+ return {'stopped':pids,'forced':forced}
+
+def browser(mode,home_override=''):
+ s=settings();proxy=mode_proxy(mode)
  h=verify(mode)
  if not h['healthy']:
   if h.get('connected') is False:raise ValueError('CONNECT_FIRST')
   raise ValueError('BROWSER_BLOCKED_PATH_UNHEALTHY')
- profile=ROOT/'data'/('Browser_'+mode);profile.mkdir(exist_ok=True)
+ profile=browser_profile()
  browser_exe=dep_path('chrome')
  if not browser_exe or not pathlib.Path(browser_exe).is_file():raise ValueError('DEPENDENCY_NOT_CONFIGURED_BROWSER')
+ stopped=stop_project_browser(browser_exe,profile)
+ bp=chrome_proxy(proxy)
  args=[browser_exe,f'--user-data-dir={profile}','--no-first-run','--no-default-browser-check','--disable-quic','--force-webrtc-ip-handling-policy=disable_non_proxied_udp']
- if proxy:args+=[f'--proxy-server={proxy}','--proxy-bypass-list=<-loopback>','--host-resolver-rules=MAP * ~NOTFOUND , EXCLUDE 127.0.0.1']
- args+=[s['home']]
+ if bp:
+  args+=[f'--proxy-server={bp}','--proxy-bypass-list=<-loopback>']
+  if bp.lower().startswith('socks5://'):args+=['--host-resolver-rules=MAP * ~NOTFOUND , EXCLUDE 127.0.0.1']
+ args+=[home_override or s['home']]
  sp.Popen(args,stdin=sp.DEVNULL,stdout=sp.DEVNULL,stderr=sp.DEVNULL,creationflags=FLAGS,cwd=str(ROOT),env=env(),close_fds=True)
- return {'launched':True,'mode':mode,'health':h}
+ write(ROOT/'data'/'browser_route.json',{'schema':1,'mode':mode,'proxy':bp,'profile':profile.name,'launched':now()})
+ return {'launched':True,'mode':mode,'health':h,'home':home_override or s['home'],'profile':profile.name,'proxy':bp,'restarted':bool(stopped.get('stopped'))}
 
 def inventory():
  r=[]
@@ -420,6 +513,25 @@ def dispatch(action,mode,payload):
  if action=='Verify':
   h=verify(mode);write(ROOT/'session.json',h);return h
  if action=='Browser':return browser(mode)
+ if action=='ChatGPT':
+  failed=[]
+  for m in emergency_candidates():
+   was=bool(owned(m));a=None
+   try:
+    h=ensure(m)
+    if not h.get('healthy'):
+     failed.append({'mode':m,'reason':h.get('error') or 'PATH_UNHEALTHY'});continue
+    a=chatgpt_probe(m)
+    if a['healthy']:
+     b=browser(m,'https://chatgpt.com/')
+     a['launched']=bool(b.get('launched'));write(ROOT/'session.json',a);return a
+    failed.append({'mode':m,'reason':a['error']})
+   except (ValueError,RuntimeError) as e:failed.append({'mode':m,'reason':str(e)})
+   finally:
+    if not was and (not isinstance(a,dict) or not a.get('healthy')):
+     with contextlib.suppress(Exception):stop(m)
+  h={'healthy':False,'connected':False,'state':'CONNECT_FAILED','mode':'CHATGPT','scope':'CHATGPT_WEB_EDGE','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':[],'countryPolicy':'','error':'ALL_CHATGPT_PATHS_FAILED','attempts':failed,'applicationAcceptance':'NOT_TESTED'}
+  write(ROOT/'session.json',h);return h
  if action=='Stop':
   stopped=[m for m in PORTS if stop(m)];write(ROOT/'session.json',{'healthy':False,'stopped':True,'checked':now()});return {'stopped':stopped}
  if action=='StopOne':

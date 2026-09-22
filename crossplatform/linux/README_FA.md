@@ -1,4 +1,4 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.7
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.8
 
 نسخهٔ Linux با UI بومی GTK4/Libadwaita و اتصال صریح (explicit-connect).
 
