@@ -9,3 +9,6 @@
 *.pdf -text
 *.dat -text
 *.pdb -text
+
+windows/runtime/TorSnowflake/bundle/data/geoip -text
+windows/runtime/TorSnowflake/bundle/data/geoip6 -text

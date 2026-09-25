@@ -31,13 +31,13 @@
     },
     {
       "name": "Install-FreeNetHubShell.ps1",
-      "bytes": 4307,
-      "sha256": "F66B5B912A18A9580653E95DABC987DF291115A80D4A0D06785254143566CC00"
+      "bytes": 4302,
+      "sha256": "52F514126755820697455377ACAFC78CBBF11322EE2FD5EE51C521DF8D3F183C"
     },
     {
       "name": "Verify-FreeNetHubShell.ps1",
-      "bytes": 1694,
-      "sha256": "7E83EF6578DF296B4959015894512EBEC83D18551792E35400D70264D191F6C5"
+      "bytes": 1689,
+      "sha256": "A7ED8526A00A321FF81BA5C37BF8AFD985B438EC3F095B7290EB72D56FB956F5"
     },
     {
       "name": "Rollback-FreeNetHubShell.ps1",

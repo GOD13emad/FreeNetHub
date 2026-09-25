@@ -121,7 +121,7 @@ def identity(pid):
   if not k.QueryFullProcessImageNameW(h,0,buf,C.byref(n)):return None
   a,b,c,d=W.FILETIME(),W.FILETIME(),W.FILETIME(),W.FILETIME()
   if not k.GetProcessTimes(h,C.byref(a),C.byref(b),C.byref(c),C.byref(d)):return None
-  return {'pid':int(pid),'path':str(pathlib.Path(buf.value).resolve()),'created':(a.dwHighDateTime<<32)|a.dwLowDateTime}
+  return {'pid':int(pid),'path':os.path.normcase(os.path.abspath(buf.value)),'created':(a.dwHighDateTime<<32)|a.dwLowDateTime}
  finally:k.CloseHandle(h)
 def owned(mode):
  r=read(ROOT/'data'/mode/'owner.json',{})
@@ -288,9 +288,9 @@ def service_config(mode,scan=False):
   args+=['--scan','--rtt','2s'] if scan else ['--endpoint',ep]
  else:
   exe=check_binary('tor');check_binary('lyrebird')
-  torrc=str(d.get('torrc') or '');oldroot=str(d.get('oldRoot') or '')
+  torrc=str(d.get('torrc') or '');runtime_root=str(d.get('runtimeRoot') or '')
   if not torrc or not pathlib.Path(torrc).is_file():raise ValueError('DEPENDENCY_NOT_CONFIGURED_TORRC')
-  if not oldroot or not pathlib.Path(oldroot).is_dir():raise ValueError('DEPENDENCY_NOT_CONFIGURED_PROVIDER_ROOT')
+  if not runtime_root or not pathlib.Path(runtime_root).is_dir():raise ValueError('DEPENDENCY_NOT_CONFIGURED_RUNTIME_ROOT')
   old=pathlib.Path(torrc).read_text(encoding='utf-8-sig').splitlines()
   lines=[l for l in old if not re.match(r'^(SocksPort|DataDirectory|Bridge|Log|ControlPort)\s',l)]
   if mode=='TOR':br=[l for l in old if l.startswith('Bridge snowflake ')]
@@ -299,8 +299,8 @@ def service_config(mode,scan=False):
    br=['Bridge '+x for x in bridge_lines(f.read_text(encoding='utf-8-sig') if f.exists() else '',tr)]
   if not br:raise ValueError('MISSING_PRIVATE_BRIDGES')
   tor_data=data/'tor';tor_data.mkdir(exist_ok=True)
-  # Only public directory caches are reused; no identity/guard/browser state is copied.
-  old_data=pathlib.Path(oldroot)/'TorSnowflake'/'data'
+  # Optional bundled public directory caches may be reused; no identity/guard/browser state is copied.
+  old_data=pathlib.Path(runtime_root)/'TorSnowflake'/'data'
   for n in ('cached-certs','cached-microdesc-consensus','cached-microdescs','cached-microdescs.new'):
    src=old_data/n;dst=tor_data/n
    if src.is_file() and not dst.exists():shutil.copyfile(src,dst)

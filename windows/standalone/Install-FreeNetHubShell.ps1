@@ -19,8 +19,8 @@ function Assert-PackageIntegrity{
 Assert-PackageIntegrity
 if(-not $Root){
   $roots=@(
-    "$env:USERPROFILE\source\repos\FreeNetHub",
-    "$env:LOCALAPPDATA\FreeTunnelLab\FreeNetHub"
+    "$env:LOCALAPPDATA\Programs\FreeNetHub",
+    "$env:USERPROFILE\source\repos\FreeNetHub"
   ) | Where-Object { Test-Path -LiteralPath $_ }
   if(-not $roots){ throw 'FreeNetHub project root not found.' }
   $Root=$roots[0]

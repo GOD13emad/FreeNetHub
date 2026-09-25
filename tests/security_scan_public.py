@@ -6,7 +6,7 @@ hits=[]
 binary_ext={".exe",".dll",".ico",".png",".jpg",".jpeg",".zip",".pdf"}
 
 path_patterns=[
-    ("windows_user_path", re.compile(r"C:\\\\Users\\\\(?!<USER>)[A-Za-z0-9._-]+\\\\", re.I)),
+    ("windows_user_path", re.compile(r"C:\\Users\\(?!<USER>)[A-Za-z0-9._-]+\\", re.I)),
     ("linux_home_path", re.compile(r"/home/[A-Za-z0-9._-]+/")),
     ("github_token", re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b")),
     ("private_key_pem", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----")),

@@ -15,6 +15,7 @@ old={
  "nm_connection_uuids":m.nm_connection_uuids,
  "console_owned_uuid":m.console_owned_uuid,
  "run":m.run,
+ "executable":m.executable,
  "CONSOLE":m.CONSOLE,
 }
 with tempfile.TemporaryDirectory(prefix="fnh-console-policy-") as td:
@@ -31,6 +32,7 @@ with tempfile.TemporaryDirectory(prefix="fnh-console-policy-") as td:
         "client_ip":"192.168.77.2",
         "subnet":"192.168.77.0/24",
     })+"\n",encoding="utf-8")
+    m.executable=lambda name: "/usr/bin/nmcli" if name=="nmcli" else old["executable"](name)
     m.console_status=lambda:{"ok":True,"candidates":[{"device":"wlan-test","type":"wifi"}]}
     m.nm_connection_uuids=lambda name=m.CONSOLE_NAME:["OWNED-UUID"]
     m.console_owned_uuid=lambda cfg=None:"OWNED-UUID"

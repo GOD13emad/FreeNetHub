@@ -2,7 +2,7 @@
 param([string]$Root)
 $ErrorActionPreference='Stop'; Set-StrictMode -Version Latest
 if(-not $Root){
-  $Root=@("$env:USERPROFILE\source\repos\FreeNetHub","$env:LOCALAPPDATA\FreeTunnelLab\FreeNetHub") | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+  $Root=@("$env:LOCALAPPDATA\Programs\FreeNetHub","$env:USERPROFILE\source\repos\FreeNetHub") | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
 }
 if(-not $Root){ throw 'FreeNetHub root not found.' }
 $Root=(Resolve-Path -LiteralPath $Root).Path

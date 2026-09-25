@@ -24,6 +24,8 @@ jobs:
         run: python tests/test_engine.py
       - name: Gateway unit tests
         run: python gateway/tests/test_gateway.py
+      - name: Clean self-contained packaging regression
+        run: python -m unittest tests.test_clean_install
       - name: Parse PowerShell sources
         shell: pwsh
         run: |
@@ -55,13 +57,22 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
       - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
         with:
           gradle-version: '8.9'
       - name: Install Android SDK 35
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT/cmdline-tools" -type f -path '*/bin/sdkmanager' | sort -V | tail -1)"
+          test -n "$SDKMANAGER" && test -x "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
       - name: Build fail-closed Android integration pack
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         working-directory: crossplatform/android
         run: gradle :app:assembleDebug --stacktrace
   ios-static:

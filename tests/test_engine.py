@@ -140,6 +140,24 @@ class Unit(unittest.TestCase):
   with patch.object(E,'deps',return_value={}):
    with self.assertRaisesRegex(ValueError,'DEPENDENCY_NOT_CONFIGURED_WARP'):E.check_binary('warp')
 
+ def test_emergency_candidates_prioritize_private_bridges(self):
+  with tempfile.TemporaryDirectory(dir=R/'tests') as d:
+   rr=pathlib.Path(d)
+   with patch.object(E,'ROOT',rr),patch.object(E,'settings',return_value=E.DEFAULT|{'order':['WARP','TOR']}):
+    (rr/'data').mkdir();(rr/'data'/'bridges_webtunnel.txt').write_text('x')
+    self.assertEqual(E.emergency_candidates()[0],'WEBTUNNEL');self.assertIn('TOR',E.emergency_candidates());self.assertEqual(len(E.emergency_candidates()),len(set(E.emergency_candidates())))
+ def test_chatgpt_probe_requires_primary_and_supporting_edge(self):
+  ok={'exit':0,'code':'200','seconds':.1};bad={'exit':7,'code':'000','seconds':.1}
+  with patch.object(E,'curl',side_effect=[ok,ok,bad]),patch.object(E,'mode_proxy',return_value='socks5h://127.0.0.1:1'):
+   r=E.chatgpt_probe('TOR');self.assertTrue(r['healthy']);self.assertEqual(r['state'],'CHATGPT_EDGE_REACHABLE');self.assertEqual(r['applicationAcceptance'],'EDGE_REACHABILITY_ONLY_NOT_LOGIN')
+  with patch.object(E,'curl',side_effect=[bad,ok,ok]),patch.object(E,'mode_proxy',return_value='socks5h://127.0.0.1:1'):
+   self.assertFalse(E.chatgpt_probe('TOR')['healthy'])
+ def test_chatgpt_dispatch_uses_first_reachable_and_launches(self):
+  health={'healthy':True,'mode':'TOR'}
+  app={'healthy':True,'mode':'TOR','error':'','state':'CHATGPT_EDGE_REACHABLE'}
+  with patch.object(E,'emergency_candidates',return_value=['TOR','WARP']),patch.object(E,'owned',return_value=None),patch.object(E,'ensure',return_value=health) as en,patch.object(E,'chatgpt_probe',return_value=app),patch.object(E,'browser',return_value={'launched':True}),patch.object(E,'write'),patch.object(E,'stop') as st:
+   r=E.dispatch('ChatGPT','AUTO','');self.assertTrue(r['healthy']);self.assertTrue(r['launched']);en.assert_called_once_with('TOR');st.assert_not_called()
+
  def test_stop_one_only_requested_mode(self):
   with patch.object(E,'stop',return_value=True) as st:
    r=E.dispatch('StopOne','WARP','');self.assertEqual(r['stopped'],['WARP']);st.assert_called_once_with('WARP')

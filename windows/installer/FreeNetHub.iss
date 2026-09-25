@@ -14,7 +14,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\..\delivery\github_v4.2.0
-OutputBaseFilename=FreeNetHub_4.2.0_Setup
+OutputBaseFilename=FreeNetHub_4.2.0_R16_Clean_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -42,6 +42,9 @@ Name: "{app}\jobs"
 Name: "{app}\evidence"
 Name: "{app}\gateway\runtime"
 
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\\runtime"
+
 [Files]
 Source: "..\standalone\FreeNetHub.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\standalone\FreeNetHub.ico"; DestDir: "{app}"; Flags: ignoreversion
@@ -52,6 +55,8 @@ Source: "..\..\app\manifest.json"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\dependencies.example.json"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\assets\FreeNetHub.ico"; DestDir: "{app}\app\assets"; Flags: ignoreversion
 Source: "..\..\app\assets\FreeNetHub_256.png"; DestDir: "{app}\app\assets"; Flags: ignoreversion
+Source: "..\runtime\WarpPlusFast\*"; DestDir: "{app}\runtime\WarpPlusFast"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\runtime\TorSnowflake\bundle\*"; DestDir: "{app}\runtime\TorSnowflake\bundle"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\..\gateway\gateway_control.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion
 Source: "..\..\gateway\gateway_request.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion
 Source: "..\..\gateway\Setup-GatewayCore.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion
@@ -96,6 +101,7 @@ Type: filesandordirs; Name: "{app}\jobs"
 Type: filesandordirs; Name: "{app}\evidence"
 Type: filesandordirs; Name: "{app}\gateway\runtime"
 Type: filesandordirs; Name: "{app}\data"
+Type: filesandordirs; Name: "{app}\runtime"
 
 [Code]
 function FindPwsh: String;

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r15",
+  "version": "4.2.0-crossplatform-r16",
   "files": [
     {
       "file": "README_FA.md",
@@ -164,8 +164,8 @@
     },
     {
       "file": "linux/test_console_policy.py",
-      "bytes": 2677,
-      "sha256": "459BCBECB6697E8195C9736273DF807E56C2FF762C2EDDE1AE9FED178A77EC59"
+      "bytes": 2798,
+      "sha256": "F78AEFEB38CE1C5EC0954AE4E4F043087184074D150E076E79AA40F76F0A5624"
     },
     {
       "file": "linux/test_private_state_permissions.py",

@@ -4,8 +4,8 @@
   "code": [
     {
       "file": "engine.py",
-      "sha256": "801F569388ED3AF9F474DEA28F2E4C15E324C4C2EFD7020B40E6C94257559C2A",
-      "bytes": 33282
+      "sha256": "F6FB91C4714A73D6A42BF15BC9F41D134352978380B536CF586327052221C1A7",
+      "bytes": 33326
     },
     {
       "file": "FreeNetHub.ps1",
@@ -23,5 +23,5 @@
       "bytes": 45853
     }
   ],
-  "coreVersion": "4.0-scope-ui3"
+  "coreVersion": "4.0-scope-ui3-clean-r16"
 }

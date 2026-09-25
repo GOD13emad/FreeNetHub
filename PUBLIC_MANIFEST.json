@@ -1,17 +1,17 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-main-r15",
-  "source": "git-index-blobs",
+  "version": "4.2.0-public-main-r16-clean",
+  "source": "working-tree-lf-normalized",
   "files": [
     {
       "file": ".gitattributes",
-      "bytes": 140,
-      "sha256": "29CC4BDC163820CAA43B056FB243EB536CE4EE092B7042255FCD166DEA989045"
+      "bytes": 248,
+      "sha256": "620213E2D89DF63A1DCDD542103944FAFD35809E93247BF2DF88B7AE16049B97"
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 3676,
-      "sha256": "418D26833180C06EBDD598575B1810A7F92CE56A8A60EB7134AF9A823F21FDA1"
+      "bytes": 4204,
+      "sha256": "B1EC84BDBE328D4845AA8AC858A45D1AF3EFAFC74D886F840439360D60216EA5"
     },
     {
       "file": ".gitignore",
@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 5127,
-      "sha256": "C1914614288ED435B9ED60F18D4C849F58678CF8245E36989B0C3D7A721DDE23"
+      "bytes": 5957,
+      "sha256": "50FDDD388F6FB2B419CEA89140ED2FA58E86046FAECCF7FE98674FA1C093E874"
     },
     {
       "file": "SECURITY.md",
@@ -45,13 +45,13 @@
     },
     {
       "file": "Setup-WindowsDependencies.ps1",
-      "bytes": 6487,
-      "sha256": "1726C4C14B10B2F1A7812DB3DCB1283F80D8FA37D0FB67CCD425E2A7E3DFFA30"
+      "bytes": 7943,
+      "sha256": "720B3CCA93C9FAF983463D0CE8CF3F305896300D5797F9335B9703CAC2D4C509"
     },
     {
       "file": "THIRD_PARTY_NOTICES.md",
-      "bytes": 1106,
-      "sha256": "E4A83B48F8309BC3667ED1C70B6B8C194FEC9B6AC40D2D46A2244C289915FE7D"
+      "bytes": 1870,
+      "sha256": "9988D6D10C2ED28AE79EE0D9B72349DD4B33974A3A13584F1431F60E20937482"
     },
     {
       "file": "Uninstall-FreeNetHub.ps1",
@@ -80,23 +80,23 @@
     },
     {
       "file": "app/dependencies.example.json",
-      "bytes": 273,
-      "sha256": "1E33CA048ED05FCD0D437A4080A2945EBF02E8DCF5253323B0B756CBD77F0ED6"
+      "bytes": 277,
+      "sha256": "50BCB770067FBD12724C0B30E0DF5765A7F017EBC916FF77F1D30CA8135BAB37"
     },
     {
       "file": "app/engine.py",
-      "bytes": 33282,
-      "sha256": "801F569388ED3AF9F474DEA28F2E4C15E324C4C2EFD7020B40E6C94257559C2A"
+      "bytes": 33326,
+      "sha256": "F6FB91C4714A73D6A42BF15BC9F41D134352978380B536CF586327052221C1A7"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 743,
-      "sha256": "B0246BABD1144C5AB1AB438F3333BA75ADF9A34FE5D4AA28C36986791B70A3B0"
+      "bytes": 753,
+      "sha256": "2183210E21955B6BA8C3736608F3324CD1135C838DC31F3A012A17BAD76ACA76"
     },
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 6102,
-      "sha256": "204B56AA50B939D8CA61106C8542D5926DB1CC186127D07051E3D02483237636"
+      "sha256": "28DC03C34D7D42DD22273FB082B354FB0CBD31D5F4E9DC3E419F3AE109738274"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -260,8 +260,8 @@
     },
     {
       "file": "crossplatform/linux/test_console_policy.py",
-      "bytes": 2677,
-      "sha256": "459BCBECB6697E8195C9736273DF807E56C2FF762C2EDDE1AE9FED178A77EC59"
+      "bytes": 2798,
+      "sha256": "F78AEFEB38CE1C5EC0954AE4E4F043087184074D150E076E79AA40F76F0A5624"
     },
     {
       "file": "crossplatform/linux/test_private_state_permissions.py",
@@ -359,6 +359,11 @@
       "sha256": "8367B940E343A94EA6F1BE01B9CEF09E759051E1E9E82C7558C6C2A49CC33191"
     },
     {
+      "file": "evidence/R16_CLEAN_INSTALL_ACCEPTANCE_20260925.json",
+      "bytes": 1971,
+      "sha256": "8E7D808645C277C4E8373E7F2266482C82862388C94B401F1E2A855F70E2CFE3"
+    },
+    {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
       "bytes": 2126,
       "sha256": "FE39F0868C138A3A3CDB57548BCD7AEB562B0BCB72328590D91ACDC0EB6B2D41"
@@ -380,8 +385,8 @@
     },
     {
       "file": "gateway/Setup-GatewayCore.ps1",
-      "bytes": 4086,
-      "sha256": "958F7C43794683F3F9319879FBF5BE4CB5B3FD7534BE458667A7AD43733FF4ED"
+      "bytes": 4233,
+      "sha256": "35EAC2E2E5390A369BD05FE324235D74AD4A3E93B76BBA57B38BF2BA9CC9795B"
     },
     {
       "file": "gateway/Start-Gateway.ps1",
@@ -441,7 +446,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 2912,
-      "sha256": "348376ADDA3701052C199793A8AB142C2452B2044780842908DC50F556339AD2"
+      "sha256": "1B064E0A7CE5E80B49F1DDE750DD60CAD16CF915D3691E7C25E85A77AC93F846"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -474,9 +479,39 @@
       "sha256": "8B24DAC139E85681BE8ECC3A5E47068E37837480EEFEACAB6F6CF1C407D7582F"
     },
     {
+      "file": "gateway/tests/dns_policy_check.ps1",
+      "bytes": 486,
+      "sha256": "7BB8303900F6192CE872E6A6DF5A6A67E6E93A6E0C21BE6FF5ABB3841A822D66"
+    },
+    {
+      "file": "gateway/tests/elevated_final_acceptance_42rc.ps1",
+      "bytes": 16814,
+      "sha256": "C6BC633219EBE85FEE164E9164B04927B6641074B127D99259A0D30D7D030781"
+    },
+    {
+      "file": "gateway/tests/elevated_pc_tunnel_acceptance.ps1",
+      "bytes": 6956,
+      "sha256": "3FA20E418494FD62C46F0D4EAA790D5D743C98C55E942B39791B071AE8C16CC9"
+    },
+    {
+      "file": "gateway/tests/elevated_pc_tunnel_acceptance_42c2.ps1",
+      "bytes": 11152,
+      "sha256": "F2B32004C4060A9C325B1DA6A38FEB5FF924871A1DA6D1C2118594C8B5CB2E94"
+    },
+    {
       "file": "gateway/tests/parse_all.ps1",
       "bytes": 464,
       "sha256": "7618F92BC1FA561D884B664A15B3517B218B9DF330CED5C908038FB5636A1DAF"
+    },
+    {
+      "file": "gateway/tests/parse_clean_acceptance.ps1",
+      "bytes": 735,
+      "sha256": "C8794A0D018FC04D27B4CF831DFF5F1824B920CDF947DD30C04FFC915682B390"
+    },
+    {
+      "file": "gateway/tests/static_gateway_check.ps1",
+      "bytes": 707,
+      "sha256": "DB01CB201DE99D5363538D589B9356FF86CC19E6914A5DFEC9738820BC33E098"
     },
     {
       "file": "gateway/tests/test_gateway.py",
@@ -505,13 +540,18 @@
     },
     {
       "file": "tests/security_scan_public.py",
-      "bytes": 2275,
-      "sha256": "40B64065452B09EBB218FDE847175C9FB7D23EC8F28088B172EBCB91F96403DF"
+      "bytes": 2269,
+      "sha256": "692269284F89DB89E1A8EDF0CAF14283940ADD0776EB0A0FE6E1552A13057F0C"
+    },
+    {
+      "file": "tests/test_clean_install.py",
+      "bytes": 1372,
+      "sha256": "D89B15052E91CE0797EA07B3E14D5BFEC47D2BCE3384382A1D9D90A08C0884BC"
     },
     {
       "file": "tests/test_engine.py",
-      "bytes": 13514,
-      "sha256": "A23BD883BC759FFF6816300E88425A83D4B9CF348B1333ECE33893DB1078CEDD"
+      "bytes": 15344,
+      "sha256": "D3CC0080B693357EF5D3BAB695E09DBD58BC1913A38C1F4690FDB276250E88EC"
     },
     {
       "file": "tests/verify_public_tree.py",
@@ -520,13 +560,78 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 9787,
-      "sha256": "D05A77960A5BA19488B9530BBBF33EC5CD3FF8943A65C767A756E3C3F4480711"
+      "bytes": 10175,
+      "sha256": "FF0286DB9392B5F6E790D8F3E5A4CE47B81F09BD1E699E9B2E8B25A89F0146B8"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",
       "bytes": 7953,
       "sha256": "C0428CB61D0ADB4DCB2F8610E1B494B3864CF66350612A5A5E489B000884BA4F"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/data/geoip",
+      "bytes": 9699850,
+      "sha256": "25A69C1DC1D946BFDB0B1BA628DB36E9668C51639963C2EE2AFDA7DC857F66A5"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/data/geoip6",
+      "bytes": 16236188,
+      "sha256": "0A3B61BA326550D66A4C805563BE25E28F1D59E5CDFC06B091BFDD9EA2C8F998"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/data/torrc-defaults",
+      "bytes": 928,
+      "sha256": "0F5205266CCB37DA3D8D6A4F5C52862E42DAC9F1DC2650BE60CAD523FA6EE964"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/docs/libevent.txt",
+      "bytes": 4528,
+      "sha256": "FF02EFFC9B331EDCDAC387D198691BFA3E575E7D244AD10CB826AA51EF085670"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/docs/lyrebird.txt",
+      "bytes": 282585,
+      "sha256": "2331E6517A15CE87E2A1D2838C314CA1B8F3C7A347AC28D370A7FCCDB5964F40"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/docs/openssl.txt",
+      "bytes": 10175,
+      "sha256": "7D5450CB2D142651B8AFA315B5F238EFC805DAD827D91BA367D8516BC9D49E7A"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/docs/tor.txt",
+      "bytes": 21086,
+      "sha256": "5DC29EA302CC75DB6DB4A7C88D7B5D4638B4E0F5F1D2E6D21CE71F707470B766"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/docs/zlib.txt",
+      "bytes": 1002,
+      "sha256": "E32FF4E00D9D94930537635291DA39E7E612703334BF6FDE8C7F1686FE8A45A2"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/tor/pluggable_transports/lyrebird.exe",
+      "bytes": 17957376,
+      "sha256": "6E218E85F9A7AE2481F5402DED822471A9A9D0C7E66B05DB3842B93FA5C1F02E"
+    },
+    {
+      "file": "windows/runtime/TorSnowflake/bundle/tor/tor.exe",
+      "bytes": 10222592,
+      "sha256": "60C45B01938C799862E511A9A5BAB12F959A819C6264A24502EDC342165F570C"
+    },
+    {
+      "file": "windows/runtime/WarpPlusFast/LICENSE",
+      "bytes": 1023,
+      "sha256": "91276DB973F25602D1AA43491F59CBC84CB88E6F151E1D0CC82A755563CE0195"
+    },
+    {
+      "file": "windows/runtime/WarpPlusFast/README.md",
+      "bytes": 5045,
+      "sha256": "CFC96DFEA84E2BCD68E3C241658010C682DD4648024B715907AE2C3811709DA3"
+    },
+    {
+      "file": "windows/runtime/WarpPlusFast/warp-plus.exe",
+      "bytes": 20175360,
+      "sha256": "FFE76F545317E7E511C9B1723D935F0C0DCA6D355403E30101720F1A5882C47C"
     },
     {
       "file": "windows/standalone/Build-Manifest42.py",
@@ -560,13 +665,13 @@
     },
     {
       "file": "windows/standalone/Install-FreeNetHubShell.ps1",
-      "bytes": 4307,
-      "sha256": "F66B5B912A18A9580653E95DABC987DF291115A80D4A0D06785254143566CC00"
+      "bytes": 4302,
+      "sha256": "52F514126755820697455377ACAFC78CBBF11322EE2FD5EE51C521DF8D3F183C"
     },
     {
       "file": "windows/standalone/MANIFEST.json",
       "bytes": 1857,
-      "sha256": "EE51E8F257CA615281B630C1D059C7FB39F33E95310E6E5D74CD63F689094A9F"
+      "sha256": "BF6C56E11C0CA135584FBFD3D8C25C737CA3A1FC8097BC92F00076E1057345A6"
     },
     {
       "file": "windows/standalone/README_FA.md",
@@ -590,8 +695,8 @@
     },
     {
       "file": "windows/standalone/Verify-FreeNetHubShell.ps1",
-      "bytes": 1694,
-      "sha256": "7E83EF6578DF296B4959015894512EBEC83D18551792E35400D70264D191F6C5"
+      "bytes": 1689,
+      "sha256": "A7ED8526A00A321FF81BA5C37BF8AFD985B438EC3F095B7290EB72D56FB956F5"
     }
   ]
 }

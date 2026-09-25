@@ -29,9 +29,8 @@ try{
  if(!(Valid-SingBox $target)){
   $candidates=@()
   if(Test-Path -LiteralPath $Local){
-   try{$old=Get-Content -LiteralPath $Local -Raw -Encoding UTF8|ConvertFrom-Json;if($old.singbox -and $old.singbox.path){$candidates+=[string]$old.singbox.path}}catch{}
+   try{$old=Get-Content -LiteralPath $Local -Raw -Encoding UTF8|ConvertFrom-Json;if(($old.PSObject.Properties.Name -contains 'singbox') -and $old.singbox -and ($old.singbox.PSObject.Properties.Name -contains 'path') -and $old.singbox.path){$candidates+=[string]$old.singbox.path}}catch{}
   }
-  $candidates+=(Join-Path $env:LOCALAPPDATA 'FreeTunnelLab\SingBox\sing-box.exe')
   $src=$candidates|Where-Object{Valid-SingBox $_}|Select-Object -First 1
   if($src){
    New-Item -ItemType Directory -Path $dir -Force|Out-Null;Copy-Item -LiteralPath $src -Destination $target -Force;$r.source='REUSED_PINNED_LOCAL'
@@ -51,8 +50,8 @@ try{
  Assert (Valid-SingBox $target) 'SINGBOX_RUNTIME_VALIDATION_FAIL'
  $old=$null;if(Test-Path -LiteralPath $Local){try{$old=Get-Content -LiteralPath $Local -Raw -Encoding UTF8|ConvertFrom-Json}catch{}}
  $cfg=[ordered]@{schema=$(if($old -and [int]$old.schema -ge 2){2}else{1});singbox=[ordered]@{path=(Resolve-Path -LiteralPath $target).Path;sha256=$BinarySha;version=$SbVersion;archiveSha256=$ArchiveSha}}
- if($old -and $old.console){$cfg.console=$old.console}
- if($old -and $old.wsl){$cfg.wsl=$old.wsl;$cfg.schema=2}
+ if($old -and ($old.PSObject.Properties.Name -contains 'console') -and $old.console){$cfg.console=$old.console}
+ if($old -and ($old.PSObject.Properties.Name -contains 'wsl') -and $old.wsl){$cfg.wsl=$old.wsl;$cfg.schema=2}
  WJ $Local $cfg
  $r.status='PASS';$r.path=(Resolve-Path -LiteralPath $target).Path;$r.sha256=$BinarySha;$r.version=$SbVersion;$r.localGateway=$Local
 }catch{$r.error=$_.Exception.Message}

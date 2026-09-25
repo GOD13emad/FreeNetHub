@@ -7,5 +7,5 @@
   "tor": null,
   "lyrebird": null,
   "torrc": "",
-  "oldRoot": ""
+  "runtimeRoot": ""
 }

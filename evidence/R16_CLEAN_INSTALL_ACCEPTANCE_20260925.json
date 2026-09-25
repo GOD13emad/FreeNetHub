@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "revision": "R16 Clean",
+  "date": "2026-09-25",
+  "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
+  "scope": {
+    "default": "BROWSER_ONLY",
+    "fullSystem": "EXPLICIT_WARP_ONLY_DEFAULT_OFF",
+    "console": "SEPARATE_CONSOLE_ONLY"
+  },
+  "cleanPackaging": {
+    "selfContained": true,
+    "externalLegacyRuntimeRequired": false,
+    "legacyFreeTunnelLabPresentAfterCleanup": false,
+    "installerSha256": "389C3F8CDE1148C75CC04D7B5225380D2E5AF27E6E350C51E7581387F7B39A52",
+    "installerBytes": 15862535,
+    "bundledRuntimeSourceFiles": 13,
+    "bundledRuntimeSourceBytes": 74617738,
+    "staleUnusedTorToolsRemoved": true,
+    "upgradeRuntimePreclean": true
+  },
+  "windowsValidation": {
+    "engineUnit": "53 PASS, 1 expected skip",
+    "gatewayUnit": "9 PASS",
+    "scopeUiUnit": "2 PASS",
+    "cleanPackagingRegression": "3 PASS",
+    "guiSmoke": "PASS",
+    "gatewayStatus": "PASS / running=false",
+    "warpConnectVerifyStop": "PASS",
+    "torConnectVerifyStop": "PASS",
+    "tunnelProcessesAfterStop": 0,
+    "publicAuthorityInstallerRuntimeAcceptance": "PASS"
+  },
+  "linux": {
+    "runtimeVersion": "4.2.0-linux.8",
+    "consolePolicyTestHarness": "HERMETIC_NMCLI_DISCOVERY_FIX",
+    "localRegression": "PASS",
+    "runtimeSafeBaseline": "WARP disconnected; Tor listener off"
+  },
+  "ci": {
+    "previousRun": 35742577723,
+    "previousWindowsUnit": "PASS",
+    "previousIosStatic": "PASS",
+    "previousLinuxFailureRootCause": "test harness depended on real nmcli discovery on hosted runner",
+    "previousAndroidFailureRootCause": "android-actions/setup-android requested obsolete SDK package tools",
+    "r16BranchCI": "REQUIRED_ON_COMMIT"
+  },
+  "openExternalGates": [
+    "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
+    "TRUSTED_CODE_SIGNING_CERTIFICATE",
+    "ANDROID_FORWARDING_CORE_DEVICE_RUNTIME_PRODUCTION_SIGNING",
+    "IOS_FORWARDING_CORE_MACOS_BUILD_SIGNING_DEVICE_RUNTIME"
+  ]
+}
