@@ -14,7 +14,7 @@
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "1B064E0A7CE5E80B49F1DDE750DD60CAD16CF915D3691E7C25E85A77AC93F846",
   "crossPlatformManifestSha256": "28DC03C34D7D42DD22273FB082B354FB0CBD31D5F4E9DC3E419F3AE109738274",
-  "installerSha256": "389C3F8CDE1148C75CC04D7B5225380D2E5AF27E6E350C51E7581387F7B39A52",
+  "installerSha256": "50DF1E6459BCB40F98D0ED257F5CCFE98CFEDD280E51CBF0A732275D67BF7467",
   "acceptanceEvidence": "evidence/R16_CLEAN_INSTALL_ACCEPTANCE_20260925.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
@@ -110,20 +110,28 @@
       "installerBytes": 2217329
     },
     "r16Clean": {
-      "status": "PUBLIC_AUTHORITY_BUILD_LOCAL_ACCEPTED_CI_REQUIRED_ON_COMMIT",
+      "status": "ACCEPTED_R16_CLEAN_BRANCH_CI_PASS",
       "selfContainedWindowsRuntime": true,
       "externalLegacyRuntimeRequired": false,
       "legacyFreeTunnelLabRemoved": true,
       "installerAsset": "FreeNetHub_4.2.0_R16_Clean_Setup.exe",
-      "installerBytes": 15862535,
-      "installerSha256": "389C3F8CDE1148C75CC04D7B5225380D2E5AF27E6E350C51E7581387F7B39A52",
+      "installerBytes": 15863027,
+      "installerSha256": "50DF1E6459BCB40F98D0ED257F5CCFE98CFEDD280E51CBF0A732275D67BF7467",
       "bundledRuntimeSourceFiles": 13,
       "bundledRuntimeSourceBytes": 74617738,
       "cleanInstallRegression": "PASS",
       "warpRuntime": "PASS_CONNECT_VERIFY_STOP_WITHOUT_LEGACY_FOLDER",
       "torRuntime": "PASS_CONNECT_VERIFY_STOP_WITHOUT_LEGACY_FOLDER",
       "linuxCiHarnessFix": "HERMETIC_NMCLI_DISCOVERY",
-      "androidCiFix": "REMOVE_OBSOLETE_SETUP_ANDROID_TOOLS_INSTALL"
+      "androidCiFix": "REMOVE_OBSOLETE_SETUP_ANDROID_TOOLS_INSTALL",
+      "validatedCommit": "ef24d3b726030be1aa8d2dc2bef75dbaa842688a",
+      "validatedCiRun": 36105619597,
+      "validatedCiJobs": {
+        "windows-unit": "PASS",
+        "linux-static": "PASS",
+        "android-build": "PASS",
+        "ios-static": "PASS"
+      }
     }
   }
 }

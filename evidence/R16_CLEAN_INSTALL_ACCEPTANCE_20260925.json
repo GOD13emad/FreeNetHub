@@ -14,8 +14,8 @@
     "selfContained": true,
     "externalLegacyRuntimeRequired": false,
     "legacyFreeTunnelLabPresentAfterCleanup": false,
-    "installerSha256": "389C3F8CDE1148C75CC04D7B5225380D2E5AF27E6E350C51E7581387F7B39A52",
-    "installerBytes": 15862535,
+    "installerSha256": "50DF1E6459BCB40F98D0ED257F5CCFE98CFEDD280E51CBF0A732275D67BF7467",
+    "installerBytes": 15863027,
     "bundledRuntimeSourceFiles": 13,
     "bundledRuntimeSourceBytes": 74617738,
     "staleUnusedTorToolsRemoved": true,
@@ -31,7 +31,8 @@
     "warpConnectVerifyStop": "PASS",
     "torConnectVerifyStop": "PASS",
     "tunnelProcessesAfterStop": 0,
-    "publicAuthorityInstallerRuntimeAcceptance": "PASS"
+    "publicAuthorityInstallerRuntimeAcceptance": "PASS",
+    "finalAuthorityInstallerRuntimeAcceptance": "PASS"
   },
   "linux": {
     "runtimeVersion": "4.2.0-linux.8",
@@ -45,7 +46,13 @@
     "previousIosStatic": "PASS",
     "previousLinuxFailureRootCause": "test harness depended on real nmcli discovery on hosted runner",
     "previousAndroidFailureRootCause": "android-actions/setup-android requested obsolete SDK package tools",
-    "r16BranchCI": "REQUIRED_ON_COMMIT"
+    "r16BranchCI": "PASS",
+    "validatedCommit": "ef24d3b726030be1aa8d2dc2bef75dbaa842688a",
+    "validatedRun": 36105619597,
+    "windowsUnit": "PASS",
+    "linuxStatic": "PASS",
+    "androidBuild": "PASS",
+    "iosStatic": "PASS"
   },
   "openExternalGates": [
     "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
