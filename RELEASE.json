@@ -159,7 +159,7 @@
       "productRuntimeChanged": false,
       "consoleVirtual": "LOCAL_PASS_USERSPACE_TCP_UDP_SOURCE_ISOLATION",
       "windowsVirtualSigning": "LOCAL_PASS_EPHEMERAL_SELF_SIGNED_UNTRUSTED",
-      "androidEmulator": "PENDING_HOSTED_CI",
+      "androidEmulator": "PENDING_HOSTED_CI_ADB_PATH_FIXED",
       "iosSimulator": "PENDING_HOSTED_CI_EXTENSION_METADATA_FIXED",
       "productionCredentialGatesRemainExternal": true
     }

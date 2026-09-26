@@ -143,6 +143,9 @@ jobs:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: |
+          export PATH="$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH"
+          command -v adb
+          adb version
           nohup "$ANDROID_SDK_ROOT/emulator/emulator" -avd fnh_ci -no-window -noaudio -no-boot-anim -no-snapshot -wipe-data -gpu swiftshader_indirect >/tmp/fnh-emulator.log 2>&1 &
           adb wait-for-device
           for i in $(seq 1 120); do
