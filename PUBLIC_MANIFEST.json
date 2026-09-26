@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 7913,
-      "sha256": "EA10B5F697D06F1F6754F070F69FA21F9D6AFFDBE3426CD76E346EC19644AF79"
+      "bytes": 7911,
+      "sha256": "9A32AE418E11E44674E1FA43F74504714DCCF5C8FC18F74D6604D6ADED061562"
     },
     {
       "file": "SECURITY.md",
@@ -575,8 +575,8 @@
     },
     {
       "file": "tests/virtual_codesign.ps1",
-      "bytes": 2211,
-      "sha256": "F874D807FB5BE507DCC2859B0615D7D4254550B088CEB6F7F062AF78FDABD0E1"
+      "bytes": 2035,
+      "sha256": "D61199A493062262922C2619AD6B311964E4C21FC0A61EF8092B2A31A6C58C4F"
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
