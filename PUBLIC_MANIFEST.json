@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 7278,
-      "sha256": "83DB5044A8F1CD8C7C28ED7E81A72D287F87DA6678D8A76D20B126738C9A6C20"
+      "bytes": 7341,
+      "sha256": "4813FAA61EFDAA5EC216727D22E2B798EF355581A1426B92BE88B0013D9677CE"
     },
     {
       "file": "SECURITY.md",
@@ -90,8 +90,8 @@
     },
     {
       "file": "app/manifest.json",
-      "bytes": 780,
-      "sha256": "DEA8AA9A6839D26714C2ED9D2CD7DADDB21FCE50689EC99206A580A7C7EEAED7"
+      "bytes": 753,
+      "sha256": "5C416367DC0FE7BC9DD696C83874DA274EB5FCF23CEE0D0A265471A1101C9406"
     },
     {
       "file": "crossplatform/MANIFEST.json",
@@ -365,8 +365,8 @@
     },
     {
       "file": "evidence/R17_FINAL_CLEANUP_ACCEPTANCE_20260926.json",
-      "bytes": 3071,
-      "sha256": "0BC274B13662659C5322D25F50A27B5859C9E431A79ABCE5157BCAB1C8CC4BB5"
+      "bytes": 3117,
+      "sha256": "B0F7E01767DE3E5E36C8C0C4F61F6CC166BDE69A01CCD28452B9754DD6E5537F"
     },
     {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
