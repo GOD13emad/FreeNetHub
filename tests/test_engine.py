@@ -140,6 +140,22 @@ class Unit(unittest.TestCase):
   with patch.object(E,'deps',return_value={}):
    with self.assertRaisesRegex(ValueError,'DEPENDENCY_NOT_CONFIGURED_WARP'):E.check_binary('warp')
 
+ def test_browser_profile_migrates_legacy_identity(self):
+  with tempfile.TemporaryDirectory(dir=R/'tests') as d:
+   rr=pathlib.Path(d);data=rr/'data';legacy=data/'Browser_WARP';legacy.mkdir(parents=True);sentinel=legacy/'Login Data';sentinel.write_bytes(b'identity')
+   E.write(data/'browser_profile.json',{'schema':1,'profile':'Browser_WARP','legacyPreserved':True})
+   with patch.object(E,'ROOT',rr):
+    p=E.browser_profile()
+   self.assertEqual(p,data/'Browser_Primary');self.assertFalse(legacy.exists());self.assertEqual((p/'Login Data').read_bytes(),b'identity')
+   m=E.read(data/'browser_profile.json');self.assertEqual(m['profile'],'Browser_Primary');self.assertFalse(m['legacyPreserved']);self.assertEqual(m['migratedFrom'],'Browser_WARP')
+ def test_browser_profile_migration_conflict_fails_closed(self):
+  with tempfile.TemporaryDirectory(dir=R/'tests') as d:
+   rr=pathlib.Path(d);data=rr/'data';legacy=data/'Browser_WARP';primary=data/'Browser_Primary';legacy.mkdir(parents=True);primary.mkdir();(legacy/'Login Data').write_bytes(b'old');(primary/'Login Data').write_bytes(b'new')
+   E.write(data/'browser_profile.json',{'schema':1,'profile':'Browser_WARP'})
+   with patch.object(E,'ROOT',rr):
+    with self.assertRaisesRegex(ValueError,'BROWSER_PROFILE_MIGRATION_CONFLICT'):E.browser_profile()
+   self.assertTrue(legacy.exists());self.assertTrue(primary.exists())
+
  def test_emergency_candidates_prioritize_private_bridges(self):
   with tempfile.TemporaryDirectory(dir=R/'tests') as d:
    rr=pathlib.Path(d)

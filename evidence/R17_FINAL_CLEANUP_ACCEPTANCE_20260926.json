@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "revision": "R17 Final",
+  "date": "2026-09-26",
+  "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
+  "purpose": "Remove the last legacy browser-profile behavior from upgrade paths while preserving signed-in browser identity.",
+  "browserProfile": {
+    "canonical": "Browser_Primary",
+    "legacyNamesRemoved": [
+      "Browser_WARP",
+      "Browser_GOOL",
+      "Browser_CFON"
+    ],
+    "freshInstallCreatesCanonical": true,
+    "legacyBrowserWarpAutoMigratesToCanonical": true,
+    "migrationPreservesDirectoryContents": true,
+    "migrationConflict": "FAIL_CLOSED_BROWSER_PROFILE_MIGRATION_CONFLICT",
+    "installedIdentityCriticalHashesPreserved": true,
+    "installedIdentityBad": [],
+    "cacheCleanupMiB": 4722.82
+  },
+  "windows": {
+    "engineSha256": "82659327F31701A713FF25587F9AFDF4798CB6947EE6FD4A09A261E5922B1ED7",
+    "appManifestSha256": "DEA8AA9A6839D26714C2ED9D2CD7DADDB21FCE50689EC99206A580A7C7EEAED7",
+    "installerAsset": "FreeNetHub_4.2.0_R17_Final_Setup.exe",
+    "installerBytes": 15842636,
+    "installerSha256": "3A0A915793ABEDFB11EFD7C7DC0C8508B4E63FD3EAB512FED69F76B5800AA238",
+    "installerExit": 0,
+    "installedStatus": "PASS",
+    "installedRuntime": "SELF_CONTAINED",
+    "freeTunnelLabPresent": false,
+    "legacyBrowserProfilePresent": false,
+    "guiSmoke": "PASS",
+    "engineUnit": "55 PASS",
+    "cleanPackagingRegression": "3 PASS",
+    "gatewayUnit": "9 PASS",
+    "scopeUiUnit": "2 PASS",
+    "powershellParse": "PASS"
+  },
+  "runtimeAcceptance": {
+    "warp": {
+      "connect": {
+        "job": "39d63ceded774b848c92d971d2a5a420",
+        "exit": 0,
+        "state": "CONNECTED_HEALTHY",
+        "healthy": true
+      },
+      "verify": {
+        "job": "4559042565a249929c1e28010343a8b4",
+        "exit": 0,
+        "state": "CONNECTED_HEALTHY",
+        "healthy": true
+      },
+      "stop": {
+        "job": "788b5cb3bde54265afd9719e0946ada6",
+        "exit": 0
+      }
+    },
+    "tor": {
+      "connect": {
+        "job": "740083709a4e42779d2160ac0855fb0b",
+        "exit": 0,
+        "state": "CONNECTED_HEALTHY",
+        "healthy": true
+      },
+      "verify": {
+        "job": "8b699ad59e4f4a02b384bfaa2df28b02",
+        "exit": 0,
+        "state": "CONNECTED_HEALTHY",
+        "healthy": true
+      },
+      "stop": {
+        "job": "07c9bdb7172a4e70acfef86b9a648284",
+        "exit": 0
+      }
+    },
+    "finalStop": {
+      "job": "85aaba73629d43b58367ea20fbc4393d",
+      "exit": 0,
+      "tunnelProcesses": 0
+    }
+  },
+  "linux": {
+    "runtimeVersion": "4.2.0-linux.8",
+    "crossPlatformManifestVersion": "4.2.0-crossplatform-r16",
+    "status": "UNCHANGED_ACCEPTED"
+  },
+  "openExternalGates": [
+    "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
+    "TRUSTED_CODE_SIGNING_CERTIFICATE",
+    "ANDROID_FORWARDING_CORE_DEVICE_RUNTIME_PRODUCTION_SIGNING",
+    "IOS_FORWARDING_CORE_MACOS_BUILD_SIGNING_DEVICE_RUNTIME"
+  ],
+  "validationStage": "LOCAL_ACCEPTED_PENDING_PR_AND_MAIN_CI",
+  "ciPolicy": "PR_AND_MAIN_MUST_PASS_BEFORE_GITHUB_RELEASE"
+}

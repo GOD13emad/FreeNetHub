@@ -380,17 +380,30 @@ def emergency_candidates():
 
 def browser_profile():
  marker=ROOT/'data'/'browser_profile.json'
+ data=ROOT/'data';primary=data/'Browser_Primary';legacy=data/'Browser_WARP'
  rec={}
  with contextlib.suppress(Exception):rec=read(marker,{}) or {}
  name=str(rec.get('profile') or '')
+ def migrate_legacy():
+  if not legacy.exists():return None
+  if primary.exists():
+   try:has_primary=any(primary.iterdir())
+   except OSError:raise ValueError('BROWSER_PROFILE_MIGRATION_CONFLICT')
+   if has_primary:raise ValueError('BROWSER_PROFILE_MIGRATION_CONFLICT')
+   primary.rmdir()
+  legacy.replace(primary)
+  write(marker,{'schema':2,'profile':'Browser_Primary','legacyPreserved':False,'migratedFrom':'Browser_WARP','migrated':now()})
+  return primary
  if re.fullmatch(r'Browser_[A-Za-z0-9_-]{1,64}',name):
-  p=ROOT/'data'/name
-  if p.exists():return p
- legacy=ROOT/'data'/'Browser_WARP'
- p=legacy if legacy.exists() else ROOT/'data'/'Browser_Primary'
- p.mkdir(parents=True,exist_ok=True)
- write(marker,{'schema':1,'profile':p.name,'legacyPreserved':bool(p==legacy),'created':now()})
- return p
+  p=data/name
+  if p.exists():
+   if p==legacy:return migrate_legacy()
+   return p
+ migrated=migrate_legacy()
+ if migrated:return migrated
+ primary.mkdir(parents=True,exist_ok=True)
+ write(marker,{'schema':2,'profile':'Browser_Primary','legacyPreserved':False,'created':now()})
+ return primary
 
 def chrome_proxy(proxy):
  if proxy.lower().startswith('socks5h://'):return 'socks5://'+proxy[len('socks5h://'):]
