@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 7771,
-      "sha256": "9997647900CDE0B6A858ED2BE00DB6601FBF328B449B9367B7AA7DA6EDCC93D8"
+      "bytes": 7796,
+      "sha256": "6D2F7A17A9F50CC0E78FADE48B5D5D16FFACA10954F54C6831F548AE0D65AE6A"
     },
     {
       "file": "SECURITY.md",
@@ -96,7 +96,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 6110,
-      "sha256": "9ED77765BE0590CB3394B3BB32CFE9916FD9D5A0425F91DDA325A923C22D6C9B"
+      "sha256": "9E1D262F9836407CBA3C624922B9AC4A58B37376CF3799A009F9757662EAFC2D"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -175,8 +175,8 @@
     },
     {
       "file": "crossplatform/ios/PacketTunnel/Info.plist",
-      "bytes": 410,
-      "sha256": "782A1D4AC911DA2126148202701978AE141B128EAB4F33C08751D2761B474671"
+      "bytes": 996,
+      "sha256": "F92E8564FDE67E24EF15BE69D012B22C5A47690ECD0C658F8D0AA221EC9E7E25"
     },
     {
       "file": "crossplatform/ios/PacketTunnel/PacketTunnel.entitlements",

@@ -79,8 +79,8 @@
     },
     {
       "file": "ios/PacketTunnel/Info.plist",
-      "bytes": 410,
-      "sha256": "782A1D4AC911DA2126148202701978AE141B128EAB4F33C08751D2761B474671"
+      "bytes": 996,
+      "sha256": "F92E8564FDE67E24EF15BE69D012B22C5A47690ECD0C658F8D0AA221EC9E7E25"
     },
     {
       "file": "ios/PacketTunnel/PacketTunnel.entitlements",
