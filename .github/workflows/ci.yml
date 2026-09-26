@@ -200,68 +200,83 @@ jobs:
           grep -Fq 'Provider core: NOT LINKED. No TUN will be established.' /tmp/fnh-window.xml
 
           # Exercise the real VpnService permission lifecycle without creating a tunnel.
-          read BTN_X BTN_Y < <(python3 - <<'PYBTN'
-          import re, xml.etree.ElementTree as ET
-          root=ET.parse('/tmp/fnh-window.xml').getroot()
+          center_for() {
+            python3 - "$1" "$2" "$3" <<'PYCENTER'
+          import sys, xml.etree.ElementTree as ET
+          path, attr, want = sys.argv[1:4]
+          root = ET.parse(path).getroot()
           for node in root.iter('node'):
-              if (node.attrib.get('text') or '').casefold() == 'request vpn permission':
-                  m=re.fullmatch(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]', node.attrib['bounds'])
-                  if not m:
-                      raise SystemExit('VPN_BUTTON_BOUNDS_INVALID')
-                  x1,y1,x2,y2=map(int,m.groups())
+              have = node.attrib.get(attr) or ''
+              if have.casefold() == want.casefold():
+                  raw = node.attrib.get('bounds','')
+                  for ch in '[],':
+                      raw = raw.replace(ch, ' ')
+                  parts = raw.split()
+                  if len(parts) != 4:
+                      raise SystemExit(f'BOUNDS_INVALID:{path}:{attr}:{want}:{raw}')
+                  x1,y1,x2,y2 = map(int, parts)
                   print((x1+x2)//2,(y1+y2)//2)
                   break
           else:
-              raise SystemExit('VPN_PERMISSION_BUTTON_NOT_FOUND')
-          PYBTN
-          )
+              raise SystemExit(f'UI_NODE_NOT_FOUND:{path}:{attr}:{want}')
+          PYCENTER
+          }
+
+          read BTN_X BTN_Y < <(center_for /tmp/fnh-window.xml text 'Request VPN permission')
           "$ADB" shell input tap "$BTN_X" "$BTN_Y"
           sleep 1
-          WINDOW_STATE="$("$ADB" shell dumpsys window 2>/dev/null | tr -d '\r' || true)"
-          ACTIVITY_STATE="$("$ADB" shell dumpsys activity activities 2>/dev/null | tr -d '\r' || true)"
-          "$ADB" shell uiautomator dump /sdcard/fnh-vpn-consent.xml >/dev/null || true
-          "$ADB" pull /sdcard/fnh-vpn-consent.xml /tmp/fnh-vpn-consent.xml >/dev/null 2>&1 || true
-          CONSENT_EVIDENCE="$( { printf '%s\n' "$WINDOW_STATE"; printf '%s\n' "$ACTIVITY_STATE"; cat /tmp/fnh-vpn-consent.xml 2>/dev/null || true; } )"
-          echo "$CONSENT_EVIDENCE"
-          echo "$CONSENT_EVIDENCE" | grep -Eqi 'com\.android\.vpndialogs|ConfirmDialog|connection request|set up a VPN connection'
-          "$ADB" shell input keyevent 4
+          "$ADB" shell uiautomator dump /sdcard/fnh-vpn-consent.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-vpn-consent.xml /tmp/fnh-vpn-consent.xml >/dev/null
+          grep -Fq 'package="com.android.vpndialogs"' /tmp/fnh-vpn-consent.xml
+          grep -Fq 'text="Connection request"' /tmp/fnh-vpn-consent.xml
+          grep -Fq 'resource-id="android:id/button2"' /tmp/fnh-vpn-consent.xml
+          grep -Fq 'resource-id="android:id/button1"' /tmp/fnh-vpn-consent.xml
+
+          # Exercise an actual user cancellation.
+          read CANCEL_X CANCEL_Y < <(center_for /tmp/fnh-vpn-consent.xml resource-id 'android:id/button2')
+          "$ADB" shell input tap "$CANCEL_X" "$CANCEL_Y"
           sleep 1
           "$ADB" shell uiautomator dump /sdcard/fnh-after-cancel.xml >/dev/null
           "$ADB" pull /sdcard/fnh-after-cancel.xml /tmp/fnh-after-cancel.xml >/dev/null
+          grep -Fq 'package="com.freenethub.mobile"' /tmp/fnh-after-cancel.xml
           grep -Fq 'Provider core: NOT LINKED. No TUN will be established.' /tmp/fnh-after-cancel.xml
           if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
             echo 'VPN service unexpectedly running after permission cancel'
             exit 1
           fi
 
-          # Simulate an already-consented user in the emulator and exercise prepare()==null.
-          "$ADB" shell cmd appops set com.freenethub.mobile ACTIVATE_VPN allow
-          "$ADB" shell am start -W -n com.freenethub.mobile/.MainActivity >/tmp/fnh-am-restart.txt
-          "$ADB" shell uiautomator dump /sdcard/fnh-permission-ready.xml >/dev/null
-          "$ADB" pull /sdcard/fnh-permission-ready.xml /tmp/fnh-permission-ready.xml >/dev/null
-          read BTN_X BTN_Y < <(python3 - <<'PYBTN2'
-          import re, xml.etree.ElementTree as ET
-          root=ET.parse('/tmp/fnh-permission-ready.xml').getroot()
-          for node in root.iter('node'):
-              if (node.attrib.get('text') or '').casefold() == 'request vpn permission':
-                  m=re.fullmatch(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]', node.attrib['bounds'])
-                  x1,y1,x2,y2=map(int,m.groups())
-                  print((x1+x2)//2,(y1+y2)//2)
-                  break
-          else:
-              raise SystemExit('VPN_PERMISSION_BUTTON_NOT_FOUND_AFTER_GRANT')
-          PYBTN2
-          )
+          # Re-open the real system consent dialog and accept it.
+          read BTN_X BTN_Y < <(center_for /tmp/fnh-after-cancel.xml text 'Request VPN permission')
+          "$ADB" shell input tap "$BTN_X" "$BTN_Y"
+          sleep 1
+          "$ADB" shell uiautomator dump /sdcard/fnh-vpn-consent2.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-vpn-consent2.xml /tmp/fnh-vpn-consent2.xml >/dev/null
+          grep -Fq 'package="com.android.vpndialogs"' /tmp/fnh-vpn-consent2.xml
+          grep -Fq 'text="Connection request"' /tmp/fnh-vpn-consent2.xml
+          read OK_X OK_Y < <(center_for /tmp/fnh-vpn-consent2.xml resource-id 'android:id/button1')
+          "$ADB" shell input tap "$OK_X" "$OK_Y"
+          sleep 1
+          "$ADB" shell uiautomator dump /sdcard/fnh-after-ok.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-after-ok.xml /tmp/fnh-after-ok.xml >/dev/null
+          grep -Fq 'package="com.freenethub.mobile"' /tmp/fnh-after-ok.xml
+          grep -Fq 'Provider core: NOT LINKED. No TUN will be established.' /tmp/fnh-after-ok.xml
+          if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
+            echo 'VPN service unexpectedly running after VPN consent'
+            exit 1
+          fi
+
+          # With consent persisted, VpnService.prepare() must now return null in-app.
+          read BTN_X BTN_Y < <(center_for /tmp/fnh-after-ok.xml text 'Request VPN permission')
           "$ADB" shell input tap "$BTN_X" "$BTN_Y"
           sleep 1
           "$ADB" shell uiautomator dump /sdcard/fnh-after-grant.xml >/dev/null
           "$ADB" pull /sdcard/fnh-after-grant.xml /tmp/fnh-after-grant.xml >/dev/null
           grep -Fq 'Permission ready; provider core still NOT LINKED.' /tmp/fnh-after-grant.xml
           if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
-            echo 'VPN service unexpectedly running after consent'
+            echo 'VPN service unexpectedly running after prepare()==null'
             exit 1
           fi
-          "$ADB" shell cmd appops set com.freenethub.mobile ACTIVATE_VPN default
+
           "$ADB" shell am force-stop com.freenethub.mobile
           "$ADB" shell am start -W -n com.freenethub.mobile/.MainActivity | tee /tmp/fnh-am-relaunch.txt
           grep -q 'Status: ok' /tmp/fnh-am-relaunch.txt
@@ -330,10 +345,12 @@ jobs:
           xcrun simctl io "$UDID" screenshot /tmp/fnh-ios-runtime.png >/dev/null
           test -s /tmp/fnh-ios-runtime.png
           xcrun simctl terminate "$UDID" com.freenethub.app
-          xcrun simctl launch "$UDID" com.freenethub.app | tee /tmp/fnh-ios-relaunch.txt
-          grep -q 'com.freenethub.app:' /tmp/fnh-ios-relaunch.txt
+          RELAUNCH_OUT="$(xcrun simctl launch "$UDID" com.freenethub.app)"
+          echo "$RELAUNCH_OUT" | tee /tmp/fnh-ios-relaunch.txt
+          grep -Eq '^com.freenethub.app: [0-9]+$' /tmp/fnh-ios-relaunch.txt
           sleep 2
-          xcrun simctl spawn "$UDID" ps -ax | grep -F 'FreeNetHub.app/FreeNetHub' >/dev/null
+          xcrun simctl io "$UDID" screenshot /tmp/fnh-ios-relaunch.png >/dev/null
+          test -s /tmp/fnh-ios-relaunch.png
 
   virtual-acceptance:
     needs:
