@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 11938,
-      "sha256": "99DCB3C9E37326C5A32FBCD503800C5F140478A5D24FD21C2F15F29DE7A4E2A5"
+      "bytes": 12489,
+      "sha256": "28E632381DAC3CDBAC226E4A9E3BC7DC33909A986EC0252F988123E26443DF76"
     },
     {
       "file": ".gitignore",
@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 7821,
-      "sha256": "101A1DD08ADC04F8505AE891C6339559C70D2AD08DFE4CA52E5EEAF1BF108EC7"
+      "bytes": 7814,
+      "sha256": "802236275ED2D935BBDDB641DBA351692EF6B771A2D1F3F9DBE2531E94ADC5B1"
     },
     {
       "file": "SECURITY.md",

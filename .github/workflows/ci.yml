@@ -137,6 +137,16 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platform-tools" "emulator" "platforms;android-35" "build-tools;35.0.0" "system-images;android-35;google_apis;x86_64"
           echo no | "$AVDMANAGER" create avd --force --name fnh_ci --package "system-images;android-35;google_apis;x86_64"
+          AVD_INI="$(find "$HOME" "$ANDROID_SDK_ROOT" "$RUNNER_TEMP" -type f -name 'fnh_ci.ini' -print -quit 2>/dev/null || true)"
+          if [ -z "$AVD_INI" ]; then
+            echo 'AVD metadata was not created'
+            find "$HOME/.android" "$ANDROID_SDK_ROOT" "$RUNNER_TEMP" -maxdepth 4 -type f 2>/dev/null | sort | tail -200 || true
+            exit 1
+          fi
+          AVD_HOME="$(dirname "$AVD_INI")"
+          echo "ANDROID_AVD_HOME=$AVD_HOME" >> "$GITHUB_ENV"
+          echo "Resolved AVD home: $AVD_HOME"
+          cat "$AVD_INI"
           sudo chmod 666 /dev/kvm || true
       - name: Boot emulator and validate fail-closed runtime
         env:
