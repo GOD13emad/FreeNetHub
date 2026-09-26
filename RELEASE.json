@@ -155,12 +155,15 @@
       "sourceLineEndingNormalization": "PASS_APP_MANIFEST_LF"
     },
     "r18VirtualValidation": {
-      "status": "VIRTUAL_VALIDATION_PENDING_CI",
+      "status": "VIRTUAL_VALIDATION_SUITE_REQUIRED_CI",
       "productRuntimeChanged": false,
-      "consoleVirtual": "LOCAL_PASS_USERSPACE_TCP_UDP_SOURCE_ISOLATION",
-      "windowsVirtualSigning": "LOCAL_PASS_EPHEMERAL_SELF_SIGNED_UNTRUSTED",
-      "androidEmulator": "PENDING_HOSTED_CI_AVD_HOME_RESOLVED",
-      "iosSimulator": "PENDING_HOSTED_CI_EXTENSION_METADATA_FIXED",
+      "consoleVirtual": [
+        "LOCAL_PASS_USERSPACE_TCP_UDP_SOURCE_ISOLATION",
+        "CI_REQUIRED_KERNEL_NETNS_NAT_TCP_UDP"
+      ],
+      "windowsVirtualSigning": "LOCAL_PASS_EPHEMERAL_SELF_SIGNED_TEMPORARILY_TRUSTED_VALID_NO_RESIDUE",
+      "androidEmulator": "CI_REQUIRED_BUILD_INSTALL_LAUNCH_FAIL_CLOSED",
+      "iosSimulator": "CI_REQUIRED_BUILD_INSTALL_LAUNCH",
       "productionCredentialGatesRemainExternal": true
     }
   },

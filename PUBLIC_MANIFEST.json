@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 12489,
-      "sha256": "28E632381DAC3CDBAC226E4A9E3BC7DC33909A986EC0252F988123E26443DF76"
+      "bytes": 12564,
+      "sha256": "6EFEB80B4B3F008F5693726EFA3323CDEBC1A252387BE5B606DF98E4E4DC82E2"
     },
     {
       "file": ".gitignore",
@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 7814,
-      "sha256": "802236275ED2D935BBDDB641DBA351692EF6B771A2D1F3F9DBE2531E94ADC5B1"
+      "bytes": 7913,
+      "sha256": "EA10B5F697D06F1F6754F070F69FA21F9D6AFFDBE3426CD76E346EC19644AF79"
     },
     {
       "file": "SECURITY.md",
@@ -534,6 +534,11 @@
       "sha256": "5E8513E6F57CDA167E62F24CC7353F12A5E4C1E3022B0B11DBAAC24F1AE89CE8"
     },
     {
+      "file": "gateway/tests/virtual_console_netns_e2e.sh",
+      "bytes": 3544,
+      "sha256": "204B51920C305EA97485023FFFFF96A72911A657D8211B9E94EF7F04AF6B8FF2"
+    },
+    {
       "file": "gateway/validate_console_profile.ps1",
       "bytes": 4537,
       "sha256": "51134BFA9130359430C310DC7067459D64C3CEFFB73A9BC7D1C4AF80D5323BFC"
@@ -570,8 +575,8 @@
     },
     {
       "file": "tests/virtual_codesign.ps1",
-      "bytes": 1928,
-      "sha256": "0099BEB656B7BAF58508994A8552E38714BCB84F0E672D45B2B42C2F1CCD0139"
+      "bytes": 2211,
+      "sha256": "F874D807FB5BE507DCC2859B0615D7D4254550B088CEB6F7F062AF78FDABD0E1"
     },
     {
       "file": "windows/installer/FreeNetHub.iss",

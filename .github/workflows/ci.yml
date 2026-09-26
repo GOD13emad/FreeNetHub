@@ -92,7 +92,9 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Virtual console TCP/UDP/source-isolation E2E
-        run: python3 gateway/tests/virtual_console_e2e.py
+        run: |
+          python3 gateway/tests/virtual_console_e2e.py
+          sudo bash gateway/tests/virtual_console_netns_e2e.sh
 
   windows-virtual-signing:
     runs-on: windows-latest
