@@ -11,6 +11,7 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: com.freenethub.app
       MARKETING_VERSION: 4.2.0
       CURRENT_PROJECT_VERSION: 420
+      GENERATE_INFOPLIST_FILE: YES
       CODE_SIGN_ENTITLEMENTS: FreeNetHub/FreeNetHub.entitlements
     dependencies:
       - target: PacketTunnel

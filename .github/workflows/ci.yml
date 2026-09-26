@@ -86,3 +86,175 @@ jobs:
           plutil -lint crossplatform/ios/PacketTunnel/Info.plist
           xcrun swiftc -parse crossplatform/ios/FreeNetHub/FreeNetHubApp.swift crossplatform/ios/FreeNetHub/ContentView.swift
           xcrun swiftc -parse crossplatform/ios/PacketTunnel/PacketTunnelProvider.swift
+
+  console-virtual-e2e:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Virtual console TCP/UDP/source-isolation E2E
+        run: |
+          python3 gateway/tests/virtual_console_e2e.py
+          sudo bash gateway/tests/virtual_console_netns_e2e.sh
+
+  windows-virtual-signing:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Exercise ephemeral Authenticode signing pipeline
+        shell: pwsh
+        run: |
+          $src=Join-Path $env:RUNNER_TEMP 'FnhSignProbe.cs'
+          $exe=Join-Path $env:RUNNER_TEMP 'FnhSignProbe.exe'
+          Set-Content -LiteralPath $src -Encoding ASCII -Value 'public static class Program { public static void Main() {} }'
+          $csc=Get-ChildItem "$env:WINDIR\Microsoft.NET\Framework64" -Filter csc.exe -Recurse | Sort-Object FullName | Select-Object -Last 1 -ExpandProperty FullName
+          if(-not $csc){ throw 'csc.exe not found' }
+          & $csc /nologo /target:exe /out:$exe $src
+          if($LASTEXITCODE){ exit $LASTEXITCODE }
+          if((Get-AuthenticodeSignature -LiteralPath $exe).Status -ne 'NotSigned'){ throw 'probe PE unexpectedly pre-signed' }
+          ./tests/virtual_codesign.ps1 -InputPath $exe
+          if(Get-ChildItem Cert:\CurrentUser\My | Where-Object Subject -eq 'CN=FreeNetHub Virtual Signing Validation'){ throw 'virtual signing certificate residue' }
+          if(Get-ChildItem tests -Directory -Filter '.virtual-sign-*' -ErrorAction SilentlyContinue){ throw 'virtual signing file residue' }
+
+  android-emulator-runtime:
+    needs: android-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+        with:
+          gradle-version: '8.9'
+      - name: Install Android emulator image
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT/cmdline-tools" -type f -path '*/bin/sdkmanager' | sort -V | tail -1)"
+          AVDMANAGER="$(dirname "$SDKMANAGER")/avdmanager"
+          test -x "$SDKMANAGER" && test -x "$AVDMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platform-tools" "emulator" "platforms;android-35" "build-tools;35.0.0" "system-images;android-35;google_apis;x86_64"
+          echo no | "$AVDMANAGER" create avd --force --name fnh_ci --package "system-images;android-35;google_apis;x86_64"
+          AVD_INI="$(find "$HOME" "$ANDROID_SDK_ROOT" "$RUNNER_TEMP" -type f -name 'fnh_ci.ini' -print -quit 2>/dev/null || true)"
+          if [ -z "$AVD_INI" ]; then
+            echo 'AVD metadata was not created'
+            find "$HOME/.android" "$ANDROID_SDK_ROOT" "$RUNNER_TEMP" -maxdepth 4 -type f 2>/dev/null | sort | tail -200 || true
+            exit 1
+          fi
+          AVD_HOME="$(dirname "$AVD_INI")"
+          echo "ANDROID_AVD_HOME=$AVD_HOME" >> "$GITHUB_ENV"
+          echo "Resolved AVD home: $AVD_HOME"
+          cat "$AVD_INI"
+          sudo chmod 666 /dev/kvm || true
+      - name: Boot emulator and validate fail-closed runtime
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          export PATH="$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH"
+          ADB="$ANDROID_SDK_ROOT/platform-tools/adb"
+          EMU="$ANDROID_SDK_ROOT/emulator/emulator"
+          test -x "$ADB" && test -x "$EMU"
+          "$ADB" version
+          "$ADB" start-server
+          if "$EMU" -accel-check; then ACCEL=on; else ACCEL=off; fi
+          echo "Android emulator acceleration: $ACCEL"
+          nohup "$EMU" -avd fnh_ci -no-window -noaudio -no-boot-anim -no-snapshot -wipe-data -no-metrics -gpu swiftshader_indirect -accel "$ACCEL" >/tmp/fnh-emulator.log 2>&1 &
+          EMU_PID=$!
+          sleep 5
+          if ! kill -0 "$EMU_PID" 2>/dev/null; then
+            cat /tmp/fnh-emulator.log
+            echo 'Emulator exited before ADB became available'
+            exit 1
+          fi
+          if ! timeout 150s "$ADB" wait-for-device; then
+            cat /tmp/fnh-emulator.log
+            echo 'ADB device deadline exceeded'
+            exit 1
+          fi
+          BOOTED=0
+          for i in $(seq 1 90); do
+            if [ "$("$ADB" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; then BOOTED=1; break; fi
+            sleep 2
+          done
+          if [ "$BOOTED" != "1" ]; then
+            cat /tmp/fnh-emulator.log
+            "$ADB" shell getprop || true
+            echo 'Android boot-complete deadline exceeded'
+            exit 1
+          fi
+          "$ADB" shell input keyevent 82 || true
+          BEFORE="$("$ADB" shell ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
+          cd crossplatform/android
+          gradle :app:assembleDebug --stacktrace
+          "$ADB" install -r app/build/outputs/apk/debug/app-debug.apk
+          "$ADB" shell am start -W -n com.freenethub.mobile/.MainActivity | tee /tmp/fnh-am-start.txt
+          grep -q 'Status: ok' /tmp/fnh-am-start.txt
+          sleep 2
+          "$ADB" shell uiautomator dump /sdcard/fnh-window.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-window.xml /tmp/fnh-window.xml >/dev/null
+          grep -Fq 'Provider core: NOT LINKED. No TUN will be established.' /tmp/fnh-window.xml
+          AFTER="$("$ADB" shell ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
+          test "$BEFORE" = "$AFTER"
+          if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
+            echo 'VPN service unexpectedly running'
+            exit 1
+          fi
+          "$ADB" shell pm path com.freenethub.mobile | grep -q '^package:'
+          "$ADB" emu kill || true
+
+  ios-simulator-runtime:
+    needs: ios-static
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install XcodeGen
+        run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+      - name: Generate and build simulator app
+        working-directory: crossplatform/ios
+        run: |
+          xcodegen generate
+          xcodebuild -project FreeNetHub.xcodeproj -scheme FreeNetHub -configuration Debug -sdk iphonesimulator -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+          test -d build/Build/Products/Debug-iphonesimulator/FreeNetHub.app
+      - name: Boot simulator, install and launch
+        working-directory: crossplatform/ios
+        run: |
+          UDID="$(python3 - <<'PY'
+          import json,subprocess
+          d=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','available','-j']))
+          for runtime,devices in d['devices'].items():
+              if 'iOS' not in runtime:
+                  continue
+              for dev in devices:
+                  if dev.get('isAvailable') and dev.get('name','').startswith('iPhone'):
+                      print(dev['udid']); raise SystemExit
+          raise SystemExit('NO_AVAILABLE_IPHONE_SIMULATOR')
+          PY
+          )"
+          test -n "$UDID"
+          xcrun simctl boot "$UDID" 2>/dev/null || true
+          xcrun simctl bootstatus "$UDID" -b
+          APP=build/Build/Products/Debug-iphonesimulator/FreeNetHub.app
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" com.freenethub.app | tee /tmp/fnh-ios-launch.txt
+          grep -q 'com.freenethub.app:' /tmp/fnh-ios-launch.txt
+          xcrun simctl get_app_container "$UDID" com.freenethub.app >/dev/null
+
+  virtual-acceptance:
+    needs:
+      - windows-unit
+      - linux-static
+      - android-build
+      - ios-static
+      - console-virtual-e2e
+      - windows-virtual-signing
+      - android-emulator-runtime
+      - ios-simulator-runtime
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'All desktop and virtualized external-gate validations passed.'

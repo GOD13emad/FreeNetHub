@@ -1,7 +1,7 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-main-r17-final",
+  "releaseRevision": "4.2.0-public-main-r18-virtual-validation",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
@@ -13,7 +13,7 @@
   "viewSha256": "8B0E9D9C84423B78769FD4DAD3000B8EB23C7072E3FCDAEDE61DB62FBA655D2F",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "1B064E0A7CE5E80B49F1DDE750DD60CAD16CF915D3691E7C25E85A77AC93F846",
-  "crossPlatformManifestSha256": "28DC03C34D7D42DD22273FB082B354FB0CBD31D5F4E9DC3E419F3AE109738274",
+  "crossPlatformManifestSha256": "9E1D262F9836407CBA3C624922B9AC4A58B37376CF3799A009F9757662EAFC2D",
   "installerSha256": "2A6548AFFE8F2CFC483E9C3CE6EED121577488B3FE3DEC015361144A54A44EFF",
   "acceptanceEvidence": "evidence/R17_FINAL_CLEANUP_ACCEPTANCE_20260926.json",
   "consolePhysicalFieldValidated": false,
@@ -153,6 +153,18 @@
       "torRuntime": "PASS_CONNECT_VERIFY_STOP",
       "hostedCi": "REQUIRED_PR_AND_MAIN_BEFORE_RELEASE",
       "sourceLineEndingNormalization": "PASS_APP_MANIFEST_LF"
+    },
+    "r18VirtualValidation": {
+      "status": "VIRTUAL_VALIDATION_SUITE_REQUIRED_CI",
+      "productRuntimeChanged": false,
+      "consoleVirtual": [
+        "LOCAL_PASS_USERSPACE_TCP_UDP_SOURCE_ISOLATION",
+        "CI_REQUIRED_KERNEL_NETNS_NAT_TCP_UDP"
+      ],
+      "windowsVirtualSigning": "LOCAL_PASS_EPHEMERAL_SELF_SIGNED_UNTRUSTED_CRYPTOGRAPHIC_NO_RESIDUE",
+      "androidEmulator": "CI_REQUIRED_BUILD_INSTALL_LAUNCH_FAIL_CLOSED",
+      "iosSimulator": "CI_REQUIRED_BUILD_INSTALL_LAUNCH",
+      "productionCredentialGatesRemainExternal": true
     }
   },
   "appManifestSha256": "5C416367DC0FE7BC9DD696C83874DA274EB5FCF23CEE0D0A265471A1101C9406"

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r16",
+  "version": "4.2.0-crossplatform-r18-virtual",
   "files": [
     {
       "file": "README_FA.md",
@@ -79,8 +79,8 @@
     },
     {
       "file": "ios/PacketTunnel/Info.plist",
-      "bytes": 410,
-      "sha256": "782A1D4AC911DA2126148202701978AE141B128EAB4F33C08751D2761B474671"
+      "bytes": 996,
+      "sha256": "F92E8564FDE67E24EF15BE69D012B22C5A47690ECD0C658F8D0AA221EC9E7E25"
     },
     {
       "file": "ios/PacketTunnel/PacketTunnel.entitlements",
@@ -99,8 +99,8 @@
     },
     {
       "file": "ios/project.yml",
-      "bytes": 796,
-      "sha256": "A2CEA96CBAD18F48C8D399C672F1A679BF43ACAABC32F65A486B37EBB21049C9"
+      "bytes": 831,
+      "sha256": "169B22362F7919E922B7E85B1809844CF3ED62BCE142C272369FAE1D5E7FA7D4"
     },
     {
       "file": "linux/FreeNetHub.svg",

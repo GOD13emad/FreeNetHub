@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 4204,
-      "sha256": "B1EC84BDBE328D4845AA8AC858A45D1AF3EFAFC74D886F840439360D60216EA5"
+      "bytes": 12564,
+      "sha256": "6EFEB80B4B3F008F5693726EFA3323CDEBC1A252387BE5B606DF98E4E4DC82E2"
     },
     {
       "file": ".gitignore",
@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 7341,
-      "sha256": "4813FAA61EFDAA5EC216727D22E2B798EF355581A1426B92BE88B0013D9677CE"
+      "bytes": 7911,
+      "sha256": "9A32AE418E11E44674E1FA43F74504714DCCF5C8FC18F74D6604D6ADED061562"
     },
     {
       "file": "SECURITY.md",
@@ -95,8 +95,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 6102,
-      "sha256": "28DC03C34D7D42DD22273FB082B354FB0CBD31D5F4E9DC3E419F3AE109738274"
+      "bytes": 6110,
+      "sha256": "9E1D262F9836407CBA3C624922B9AC4A58B37376CF3799A009F9757662EAFC2D"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -175,8 +175,8 @@
     },
     {
       "file": "crossplatform/ios/PacketTunnel/Info.plist",
-      "bytes": 410,
-      "sha256": "782A1D4AC911DA2126148202701978AE141B128EAB4F33C08751D2761B474671"
+      "bytes": 996,
+      "sha256": "F92E8564FDE67E24EF15BE69D012B22C5A47690ECD0C658F8D0AA221EC9E7E25"
     },
     {
       "file": "crossplatform/ios/PacketTunnel/PacketTunnel.entitlements",
@@ -195,8 +195,8 @@
     },
     {
       "file": "crossplatform/ios/project.yml",
-      "bytes": 796,
-      "sha256": "A2CEA96CBAD18F48C8D399C672F1A679BF43ACAABC32F65A486B37EBB21049C9"
+      "bytes": 831,
+      "sha256": "169B22362F7919E922B7E85B1809844CF3ED62BCE142C272369FAE1D5E7FA7D4"
     },
     {
       "file": "crossplatform/linux/FreeNetHub.svg",
@@ -529,6 +529,16 @@
       "sha256": "0AA5D9CC46623ADB7D762866C188331E254DDCB30D8DA78F16745C5201CF6A9E"
     },
     {
+      "file": "gateway/tests/virtual_console_e2e.py",
+      "bytes": 5426,
+      "sha256": "5E8513E6F57CDA167E62F24CC7353F12A5E4C1E3022B0B11DBAAC24F1AE89CE8"
+    },
+    {
+      "file": "gateway/tests/virtual_console_netns_e2e.sh",
+      "bytes": 3544,
+      "sha256": "204B51920C305EA97485023FFFFF96A72911A657D8211B9E94EF7F04AF6B8FF2"
+    },
+    {
       "file": "gateway/validate_console_profile.ps1",
       "bytes": 4537,
       "sha256": "51134BFA9130359430C310DC7067459D64C3CEFFB73A9BC7D1C4AF80D5323BFC"
@@ -562,6 +572,11 @@
       "file": "tests/verify_public_tree.py",
       "bytes": 4564,
       "sha256": "D0FF0529833314E6909019DC44C8FDC31DBD68C159859A24BD36D82B5D945CCB"
+    },
+    {
+      "file": "tests/virtual_codesign.ps1",
+      "bytes": 2035,
+      "sha256": "D61199A493062262922C2619AD6B311964E4C21FC0A61EF8092B2A31A6C58C4F"
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
