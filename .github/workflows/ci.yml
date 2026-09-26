@@ -217,7 +217,7 @@ jobs:
           )
           "$ADB" shell input tap "$BTN_X" "$BTN_Y"
           sleep 1
-          FOCUS="$("$ADB" shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp' | tr -d '' || true)"
+          FOCUS="$("$ADB" shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp' | tr -d '\r' || true)"
           echo "$FOCUS"
           echo "$FOCUS" | grep -Eqi 'com\.android\.(vpndialogs|settings)|vpn'
           "$ADB" shell input keyevent 4
