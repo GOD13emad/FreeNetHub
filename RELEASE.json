@@ -1,21 +1,21 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-main-r16-clean",
+  "releaseRevision": "4.2.0-public-main-r17-final",
   "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
     "CONSOLE_GATEWAY_SOFTWARE"
   ],
-  "engineSha256": "F6FB91C4714A73D6A42BF15BC9F41D134352978380B536CF586327052221C1A7",
+  "engineSha256": "82659327F31701A713FF25587F9AFDF4798CB6947EE6FD4A09A261E5922B1ED7",
   "uiSha256": "3629EFEFEC8F3B3E67AAD1D83B80C2D30370163A6E6DE7641E14EBADD416F7EE",
   "viewSha256": "8B0E9D9C84423B78769FD4DAD3000B8EB23C7072E3FCDAEDE61DB62FBA655D2F",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "1B064E0A7CE5E80B49F1DDE750DD60CAD16CF915D3691E7C25E85A77AC93F846",
   "crossPlatformManifestSha256": "28DC03C34D7D42DD22273FB082B354FB0CBD31D5F4E9DC3E419F3AE109738274",
-  "installerSha256": "50DF1E6459BCB40F98D0ED257F5CCFE98CFEDD280E51CBF0A732275D67BF7467",
-  "acceptanceEvidence": "evidence/R16_CLEAN_INSTALL_ACCEPTANCE_20260925.json",
+  "installerSha256": "2A6548AFFE8F2CFC483E9C3CE6EED121577488B3FE3DEC015361144A54A44EFF",
+  "acceptanceEvidence": "evidence/R17_FINAL_CLEANUP_ACCEPTANCE_20260926.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
@@ -133,6 +133,27 @@
         "ios-static": "PASS"
       },
       "validationNote": "Final authority commit and latest validated hosted CI run after R16 acceptance metadata commit."
+    },
+    "r17Final": {
+      "status": "LOCAL_ACCEPTED_CI_REQUIRED_ON_COMMIT",
+      "canonicalBrowserProfile": "Browser_Primary",
+      "legacyBrowserProfileAutoMigration": true,
+      "migrationConflictPolicy": "FAIL_CLOSED",
+      "signedInIdentityPreservedOnValidatedUpgrade": true,
+      "legacyFreeTunnelLabRemoved": true,
+      "externalLegacyRuntimeRequired": false,
+      "installerAsset": "FreeNetHub_4.2.0_R17_Final_Setup.exe",
+      "installerBytes": 15852838,
+      "installerSha256": "2A6548AFFE8F2CFC483E9C3CE6EED121577488B3FE3DEC015361144A54A44EFF",
+      "engineUnit": "PASS_55",
+      "cleanInstallRegression": "PASS_3",
+      "gatewayUnit": "PASS_9",
+      "scopeUiUnit": "PASS_2",
+      "warpRuntime": "PASS_CONNECT_VERIFY_STOP",
+      "torRuntime": "PASS_CONNECT_VERIFY_STOP",
+      "hostedCi": "REQUIRED_PR_AND_MAIN_BEFORE_RELEASE",
+      "sourceLineEndingNormalization": "PASS_APP_MANIFEST_LF"
     }
-  }
+  },
+  "appManifestSha256": "5C416367DC0FE7BC9DD696C83874DA274EB5FCF23CEE0D0A265471A1101C9406"
 }
