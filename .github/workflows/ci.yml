@@ -198,6 +198,89 @@ jobs:
           "$ADB" shell uiautomator dump /sdcard/fnh-window.xml >/dev/null
           "$ADB" pull /sdcard/fnh-window.xml /tmp/fnh-window.xml >/dev/null
           grep -Fq 'Provider core: NOT LINKED. No TUN will be established.' /tmp/fnh-window.xml
+
+          # Exercise the real VpnService permission lifecycle without creating a tunnel.
+          center_for() {
+            python3 - "$1" "$2" "$3" <<'PYCENTER'
+          import sys, xml.etree.ElementTree as ET
+          path, attr, want = sys.argv[1:4]
+          root = ET.parse(path).getroot()
+          for node in root.iter('node'):
+              have = node.attrib.get(attr) or ''
+              if have.casefold() == want.casefold():
+                  raw = node.attrib.get('bounds','')
+                  for ch in '[],':
+                      raw = raw.replace(ch, ' ')
+                  parts = raw.split()
+                  if len(parts) != 4:
+                      raise SystemExit(f'BOUNDS_INVALID:{path}:{attr}:{want}:{raw}')
+                  x1,y1,x2,y2 = map(int, parts)
+                  print((x1+x2)//2,(y1+y2)//2)
+                  break
+          else:
+              raise SystemExit(f'UI_NODE_NOT_FOUND:{path}:{attr}:{want}')
+          PYCENTER
+          }
+
+          read BTN_X BTN_Y < <(center_for /tmp/fnh-window.xml text 'Request VPN permission')
+          "$ADB" shell input tap "$BTN_X" "$BTN_Y"
+          sleep 1
+          "$ADB" shell uiautomator dump /sdcard/fnh-vpn-consent.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-vpn-consent.xml /tmp/fnh-vpn-consent.xml >/dev/null
+          grep -Fq 'package="com.android.vpndialogs"' /tmp/fnh-vpn-consent.xml
+          grep -Fq 'text="Connection request"' /tmp/fnh-vpn-consent.xml
+          grep -Fq 'resource-id="android:id/button2"' /tmp/fnh-vpn-consent.xml
+          grep -Fq 'resource-id="android:id/button1"' /tmp/fnh-vpn-consent.xml
+
+          # Exercise an actual user cancellation.
+          read CANCEL_X CANCEL_Y < <(center_for /tmp/fnh-vpn-consent.xml resource-id 'android:id/button2')
+          "$ADB" shell input tap "$CANCEL_X" "$CANCEL_Y"
+          sleep 1
+          "$ADB" shell uiautomator dump /sdcard/fnh-after-cancel.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-after-cancel.xml /tmp/fnh-after-cancel.xml >/dev/null
+          grep -Fq 'package="com.freenethub.mobile"' /tmp/fnh-after-cancel.xml
+          grep -Fq 'Provider core: NOT LINKED. No TUN will be established.' /tmp/fnh-after-cancel.xml
+          if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
+            echo 'VPN service unexpectedly running after permission cancel'
+            exit 1
+          fi
+
+          # Re-open the real system consent dialog and accept it.
+          read BTN_X BTN_Y < <(center_for /tmp/fnh-after-cancel.xml text 'Request VPN permission')
+          "$ADB" shell input tap "$BTN_X" "$BTN_Y"
+          sleep 1
+          "$ADB" shell uiautomator dump /sdcard/fnh-vpn-consent2.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-vpn-consent2.xml /tmp/fnh-vpn-consent2.xml >/dev/null
+          grep -Fq 'package="com.android.vpndialogs"' /tmp/fnh-vpn-consent2.xml
+          grep -Fq 'text="Connection request"' /tmp/fnh-vpn-consent2.xml
+          read OK_X OK_Y < <(center_for /tmp/fnh-vpn-consent2.xml resource-id 'android:id/button1')
+          "$ADB" shell input tap "$OK_X" "$OK_Y"
+          sleep 1
+          "$ADB" shell uiautomator dump /sdcard/fnh-after-ok.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-after-ok.xml /tmp/fnh-after-ok.xml >/dev/null
+          grep -Fq 'package="com.freenethub.mobile"' /tmp/fnh-after-ok.xml
+          grep -Fq 'Provider core: NOT LINKED. No TUN will be established.' /tmp/fnh-after-ok.xml
+          if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
+            echo 'VPN service unexpectedly running after VPN consent'
+            exit 1
+          fi
+
+          # With consent persisted, VpnService.prepare() must now return null in-app.
+          read BTN_X BTN_Y < <(center_for /tmp/fnh-after-ok.xml text 'Request VPN permission')
+          "$ADB" shell input tap "$BTN_X" "$BTN_Y"
+          sleep 1
+          "$ADB" shell uiautomator dump /sdcard/fnh-after-grant.xml >/dev/null
+          "$ADB" pull /sdcard/fnh-after-grant.xml /tmp/fnh-after-grant.xml >/dev/null
+          grep -Fq 'Permission ready; provider core still NOT LINKED.' /tmp/fnh-after-grant.xml
+          if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
+            echo 'VPN service unexpectedly running after prepare()==null'
+            exit 1
+          fi
+
+          "$ADB" shell am force-stop com.freenethub.mobile
+          "$ADB" shell am start -W -n com.freenethub.mobile/.MainActivity | tee /tmp/fnh-am-relaunch.txt
+          grep -q 'Status: ok' /tmp/fnh-am-relaunch.txt
+
           AFTER="$("$ADB" shell ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
           test "$BEFORE" = "$AFTER"
           if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
@@ -220,7 +303,19 @@ jobs:
         run: |
           xcodegen generate
           xcodebuild -project FreeNetHub.xcodeproj -scheme FreeNetHub -configuration Debug -sdk iphonesimulator -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
-          test -d build/Build/Products/Debug-iphonesimulator/FreeNetHub.app
+          APP=build/Build/Products/Debug-iphonesimulator/FreeNetHub.app
+          APPEX="$APP/PlugIns/PacketTunnel.appex"
+          test -d "$APP"
+          test -d "$APPEX"
+          EXT_EXEC="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APPEX/Info.plist")"
+          test -n "$EXT_EXEC" && test -x "$APPEX/$EXT_EXEC"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APPEX/Info.plist")" = 'com.freenethub.app.PacketTunnel'
+          test "$(/usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "$APPEX/Info.plist")" = 'com.apple.networkextension.packet-tunnel'
+          grep -Fq 'completionHandler(ProviderError.coreNotLinked)' PacketTunnel/PacketTunnelProvider.swift
+          if grep -Fq 'setTunnelNetworkSettings' PacketTunnel/PacketTunnelProvider.swift; then
+            echo 'Packet tunnel unexpectedly configures network settings without a forwarding core'
+            exit 1
+          fi
       - name: Boot simulator, install and launch
         working-directory: crossplatform/ios
         run: |
@@ -243,7 +338,19 @@ jobs:
           xcrun simctl install "$UDID" "$APP"
           xcrun simctl launch "$UDID" com.freenethub.app | tee /tmp/fnh-ios-launch.txt
           grep -q 'com.freenethub.app:' /tmp/fnh-ios-launch.txt
-          xcrun simctl get_app_container "$UDID" com.freenethub.app >/dev/null
+          INSTALLED_APP="$(xcrun simctl get_app_container "$UDID" com.freenethub.app app)"
+          test -d "$INSTALLED_APP"
+          test -d "$INSTALLED_APP/PlugIns/PacketTunnel.appex"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$INSTALLED_APP/PlugIns/PacketTunnel.appex/Info.plist")" = 'com.freenethub.app.PacketTunnel'
+          xcrun simctl io "$UDID" screenshot /tmp/fnh-ios-runtime.png >/dev/null
+          test -s /tmp/fnh-ios-runtime.png
+          xcrun simctl terminate "$UDID" com.freenethub.app
+          RELAUNCH_OUT="$(xcrun simctl launch "$UDID" com.freenethub.app)"
+          echo "$RELAUNCH_OUT" | tee /tmp/fnh-ios-relaunch.txt
+          grep -Eq '^com.freenethub.app: [0-9]+$' /tmp/fnh-ios-relaunch.txt
+          sleep 2
+          xcrun simctl io "$UDID" screenshot /tmp/fnh-ios-relaunch.png >/dev/null
+          test -s /tmp/fnh-ios-relaunch.png
 
   virtual-acceptance:
     needs:
