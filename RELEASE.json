@@ -110,7 +110,7 @@
       "installerBytes": 2217329
     },
     "r16Clean": {
-      "status": "ACCEPTED_R16_CLEAN_BRANCH_CI_PASS",
+      "status": "ACCEPTED_R16_CLEAN_FINAL_AUTHORITY_CI_PASS",
       "selfContainedWindowsRuntime": true,
       "externalLegacyRuntimeRequired": false,
       "legacyFreeTunnelLabRemoved": true,
@@ -124,14 +124,15 @@
       "torRuntime": "PASS_CONNECT_VERIFY_STOP_WITHOUT_LEGACY_FOLDER",
       "linuxCiHarnessFix": "HERMETIC_NMCLI_DISCOVERY",
       "androidCiFix": "REMOVE_OBSOLETE_SETUP_ANDROID_TOOLS_INSTALL",
-      "validatedCommit": "ef24d3b726030be1aa8d2dc2bef75dbaa842688a",
-      "validatedCiRun": 36105619597,
+      "validatedCommit": "313c6bbfda1ea4edfd13177e4db0b0016e753b4c",
+      "validatedCiRun": 36106750185,
       "validatedCiJobs": {
         "windows-unit": "PASS",
         "linux-static": "PASS",
         "android-build": "PASS",
         "ios-static": "PASS"
-      }
+      },
+      "validationNote": "Final authority commit and latest validated hosted CI run after R16 acceptance metadata commit."
     }
   }
 }

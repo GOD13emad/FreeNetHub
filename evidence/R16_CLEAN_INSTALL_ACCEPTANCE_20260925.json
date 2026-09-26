@@ -47,12 +47,13 @@
     "previousLinuxFailureRootCause": "test harness depended on real nmcli discovery on hosted runner",
     "previousAndroidFailureRootCause": "android-actions/setup-android requested obsolete SDK package tools",
     "r16BranchCI": "PASS",
-    "validatedCommit": "ef24d3b726030be1aa8d2dc2bef75dbaa842688a",
-    "validatedRun": 36105619597,
+    "validatedCommit": "313c6bbfda1ea4edfd13177e4db0b0016e753b4c",
+    "validatedRun": 36106750185,
     "windowsUnit": "PASS",
     "linuxStatic": "PASS",
     "androidBuild": "PASS",
-    "iosStatic": "PASS"
+    "iosStatic": "PASS",
+    "validationNote": "Latest validated hosted CI for the final R16 authority commit."
   },
   "openExternalGates": [
     "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
