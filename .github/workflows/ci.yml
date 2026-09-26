@@ -217,9 +217,13 @@ jobs:
           )
           "$ADB" shell input tap "$BTN_X" "$BTN_Y"
           sleep 1
-          FOCUS="$("$ADB" shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp' | tr -d '\r' || true)"
-          echo "$FOCUS"
-          echo "$FOCUS" | grep -Eqi 'com\.android\.(vpndialogs|settings)|vpn'
+          WINDOW_STATE="$("$ADB" shell dumpsys window 2>/dev/null | tr -d '\r' || true)"
+          ACTIVITY_STATE="$("$ADB" shell dumpsys activity activities 2>/dev/null | tr -d '\r' || true)"
+          "$ADB" shell uiautomator dump /sdcard/fnh-vpn-consent.xml >/dev/null || true
+          "$ADB" pull /sdcard/fnh-vpn-consent.xml /tmp/fnh-vpn-consent.xml >/dev/null 2>&1 || true
+          CONSENT_EVIDENCE="$( { printf '%s\n' "$WINDOW_STATE"; printf '%s\n' "$ACTIVITY_STATE"; cat /tmp/fnh-vpn-consent.xml 2>/dev/null || true; } )"
+          echo "$CONSENT_EVIDENCE"
+          echo "$CONSENT_EVIDENCE" | grep -Eqi 'com\.android\.vpndialogs|ConfirmDialog|connection request|set up a VPN connection'
           "$ADB" shell input keyevent 4
           sleep 1
           "$ADB" shell uiautomator dump /sdcard/fnh-after-cancel.xml >/dev/null
