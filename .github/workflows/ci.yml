@@ -101,7 +101,15 @@ jobs:
       - name: Exercise ephemeral Authenticode signing pipeline
         shell: pwsh
         run: |
-          ./tests/virtual_codesign.ps1 -InputPath "$env:SystemRoot\System32\where.exe"
+          $src=Join-Path $env:RUNNER_TEMP 'FnhSignProbe.cs'
+          $exe=Join-Path $env:RUNNER_TEMP 'FnhSignProbe.exe'
+          Set-Content -LiteralPath $src -Encoding ASCII -Value 'public static class Program { public static void Main() {} }'
+          $csc=Get-ChildItem "$env:WINDIR\Microsoft.NET\Framework64" -Filter csc.exe -Recurse | Sort-Object FullName | Select-Object -Last 1 -ExpandProperty FullName
+          if(-not $csc){ throw 'csc.exe not found' }
+          & $csc /nologo /target:exe /out:$exe $src
+          if($LASTEXITCODE){ exit $LASTEXITCODE }
+          if((Get-AuthenticodeSignature -LiteralPath $exe).Status -ne 'NotSigned'){ throw 'probe PE unexpectedly pre-signed' }
+          ./tests/virtual_codesign.ps1 -InputPath $exe
           if(Get-ChildItem Cert:\CurrentUser\My | Where-Object Subject -eq 'CN=FreeNetHub Virtual Signing Validation'){ throw 'virtual signing certificate residue' }
           if(Get-ChildItem tests -Directory -Filter '.virtual-sign-*' -ErrorAction SilentlyContinue){ throw 'virtual signing file residue' }
 

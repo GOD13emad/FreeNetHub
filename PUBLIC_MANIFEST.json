@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 10257,
-      "sha256": "4A4851F027F10584D25BAE25C144CFD57EE615857C22A44981435EEF3690BF44"
+      "bytes": 10920,
+      "sha256": "BA089265FBC12E0802B2A02F7A944ED10A2D69724C85C2AC9435B87B6AB0814A"
     },
     {
       "file": ".gitignore",
@@ -35,8 +35,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 7341,
-      "sha256": "4813FAA61EFDAA5EC216727D22E2B798EF355581A1426B92BE88B0013D9677CE"
+      "bytes": 7771,
+      "sha256": "9997647900CDE0B6A858ED2BE00DB6601FBF328B449B9367B7AA7DA6EDCC93D8"
     },
     {
       "file": "SECURITY.md",
@@ -95,8 +95,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 6102,
-      "sha256": "28DC03C34D7D42DD22273FB082B354FB0CBD31D5F4E9DC3E419F3AE109738274"
+      "bytes": 6110,
+      "sha256": "9ED77765BE0590CB3394B3BB32CFE9916FD9D5A0425F91DDA325A923C22D6C9B"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -195,8 +195,8 @@
     },
     {
       "file": "crossplatform/ios/project.yml",
-      "bytes": 796,
-      "sha256": "A2CEA96CBAD18F48C8D399C672F1A679BF43ACAABC32F65A486B37EBB21049C9"
+      "bytes": 831,
+      "sha256": "169B22362F7919E922B7E85B1809844CF3ED62BCE142C272369FAE1D5E7FA7D4"
     },
     {
       "file": "crossplatform/linux/FreeNetHub.svg",
