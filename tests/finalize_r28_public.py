@@ -15,6 +15,12 @@ EXPECTED={
 INSTALLER=R/"delivery/github_v4.2.0/FreeNetHub_4.2.0_R28_Final_Setup.exe"
 INSTALLER_SHA="2AA91D849A513A21D3BF9903F8E72FFB6A184D378FB357CE4FA7A9D6F7EB0073"
 def sha(p): return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest().upper()
+def canonical_bytes(rel):
+ rel=pathlib.PurePosixPath(rel).as_posix()
+ p=R/rel
+ oid=subprocess.check_output(["git","hash-object","-w",f"--path={rel}",str(p)],cwd=R,text=True).strip()
+ return subprocess.check_output(["git","cat-file","blob",oid],cwd=R)
+def canonical_sha(rel): return hashlib.sha256(canonical_bytes(rel)).hexdigest().upper()
 def load(rel): return json.loads((R/rel).read_text(encoding="utf-8-sig"))
 def dump(rel,obj): (R/rel).write_text(json.dumps(obj,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
 def assert_pass(rel):
@@ -72,7 +78,7 @@ rel.update({
  "releaseRevision":"4.2.0-local-r28-final","status":STATUS,
  "engineSha256":EXPECTED["app/engine.py"],"nodeHubSha256":EXPECTED["app/nodehub.py"],"uiSha256":EXPECTED["app/FreeNetHub.ps1"],
  "viewSha256":EXPECTED["app/View.xaml"],"appManifestSha256":EXPECTED["app/manifest.json"],
- "gatewayManifestSha256":EXPECTED["gateway/manifest.json"],"installerSha256":INSTALLER_SHA,
+ "gatewayManifestSha256":canonical_sha("gateway/manifest.json"),"installerSha256":INSTALLER_SHA,
  "installerStatus":"R28_FINAL_EXACT_ARTIFACT_ACCEPTED_LOCAL_CI_REQUIRED",
  "acceptanceEvidence":"evidence/R28_FINAL_ACCEPTANCE_20260928.json"
 })
@@ -134,8 +140,8 @@ def candidates():
   if p.is_file(): out.append(rel)
  return sorted(set(out),key=str.lower)
 def row(rel):
- p=R/rel; data=p.read_bytes()
+ data=canonical_bytes(rel)
  return {"file":rel,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest().upper()}
-pm={"schema":3,"version":"4.2.0-local-r28-final","source":"working-tree-public-candidate","files":[row(x) for x in candidates()]}
+pm={"schema":3,"version":"4.2.0-local-r28-final","source":"git-clean-filtered-candidate","files":[row(x) for x in candidates()]}
 dump("PUBLIC_MANIFEST.json",pm)
 print(json.dumps({"status":"PASS","files":len(pm["files"]),"installerSha256":INSTALLER_SHA,"finalAcceptanceSha256":sha(R/"evidence/R28_FINAL_ACCEPTANCE_20260928.json"),"publicManifestSha256":sha(R/"PUBLIC_MANIFEST.json")},indent=2))

@@ -4,6 +4,14 @@ R=Path(__file__).resolve().parent.parent
 
 def h(p): return hashlib.sha256(p.read_bytes()).hexdigest().upper()
 
+def canonical_bytes(p):
+    p=Path(p).resolve()
+    rel=p.relative_to(R).as_posix()
+    oid=subprocess.check_output(["git","hash-object","-w",f"--path={rel}",str(p)],cwd=R,text=True).strip()
+    return subprocess.check_output(["git","cat-file","blob",oid],cwd=R)
+
+def hc(p): return hashlib.sha256(canonical_bytes(p)).hexdigest().upper()
+
 def verify_manifest(base,manifest,key):
     m=json.loads(manifest.read_text(encoding="utf-8-sig"))
     failures=[]
@@ -50,7 +58,7 @@ checks={
  "gatewayManifestSha256":R/"gateway"/"manifest.json",
  "crossPlatformManifestSha256":R/"crossplatform"/"MANIFEST.json",
 }
-relbad=[k for k,p in checks.items() if h(p)!=rel[k].upper()]
+relbad=[k for k,p in checks.items() if hc(p)!=rel[k].upper()]
 ev=R/rel["acceptanceEvidence"]
 if not ev.is_file():
     relbad.append("acceptanceEvidence")
@@ -74,7 +82,11 @@ if pm_path.is_file():
         relp=row["file"]
         listed.add(relp)
         fp=R/relp
-        if not fp.is_file() or fp.stat().st_size!=int(row["bytes"]) or h(fp)!=row["sha256"].upper():
+        if not fp.is_file():
+            publicbad.append(relp)
+            continue
+        data=canonical_bytes(fp)
+        if len(data)!=int(row["bytes"]) or hashlib.sha256(data).hexdigest().upper()!=row["sha256"].upper():
             publicbad.append(relp)
     actual=set()
     raw=subprocess.check_output(["git","ls-files","-z","--cached","--others","--exclude-standard"],cwd=R)

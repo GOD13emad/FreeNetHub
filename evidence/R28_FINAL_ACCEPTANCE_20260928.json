@@ -173,7 +173,11 @@
     "publicTreeSecurity": {
       "status": "PASS",
       "evidence": "evidence/R28_PUBLIC_TREE_SECURITY_ACCEPTANCE_20260928.json",
-      "sha256": "636B772C5F500BB19D550988A0A64780CCCEBFF831AF2544C461C1B6C85A7A4B"
+      "checks": [
+        "security_scan_public.py",
+        "verify_public_tree.py"
+      ],
+      "canonicalHashPolicy": "GIT_CLEAN_FILTERED_BYTES"
     }
   },
   "capabilities": {
@@ -195,8 +199,8 @@
   "promotion": {
     "localAcceptance": "PASS",
     "publicTreeSecurity": "PASS",
-    "hostedCI": "PENDING",
+    "hostedCI": "RETRY_REQUIRED_AFTER_CANONICAL_HASH_FIX",
     "githubR28Release": "PENDING"
   },
-  "decision": "R28 Windows payload is locally accepted and public-tree/security clean. Hosted CI on the promoted commit is the remaining software promotion gate before publishing the R28 GitHub release; Windows trusted code signing and physical-console E2E remain external gates."
+  "decision": "R28 Windows payload and public-tree/security are locally accepted. Hosted CI retry on the canonical-hash fix commit is the remaining software promotion gate before publishing the R28 GitHub release."
 }

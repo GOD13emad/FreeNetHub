@@ -22,5 +22,14 @@
     "tests/security_scan_public.py",
     "tests/verify_public_tree.py"
   ],
-  "note": "Executed after public evidence path sanitization and final R28 metadata generation; this record intentionally contains no user-specific filesystem path."
+  "note": "Local security/public-tree gates pass after canonical hash repair; hosted CI retry is required on the repair commit.",
+  "canonicalHashPolicy": "GIT_CLEAN_FILTERED_BYTES",
+  "hostedCiFirstRun": {
+    "runId": 36432377158,
+    "commit": "f3629212ce3f918132e6bcd9af02fa9a786fcbd4",
+    "windowsUnit": "FAIL_PUBLIC_MANIFEST_ONLY",
+    "rootCause": "WINDOWS_WORKTREE_CRLF_HASHED_IN_MANIFEST_VS_GITHUB_LF_CHECKOUT",
+    "runtimeDefect": false,
+    "repair": "GENERATOR_AND_VERIFIER_USE_GIT_CLEAN_FILTERED_CANONICAL_BYTES"
+  }
 }

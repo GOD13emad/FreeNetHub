@@ -2,7 +2,7 @@
   "schema": 2,
   "project": "Open Internet Gateway / FreeNet Hub",
   "date": "2026-09-28",
-  "status": "CURRENT_R28_LOCAL_ACCEPTED",
+  "status": "CURRENT_R28_PUBLIC_TREE_PASS_CI_RETRY_PENDING",
   "records": [
     {
       "claim": "R28 provider-specific Windows UI exposes Smart, Node Pool, WARP, CFON, Tor, Custom, console and GitHub update controls; browser-only remains default and full-system is explicit WARP only.",
@@ -68,16 +68,18 @@
       "status": "CONFIRMED"
     },
     {
-      "claim": "R28 final public security and integrity gates passed after path sanitization: no forbidden runtime artifacts or sensitive path/token hits; public/app/gateway/cross-platform/windows manifests and release hashes all verified.",
+      "claim": "Hosted CI run 36432377158 exposed a Windows-working-tree versus Git-clean-filtered byte mismatch in PUBLIC_MANIFEST and RELEASE gateway-manifest hashing; prevention is canonical git clean-filtered hashing in both generator and verifier.",
       "evidence": [
-        "evidence/R28_PUBLIC_TREE_SECURITY_ACCEPTANCE_20260928.json",
-        "tests/security_scan_public.py",
-        "tests/verify_public_tree.py"
+        "GitHub Actions run 36432377158 / windows-unit / Verify public manifests",
+        "tests/rebuild_public_manifest.py",
+        "tests/verify_public_tree.py",
+        "tests/finalize_r28_public.py"
       ],
-      "status": "CONFIRMED/PASS",
+      "status": "CONFIRMED_ROOT_CAUSE_FIXED_LOCAL",
       "reuseTargets": [
-        "release audit",
-        "GitHub promotion",
+        "release engineering",
+        "CI design",
+        "failure prevention",
         "handoff"
       ]
     }
