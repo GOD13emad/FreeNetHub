@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "sourceHypothesis": "Pawdroid/ShadowShare subset advertised as periodically speed-tested; results remain local-network dependent.",
+  "attempted": 8,
+  "passed": 0,
+  "results": [
+    {
+      "protocol": "vmess",
+      "source": "SHADOWSHARE_README_ID",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": null,
+      "error": "PATH_NOT_VERIFIED_NODE"
+    },
+    {
+      "protocol": "ss",
+      "source": "SHADOWSHARE_README_ES",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": null,
+      "error": "PATH_NOT_VERIFIED_NODE"
+    },
+    {
+      "protocol": "ss",
+      "source": "SHADOWSHARE_SUB_DE",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": null,
+      "error": "PATH_NOT_VERIFIED_NODE"
+    },
+    {
+      "protocol": "hysteria2",
+      "source": "SHADOWSHARE_SUB_DE",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": null,
+      "error": "PATH_NOT_VERIFIED_NODE"
+    },
+    {
+      "protocol": "hysteria2",
+      "source": "SHADOWSHARE_SUB_DE",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": null,
+      "error": "PATH_NOT_VERIFIED_NODE"
+    },
+    {
+      "protocol": "trojan",
+      "source": "SHADOWSHARE_README_BN",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": null,
+      "error": "PATH_NOT_VERIFIED_NODE"
+    },
+    {
+      "protocol": "trojan",
+      "source": "SHADOWSHARE_SUB_DE",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": null,
+      "error": "PATH_NOT_VERIFIED_NODE"
+    },
+    {
+      "protocol": "vless",
+      "source": "SHADOWSHARE_SUB_FR",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": null,
+      "error": "PATH_NOT_VERIFIED_NODE"
+    }
+  ],
+  "privacy": "No raw URI, server, credential, path, key, or IP persisted."
+}

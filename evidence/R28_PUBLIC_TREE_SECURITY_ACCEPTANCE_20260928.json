@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "test": "R28_PUBLIC_TREE_SECURITY_FINAL",
+  "security": {
+    "status": "PASS",
+    "forbiddenRuntimeArtifacts": 0,
+    "sensitivePatternHits": 0
+  },
+  "publicTree": {
+    "status": "PASS",
+    "publicManifest": "PASS",
+    "appManifest": "PASS",
+    "gatewayManifest": "PASS",
+    "crossPlatformManifest": "PASS",
+    "windowsPackageManifest": "PASS",
+    "releaseHashes": "PASS",
+    "forbiddenRuntimeArtifacts": "PASS"
+  },
+  "provenance": [
+    "tests/security_scan_public.py",
+    "tests/verify_public_tree.py"
+  ],
+  "note": "Executed after public evidence path sanitization and final R28 metadata generation; this record intentionally contains no user-specific filesystem path."
+}

@@ -1,22 +1,22 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-local-r27-country-shadowshare-hy2-final",
-  "status": "LOCAL_ACCEPTED_WINDOWS_4.2_R27_COUNTRY_SHADOWSHARE_HY2",
+  "releaseRevision": "4.2.0-local-r28-final",
+  "status": "LOCAL_ACCEPTED_WINDOWS_4.2_R28_FINAL",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
     "CONSOLE_GATEWAY_SOFTWARE",
     "NODE_HUB_BROWSER_PROXY"
   ],
-  "engineSha256": "F5B2E69948830BFE103A76BE23D4BAF542C45B75C4B70D61C71177337A78C82D",
-  "uiSha256": "30624181E46A86D6C2228D740A22F2B013DF06F9EF6E853E0010D48AFCA6203F",
-  "viewSha256": "7FDF3BAFE325147C130E1C4A657181177377747FDDFE61A0FD2D4B4CAB0533C0",
+  "engineSha256": "9D9DC7724D05BF8C58986ABE760C9CF0A127F09816046D8984617CBE9A9C8658",
+  "uiSha256": "6D37EEDAFBE475C785176B50CEBEE11EBA455CF8E6760E0C95DE9D1A0E446C60",
+  "viewSha256": "3B170D89488940EEF41503E00FD6DD7AC9C0EAFDCDB7CF53532BDDEBF8AE7E0C",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
-  "gatewayManifestSha256": "87C45F6B26BE1BAC9EC0A7E0B3D6FBDD3E4B8D495A3AD82922F0B3BA5A4499C3",
+  "gatewayManifestSha256": "ACBC3A9622A75A7807C07A9DEC6D6A9FC310A527AEA185A1C4ED7552FB4E4966",
   "crossPlatformManifestSha256": "9E1D262F9836407CBA3C624922B9AC4A58B37376CF3799A009F9757662EAFC2D",
-  "installerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
-  "acceptanceEvidence": "evidence/R27_FINAL_ACCEPTANCE_20260928.json",
+  "installerSha256": "2AA91D849A513A21D3BF9903F8E72FFB6A184D378FB357CE4FA7A9D6F7EB0073",
+  "acceptanceEvidence": "evidence/R28_FINAL_ACCEPTANCE_20260928.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
@@ -168,10 +168,10 @@
       "productionCredentialGatesRemainExternal": true
     }
   },
-  "appManifestSha256": "E3E8206F413B2E0830E821D63EEAC396D4BE1ECF86FA8CDB15682507EEC413AE",
-  "nodeHubSha256": "C016F0975720505F0FD9901F25458AA98B6BCBE99387D952592517307CF3FBC2",
+  "appManifestSha256": "F82910D2755B78F34FAD59463832F2A7CA8D2849EBBF1E2EBD81F8EF1BDE84EF",
+  "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
   "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
-  "installerStatus": "R27_BUILT_INSTALLED_LIVE_SMOKE_ACCEPTED",
+  "installerStatus": "R28_FINAL_EXACT_ARTIFACT_ACCEPTED_LOCAL_SECURITY_PASS_CI_REQUIRED",
   "r21": {
     "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH",
     "countryAutoOrder": [
@@ -304,5 +304,51 @@
     "atRestNetwork": "PASS",
     "trustedWindowsSigning": "OPEN_NOTSIGNED",
     "knowledgeRecord": "evidence/R27_PROJECT_KNOWLEDGE_20260928.json"
+  },
+  "r28": {
+    "status": "LOCAL_ACCEPTED_HOSTED_CI_REQUIRED",
+    "providerCapabilityUi": true,
+    "defaultScope": "BROWSER_ONLY",
+    "fullSystem": "WARP_EXPLICIT_ONLY",
+    "console": "SEPARATE_GATEWAY",
+    "metrics": [
+      "PING_OR_REAL_DELAY",
+      "DOWNLOAD_MBPS",
+      "UPLOAD_MBPS"
+    ],
+    "nodeProtocols": [
+      "SS",
+      "VMESS",
+      "VLESS",
+      "TROJAN",
+      "HYSTERIA2"
+    ],
+    "publicRefresh": {
+      "ttlSeconds": 1800,
+      "uiRollingMinutes": 30,
+      "endpointRegistry": 10,
+      "independentFamilies": 5,
+      "stalePolicy": "DROP_ONLY_SUCCESSFULLY_REFRESHED_PUBLIC_SOURCES_PRESERVE_FAILED_SOURCE_CACHE_AND_MANUAL_FAVORITE_PINNED"
+    },
+    "nodeBenchmark": {
+      "boundedMax": 4,
+      "persistPerformanceHistory": true,
+      "rollingMinutes": 10
+    },
+    "githubSelfUpdate": "CHECK_DOWNLOAD_SHA256_VERIFY_CONFIRM_INSTALL",
+    "protocolCompatibility": {
+      "trojanDefaultTls": true,
+      "wsEarlyData": true,
+      "legacyTrojanWs": true,
+      "httpHeaderTransport": true,
+      "httpUpgradeHostFix": true,
+      "quicTransport": true,
+      "unsupportedXhttpKcpFailClosed": true
+    },
+    "benchmarkDiversity": "UNDERTESTED_PROTOCOL_THEN_SOURCE",
+    "publicRelease": false,
+    "publicTreeSecurity": "PASS",
+    "hostedCI": "PENDING",
+    "installerAsset": "FreeNetHub_4.2.0_R28_Final_Setup.exe"
   }
 }

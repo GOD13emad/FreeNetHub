@@ -1,0 +1,96 @@
+{
+  "schema": 2,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "endpointRegistry": 10,
+  "sourceFamilyCount": 5,
+  "successfulSources": 9,
+  "failedSources": 1,
+  "parsedRaw": 454,
+  "importedUnique": 448,
+  "totalPool": 465,
+  "reachableTcp": 310,
+  "staleDropped": 23,
+  "metadataMigration": {
+    "checked": 0,
+    "mismatches": 0
+  },
+  "sourceStats": [
+    {
+      "name": "V2CROSS_PAGE",
+      "family": "v2cross",
+      "status": "FETCH_FAILED",
+      "found": 0,
+      "parseErrors": 0
+    },
+    {
+      "name": "SHADOWSHARE_SUB_EN",
+      "family": "pawdroid-shadowshare",
+      "status": "PASS",
+      "found": 18,
+      "parseErrors": 2
+    },
+    {
+      "name": "SHADOWSHARE_SUB_DE",
+      "family": "pawdroid-shadowshare",
+      "status": "PASS",
+      "found": 20,
+      "parseErrors": 0
+    },
+    {
+      "name": "SHADOWSHARE_SUB_FR",
+      "family": "pawdroid-shadowshare",
+      "status": "PASS",
+      "found": 18,
+      "parseErrors": 2
+    },
+    {
+      "name": "SHADOWSHARE_README_ID",
+      "family": "pawdroid-shadowshare",
+      "status": "PASS",
+      "found": 20,
+      "parseErrors": 0
+    },
+    {
+      "name": "SHADOWSHARE_README_BN",
+      "family": "pawdroid-shadowshare",
+      "status": "PASS",
+      "found": 19,
+      "parseErrors": 1
+    },
+    {
+      "name": "SHADOWSHARE_README_ES",
+      "family": "pawdroid-shadowshare",
+      "status": "PASS",
+      "found": 20,
+      "parseErrors": 0
+    },
+    {
+      "name": "RADIKAL_TOP100",
+      "family": "0xradikal",
+      "status": "PASS",
+      "found": 91,
+      "parseErrors": 7
+    },
+    {
+      "name": "MORPHEUS_MINI",
+      "family": "morpheusadam",
+      "status": "PASS",
+      "found": 100,
+      "parseErrors": 0
+    },
+    {
+      "name": "MATIN_SUB1",
+      "family": "matinghanbari",
+      "status": "PASS",
+      "found": 148,
+      "parseErrors": 47
+    }
+  ],
+  "cleanup": {
+    "stateRestored": true,
+    "listeners": 0
+  },
+  "error": "",
+  "privacy": "No raw node URI, credential, server address, raw exit IP, or user-specific filesystem path is persisted."
+}

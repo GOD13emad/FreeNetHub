@@ -52,10 +52,13 @@ $beforeTerm=@(Get-Process WindowsTerminal,OpenConsole -ErrorAction SilentlyConti
 $p=$null;$child=$null
 try{
  $p=Start-Process -FilePath $exe -ArgumentList @($app) -WorkingDirectory $InstallRoot -PassThru
- $deadline=[DateTime]::UtcNow.AddSeconds(12)
+ $deadline=[DateTime]::UtcNow.AddSeconds(20)
  do{
   Start-Sleep -Milliseconds 250
   $child=Get-CimInstance Win32_Process -Filter ('ParentProcessId='+$p.Id) -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq 'pwsh.exe' -and $_.CommandLine -and $_.CommandLine.Contains($app,[StringComparison]::OrdinalIgnoreCase)}|Select-Object -First 1
+  if(!$child){
+   $child=Get-CimInstance Win32_Process -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq 'pwsh.exe' -and $_.CommandLine -and $_.CommandLine.Contains($app,[StringComparison]::OrdinalIgnoreCase)}|Select-Object -First 1
+  }
   if($child){$cp=Get-Process -Id $child.ProcessId -ErrorAction SilentlyContinue;if($cp -and $cp.MainWindowHandle -ne 0){break}}
  }while([DateTime]::UtcNow -lt $deadline)
  Assert ($null -ne $child) 'UI_CHILD_NOT_FOUND'
@@ -73,6 +76,15 @@ try{
  $restored=[FNHInstallU32]::IsWindowVisible($h) -and -not [FNHInstallU32]::IsIconic($h)
  $afterTerm=@(Get-Process WindowsTerminal,OpenConsole -ErrorAction SilentlyContinue|Select-Object Id)
  $newTerm=@($afterTerm|Where-Object{$id=$_.Id;-not ($beforeTerm|Where-Object{$_.Id -eq $id})})
+ $attributedTerm=@()
+ $terminalDetails=@()
+ foreach($nt in $newTerm){
+  $ci=Get-CimInstance Win32_Process -Filter ('ProcessId='+[int]$nt.Id) -ErrorAction SilentlyContinue
+  $cmd=$(if($ci){[string]$ci.CommandLine}else{''});$ppid=$(if($ci){[int]$ci.ParentProcessId}else{0})
+  $attributed=($ppid -in @([int]$p.Id,[int]$child.ProcessId)) -or ($cmd -and ($cmd.Contains($InstallRoot,[StringComparison]::OrdinalIgnoreCase) -or $cmd.Contains($app,[StringComparison]::OrdinalIgnoreCase)))
+  $terminalDetails+=[ordered]@{id=[int]$nt.Id;name=$(if($ci){[string]$ci.Name}else{'unknown'});parentPid=$ppid;attributedToFreeNetHub=$attributed}
+  if($attributed){$attributedTerm+=$nt}
+ }
  $ports=@(19410,19413,19414,19450,19452,19453,19460,19591,19594)
  $listeners=@(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue|Where-Object{$ports -contains $_.LocalPort})
  $tun=@(Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq 'FreeNetHub'})
@@ -80,10 +92,10 @@ try{
   schema=1;utc=[DateTimeOffset]::UtcNow.ToString('o');installRoot=$InstallRoot
   version=[Diagnostics.FileVersionInfo]::GetVersionInfo($exe).FileVersion;exeSha256=(Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash
   appManifestFiles=$appCount;gatewayManifestFiles=$gatewayCount;runtimeBootstrap='PASS';gatewayCore='PASS';pwshPathRecorded=$storedPwsh;singBoxSha256=(Get-FileHash -LiteralPath $sb -Algorithm SHA256).Hash
-  shell=[ordered]@{singleInstance=$single;minimizeHiddenToTray=$hidden;restoredVisible=$restored;taskbarWindowIconSet=($big -ne [IntPtr]::Zero -and $small -ne [IntPtr]::Zero);appUserModelId=[string]$owner.appUserModelId;appUserModelIdResult=[int]$owner.appUserModelIdResult;noNewTerminalProcesses=($newTerm.Count -eq 0)}
+  shell=[ordered]@{singleInstance=$single;minimizeHiddenToTray=$hidden;restoredVisible=$restored;taskbarWindowIconSet=($big -ne [IntPtr]::Zero -and $small -ne [IntPtr]::Zero);appUserModelId=[string]$owner.appUserModelId;appUserModelIdResult=[int]$owner.appUserModelIdResult;noAttributedTerminalProcesses=($attributedTerm.Count -eq 0);systemWideNewTerminalProcesses=$newTerm.Count;terminalDetails=$terminalDetails}
   network=[ordered]@{requested=$false;tunCount=$tun.Count;projectPortListeners=$listeners.Count;wslOwner=(Test-Path -LiteralPath (Join-Path $InstallRoot 'gateway\runtime\wsl-console-owner.json'));providerOwner=(Test-Path -LiteralPath (Join-Path $InstallRoot 'gateway\runtime\console-provider-owner.json'))}
  }
- $r.accepted=($single -and $hidden -and $restored -and $big -ne [IntPtr]::Zero -and $small -ne [IntPtr]::Zero -and [int]$owner.appUserModelIdResult -eq 0 -and $newTerm.Count -eq 0 -and $tun.Count -eq 0 -and $listeners.Count -eq 0 -and -not $r.network.wslOwner -and -not $r.network.providerOwner)
+ $r.accepted=($single -and $hidden -and $restored -and $big -ne [IntPtr]::Zero -and $small -ne [IntPtr]::Zero -and [int]$owner.appUserModelIdResult -eq 0 -and $attributedTerm.Count -eq 0 -and $tun.Count -eq 0 -and $listeners.Count -eq 0 -and -not $r.network.wslOwner -and -not $r.network.providerOwner)
  $r|ConvertTo-Json -Depth 12|Set-Content -LiteralPath $EvidencePath -Encoding UTF8
  $r|ConvertTo-Json -Depth 12
  if(!$r.accepted){exit 20}

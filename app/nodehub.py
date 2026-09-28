@@ -1,6 +1,6 @@
 from __future__ import annotations
 import base64, hashlib, html, json, re
-from urllib.parse import parse_qs, unquote, urlsplit
+from urllib.parse import parse_qs, parse_qsl, urlencode, unquote, urlsplit
 
 SUPPORTED_PROTOCOLS = ("ss", "vmess", "vless", "trojan", "hysteria2", "hy2")
 MAX_NODE_TEXT = 2 * 1024 * 1024
@@ -31,14 +31,52 @@ def _q(parts):
     return {k: v[-1] for k, v in parse_qs(parts.query, keep_blank_values=True).items()}
 
 def _transport(q: dict) -> dict | None:
-    typ = (q.get("type") or q.get("net") or "tcp").lower()
+    typ = (q.get("type") or q.get("net") or "").lower()
+    legacy_ws = str(q.get("ws") or "").lower() in ("1", "true", "yes") or bool(q.get("wspath"))
+    if not typ:
+        typ = "ws" if legacy_ws else "tcp"
     if typ in ("tcp", "none", ""):
-        return None
+        header = str(q.get("headerType") or q.get("headertype") or "").lower()
+        if header == "http":
+            typ = "http"
+        else:
+            return None
     if typ == "ws":
-        out = {"type": "ws", "path": unquote(q.get("path", "/") or "/")}
+        path = unquote(q.get("path") or q.get("wspath") or "/")
+        ed = str(q.get("ed") or "").strip()
+        eh = unquote(str(q.get("eh") or "")).strip()
+        if "?" in path:
+            base, query = path.split("?", 1)
+            pairs = parse_qsl(query, keep_blank_values=True)
+            kept = []
+            for k, v in pairs:
+                if k == "ed" and not ed:
+                    ed = v
+                else:
+                    kept.append((k, v))
+            path = base + (("?" + urlencode(kept)) if kept else "")
+        out = {"type": "ws", "path": path or "/"}
         host = q.get("host")
         if host:
             out["headers"] = {"Host": host}
+        if ed:
+            try:
+                early = int(ed)
+            except ValueError as exc:
+                raise ValueError("NODE_WS_EARLY_DATA_INVALID") from exc
+            if not 1 <= early <= 8192:
+                raise ValueError("NODE_WS_EARLY_DATA_INVALID")
+            out["max_early_data"] = early
+            header = eh or "Sec-WebSocket-Protocol"
+            if len(header) > 128 or "\r" in header or "\n" in header:
+                raise ValueError("NODE_WS_EARLY_HEADER_INVALID")
+            out["early_data_header_name"] = header
+        return out
+    if typ in ("http", "h2"):
+        out = {"type": "http", "path": unquote(q.get("path", "/") or "/")}
+        hosts = [x.strip() for x in str(q.get("host") or "").split(",") if x.strip()]
+        if hosts:
+            out["host"] = hosts
         return out
     if typ == "grpc":
         return {"type": "grpc", "service_name": unquote(q.get("serviceName") or q.get("service_name") or "")}
@@ -46,16 +84,21 @@ def _transport(q: dict) -> dict | None:
         out = {"type": "httpupgrade", "path": unquote(q.get("path", "/") or "/")}
         host = q.get("host")
         if host:
-            out["host"] = [host]
+            out["host"] = host
         return out
+    if typ == "quic":
+        return {"type": "quic"}
     raise ValueError("NODE_TRANSPORT_UNSUPPORTED_" + typ.upper())
 
-def _tls(q: dict, server: str) -> dict | None:
+def _tls(q: dict, server: str, default_enabled: bool = False) -> dict | None:
     security = (q.get("security") or "").lower()
     if security not in ("tls", "reality"):
-        return None
-    out = {"enabled": True, "server_name": q.get("sni") or q.get("servername") or server}
-    insecure = str(q.get("allowInsecure") or q.get("insecure") or "").lower()
+        if default_enabled and not security:
+            security = "tls"
+        else:
+            return None
+    out = {"enabled": True, "server_name": q.get("sni") or q.get("servername") or q.get("serverName") or server}
+    insecure = str(q.get("allowInsecure") or q.get("allowinsecure") or q.get("insecure") or "").lower()
     if insecure in ("1", "true", "yes"):
         out["insecure"] = True
     alpn = [x for x in (q.get("alpn") or "").split(",") if x]
@@ -65,10 +108,10 @@ def _tls(q: dict, server: str) -> dict | None:
     if fp:
         out["utls"] = {"enabled": True, "fingerprint": fp}
     if security == "reality":
-        pbk = q.get("pbk") or q.get("publicKey") or q.get("public_key")
+        pbk = q.get("pbk") or q.get("publicKey") or q.get("publickey") or q.get("public_key")
         if not pbk:
             raise ValueError("NODE_REALITY_PUBLIC_KEY_REQUIRED")
-        out["reality"] = {"enabled": True, "public_key": pbk, "short_id": q.get("sid") or q.get("shortId") or q.get("short_id") or ""}
+        out["reality"] = {"enabled": True, "public_key": pbk, "short_id": q.get("sid") or q.get("shortId") or q.get("shortid") or q.get("short_id") or ""}
     return out
 
 def parse_uri(uri: str) -> dict:
@@ -162,7 +205,7 @@ def parse_uri(uri: str) -> dict:
         else:
             node = {
                 "protocol": scheme, "name": _name(parts.fragment, f"{scheme.upper()} {server}"),
-                "server": server, "port": port, "tls": _tls(q, server), "transport": _transport(q),
+                "server": server, "port": port, "tls": _tls(q, server, default_enabled=(scheme == "trojan")), "transport": _transport(q),
             }
             if scheme == "vless":
                 node["uuid"] = user
@@ -232,6 +275,10 @@ def merge(existing: list[dict], incoming: list[dict]) -> list[dict]:
             x["endpoint_test"] = old["endpoint_test"]
         if old.get("history"):
             x["history"] = list(old["history"])[-20:]
+        if old.get("performance_test"):
+            x["performance_test"] = old["performance_test"]
+        if old.get("performance_history"):
+            x["performance_history"] = list(old["performance_history"])[-12:]
         by_id[n["id"]] = x
     return list(by_id.values())[:MAX_NODES]
 
@@ -244,7 +291,9 @@ def public_node(node: dict) -> dict:
         "tags": list(node.get("tags", []) or [])[:16], "note": str(node.get("note", "") or "")[:500],
         "source": node.get("source", ""), "last_test": last,
         "endpoint_test": node.get("endpoint_test") if isinstance(node.get("endpoint_test"), dict) else None,
+        "performance_test": node.get("performance_test") if isinstance(node.get("performance_test"), dict) else None,
         "history": list(node.get("history", []) or [])[-20:],
+        "performance_history": list(node.get("performance_history", []) or [])[-12:],
     }
 
 def _outbound(node: dict) -> dict:

@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "FAIL",
+  "singboxVersion": "1.14.0",
+  "cases": [
+    {
+      "case": "ss_tcp",
+      "status": "FAIL",
+      "stage": "https",
+      "curlExit": 28,
+      "httpCode": "000",
+      "seconds": 4.015343
+    },
+    {
+      "case": "vmess_ws",
+      "status": "FAIL",
+      "stage": "https",
+      "curlExit": 28,
+      "httpCode": "000",
+      "seconds": 4.004208
+    },
+    {
+      "case": "vless_tcp",
+      "status": "FAIL",
+      "stage": "https",
+      "curlExit": 28,
+      "httpCode": "000",
+      "seconds": 4.01282
+    },
+    {
+      "case": "vless_ws_ed",
+      "status": "FAIL",
+      "stage": "https",
+      "curlExit": 28,
+      "httpCode": "000",
+      "seconds": 4.004383
+    }
+  ],
+  "privacy": "Synthetic loopback-only credentials/configs were deleted; no public node data used."
+}

@@ -1,0 +1,202 @@
+{
+  "schema": 3,
+  "version": "4.2.0",
+  "date": "2026-09-28",
+  "product": "Open Internet Gateway / FreeNet Hub",
+  "status": "LOCAL_ACCEPTED_WINDOWS_4.2_R28_FINAL",
+  "authority": {
+    "releaseRevision": "4.2.0-local-r28-final",
+    "installer": {
+      "file": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R28_Final_Setup.exe",
+      "sha256": "2AA91D849A513A21D3BF9903F8E72FFB6A184D378FB357CE4FA7A9D6F7EB0073",
+      "bytes": 15873170,
+      "authenticode": "NotSigned"
+    }
+  },
+  "sourceHashes": {
+    "app/engine.py": "9D9DC7724D05BF8C58986ABE760C9CF0A127F09816046D8984617CBE9A9C8658",
+    "app/nodehub.py": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
+    "app/FreeNetHub.ps1": "6D37EEDAFBE475C785176B50CEBEE11EBA455CF8E6760E0C95DE9D1A0E446C60",
+    "app/View.xaml": "3B170D89488940EEF41503E00FD6DD7AC9C0EAFDCDB7CF53532BDDEBF8AE7E0C",
+    "app/manifest.json": "F82910D2755B78F34FAD59463832F2A7CA8D2849EBBF1E2EBD81F8EF1BDE84EF",
+    "gateway/manifest.json": "ACBC3A9622A75A7807C07A9DEC6D6A9FC310A527AEA185A1C4ED7552FB4E4966",
+    "Uninstall-FreeNetHub.ps1": "DA9DF80E9AE19627BC665659306C9AB94EDAD25E5BD61E3E8AB90634F3532532"
+  },
+  "verification": {
+    "staticRegression": {
+      "status": "PASS",
+      "coreTests": 89,
+      "gatewayScopeTests": 14,
+      "uiContract": "PASS",
+      "strictCountry": "PASS",
+      "transportCompatibility": "PASS",
+      "failClosed": "PASS"
+    },
+    "qualification": {
+      "status": "PASS",
+      "evidence": "evidence/R28_FINAL_QUALIFICATION_ACCEPTANCE_20260928.json",
+      "sha256": "B43C0C20211CF6BEBFD1336571C31CBDE7DDD716429DA69C8E01B32870D40622",
+      "cleanInstall": true,
+      "smoke": true,
+      "uninstall": true,
+      "residueRoot": false,
+      "listenersAfter": 0
+    },
+    "productionInstall": {
+      "status": "PASS",
+      "evidence": "evidence/R28_FINAL_INSTALL_ACCEPTANCE_20260928.json",
+      "sha256": "95EA7DF5FCE80B3DE110B13BE9E67C7C8387BC650ECCA7C065A7995626A09B42",
+      "sourceParity": true,
+      "userStatePreserved": true
+    },
+    "installedSmoke": {
+      "status": "PASS",
+      "evidence": "evidence/R28_FINAL_INSTALLED_SMOKE_20260928.json",
+      "sha256": "E6FC00E136A25A594C63F6F5A0793178CDE6C509F470664FF01407D6F4A1934A",
+      "singleInstance": true,
+      "trayRestore": true,
+      "noAttributedTerminal": true,
+      "idleListeners": 0
+    },
+    "live": {
+      "status": "PASS",
+      "evidence": "evidence/R28_FINAL_LIVE_ACCEPTANCE_20260928.json",
+      "sha256": "7031E8C09273FCF693B95CA04DC543F451C8146DC29DA9232A4A3AE0195B8400",
+      "publicRefresh": {
+        "status": "PASS",
+        "families": [
+          "0xradikal",
+          "matinghanbari",
+          "morpheusadam",
+          "pawdroid-shadowshare",
+          "v2cross"
+        ],
+        "familyCount": 5,
+        "successfulSources": 10,
+        "failedSources": 0,
+        "parsedRaw": 467,
+        "importedUnique": 460,
+        "totalPool": 460,
+        "reachableTcp": 308,
+        "staleDropped": 33,
+        "ttlSeconds": 1800
+      },
+      "direct": {
+        "status": "PASS",
+        "path": "DIRECT_HOST_INTERNET",
+        "proxyUsed": false,
+        "physicalRouteTrusted": true,
+        "adapterName": "Ethernet 3",
+        "cloudflareWarp": "off",
+        "cloudflareGateway": "off",
+        "country": "IR",
+        "pingMs": 83.7,
+        "httpsLatencyMs": 279.7,
+        "downloadMbps": 41.14,
+        "uploadMbps": 5.14,
+        "downloadSampleBytes": 5000000,
+        "uploadSampleBytes": 1000000,
+        "pathProof": "NO_PROXY_ENV+--noproxy_*+PHYSICAL_DEFAULT_ROUTE+CF_WARP_OFF"
+      },
+      "warp": {
+        "status": "PASS",
+        "temporary": true,
+        "healthy": true,
+        "country": "IR",
+        "path": "PROXY_PATH",
+        "proxyUsed": true,
+        "pingMs": 365.8,
+        "downloadMbps": 16.13,
+        "uploadMbps": 1.71,
+        "downloadSampleBytes": 2000000,
+        "uploadSampleBytes": 500000
+      },
+      "nodeSample": {
+        "status": "OBSERVED",
+        "benchmarked": 4,
+        "passed": 0,
+        "failed": 4,
+        "eligible": 316,
+        "remainingUnbenchmarked": 299,
+        "rows": [
+          {
+            "status": "FAIL",
+            "ok": false,
+            "pingMs": 77.8,
+            "downloadMbps": null,
+            "uploadMbps": null,
+            "country": "",
+            "error": "PATH_NOT_VERIFIED_NODE"
+          },
+          {
+            "status": "FAIL",
+            "ok": false,
+            "pingMs": 103.4,
+            "downloadMbps": null,
+            "uploadMbps": null,
+            "country": "",
+            "error": "PATH_NOT_VERIFIED_NODE"
+          },
+          {
+            "status": "FAIL",
+            "ok": false,
+            "pingMs": null,
+            "downloadMbps": null,
+            "uploadMbps": null,
+            "country": "",
+            "error": "PATH_NOT_VERIFIED_NODE"
+          },
+          {
+            "status": "FAIL",
+            "ok": false,
+            "pingMs": 13.3,
+            "downloadMbps": null,
+            "uploadMbps": null,
+            "country": "",
+            "error": "PATH_NOT_VERIFIED_NODE"
+          }
+        ],
+        "interpretation": "Ephemeral public-node availability sample; zero pass is not by itself a deterministic product defect."
+      },
+      "cleanup": {
+        "stateRestored": true,
+        "activeProjectPorts": [],
+        "ownerFiles": 0,
+        "pass": true
+      }
+    },
+    "transport": {
+      "status": "PASS",
+      "evidence": "evidence/R28_TRANSPORT_COMPAT_ACCEPTANCE_20260928.json",
+      "sha256": "F54932B138E2ADDF8BE745418E3BF4D094FE68BD7FE971F110A6A7309E39C4C5"
+    },
+    "publicTreeSecurity": {
+      "status": "PASS",
+      "evidence": "evidence/R28_PUBLIC_TREE_SECURITY_ACCEPTANCE_20260928.json",
+      "sha256": "636B772C5F500BB19D550988A0A64780CCCEBFF831AF2544C461C1B6C85A7A4B"
+    }
+  },
+  "capabilities": {
+    "defaultScope": "BROWSER_ONLY",
+    "fullSystem": "EXPLICIT_WARP_ONLY",
+    "console": "SEPARATE_GATEWAY",
+    "publicSources": {
+      "endpoints": 10,
+      "families": 5,
+      "ttlSeconds": 1800
+    },
+    "metrics": "PING + VERIFIED DOWNLOAD/UPLOAD; failed/unverified throughput=N/A",
+    "githubSelfUpdate": "CHECK -> reject downgrade -> require SHA-256 -> download -> verify -> user confirm -> install"
+  },
+  "externalGates": {
+    "trustedWindowsCodeSigning": "OPEN_NOTSIGNED",
+    "physicalConsoleGameCountryE2E": "UNPROVEN_WITHOUT_ATTACHED_CONSOLE"
+  },
+  "promotion": {
+    "localAcceptance": "PASS",
+    "publicTreeSecurity": "PASS",
+    "hostedCI": "PENDING",
+    "githubR28Release": "PENDING"
+  },
+  "decision": "R28 Windows payload is locally accepted and public-tree/security clean. Hosted CI on the promoted commit is the remaining software promotion gate before publishing the R28 GitHub release; Windows trusted code signing and physical-console E2E remain external gates."
+}

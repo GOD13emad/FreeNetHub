@@ -39,6 +39,10 @@ class GatewayTests(unittest.TestCase):
  def test_verified_wireguard_contract(self):
   p={"kind":"wireguard","country":"NL","capabilities":{"tcp":True,"udp":True,"country_verified":True},"endpoint":{"type":"wireguard","tag":"provider"}}
   x=M.console_contract("WARP",p,"NL");self.assertTrue(x["ready"])
+ def test_pc_tunnel_uses_country_independent_warp_provider_connect(self):
+  text=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("Run-Engine 'ConnectProvider' 'WARP'",text)
+  self.assertNotIn("Run-Engine 'Connect' 'WARP' 220",text)
  def test_gateway_core_bootstrap_uses_canonical_runtime_temp(self):
   text=(G/"Setup-GatewayCore.ps1").read_text(encoding="utf-8-sig")
   self.assertIn("Join-Path $Runtime ('bootstrap-'",text)

@@ -32,9 +32,44 @@ try{
   $py='';if($d.pythonw){$candidate=Join-Path (Split-Path ([string]$d.pythonw) -Parent) 'python.exe';if(Test-Path -LiteralPath $candidate){$py=$candidate}}
   if(!$py){$g=Get-Command python.exe -ErrorAction SilentlyContinue;if($g){$py=$g.Source}}
   if($py){
-   $job=[guid]::NewGuid().ToString('N')
-   & $py $eng --action Stop --mode AUTO --job $job --budget 90|Out-Null
-   if($LASTEXITCODE -ne 0){throw ('ENGINE_STOP_EXIT_'+$LASTEXITCODE)}
+   # A closed/crashed UI can leave one exact engine job finishing in the background.
+   # Request cancellation by its own job id and wait boundedly before Stop, rather than
+   # racing its writes or killing unrelated Python processes.
+   function Get-OwnedEngineJobs{
+    @(
+     Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+      Where-Object {$_.CommandLine -and $_.CommandLine.Contains($eng,[StringComparison]::OrdinalIgnoreCase)} |
+      ForEach-Object {
+       $m=[regex]::Match([string]$_.CommandLine,'(?i)(?:^|\s)--job\s+([a-f0-9]{32})(?:\s|$)')
+       [pscustomobject]@{Pid=[int]$_.ProcessId;Job=$(if($m.Success){$m.Groups[1].Value}else{''})}
+      }
+    )
+   }
+   $running=@(Get-OwnedEngineJobs)
+   if($running.Count){
+    foreach($x in $running){
+     if($x.Job){[IO.File]::WriteAllText((Join-Path $Root ('jobs\'+$x.Job+'.cancel')),'uninstall cancel',[Text.UTF8Encoding]::new($false))}
+    }
+    $Actions+='Requested cancellation of active FreeNetHub engine jobs'
+    $deadline=[DateTime]::UtcNow.AddSeconds(25)
+    do{Start-Sleep -Milliseconds 250;$running=@(Get-OwnedEngineJobs)}while($running.Count -and [DateTime]::UtcNow -lt $deadline)
+    if($running.Count){throw ('ENGINE_JOB_DRAIN_TIMEOUT_'+(($running|ForEach-Object{$_.Pid}) -join ','))}
+    $Actions+='Drained active FreeNetHub engine jobs before cleanup'
+   }
+   $stopOk=$false;$lastStop=''
+   for($attempt=1;$attempt -le 3;$attempt++){
+    $job=[guid]::NewGuid().ToString('N')
+    & $py $eng --action Stop --mode AUTO --job $job --budget 90|Out-Null
+    $ec=$LASTEXITCODE;$jr=Join-Path $Root ('jobs\'+$job+'.json');$detail=''
+    if(Test-Path -LiteralPath $jr){
+     try{$rec=Get-Content -LiteralPath $jr -Raw -Encoding UTF8|ConvertFrom-Json;$detail=[string]$rec.result.error}catch{}
+    }
+    if($ec -eq 0){$stopOk=$true;break}
+    $lastStop=('exit='+$ec+' error='+$detail)
+    if($attempt -lt 3 -and $detail -match 'Permission denied|BUSY_ANOTHER_JOB'){Start-Sleep -Milliseconds (350*$attempt);continue}
+    break
+   }
+   if(!$stopOk){throw ('ENGINE_STOP_FAILED_'+$lastStop)}
    $Actions+='Stopped FreeNetHub-owned browser/proxy providers'
   }
  }

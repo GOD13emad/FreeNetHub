@@ -1,0 +1,78 @@
+{
+  "schema": 2,
+  "date": "2026-09-28",
+  "status": "FAIL",
+  "singboxVersion": "1.14.0",
+  "serverDns": "sing-box local DNS + route.default_domain_resolver=local",
+  "cases": [
+    {
+      "case": "ss_tcp",
+      "status": "FAIL",
+      "stage": "https",
+      "ipLiteral": {
+        "ok": false,
+        "exit": 35,
+        "code": "000",
+        "seconds": 0.096133
+      },
+      "domain": {
+        "ok": false,
+        "exit": 28,
+        "code": "000",
+        "seconds": 4.010585
+      }
+    },
+    {
+      "case": "vmess_ws",
+      "status": "FAIL",
+      "stage": "https",
+      "ipLiteral": {
+        "ok": false,
+        "exit": 35,
+        "code": "000",
+        "seconds": 0.099051
+      },
+      "domain": {
+        "ok": false,
+        "exit": 28,
+        "code": "000",
+        "seconds": 4.009875
+      }
+    },
+    {
+      "case": "vless_tcp",
+      "status": "FAIL",
+      "stage": "https",
+      "ipLiteral": {
+        "ok": false,
+        "exit": 35,
+        "code": "000",
+        "seconds": 0.097377
+      },
+      "domain": {
+        "ok": false,
+        "exit": 28,
+        "code": "000",
+        "seconds": 4.005937
+      }
+    },
+    {
+      "case": "vless_ws_ed",
+      "status": "FAIL",
+      "stage": "https",
+      "ipLiteral": {
+        "ok": false,
+        "exit": 35,
+        "code": "000",
+        "seconds": 0.097157
+      },
+      "domain": {
+        "ok": false,
+        "exit": 28,
+        "code": "000",
+        "seconds": 4.010488
+      }
+    }
+  ],
+  "privacy": "Synthetic loopback credentials/configs deleted; no public-node material used."
+}

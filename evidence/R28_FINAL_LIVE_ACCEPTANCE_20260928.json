@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "test": "R28_FINAL_INSTALLED_LIVE",
+  "direct": {
+    "status": "PASS",
+    "path": "DIRECT_HOST_INTERNET",
+    "proxyUsed": false,
+    "physicalRouteTrusted": true,
+    "adapterName": "Ethernet 3",
+    "cloudflareWarp": "off",
+    "cloudflareGateway": "off",
+    "country": "IR",
+    "pingMs": 83.7,
+    "httpsLatencyMs": 279.7,
+    "downloadMbps": 41.14,
+    "uploadMbps": 5.14,
+    "downloadSampleBytes": 5000000,
+    "uploadSampleBytes": 1000000,
+    "pathProof": "NO_PROXY_ENV+--noproxy_*+PHYSICAL_DEFAULT_ROUTE+CF_WARP_OFF"
+  },
+  "update": {
+    "status": "PASS",
+    "tag": "v4.2.0-r18-virtual-final",
+    "currentRevision": "4.2.0-local-r28-final",
+    "currentRevisionNumber": 28,
+    "remoteRevisionNumber": 17,
+    "updateAvailable": false,
+    "asset": {
+      "name": "FreeNetHub_4.2.0_R17_Final_Setup.exe",
+      "digestPresent": true,
+      "bytes": 15852838
+    }
+  },
+  "warp": {
+    "status": "PASS",
+    "temporary": true,
+    "healthy": true,
+    "country": "IR",
+    "path": "PROXY_PATH",
+    "proxyUsed": true,
+    "pingMs": 365.8,
+    "downloadMbps": 16.13,
+    "uploadMbps": 1.71,
+    "downloadSampleBytes": 2000000,
+    "uploadSampleBytes": 500000
+  },
+  "publicRefresh": {
+    "status": "PASS",
+    "families": [
+      "0xradikal",
+      "matinghanbari",
+      "morpheusadam",
+      "pawdroid-shadowshare",
+      "v2cross"
+    ],
+    "familyCount": 5,
+    "successfulSources": 10,
+    "failedSources": 0,
+    "parsedRaw": 467,
+    "importedUnique": 460,
+    "totalPool": 460,
+    "reachableTcp": 308,
+    "staleDropped": 33,
+    "ttlSeconds": 1800
+  },
+  "nodeSample": {
+    "status": "OBSERVED",
+    "benchmarked": 4,
+    "passed": 0,
+    "failed": 4,
+    "eligible": 316,
+    "remainingUnbenchmarked": 299,
+    "rows": [
+      {
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 77.8,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 103.4,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": null,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 13.3,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      }
+    ],
+    "interpretation": "Ephemeral public-node availability sample; zero pass is not by itself a deterministic product defect."
+  },
+  "cleanup": {
+    "stateRestored": true,
+    "activeProjectPorts": [],
+    "ownerFiles": 0,
+    "pass": true
+  },
+  "error": "",
+  "privacy": "No raw node URI, credential, server address, or exit IP is persisted."
+}

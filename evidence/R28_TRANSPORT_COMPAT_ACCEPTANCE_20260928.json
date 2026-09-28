@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "singBoxVersion": "sing-box version 1.14.0",
+  "cases": [
+    {
+      "case": "trojan_default_tls",
+      "parse": "PASS",
+      "singBoxCheck": "PASS",
+      "exit": 0,
+      "error": ""
+    },
+    {
+      "case": "ws_early_data",
+      "parse": "PASS",
+      "singBoxCheck": "PASS",
+      "exit": 0,
+      "error": ""
+    },
+    {
+      "case": "http_h2",
+      "parse": "PASS",
+      "singBoxCheck": "PASS",
+      "exit": 0,
+      "error": ""
+    },
+    {
+      "case": "httpupgrade",
+      "parse": "PASS",
+      "singBoxCheck": "PASS",
+      "exit": 0,
+      "error": ""
+    },
+    {
+      "case": "quic",
+      "parse": "PASS",
+      "singBoxCheck": "PASS",
+      "exit": 0,
+      "error": ""
+    },
+    {
+      "case": "reality_alias",
+      "parse": "PASS",
+      "singBoxCheck": "PASS",
+      "exit": 0,
+      "error": ""
+    }
+  ]
+}

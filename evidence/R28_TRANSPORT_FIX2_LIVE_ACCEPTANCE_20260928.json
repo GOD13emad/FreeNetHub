@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "pre": {
+    "total": 433,
+    "favorite": 0,
+    "pinned": 0,
+    "rated": 0,
+    "tagged": 0,
+    "noted": 0,
+    "duplicateRawGroups": 0
+  },
+  "refresh": {
+    "exit": 0,
+    "refreshed": true,
+    "fresh": true,
+    "parsedRaw": 439,
+    "imported": 433,
+    "staleDropped": 0,
+    "total": 433,
+    "reachable": 280,
+    "sources": [
+      "V2CROSS_PAGE",
+      "SHADOWSHARE_SUB_EN",
+      "SHADOWSHARE_SUB_DE",
+      "SHADOWSHARE_SUB_FR",
+      "SHADOWSHARE_README_ID",
+      "SHADOWSHARE_README_BN",
+      "SHADOWSHARE_README_ES",
+      "RADIKAL_TOP100",
+      "MORPHEUS_MINI",
+      "MATIN_SUB1"
+    ],
+    "failed": [],
+    "families": [
+      "0xradikal",
+      "matinghanbari",
+      "morpheusadam",
+      "pawdroid-shadowshare",
+      "v2cross"
+    ]
+  },
+  "post": {
+    "total": 433,
+    "favorite": 0,
+    "pinned": 0,
+    "rated": 0,
+    "tagged": 0,
+    "noted": 0,
+    "duplicateRawGroups": 0
+  },
+  "benchmark": {
+    "benchmarked": 4,
+    "passed": 0,
+    "failed": 4,
+    "eligible": 294,
+    "remaining": 280,
+    "results": [
+      {
+        "protocol": "vmess",
+        "source": "MATIN_SUB1",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 62.4,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "protocol": "ss",
+        "source": "SHADOWSHARE_README_ES",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 90.2,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "protocol": "hysteria2",
+        "source": "SHADOWSHARE_SUB_DE",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": null,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "protocol": "trojan",
+        "source": "MORPHEUS_MINI",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 13.3,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      }
+    ]
+  },
+  "cleanup": {
+    "projectListenerCount": 0,
+    "singboxCount": 0,
+    "pass": true
+  },
+  "privacy": "No raw URI, server, credential, path, key or exit IP persisted."
+}

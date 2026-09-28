@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "provider": "WARP",
+  "status": "PASS",
+  "performance": {
+    "exit": 0,
+    "healthy": true,
+    "temporary": true,
+    "ok": true,
+    "pingMs": 426.5,
+    "downloadMbps": 16.93,
+    "uploadMbps": 1.55,
+    "country": "IR",
+    "error": null
+  },
+  "cleanup": {
+    "projectListeners": [],
+    "pass": true
+  },
+  "privacy": "No raw exit IP persisted."
+}

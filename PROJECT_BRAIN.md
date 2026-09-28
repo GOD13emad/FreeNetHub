@@ -1,288 +1,45 @@
-# PROJECT BRAIN — FreeNet Hub / Open Internet Gateway
+# PROJECT BRAIN — Open Internet Gateway / FreeNet Hub
 
 Status: CURRENT
-Brain version: R27-country-shadowshare-hy2-final-2026-09-28
-Project root: %PROJECT_ROOT%
-Current base authority: R27 is on GitHub main; hosted CI/public-manifest promotion is the current gate.
+Brain version: R28-local-accepted-2026-09-28
+Authority: working tree R28 candidate + evidence/R28_FINAL_ACCEPTANCE_20260928.json
+Installer: FreeNetHub_4.2.0_R28_Final_Setup.exe
+Installer SHA-256: 2AA91D849A513A21D3BF9903F8E72FFB6A184D378FB357CE4FA7A9D6F7EB0073
 
 ## Objective / DoD
-A self-contained, user-friendly connectivity hub with Browser Only as default, explicit Full System WARP, isolated Console Gateway, strict real-exit country semantics, robust Node Hub management, direct host speed diagnostics, reproducible installer/uninstaller behavior, and evidence-backed promotion.
+A self-contained Windows gateway with browser-only default, explicit WARP full-system mode, separate console gateway, provider-specific connection UI, refreshed/tested public node pool, real path metrics, safe update and evidence-backed install/uninstall.
 
 ## Roadmap
-1. R21 strict country + browser-only Node Hub — Completed/committed/pushed.
-2. Direct ping/download/upload using host physical Internet with path proof — Completed/live PASS.
-3. Installer bootstrap, upgrade preservation, clean uninstall — Completed/PASS.
-4. Country UI immediate persistence + mismatch fail-closed presentation — Completed/PASS.
-5. ShadowShare-style Node management: filter/sort, pin/favorite, metadata, history, copy/export — Completed static/policy PASS; final installed smoke pending rebuild.
-6. Linux accepted existing scope — PASS; Windows R22 Node-management parity on Linux is MISSING/DEFERRED.
-7. Final manifest/installer/installed-product regression — Completed/PASS (R27).
-8. Follow-up commit/push + hosted CI; publish follow-up asset only after gates — ← CURRENT.
+1. Browser identity/proxy baseline — Completed.
+2. Full-system WARP with rollback — Completed.
+3. Separate console gateway software path — Completed; physical-console field gate remains external.
+4. Strict country + Node Hub — Completed.
+5. R28 provider-specific UI / metrics / refresh / self-update — Completed.
+6. Exact final installer clean-install/upgrade/uninstall/live validation — Completed.
+7. Public-tree/security verification — Completed.
+8. Hosted CI + GitHub R28 release — ← CURRENT.
 
-## Evidence / V&V
-- Engine/Country/NodeHub suite: 65/65 PASS.
-- Gateway unit: 13/13 PASS.
-- Scope UI policy: 3/3 PASS.
-- R22 country/ShadowShare static contract: PASS.
-- R21 live public Node HTTPS/exit validation: PASS; observed SG; sensitive raw credentials/IP omitted.
-- Direct host speed: PASS with FreeNetHub browser proxy bypassed and physical default route proof.
-- R21 uninstall regression: PASS after residue root-cause fix.
-- Exact installer upgrade preservation evidence: evidence/R21_UPGRADE_PRESERVATION_ACCEPTANCE_20260928.json.
+## Accepted current state
+- Static regression: 89 core + 14 gateway/scope PASS.
+- Public refresh: 10 endpoints / 5 independent source families / 30-minute TTL; installed live sample 10 successful, 0 failed.
+- Direct and WARP installed path Ping/Download/Upload: PASS.
+- Node metric contract: verified path only; invalid throughput=N/A.
+- Qualification: clean install + smoke + uninstall + zero residue/listeners PASS.
+- Production upgrade: exact final installer, source parity and user-state preservation PASS.
+- Security privacy scan must be PASS before promotion.
 
-## Open / External Gates
-- PUBLIC_TRUST_WINDOWS_CODE_SIGNING: OPEN; installer NotSigned.
-- PHYSICAL_CONSOLE_GAME_COUNTRY_E2E: UNPROVEN without attached console traffic.
-- ANDROID/IOSS production forwarding/signing/real-device: OPEN.
-- Linux parity for R22 Node-management features: MISSING/DEFERRED.
-
-## Authority / Superseded
-- Commit 762da6d… is accepted R21 source authority.
-- Any installer built before the current R22 app hashes is SUPERSEDED and must not be promoted.
-- Final follow-up authority requires manifest regeneration, rebuild, installed parity/smoke, public-tree/security PASS, then commit/push.
+## Open external gates
+- Windows trusted Authenticode signing: OPEN_NOTSIGNED.
+- Physical console game/country E2E: UNPROVEN without attached console traffic.
 
 ## Exact Next Action
-Repair and pass hosted CI public-tree verification for R27, then publish the accepted installer asset; trusted Windows signing remains a separate external gate.
-## R27 Accepted Local Milestone — 2026-09-28
-- Status: LOCAL_ACCEPTED / functional Windows R27.
-- Installer: FreeNetHub_4.2.0_R27_Country_ShadowShare_Final_Setup.exe; SHA-256 151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996; Authenticode NotSigned.
-- Country: strict actual-exit semantics PASS; installed live target SG -> actual SG via NODE.
-- Public Node refresh: 145 total candidates on acceptance run, 137 imported during refresh, 7/7 configured public sources succeeded.
-- Protocols: SS / VMess / VLESS / Trojan / Hysteria2.
-- Regression: 65/65 Windows/core, 13/13 gateway, Hysteria2 fidelity, protocol-aware HY2 preflight, strict-country mismatch, Node fail-fast, fail-closed all PASS.
-- Installed parity: engine/nodehub/PowerShell UI/View/manifest all source-identical; settings and nodes preserved.
-- Installed smoke: single-instance/tray/taskbar/no-terminal PASS; idle project listeners=0.
-- Evidence: evidence/R27_FINAL_ACCEPTANCE_20260928.json; evidence/R27_PROJECT_KNOWLEDGE_20260928.json.
-- External gate: PUBLIC_TRUST_WINDOWS_CODE_SIGNING remains OPEN (NotSigned).
+Commit and push the security-clean R28 candidate, validate hosted CI on that exact commit, then publish the exact accepted R28 installer asset.
 
-## HISTORY (append-only)
-- 2026-09-28: Hosted CI run 36412879164 exposed public-manifest EOL/order drift and missing R27 evidence version; root cause repaired by Git-clean-filtered manifest bytes, manifest-last ordering, LF normalization, and release/evidence schema parity.
-- 2026-09-28: R27 local acceptance completed: strict SG live PASS, ShadowShare-style multi-source Node refresh + Hysteria2 PASS, installed parity/smoke PASS; trusted signing remains OPEN.
-- 2026-09-28: R21 commit 762da6d… created and pushed by another writer while this audit was running; reconciled without overwrite.
-- 2026-09-28: late concurrent country-UI and ShadowShare-style node-management delta detected; promotion stopped whenever public-tree hash mismatch appeared.
-- 2026-09-28: R22 static test initially failed because node history was recorded by engine but not exposed by public_node(); fixed by returning bounded last-20 history; R22 static test then PASS.
-- 2026-09-28: prior installer uninstall left last.json/session.json/logs/__pycache__; root cause converted to cleanup entries + regression; second uninstall removed qualification root.
+## HISTORY
+- R28: provider-capability UI, 10-source/5-family public refresh, TTL/stale pruning, real Ping/Download/Upload metrics, bounded diverse node benchmarking and GitHub self-update.
+- R28: transport compatibility expanded and fail-closed semantics strengthened.
+- R28: concurrent build supersede prevented with source-freeze guard.
+- R28: uninstall race root-caused to a finishing background engine job and fixed with exact-job cancel/drain plus narrow retry.
+- R28: exact final installer qualified and production-upgraded with state preservation and installed live validation.
 
-<!-- RC_WORKFLOW_STATE:fnh-r22-nodehub-repair:BEGIN -->
-# Project Brain
-
-Generated by ChatGPT Remote Commander durable workflow engine.
-
-## Current Authority
-- Workflow: fnh-r22-nodehub-repair
-- Lifecycle: WAITING
-- Revision: 8
-- Device: Emad-PC-Ultimate
-
-## Final Objective
-Reapply and independently verify the unexpectedly reverted nodehub history projection, preserving imported-node metadata and keeping credentials out of public node rows.
-
-## Definition of Done
-- nodehub.py public_node exposes only safe nonsecret bounded history.
-- merge preserves prior bounded history along with favorites/pins/metadata.
-- R22 static policy test is aligned to implementation and passes.
-
-## Completed
-- nodehub
-- testfix
-- verify
-
-## Open
-- None
-
-## Evidence
-- app\nodehub.py sha256=fe3cabb648286bdb0de15965cfd4165f450dcaee0fa72bbf1fb70ffa007a29f4
-- tests\test_r22_country_shadowshare.py sha256=a5853e3917b112444d6e64b5a920b98bb985a997c32763afdc6b53355747c9f7
-
-## Chat Handoffs
-- None
-
-## Exact Next Action
-Run full corrected R22 regression suite and parse checks.
-
-## Execution Profile
-{
-  "executionMode": "project-agent",
-  "fallbackPolicy": "equivalent-or-better",
-  "modelFamily": null,
-  "modelVariant": null,
-  "profileVersion": "1",
-  "reasoningEffort": null,
-  "schemaVersion": 1
-}
-
-## Finalization
-- Status: UNVALIDATED
-<!-- RC_WORKFLOW_STATE:fnh-r22-nodehub-repair:END -->
-
-<!-- RC_WORKFLOW_STATE:fnh-r22-finalize:BEGIN -->
-# Project Brain
-
-Generated by ChatGPT Remote Commander durable workflow engine.
-
-## Current Authority
-- Workflow: fnh-r22-finalize
-- Lifecycle: WAITING
-- Revision: 9
-- Device: Emad-PC-Ultimate
-
-## Final Objective
-Run final R22 regression, rebuild integrity metadata, perform bounded live strict-country validation, build a new installer, and record final evidence for the country-selection and ShadowShare-inspired Node Hub release.
-
-## Definition of Done
-- All R22/core/gateway/fail-closed/parse tests pass.
-- Manifest hashes match current modified runtime source.
-- Non-network UI smoke passes after manifest rebuild.
-- Live strict-country test accepts only actual matching exit and cleans up its temporary connection.
-- R22 installer builds, installs/smokes safely, and its SHA-256 is recorded.
-- Release/knowledge evidence states QR and format conversion limitations accurately.
-
-## Completed
-- regress
-- metadata
-
-## Open
-- smoke [reconciled_not_applied] — Run post-metadata non-network smoke
-- live [pending] — Run bounded live strict-country validation
-- installer [pending] — Build and verify R22 installer
-- evidence [pending] — Finalize R22 acceptance evidence and handoff
-
-## Evidence
-- app\manifest.json sha256=e03003a0ac91d601f66300ff9807575e2b8967e71cf3a6ddb34ab6d42ed83722
-- RELEASE.json sha256=28d2af568d25d0b8adfec1da40089104146878175aee551f5079e4b3e6262b70
-- PUBLIC_MANIFEST.json sha256=92ddc16d5ff2c7548b2998261e5ec5856f04adbc7cf80415b3b4d75aa9bda13c
-- app\engine.py sha256=3960e59606dbea4812e1efe6fed9eafcfb63eadb777a5ee9fca1c1ded2b0adc2
-- app\nodehub.py sha256=fe3cabb648286bdb0de15965cfd4165f450dcaee0fa72bbf1fb70ffa007a29f4
-- app\FreeNetHub.ps1 sha256=30624181e46a86d6c2228d740a22f2b013df06f9ef6e853e0010d48afca6203f
-- app\View.xaml sha256=7fdf3bafe325147c130e1c4a657181177377747fddfe61a0fd2d4b4cab0533c0
-- tests\test_r22_country_shadowshare.py sha256=90c4e5c0d0b79d7d5a2a8853895039a754d7e2dc4db297bf1e4bd35723727996
-
-## Chat Handoffs
-- None
-
-## Exact Next Action
-Build the R22 installer, then validate installed UI smoke and strict-country behavior from the generated runtime dependency manifest.
-
-## Execution Profile
-{
-  "executionMode": "project-agent",
-  "fallbackPolicy": "equivalent-or-better",
-  "modelFamily": null,
-  "modelVariant": null,
-  "profileVersion": "1",
-  "reasoningEffort": null,
-  "schemaVersion": 1
-}
-
-## Finalization
-- Status: UNVALIDATED
-<!-- RC_WORKFLOW_STATE:fnh-r22-finalize:END -->
-
-<!-- RC_WORKFLOW_STATE:fnh-r22-build-scripted:BEGIN -->
-# Project Brain
-
-Generated by ChatGPT Remote Commander durable workflow engine.
-
-## Current Authority
-- Workflow: fnh-r22-build-scripted
-- Lifecycle: WAITING
-- Revision: 11
-- Device: Emad-PC-Ultimate
-
-## Final Objective
-Build R22 deterministically using a small versioned pwsh build script and a persistent terminal so compiler completion is observed without wrapper timeout or quoting ambiguity.
-
-## Definition of Done
-- Build script invokes the verified per-user ISCC path and removes any prior R22 output before compile.
-- Persistent terminal runs pwsh.exe -File and reports BUILD_EXIT=0.
-- Resulting installer passes independent PE/hash/AuthentiCode readback.
-- No installation or network action occurs during build.
-
-## Completed
-- script
-- start
-- read
-
-## Open
-- validate [reconciled_not_applied] — Validate completed R22 artifact
-
-## Evidence
-- windows\installer\FreeNetHub.iss sha256=bbd5f5da562668690cee099b3525bc5e6e7c9c43bd1031dad58165d14e42aefd
-- tests\build_r22_installer.ps1 sha256=0d6ab2d21e4720dd0515d11208e42127287fa37629692819df04eccdab14513f
-
-## Chat Handoffs
-- None
-
-## Exact Next Action
-Read the R22 installer hash/size again after the file has stabilized; accept only if stable across two independent reads and then proceed to install/smoke.
-
-## Execution Profile
-{
-  "executionMode": "project-agent",
-  "fallbackPolicy": "equivalent-or-better",
-  "modelFamily": null,
-  "modelVariant": null,
-  "profileVersion": "1",
-  "reasoningEffort": null,
-  "schemaVersion": 1
-}
-
-## Finalization
-- Status: UNVALIDATED
-<!-- RC_WORKFLOW_STATE:fnh-r22-build-scripted:END -->
-
-<!-- RC_WORKFLOW_STATE:fnh-r22-installed-acceptance:BEGIN -->
-# Project Brain
-
-Generated by ChatGPT Remote Commander durable workflow engine.
-
-## Current Authority
-- Workflow: fnh-r22-installed-acceptance
-- Lifecycle: WAITING
-- Revision: 12
-- Device: Emad-PC-Ultimate
-
-## Final Objective
-Safely promote the stable R22 installer to the local Windows installation, verify installed integrity and non-network UI behavior, then run bounded strict-country validation with cleanup and persist final evidence.
-
-## Definition of Done
-- Installed FreeNet Hub prestate is captured before mutation; no unrelated process/network state is changed.
-- Stable R22 installer SHA-256 214B05E0A48B75C66275F914BFF571A70EE478F6D84F48B132063AD362AF9CDF installs successfully with no reboot.
-- Installed app/runtime hashes match R22 manifests and generated dependency bootstrap passes.
-- Installed UI smoke passes with networkRequested=false and browser scope default.
-- Strict-country live validation accepts only a matching actual exit and cleanup returns FreeNet Hub network state to stopped.
-- Final R22 evidence and Project Knowledge are persisted without raw node credentials.
-
-## Completed
-- prestate
-- install
-- integrity
-- smoke
-
-## Open
-- live [pending] — Run bounded strict-country validation and cleanup
-- evidence [pending] — Persist final R22 acceptance evidence
-
-## Evidence
-- app\FreeNetHub.ps1 sha256=30624181e46a86d6c2228d740a22f2b013df06f9ef6e853e0010d48afca6203f
-- app\engine.py sha256=3960e59606dbea4812e1efe6fed9eafcfb63eadb777a5ee9fca1c1ded2b0adc2
-- app\manifest.json sha256=af94b46f21068c8c42d5b40a71ce6d323f483e73981968feaa1e794c9f7ccf60
-
-## Chat Handoffs
-- None
-
-## Exact Next Action
-Diagnose the installed Inventory PermissionError without starting any network path; repair only if reproducible and then rerun installed smoke.
-
-## Execution Profile
-{
-  "executionMode": "project-agent",
-  "fallbackPolicy": "equivalent-or-better",
-  "modelFamily": null,
-  "modelVariant": null,
-  "profileVersion": "1",
-  "reasoningEffort": null,
-  "schemaVersion": 1
-}
-
-## Finalization
-- Status: UNVALIDATED
-<!-- RC_WORKFLOW_STATE:fnh-r22-installed-acceptance:END -->
+- 2026-09-28 R28: final public security/integrity gate PASS; no sensitive path/token hits and all public/release manifests verified.

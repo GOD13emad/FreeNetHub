@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "CURRENT",
+  "context": "R28 repeated public-node TCP-reachable but HTTP-path-invalid failures",
+  "claims": [
+    {
+      "type": "Fact",
+      "status": "Confirmed",
+      "claim": "Installed pool had 475 public nodes; 336 were quick-test eligible in the latest live gate, while repeated full-path samples returned PATH_NOT_VERIFIED_NODE and honest N/A throughput.",
+      "evidence": [
+        "evidence/R28_FINAL2_LIVE_NODE_UPDATE_ACCEPTANCE_20260928.json",
+        "privacy-safe installed structural audits"
+      ],
+      "confidence": "High",
+      "reuseTargets": [
+        "PROJECT_BRAIN",
+        "release notes",
+        "technical report",
+        "failure-prevention guide"
+      ]
+    },
+    {
+      "type": "Fact",
+      "status": "Confirmed",
+      "claim": "Trojan share links can omit a security=tls parameter because TLS is intrinsic/default in Trojan/Trojan-Go semantics; the prior parser enabled TLS only when security=tls/reality was explicit.",
+      "evidence": [
+        "https://github.com/p4gefau1t/trojan-go/issues/132",
+        "https://sing-box.sagernet.org/configuration/outbound/"
+      ],
+      "confidence": "High",
+      "reuseTargets": [
+        "parser rationale",
+        "protocol compatibility documentation"
+      ]
+    },
+    {
+      "type": "Fact",
+      "status": "Confirmed",
+      "claim": "sing-box WebSocket transport supports max_early_data and early_data_header_name; Xray WebSocket uses ed to enable early data and Sec-WebSocket-Protocol compatibility.",
+      "evidence": [
+        "https://sing-box.sagernet.org/configuration/shared/v2ray-transport/",
+        "https://github.com/XTLS/Xray-docs-next/blob/main/docs/config/transports/websocket.md"
+      ],
+      "confidence": "High",
+      "reuseTargets": [
+        "parser rationale",
+        "Node Hub documentation"
+      ]
+    },
+    {
+      "type": "Fact",
+      "status": "Confirmed",
+      "claim": "sing-box 1.14 transport model supports HTTP, WebSocket, QUIC, gRPC and HTTPUpgrade; it does not support XHTTP/mKCP in this transport interface, so unsupported transports remain fail-closed.",
+      "evidence": [
+        "https://sing-box.sagernet.org/configuration/shared/v2ray-transport/"
+      ],
+      "confidence": "High",
+      "reuseTargets": [
+        "method choice",
+        "limitations"
+      ]
+    },
+    {
+      "type": "Decision",
+      "status": "Accepted for R28 transport-fix candidate",
+      "claim": "Keep cheap endpoint reachability separate from full HTTP-path verification; failed throughput is N/A rather than 0 Mbps; do not weaken path verification.",
+      "evidence": [
+        "tests/test_engine.py",
+        "app/engine.py",
+        "evidence/R28_FINAL2_LIVE_NODE_UPDATE_ACCEPTANCE_20260928.json"
+      ],
+      "confidence": "High",
+      "reuseTargets": [
+        "UI semantics",
+        "V&V",
+        "release notes"
+      ]
+    },
+    {
+      "type": "Decision",
+      "status": "Accepted for R28 transport-fix candidate",
+      "claim": "Benchmark remains bounded to four candidates per wave but prioritizes under-tested protocols before source diversity, preventing VMess/SS/Hysteria2 starvation behind large VLESS/Trojan pools.",
+      "evidence": [
+        "tests/test_engine.py",
+        "app/engine.py"
+      ],
+      "confidence": "High",
+      "reuseTargets": [
+        "scheduler rationale",
+        "performance testing methodology"
+      ]
+    }
+  ],
+  "limitations": [
+    "Public free nodes are untrusted and volatile; TCP reachability does not prove proxy validity.",
+    "A successful parser mapping does not prove a public credential/server is still alive.",
+    "Trusted Windows code signing remains an external gate."
+  ]
+}

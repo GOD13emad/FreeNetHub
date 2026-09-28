@@ -9,6 +9,19 @@ NH=importlib.util.module_from_spec(_nhspec);_nhspec.loader.exec_module(NH)
 PORTS={'NODE':19460,'WARP':19410,'GOOL':19413,'CFON':19414,'TOR':19450,'WEBTUNNEL':19452,'OBFS4':19453}
 DEFAULT={'theme':'dark','country':'AUTO','home':'https://www.youtube.com/','monitor':False,'autoRepair':False,'showIp':False,'minimizeToTray':True,'order':['NODE','WARP','TOR','GOOL','CFON'],'localProxy':'socks5h://127.0.0.1:9909','includeDirect':False}
 ALLOWED_COUNTRIES={'AT','DE','NL','US','CA','GB','FR','SG','JP','AUTO'}
+PUBLIC_REFRESH_TTL_SECONDS=1800
+PUBLIC_NODE_SOURCES=(
+ ('V2CROSS_PAGE','v2cross','https://v2cross.com/en/free-v2ray-nodes/'),
+ ('SHADOWSHARE_SUB_EN','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_en'),
+ ('SHADOWSHARE_SUB_DE','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_de'),
+ ('SHADOWSHARE_SUB_FR','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_fr'),
+ ('SHADOWSHARE_README_ID','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-id.md'),
+ ('SHADOWSHARE_README_BN','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-bn.md'),
+ ('SHADOWSHARE_README_ES','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-es.md'),
+ ('RADIKAL_TOP100','0xradikal','https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/top100.txt'),
+ ('MORPHEUS_MINI','morpheusadam','https://raw.githubusercontent.com/morpheusadam/v2ray-config/main/subs/bundles/mini.txt'),
+ ('MATIN_SUB1','matinghanbari','https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/v2ray/subs/sub1.txt'),
+)
 FLAGS=0x08000000|0x00000200
 JOB=''; DEADLINE=float('inf'); STARTED=[]
 
@@ -66,6 +79,26 @@ def node_store():
 
 def save_node_store(store):
  write(ROOT/'data'/'nodes.json',{'schema':1,'selected':str(store.get('selected') or ''),'nodes':list(store.get('nodes') or [])[:NH.MAX_NODES]})
+
+def public_refresh_state():
+ x=read(ROOT/'data'/'node_public_refresh.json',{}) or {}
+ return x if isinstance(x,dict) else {}
+
+def public_refresh_age_seconds(state=None):
+ s=public_refresh_state() if state is None else state;stamp=str(s.get('lastSuccessUtc') or '')
+ if not stamp:return None
+ try:
+  when=dt.datetime.fromisoformat(stamp.replace('Z','+00:00'))
+  if when.tzinfo is None:when=when.replace(tzinfo=dt.timezone.utc)
+  return max(0.0,(dt.datetime.now(dt.timezone.utc)-when.astimezone(dt.timezone.utc)).total_seconds())
+ except ValueError:return None
+
+def public_refresh_is_fresh(state=None,store=None):
+ s=public_refresh_state() if state is None else state;pool=node_store() if store is None else store;age=public_refresh_age_seconds(s)
+ return bool(pool.get('nodes') and s.get('status')=='PASS' and age is not None and age<PUBLIC_REFRESH_TTL_SECONDS)
+
+def public_source_names():
+ return {name for name,_,__ in PUBLIC_NODE_SOURCES}
 
 def node_selected(store=None):
  s=node_store() if store is None else store;sid=s.get('selected')
@@ -216,6 +249,64 @@ def curl(url,proxy='',seconds=7,body=True,size=262144):
   r=native(args,seconds+2);bodytext,sep,meta=r['out'].rpartition('\n__FNH__');parts=meta.split()
   return {'exit':r['exit'],'code':parts[0] if parts else '000','seconds':float(parts[1]) if len(parts)>1 else round(time.monotonic()-started,3),'bytes':int(float(parts[2])) if len(parts)>2 else 0,'bps':float(parts[3]) if len(parts)>3 else 0,'body':bodytext[:size],'error':r['err'][:700]}
  except TimeoutError:return {'exit':124,'code':'000','seconds':round(time.monotonic()-started,3),'body':'','error':'TIMEOUT'}
+
+def node_refresh_public(force=False):
+ old=node_store();state=public_refresh_state();age=public_refresh_age_seconds(state)
+ families=sorted({family for _,family,__ in PUBLIC_NODE_SOURCES})
+ if not force and public_refresh_is_fresh(state,old):
+  return {'refreshed':False,'fresh':True,'ageSeconds':round(age,1) if age is not None else None,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'total':len(old['nodes']),'selected':old.get('selected'),'sourceFamilies':families,'sources':list(state.get('sources') or []),'failedSources':list(state.get('failedSources') or []),'nodes':node_public_rows(old)}
+ progress('Refreshing public node sources','NODE')
+ fetched={}
+ with concurrent.futures.ThreadPoolExecutor(max_workers=min(8,len(PUBLIC_NODE_SOURCES))) as ex:
+  fs={ex.submit(curl,url,seconds=18,size=NH.MAX_NODE_TEXT):(name,family,url) for name,family,url in PUBLIC_NODE_SOURCES}
+  for f in concurrent.futures.as_completed(fs):
+   check();name,family,url=fs[f]
+   try:fetched[name]=f.result()
+   except Exception as exc:fetched[name]={'exit':1,'code':'','body':'','error':str(exc)}
+ incoming=[];ok=[];failed=[];stats=[];parsed_raw=0
+ for name,family,_ in PUBLIC_NODE_SOURCES:
+  r=fetched.get(name,{})
+  if r.get('exit')==0 and r.get('code')=='200':
+   try:p=NH.parse_blob(r.get('body',''),name)
+   except ValueError as exc:
+    failed.append(name);stats.append({'name':name,'family':family,'status':'PARSE_FAILED','found':0,'error':str(exc)});continue
+   incoming.extend(p['nodes']);found=len(p['nodes']);parsed_raw+=found;ok.append(name)
+   stats.append({'name':name,'family':family,'status':'PASS','found':found,'parseErrors':len(p.get('errors') or [])})
+  else:
+   failed.append(name);stats.append({'name':name,'family':family,'status':'FETCH_FAILED','found':0,'error':str(r.get('error') or r.get('code') or 'UNREACHABLE')[:160]})
+ if not ok:
+  degraded={'schema':1,'status':'DEGRADED','checkedUtc':now(),'lastSuccessUtc':state.get('lastSuccessUtc'),'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'sourceFamilies':families,'sources':[],'failedSources':failed,'sourceStats':stats}
+  write(ROOT/'data'/'node_public_refresh.json',degraded)
+  if old['nodes']:
+   return {'refreshed':False,'fresh':False,'degraded':True,'ageSeconds':age,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'total':len(old['nodes']),'selected':old.get('selected'),'sourceFamilies':families,'sources':[],'failedSources':failed,'nodes':node_public_rows(old),'warning':'Public refresh failed; retained the existing pool.'}
+  raise ValueError('PUBLIC_NODE_SOURCE_UNREACHABLE')
+ old_by={str(n.get('id')):n for n in old['nodes'] if n.get('id')}
+ old_by_raw={str(n.get('raw')):n for n in old['nodes'] if n.get('raw')}
+ incoming_ids={str(n.get('id')) for n in incoming if n.get('id')}
+ matching=[];migrated_old_ids=set()
+ for n in incoming:
+  nid=str(n.get('id') or '')
+  if nid in old_by:
+   matching.append(old_by[nid]);continue
+  raw=str(n.get('raw') or '')
+  legacy=old_by_raw.get(raw) if raw else None
+  if legacy:
+   # Parser-semantic migrations may change node ID. Preserve only user-authored
+   # metadata; old endpoint/HTTPS/performance evidence belongs to the old config.
+   matching.append({'id':nid,'favorite':bool(legacy.get('favorite')),'pinned':bool(legacy.get('pinned')),'rating':int(legacy.get('rating',0) or 0),'tags':list(legacy.get('tags') or [])[:16],'note':str(legacy.get('note') or '')[:500]})
+   migrated_old_ids.add(str(legacy.get('id') or ''))
+ fresh_nodes=NH.merge(matching,incoming)
+ refreshed_names=set(ok)
+ preserved=[n for n in old['nodes'] if str(n.get('id')) not in incoming_ids and str(n.get('id')) not in migrated_old_ids and (str(n.get('source') or '') not in refreshed_names or bool(n.get('favorite')) or bool(n.get('pinned')))]
+ dropped=sum(1 for n in old['nodes'] if str(n.get('id')) not in incoming_ids and str(n.get('source') or '') in refreshed_names and not n.get('favorite') and not n.get('pinned'))
+ final_nodes=NH.merge(preserved,fresh_nodes)
+ selected=str(old.get('selected') or '')
+ if not any(str(n.get('id'))==selected for n in final_nodes):selected=str(final_nodes[0].get('id')) if final_nodes else ''
+ save_node_store({'schema':1,'selected':selected,'nodes':final_nodes})
+ batch=node_batch_fast();pool=node_store();stamp=now()
+ receipt={'schema':1,'status':'PASS','checkedUtc':stamp,'lastSuccessUtc':stamp,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'sourceFamilies':families,'sources':ok,'failedSources':failed,'sourceStats':stats,'parsedRaw':parsed_raw,'freshPublicUnique':len(incoming_ids),'staleDropped':dropped,'total':len(pool['nodes'])}
+ write(ROOT/'data'/'node_public_refresh.json',receipt)
+ return {'refreshed':True,'fresh':True,'ageSeconds':0.0,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'imported':len(incoming_ids),'parsedRaw':parsed_raw,'staleDropped':dropped,'total':len(pool['nodes']),'reachable':batch.get('reachable'),'selected':pool.get('selected'),'sourceFamilies':families,'sources':ok,'failedSources':failed,'sourceStats':stats,'nodes':node_public_rows(pool),'warning':'Public shared nodes are untrusted and temporary; avoid sensitive logins/payments.'}
 def direct_route():
  pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
  if not pwsh:raise ValueError('DEPENDENCY_NOT_CONFIGURED_PWSH')
@@ -238,16 +329,115 @@ def ping_direct():
  except ValueError:v=None
  return {'ok':v is not None,'avgMs':v,'target':'1.1.1.1','type':'ICMP'}
 
-def cloudflare_upload(sample_bytes=1000000,seconds=20):
- sample_bytes=max(262144,min(int(sample_bytes),5000000));tmp=ROOT/'jobs'/f'{JOB or uuid.uuid4().hex}.speed-upload.bin'
+def cloudflare_upload(sample_bytes=1000000,seconds=20,proxy=''):
+ sample_bytes=max(131072,min(int(sample_bytes),5000000));tmp=ROOT/'jobs'/f'{JOB or uuid.uuid4().hex}.speed-upload.bin'
  tmp.parent.mkdir(parents=True,exist_ok=True)
  try:
   with open(tmp,'wb') as f:f.truncate(sample_bytes)
-  args=['curl.exe','-q','-4','-sS','--connect-timeout','3','--max-time',str(seconds),'--noproxy','*','-o','NUL','--data-binary','@'+str(tmp),'--write-out','\n__FNH__%{http_code} %{time_total} %{size_upload} %{speed_upload}','https://speed.cloudflare.com/__up']
+  args=['curl.exe','-q','-4','-sS','--connect-timeout','3','--max-time',str(seconds)]
+  args+=['--proxy',proxy,'--noproxy',''] if proxy else ['--noproxy','*']
+  args+=['-o','NUL','--data-binary','@'+str(tmp),'--write-out','\n__FNH__%{http_code} %{time_total} %{size_upload} %{speed_upload}','https://speed.cloudflare.com/__up']
   r=native(args,seconds+2);bodytext,sep,meta=r['out'].rpartition('\n__FNH__');parts=meta.split()
   return {'exit':r['exit'],'code':parts[0] if parts else '000','seconds':float(parts[1]) if len(parts)>1 else None,'bytes':int(float(parts[2])) if len(parts)>2 else 0,'bps':float(parts[3]) if len(parts)>3 else 0,'error':r['err'][:700]}
  finally:
   tmp.unlink(missing_ok=True)
+
+def path_speed(mode,download_bytes=2000000,upload_bytes=500000):
+ mode=str(mode or 'AUTO').upper()
+ if mode=='DIRECT':return direct_speed()
+ if mode not in PORTS and mode!='CUSTOM':raise ValueError('SPEED_MODE_UNSUPPORTED')
+ if mode in PORTS and not owned(mode):raise RuntimeError('CONNECT_FIRST')
+ proxy=mode_proxy(mode)
+ trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy,seconds=10);tr=trace(trace_r.get('body',''))
+ ping_r=curl('https://www.youtube.com/generate_204',proxy,seconds=10,body=False)
+ if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':raise RuntimeError('PATH_SPEED_VERIFICATION_FAILED')
+ down=curl('https://speed.cloudflare.com/__down?bytes='+str(int(download_bytes)),proxy,seconds=25,body=False,size=int(download_bytes)+65536)
+ up=cloudflare_upload(int(upload_bytes),25,proxy)
+ down_ok=down.get('exit')==0 and down.get('code')=='200' and down.get('bytes')==int(download_bytes)
+ up_ok=up.get('exit')==0 and up.get('code')=='200' and up.get('bytes')==int(upload_bytes)
+ return {
+  'mode':mode,'path':'PROXY_PATH' if proxy else 'SYSTEM_PATH','ok':bool(down_ok and up_ok),
+  'pingMs':round(float(ping_r.get('seconds',0))*1000,1),'pingType':'HTTPS_RTT',
+  'downloadMbps':round(float(down.get('bps',0))*8/1e6,2),'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),
+  'downloadSampleBytes':down.get('bytes',0),'uploadSampleBytes':up.get('bytes',0),
+  'country':tr.get('loc',''),'exitIp':tr.get('ip',''),'checked':now(),
+  'proxyUsed':bool(proxy),'error':'' if (down_ok and up_ok) else 'THROUGHPUT_SAMPLE_INCOMPLETE'
+ }
+
+def system_speed():
+ trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace','',seconds=10);tr=trace(trace_r.get('body',''))
+ ping_r=curl('https://www.youtube.com/generate_204','',seconds=10,body=False)
+ if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':raise RuntimeError('SYSTEM_SPEED_VERIFICATION_FAILED')
+ if str(tr.get('warp','')).lower()!='on':raise RuntimeError('SYSTEM_TUNNEL_NOT_ACTIVE')
+ down=curl('https://speed.cloudflare.com/__down?bytes=2000000','',seconds=25,body=False,size=2065536)
+ up=cloudflare_upload(500000,25,'')
+ return {'mode':'SYSTEM','path':'CURRENT_SYSTEM_DEFAULT_ROUTE','ok':bool(down.get('exit')==0 and down.get('code')=='200' and up.get('exit')==0 and up.get('code')=='200'),
+  'pingMs':round(float(ping_r.get('seconds',0))*1000,1),'pingType':'HTTPS_RTT','downloadMbps':round(float(down.get('bps',0))*8/1e6,2),
+  'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),'country':tr.get('loc',''),'exitIp':tr.get('ip',''),'warp':tr.get('warp',''),'checked':now()}
+
+def console_speed():
+ owner=read(ROOT/'gateway'/'runtime'/'wsl-console-owner.json',{}) or {}
+ if not owner:raise RuntimeError('CONSOLE_CONNECT_FIRST')
+ if str(owner.get('providerKind') or '')!='LOCAL_MIHOMO':raise RuntimeError('CONSOLE_SPEED_PROFILE_PATH_UNAVAILABLE')
+ host=str(owner.get('hostIp') or '');port=int(owner.get('providerPort') or 0)
+ if not host or not (1024<=port<=65535):raise RuntimeError('CONSOLE_PROVIDER_ENDPOINT_INVALID')
+ proxy=f'socks5h://{host}:{port}'
+ trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy,seconds=12);tr=trace(trace_r.get('body',''))
+ ping_r=curl('https://www.youtube.com/generate_204',proxy,seconds=12,body=False)
+ if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':raise RuntimeError('CONSOLE_SPEED_VERIFICATION_FAILED')
+ expected=str(owner.get('country') or '').upper()
+ if expected and str(tr.get('loc') or '').upper()!=expected:raise RuntimeError('CONSOLE_COUNTRY_MISMATCH')
+ down=curl('https://speed.cloudflare.com/__down?bytes=1500000',proxy,seconds=25,body=False,size=1565536)
+ up=cloudflare_upload(350000,25,proxy)
+ return {'mode':'CONSOLE','path':'CONSOLE_PROVIDER_OUTBOUND','ok':bool(down.get('exit')==0 and down.get('code')=='200' and up.get('exit')==0 and up.get('code')=='200'),
+  'pingMs':round(float(ping_r.get('seconds',0))*1000,1),'pingType':'HTTPS_RTT','downloadMbps':round(float(down.get('bps',0))*8/1e6,2),
+  'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),'country':tr.get('loc',''),'exitIp':tr.get('ip',''),'checked':now(),'providerKind':'LOCAL_MIHOMO'}
+
+def node_record_performance(node_id,perf):
+ s=node_store()
+ for n in s['nodes']:
+  if n.get('id')==node_id:
+   rec={k:perf.get(k) for k in ('ok','pingMs','pingType','downloadMbps','uploadMbps','country','checked','error')}
+   n['performance_test']=rec
+   hist=list(n.get('performance_history') or []);hist.append(rec);n['performance_history']=hist[-12:]
+   break
+ save_node_store(s)
+
+def update_release():
+ r=curl('https://api.github.com/repos/GOD13emad/FreeNetHub/releases/latest',seconds=12,size=1048576)
+ if r.get('exit')!=0 or r.get('code')!='200':raise RuntimeError('UPDATE_GITHUB_UNREACHABLE')
+ try:j=json.loads(r.get('body',''))
+ except ValueError as ex:raise RuntimeError('UPDATE_RESPONSE_INVALID') from ex
+ assets=[a for a in (j.get('assets') or []) if isinstance(a,dict) and str(a.get('name','')).lower().endswith('.exe') and str(a.get('name','')).startswith('FreeNetHub_')]
+ asset=assets[0] if assets else None
+ release=read(ROOT/'RELEASE.json',{}) or {}
+ manifest=read(ROOT/'app'/'manifest.json',{}) or {}
+ local_rev=str(release.get('releaseRevision') or manifest.get('coreVersion') or '')
+ lm=re.search(r'(?i)(?:^|[-_])r(\d+)(?:[-_]|$)',local_rev)
+ rm=re.search(r'(?i)(?:^|[-_])r(\d+)(?:[-_]|$)',str(asset.get('name','')) if asset else '')
+ local_n=int(lm.group(1)) if lm else 0;remote_n=int(rm.group(1)) if rm else 0
+ update_available=bool(asset and (remote_n==0 or local_n==0 or remote_n>local_n))
+ return {'tag':str(j.get('tag_name') or ''),'name':str(j.get('name') or ''),'published':j.get('published_at'),'htmlUrl':j.get('html_url'),
+         'currentRevision':local_rev,'currentRevisionNumber':local_n,'remoteRevisionNumber':remote_n,'updateAvailable':update_available,
+         'asset':({'name':asset.get('name'),'url':asset.get('browser_download_url'),'bytes':asset.get('size'),'digest':asset.get('digest')} if asset else None)}
+
+def update_download():
+ rel=update_release();a=rel.get('asset')
+ if not a or not a.get('url'):raise RuntimeError('UPDATE_INSTALLER_ASSET_MISSING')
+ if not rel.get('updateAvailable'):raise RuntimeError('UPDATE_NOT_NEWER_THAN_CURRENT')
+ dg=str(a.get('digest') or '')
+ if not dg.lower().startswith('sha256:') or not re.fullmatch(r'[0-9a-fA-F]{64}',dg.split(':',1)[1]):raise RuntimeError('UPDATE_SHA256_METADATA_MISSING')
+ expected=dg.split(':',1)[1].upper()
+ tag=re.sub(r'[^A-Za-z0-9._-]','_',rel.get('tag') or 'latest')[:80]
+ outdir=ROOT/'updates'/tag;outdir.mkdir(parents=True,exist_ok=True);dest=outdir/pathlib.Path(str(a['name'])).name
+ args=['curl.exe','-q','-4','-L','--fail','--connect-timeout','5','--max-time','240','--noproxy','*','-o',str(dest),str(a['url'])]
+ rr=native(args,250)
+ if rr.get('exit')!=0 or not dest.is_file():raise RuntimeError('UPDATE_DOWNLOAD_FAILED')
+ actual=digest(dest)
+ if actual!=expected:
+  with contextlib.suppress(Exception):dest.unlink()
+  raise RuntimeError('UPDATE_HASH_MISMATCH')
+ return {'tag':rel.get('tag'),'name':rel.get('name'),'published':rel.get('published'),'installer':str(dest),'sha256':actual,'bytes':dest.stat().st_size,'verified':True}
 
 def direct_speed():
  progress('Direct ISP speed test: no FreeNetHub browser proxy','DIRECT')
@@ -719,6 +909,9 @@ def dispatch(action,mode,payload):
   new=validate_settings(read(payload));write(ROOT/'settings.json',new);return {'saved':True,'settings':new}
  if action=='Connect':
   candidates=connect_candidates(mode);failed=[]
+  if 'NODE' in candidates:
+   try:node_refresh_public(False)
+   except (ValueError,RuntimeError,TimeoutError):pass
   for m in candidates:
    try:
     h=probe(m,required_country=country_target() if (m=='CUSTOM' and country_target()!='AUTO') else None) if m in ('CUSTOM','DIRECT') else ensure_node(country_target()) if m=='NODE' else ensure(m)
@@ -729,6 +922,14 @@ def dispatch(action,mode,payload):
    except (ValueError,RuntimeError) as e:failed.append({'mode':m,'reason':str(e)})
   h={'healthy':False,'connected':False,'state':'CONNECT_FAILED','mode':mode,'scope':'BROWSER_HTTPS','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':[],'countryPolicy':country_target() if mode=='AUTO' else '','error':'ALL_PATHS_FAILED','attempts':failed,'applicationAcceptance':'NOT_TESTED'}
   write(ROOT/'session.json',h);return h
+ if action=='ConnectProvider':
+  # Internal capability-specific connection path. It deliberately ignores the
+  # global country selector for providers that do not support country targeting.
+  if mode not in ('WARP','GOOL','TOR','WEBTUNNEL','OBFS4'):raise ValueError('PROVIDER_CONNECT_MODE_UNSUPPORTED')
+  h=ensure(mode)
+  if h.get('healthy'):
+   write(ROOT/'session.json',h);return h
+  raise RuntimeError(h.get('error') or ('PATH_NOT_VERIFIED_'+mode))
  if action=='Verify':
   h=verify(mode);write(ROOT/'session.json',h);return h
  if action=='Browser':return browser(mode)
@@ -773,6 +974,53 @@ def dispatch(action,mode,payload):
   return {'results':rows,'rank':rank,'note':'Sample HTTPS latency, not guaranteed application speed.'}
  if action=='Speed':
   return direct_speed()
+ if action=='PathSpeed':
+  return path_speed(mode)
+ if action=='ProviderBenchmark':
+  if mode=='DIRECT':return {'provider':'DIRECT','health':probe('DIRECT'),'performance':direct_speed(),'temporary':False}
+  if mode=='CUSTOM':return {'provider':'CUSTOM','health':probe('CUSTOM'),'performance':path_speed('CUSTOM'),'temporary':False}
+  if mode=='AUTO':
+   attempts=[]
+   for m in connect_candidates('AUTO'):
+    was=bool(owned(m))
+    try:
+     h=ensure_node(country_target()) if m=='NODE' else ensure(m)
+     perf=path_speed(m)
+     return {'provider':m,'health':h,'performance':perf,'temporary':not was,'attempts':attempts}
+    except (ValueError,RuntimeError,TimeoutError) as ex:
+     attempts.append({'mode':m,'reason':str(ex)})
+    finally:
+     if not was:
+      with contextlib.suppress(Exception):stop(m)
+   raise RuntimeError('ALL_PATHS_FAILED')
+  if mode not in PORTS:raise ValueError('SPEED_MODE_UNSUPPORTED')
+  was=bool(owned(mode))
+  try:
+   h=ensure_node(country_target()) if mode=='NODE' else ensure(mode)
+   perf=path_speed(mode)
+   return {'provider':mode,'health':h,'performance':perf,'temporary':not was}
+  finally:
+   if not was:
+    with contextlib.suppress(Exception):stop(mode)
+ if action=='SystemSpeed':
+  return system_speed()
+ if action=='ConsoleSpeed':
+  return console_speed()
+ if action=='Providers':
+  return {'providers':[
+   {'id':'AUTO','label':'Smart','country':True,'list':False,'browser':True,'system':True,'console':False,'speed':True},
+   {'id':'NODE','label':'Node Pool','country':True,'list':True,'browser':True,'system':False,'console':False,'speed':True},
+   {'id':'CFON','label':'CFON','country':True,'list':False,'browser':True,'system':False,'console':False,'speed':True},
+   {'id':'WARP','label':'WARP','country':False,'list':False,'browser':True,'system':True,'console':False,'speed':True},
+   {'id':'GOOL','label':'GOOL','country':False,'list':False,'browser':True,'system':False,'console':False,'speed':True},
+   {'id':'TOR','label':'Tor / Snowflake','country':False,'list':False,'browser':True,'system':False,'console':False,'speed':True},
+   {'id':'CUSTOM','label':'Custom Proxy','country':'verify','list':False,'browser':True,'system':False,'console':False,'speed':True},
+   {'id':'DIRECT','label':'Direct','country':'observed','list':False,'browser':True,'system':False,'console':False,'speed':True}
+  ]}
+ if action=='UpdateCheck':
+  return update_release()
+ if action=='UpdateDownload':
+  return update_download()
  if action=='Doctor':return diagnostics()
  if action=='Import':
   if mode not in ('WEBTUNNEL','OBFS4'):raise ValueError('INVALID_IMPORT_MODE')
@@ -784,7 +1032,9 @@ def dispatch(action,mode,payload):
   if dest.exists():shutil.copyfile(dest,ROOT/'backup'/f'{mode}_{uuid.uuid4().hex}.txt')
   dest.write_text('\n'.join(lines)+'\n',encoding='utf8');return {'imported':len(lines),'connection':'NOT_TESTED','mode':mode}
  if action=='NodeList':
-  s=node_store();return {'total':len(s['nodes']),'selected':s.get('selected'),'nodes':node_public_rows(s)}
+  s=node_store();st=public_refresh_state();age=public_refresh_age_seconds(st);return {'total':len(s['nodes']),'selected':s.get('selected'),'refresh':{'fresh':public_refresh_is_fresh(st,s),'ageSeconds':round(age,1) if age is not None else None,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'sourceFamilies':sorted({family for _,family,__ in PUBLIC_NODE_SOURCES}),'sources':list(st.get('sources') or []),'failedSources':list(st.get('failedSources') or [])},'nodes':node_public_rows(s)}
+ if action=='NodeRefreshSmart':
+  return node_refresh_public(False)
  if action=='NodeTestAll':
   return node_batch_fast()
  if action=='NodeSelect':
@@ -842,32 +1092,7 @@ def dispatch(action,mode,payload):
   finally:
    if temporary:f.unlink(missing_ok=True)
  if action=='NodeRefreshPublic':
-  sources=[
-   ('V2CROSS_PAGE','https://v2cross.com/en/free-v2ray-nodes/'),
-   ('SHADOWSHARE_SUB_EN','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_en'),
-   ('SHADOWSHARE_SUB_DE','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_de'),
-   ('SHADOWSHARE_SUB_FR','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_fr'),
-   ('SHADOWSHARE_README_ID','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-id.md'),
-   ('SHADOWSHARE_README_BN','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-bn.md'),
-   ('SHADOWSHARE_README_ES','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-es.md'),
-  ]
-  fetched={}
-  with concurrent.futures.ThreadPoolExecutor(max_workers=len(sources)) as ex:
-   fs={ex.submit(curl,url,seconds=18,size=NH.MAX_NODE_TEXT):(name,url) for name,url in sources}
-   for f in concurrent.futures.as_completed(fs):
-    check();name,url=fs[f]
-    try:fetched[name]=f.result()
-    except Exception as e:fetched[name]={'exit':1,'code':'','body':'','error':str(e)}
-  ok=[];errors=[];parsed=0
-  for name,_ in sources:
-   r=fetched.get(name,{})
-   if r.get('exit')==0 and r.get('code')=='200':
-    x=node_import_text(r.get('body',''),name);parsed+=int(x.get('imported') or 0);ok.append(name)
-   else:errors.append(name)
-  if not ok:raise ValueError('PUBLIC_NODE_SOURCE_UNREACHABLE')
-  node_batch_fast()
-  s=node_store()
-  return {'imported':parsed,'total':len(s['nodes']),'sources':ok,'failedSources':errors,'selected':s.get('selected'),'nodes':node_public_rows(s),'warning':'Public shared nodes are untrusted and temporary; avoid sensitive logins/payments.'}
+  return node_refresh_public(True)
  if action=='NodeTest':
   s=node_store();n=node_selected(s)
   if not n:raise ValueError('NODE_NOT_SELECTED')
@@ -880,14 +1105,86 @@ def dispatch(action,mode,payload):
   finally:
    if not was:
     with contextlib.suppress(Exception):stop('NODE')
+ if action=='NodeSpeed':
+  s=node_store();n=node_selected(s)
+  if not n:raise ValueError('NODE_NOT_SELECTED')
+  current=owned('NODE')
+  if current and current.get('nodeId')!=n['id']:raise ValueError('NODE_ACTIVE_STOP_FIRST')
+  was=bool(current)
+  try:
+   h=ensure('NODE');node_record_test(n['id'],h)
+   perf=path_speed('NODE');node_record_performance(n['id'],perf)
+   return {'performance':perf,'node':NH.public_node(node_selected() or n),'temporary':not was}
+  finally:
+   if not was:
+    with contextlib.suppress(Exception):stop('NODE')
+ if action=='NodeBenchmarkBatch':
+  s=node_store()
+  if not s['nodes']:raise ValueError('NODE_POOL_EMPTY')
+  node_batch_fast();s=node_store()
+  protocol_attempts={}
+  for n in s['nodes']:
+   if isinstance(n.get('performance_test'),dict):
+    proto=str(n.get('protocol') or '').lower();protocol_attempts[proto]=protocol_attempts.get(proto,0)+1
+  ranked=[]
+  for n in s['nodes']:
+   ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
+   old=n.get('performance_test') if isinstance(n.get('performance_test'),dict) else {}
+   proto=str(n.get('protocol','')).lower()
+   eligible=(ep.get('reachable') is True or proto=='hysteria2')
+   if eligible:ranked.append((0 if not old else 1,protocol_attempts.get(proto,0),0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,float(ep.get('latency_ms',999999) or 999999),n))
+  rows=[];limit=4
+  ordered=sorted(ranked,key=lambda x:x[:5]);picked=[];picked_ids=set();seen_protocols=set();seen_sources=set()
+  for row in ordered:
+   n=row[-1];proto=str(n.get('protocol') or '').lower()
+   if proto not in seen_protocols:
+    picked.append(row);picked_ids.add(n.get('id'));seen_protocols.add(proto);seen_sources.add(str(n.get('source') or 'UNKNOWN'))
+    if len(picked)>=limit:break
+  if len(picked)<limit:
+   for row in ordered:
+    n=row[-1];source=str(n.get('source') or 'UNKNOWN')
+    if n.get('id') in picked_ids or source in seen_sources:continue
+    picked.append(row);picked_ids.add(n.get('id'));seen_sources.add(source)
+    if len(picked)>=limit:break
+  if len(picked)<limit:
+   for row in ordered:
+    if row[-1].get('id') in picked_ids:continue
+    picked.append(row);picked_ids.add(row[-1].get('id'))
+    if len(picked)>=limit:break
+  for _,__,___,____,_____,n in picked:
+   check()
+   current=owned('NODE')
+   if current and current.get('nodeId')!=n['id']:stop('NODE')
+   node_select(n['id'])
+   try:
+    h=ensure('NODE');node_record_test(n['id'],h)
+    perf=path_speed('NODE',1000000,250000);node_record_performance(n['id'],perf)
+    rows.append({'id':n['id'],'status':'PASS','ok':perf.get('ok'),'pingMs':perf.get('pingMs'),'downloadMbps':perf.get('downloadMbps'),'uploadMbps':perf.get('uploadMbps'),'country':perf.get('country')})
+   except (ValueError,RuntimeError,TimeoutError) as ex:
+    ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
+    fallback_ping=ep.get('latency_ms') if ep.get('reachable') is True else None
+    fail={'ok':False,'pingMs':fallback_ping,'pingType':'TCP_CONNECT' if fallback_ping is not None else None,'downloadMbps':None,'uploadMbps':None,'country':'','checked':now(),'error':str(ex)}
+    node_record_performance(n['id'],fail)
+    rows.append({'id':n['id'],'status':'FAIL','ok':False,'pingMs':fallback_ping,'downloadMbps':None,'uploadMbps':None,'country':'','error':str(ex)})
+   finally:
+    with contextlib.suppress(Exception):stop('NODE')
+  s=node_store()
+  def bench_eligible(n):
+   ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
+   return ep.get('reachable') is True or str(n.get('protocol','')).lower()=='hysteria2'
+  remaining=sum(1 for n in s['nodes'] if bench_eligible(n) and not isinstance(n.get('performance_test'),dict))
+  eligible_total=sum(1 for n in s['nodes'] if bench_eligible(n))
+  passed=sum(1 for r in rows if r.get('ok') is True);failed=len(rows)-passed
+  return {'benchmarked':len(rows),'passed':passed,'failed':failed,'eligible':eligible_total,'remainingUnbenchmarked':remaining,'results':rows,'total':len(s['nodes']),'selected':s.get('selected'),'nodes':node_public_rows(s)}
  if action=='Export':return safe_export()
  if action=='Updates':
   rows=[]
-  for repo in ('bepass-org/warp-plus','SagerNet/sing-box','bepass-org/oblivion-desktop'):
-   r=curl('https://api.github.com/repos/'+repo+'/releases/latest',seconds=8)
-   try:j=json.loads(r['body']);rows.append({'project':repo,'latest':j['tag_name'],'published':j.get('published_at'),'action':'CHECK_ONLY_NO_INSTALL'})
+  for repo in ('GOD13emad/FreeNetHub','bepass-org/warp-plus','SagerNet/sing-box','bepass-org/oblivion-desktop'):
+   r=curl('https://api.github.com/repos/'+repo+'/releases/latest',seconds=8,size=1048576)
+   try:
+    j=json.loads(r['body']);rows.append({'project':repo,'latest':j['tag_name'],'published':j.get('published_at'),'assetCount':len(j.get('assets') or []),'action':'SELF_UPDATE_AVAILABLE' if repo=='GOD13emad/FreeNetHub' else 'CHECK_ONLY'})
    except (ValueError,KeyError):rows.append({'project':repo,'status':'UNREACHABLE'})
-  return {'releases':rows,'autoInstallation':False}
+  return {'releases':rows,'selfUpdate':update_release(),'autoInstallation':False}
  raise ValueError('ACTION_NOT_ALLOWED')
 
 def main():

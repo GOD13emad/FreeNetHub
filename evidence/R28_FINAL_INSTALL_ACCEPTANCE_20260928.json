@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "installerSha256": "2AA91D849A513A21D3BF9903F8E72FFB6A184D378FB357CE4FA7A9D6F7EB0073",
+  "installExit": 0,
+  "prestate": {
+    "data\\nodes.json": {
+      "exists": true,
+      "sha": "68FAB826C760C53F506B5E8EEDEF2950A72B44A74EEAFBCE2E949A346907C675"
+    },
+    "data\\node_public_refresh.json": {
+      "exists": true,
+      "sha": "FD7239F00057E2E0053BBBAF995BB232670D34D980D65CEC5DF951A7244ED51A"
+    },
+    "settings.json": {
+      "exists": true,
+      "sha": "E0ED65441397F28B4E91807AAB52ABBA27F714820EBDB28B836EBAFF55D20EB0"
+    }
+  },
+  "parity": {
+    "RELEASE.json": true,
+    "app\\engine.py": true,
+    "app\\FreeNetHub.ps1": true,
+    "app\\View.xaml": true,
+    "app\\manifest.json": true,
+    "app\\nodehub.py": true,
+    "Uninstall-FreeNetHub.ps1": true
+  },
+  "preserved": {
+    "data\\nodes.json": true,
+    "data\\node_public_refresh.json": true,
+    "settings.json": true
+  },
+  "smoke": true,
+  "stateRestored": true,
+  "error": ""
+}

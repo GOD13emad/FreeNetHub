@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "candidate": "R28_TRANSPORT_FIX2",
+  "installerSha256": "5F001C1D617D4122E50E1F0E6B99E0343005F3872193E2C1EC1A3D8115A3D4AA",
+  "installExit": 0,
+  "parity": {
+    "app\\engine.py": true,
+    "app\\nodehub.py": true,
+    "app\\FreeNetHub.ps1": true,
+    "app\\View.xaml": true,
+    "app\\manifest.json": true,
+    "RELEASE.json": true
+  },
+  "state": {
+    "settings.json": {
+      "preserved": true,
+      "sha256": "E0ED65441397F28B4E91807AAB52ABBA27F714820EBDB28B836EBAFF55D20EB0"
+    },
+    "data\\nodes.json": {
+      "preserved": true,
+      "sha256": "78F6AEA1019BC868F49F04C73C214A465C6CF5A0DA81540752D8D2BB19D36644"
+    },
+    "data\\node_public_refresh.json": {
+      "preserved": true,
+      "sha256": "2B34A89EC7E3E9A6674E322C6165FC502CD1844070FF45575B885D6C424C3AFE"
+    }
+  },
+  "trustedWindowsSigning": "OPEN_NOTSIGNED"
+}

@@ -1,0 +1,94 @@
+{
+  "schema": 2,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "artifactSha256": "2AA91D849A513A21D3BF9903F8E72FFB6A184D378FB357CE4FA7A9D6F7EB0073",
+  "runtimeCopyParity": {
+    "nodehub": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
+    "engine": "9D9DC7724D05BF8C58986ABE760C9CF0A127F09816046D8984617CBE9A9C8658",
+    "release": "599378B4C9E6D5A92E7817AEBC08A3709E8EA60807ABD61C177238609CFEDF89",
+    "ui": "6D37EEDAFBE475C785176B50CEBEE11EBA455CF8E6760E0C95DE9D1A0E446C60",
+    "view": "3B170D89488940EEF41503E00FD6DD7AC9C0EAFDCDB7CF53532BDDEBF8AE7E0C",
+    "manifest": "F82910D2755B78F34FAD59463832F2A7CA8D2849EBBF1E2EBD81F8EF1BDE84EF"
+  },
+  "browserProfileCopied": false,
+  "direct": {
+    "status": "PASS",
+    "pingMs": 83.3,
+    "downloadMbps": 44.59,
+    "uploadMbps": 5.4,
+    "physicalRouteTrusted": true,
+    "cloudflareWarp": "off",
+    "cloudflareGateway": "off"
+  },
+  "update": {
+    "status": "PASS",
+    "currentRevisionNumber": 28,
+    "remoteRevisionNumber": 17,
+    "updateAvailable": false,
+    "digestPresent": true
+  },
+  "warp": {
+    "status": "PASS",
+    "temporary": true,
+    "pingMs": 448.4,
+    "downloadMbps": 16.04,
+    "uploadMbps": 1.7,
+    "proxyUsed": true
+  },
+  "nodeSample": {
+    "status": "OBSERVED",
+    "benchmarked": 4,
+    "passed": 0,
+    "failed": 4,
+    "eligible": 290,
+    "remaining": 273,
+    "rows": [
+      {
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 58.8,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 162.0,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": null,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      },
+      {
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 13.5,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "error": "PATH_NOT_VERIFIED_NODE"
+      }
+    ],
+    "interpretation": "Ephemeral public-node sample; invalid paths retain Ping/TCP delay where available and throughput stays N/A."
+  },
+  "cleanup": {
+    "activeProjectPorts": 0,
+    "ownerFiles": 0,
+    "pass": true,
+    "qualificationRootRemoved": true
+  },
+  "error": "",
+  "privacy": "No raw node URI, credential, server address, user IP, or raw exit IP is persisted."
+}

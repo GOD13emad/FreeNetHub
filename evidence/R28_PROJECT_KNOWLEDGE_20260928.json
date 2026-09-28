@@ -1,0 +1,90 @@
+{
+  "schema": 2,
+  "project": "Open Internet Gateway / FreeNet Hub",
+  "date": "2026-09-28",
+  "status": "CURRENT_R28_LOCAL_ACCEPTED",
+  "records": [
+    {
+      "claim": "R28 provider-specific Windows UI exposes Smart, Node Pool, WARP, CFON, Tor, Custom, console and GitHub update controls; browser-only remains default and full-system is explicit WARP only.",
+      "evidence": [
+        "app/View.xaml",
+        "app/FreeNetHub.ps1"
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "Public-node refresh uses 10 HTTPS endpoints across 5 independent families with a 30-minute TTL and drops stale nodes only for sources that refreshed successfully, preserving failed-source cache and manual/favorite/pinned entries.",
+      "evidence": [
+        "app/engine.py",
+        "evidence/R28_FINAL_LIVE_ACCEPTANCE_20260928.json"
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "Installed-product refresh on the final payload succeeded for all 10 sources / 5 families: 467 raw, 460 unique, 308 TCP-reachable and 33 stale entries dropped in that bounded run.",
+      "evidence": [
+        "evidence/R28_FINAL_LIVE_ACCEPTANCE_20260928.json"
+      ],
+      "status": "CONFIRMED_SAMPLE"
+    },
+    {
+      "claim": "Direct speed uses the host physical route and bypasses the app proxy; WARP benchmark measures a verified proxy path. Final live sample measured ping/download/upload for both paths.",
+      "evidence": [
+        "evidence/R28_FINAL_LIVE_ACCEPTANCE_20260928.json"
+      ],
+      "status": "CONFIRMED_SAMPLE"
+    },
+    {
+      "claim": "Node throughput is only shown after a verified path; failed public nodes retain real endpoint ping where available and report download/upload as N/A rather than fabricated values.",
+      "evidence": [
+        "app/engine.py",
+        "tests/test_engine.py",
+        "evidence/R28_FINAL_LIVE_ACCEPTANCE_20260928.json"
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "R28 handles SS/VMess/VLESS/Trojan/Hysteria2 and tested transport compatibility includes Trojan default TLS, WebSocket early-data, HTTP/H2, HTTPUpgrade, QUIC and Reality alias handling.",
+      "evidence": [
+        "app/nodehub.py",
+        "evidence/R28_TRANSPORT_COMPAT_ACCEPTANCE_20260928.json"
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "Uninstall race with a finishing background engine job was root-caused and prevented by exact-job cancellation, bounded drain and narrow retry; isolated clean-install qualification ends with no install-root residue or project listeners.",
+      "evidence": [
+        "Uninstall-FreeNetHub.ps1",
+        "evidence/R28_FINAL_QUALIFICATION_ACCEPTANCE_20260928.json"
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "Exact final installer upgraded the real installation while preserving settings, node pool and refresh metadata; installed source parity and desktop smoke passed.",
+      "evidence": [
+        "evidence/R28_FINAL_INSTALL_ACCEPTANCE_20260928.json",
+        "evidence/R28_FINAL_INSTALLED_SMOKE_20260928.json"
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "R28 final public security and integrity gates passed after path sanitization: no forbidden runtime artifacts or sensitive path/token hits; public/app/gateway/cross-platform/windows manifests and release hashes all verified.",
+      "evidence": [
+        "evidence/R28_PUBLIC_TREE_SECURITY_ACCEPTANCE_20260928.json",
+        "tests/security_scan_public.py",
+        "tests/verify_public_tree.py"
+      ],
+      "status": "CONFIRMED/PASS",
+      "reuseTargets": [
+        "release audit",
+        "GitHub promotion",
+        "handoff"
+      ]
+    }
+  ],
+  "limitations": [
+    "Final Windows installer is Authenticode NotSigned; trusted public code signing is an external gate.",
+    "Physical console game/country end-to-end remains unproven unless real console traffic is attached.",
+    "Public-node availability is external and ephemeral; a reachable TCP endpoint is not treated as verified proxy throughput."
+  ]
+}

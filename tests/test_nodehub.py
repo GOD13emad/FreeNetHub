@@ -63,4 +63,28 @@ try:
 except ValueError as e:
     assert str(e) == "NODE_PROTOCOL_UNSUPPORTED"
 
+# R28 transport-compatibility regressions.
+tr_default_tls = n.parse_uri("trojan://secret@tr2.example.com:443?sni=tr2.example.com#TR-DEFAULT-TLS")
+assert tr_default_tls["tls"]["enabled"] is True and tr_default_tls["tls"]["server_name"] == "tr2.example.com"
+
+ws_ed = n.parse_uri("vless://33333333-3333-3333-3333-333333333333@ed.example.com:443?security=tls&type=ws&host=cdn.example.com&path=%2Fws&ed=2560&eh=Sec-WebSocket-Protocol#WS-ED")
+assert ws_ed["transport"]["type"] == "ws"
+assert ws_ed["transport"]["max_early_data"] == 2560
+assert ws_ed["transport"]["early_data_header_name"] == "Sec-WebSocket-Protocol"
+
+ws_path_ed = n.parse_uri("vless://44444444-4444-4444-4444-444444444444@ed2.example.com:443?security=tls&type=ws&path=%2Fedge%3Fed%3D2048#WS-PATH-ED")
+assert ws_path_ed["transport"]["path"] == "/edge"
+assert ws_path_ed["transport"]["max_early_data"] == 2048
+assert ws_path_ed["transport"]["early_data_header_name"] == "Sec-WebSocket-Protocol"
+
+legacy_tr = n.parse_uri("trojan://secret@legacy.example.com:443?sni=legacy.example.com&ws=1&wspath=%2Fgo&host=cdn.example.com#LEGACY-WS")
+assert legacy_tr["tls"]["enabled"] is True
+assert legacy_tr["transport"]["type"] == "ws" and legacy_tr["transport"]["path"] == "/go"
+
+http_vl = n.parse_uri("vless://55555555-5555-5555-5555-555555555555@http.example.com:443?security=tls&type=tcp&headerType=http&host=a.example.com,b.example.com&path=%2Fh2#HTTP")
+assert http_vl["transport"]["type"] == "http" and http_vl["transport"]["host"] == ["a.example.com","b.example.com"]
+
+hu = n.parse_uri("vless://66666666-6666-6666-6666-666666666666@hu.example.com:443?security=tls&type=httpupgrade&host=cdn.example.com&path=%2Fup#HU")
+assert hu["transport"]["type"] == "httpupgrade" and hu["transport"]["host"] == "cdn.example.com"
+
 print("NODEHUB_UNIT_TEST=PASS")

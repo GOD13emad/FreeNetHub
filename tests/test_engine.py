@@ -184,6 +184,56 @@ class Unit(unittest.TestCase):
     r=E.dispatch('NodeMeta','NODE',str(meta));self.assertEqual(r['node']['name'],'Home SG');self.assertEqual(r['node']['rating'],4);self.assertFalse(meta.exists())
     E.node_record_test('n1',{'healthy':True,'country':'SG','ip':'203.0.113.9','seconds':0.2,'error':'','checked':'2026-09-28T00:00:00Z'})
     pub=E.node_public_rows()[0];self.assertEqual(pub['history'][-1]['country'],'SG');self.assertNotIn('ip',pub['history'][-1]);self.assertEqual(pub['tags'],['home','sg'])
+ def test_public_source_registry_has_independent_families(self):
+  self.assertEqual(len(E.PUBLIC_NODE_SOURCES),10)
+  self.assertGreaterEqual(len({x[1] for x in E.PUBLIC_NODE_SOURCES}),5)
+  self.assertEqual(len({x[0] for x in E.PUBLIC_NODE_SOURCES}),len(E.PUBLIC_NODE_SOURCES))
+  self.assertTrue(all(x[2].startswith('https://') for x in E.PUBLIC_NODE_SOURCES))
+  self.assertIn('RADIKAL_TOP100',{x[0] for x in E.PUBLIC_NODE_SOURCES});self.assertIn('MORPHEUS_MINI',{x[0] for x in E.PUBLIC_NODE_SOURCES});self.assertIn('MATIN_SUB1',{x[0] for x in E.PUBLIC_NODE_SOURCES})
+ def test_public_refresh_ttl_skips_network_when_fresh(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'data').mkdir();(root/'jobs').mkdir()
+   E.write(root/'data'/'nodes.json',{'schema':1,'selected':'manual','nodes':[{'id':'manual','name':'manual','protocol':'vless','server':'example.com','port':443,'uuid':'u','raw':'vless://u@example.com:443','source':'import'}]})
+   E.write(root/'data'/'node_public_refresh.json',{'schema':1,'status':'PASS','lastSuccessUtc':E.now(),'sources':['X'],'failedSources':[]})
+   with patch.object(E,'ROOT',root),patch.object(E,'curl') as c:
+    r=E.node_refresh_public(False);self.assertFalse(r['refreshed']);self.assertTrue(r['fresh']);c.assert_not_called()
+ def test_public_refresh_replaces_stale_public_and_preserves_manual_pinned(self):
+  def node(i,source,pinned=False):
+   return {'id':i,'name':i,'protocol':'vless','server':i+'.example','port':443,'uuid':'11111111-1111-1111-1111-'+i.zfill(12)[-12:],'raw':'vless://x@'+i+'.example:443','source':source,'favorite':False,'pinned':pinned,'rating':0,'tags':[],'note':''}
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'data').mkdir();(root/'jobs').mkdir()
+   E.write(root/'data'/'nodes.json',{'schema':1,'selected':'manual','nodes':[node('manual','import'),node('stale','SRC_A'),node('keep','SRC_A',True)]})
+   body='vless://11111111-1111-1111-1111-111111111111@fresh.example:443?security=tls#fresh'
+   fake={'exit':0,'code':'200','body':body,'seconds':.1}
+   with patch.object(E,'ROOT',root),patch.object(E,'PUBLIC_NODE_SOURCES',( ('SRC_A','family-a','https://a.invalid'),('SRC_B','family-b','https://b.invalid') )),patch.object(E,'curl',return_value=fake),patch.object(E,'node_batch_fast',return_value={'reachable':1}):
+    r=E.node_refresh_public(True);s=E.node_store();ids={n['id'] for n in s['nodes']}
+    self.assertTrue(r['refreshed']);self.assertIn('manual',ids);self.assertIn('keep',ids);self.assertNotIn('stale',ids);self.assertEqual(r['staleDropped'],1);self.assertEqual(E.public_refresh_state()['status'],'PASS')
+ def test_public_refresh_parser_id_migration_preserves_user_metadata_only(self):
+  old={'id':'old-id','name':'custom-ish','protocol':'trojan','server':'old.example','port':443,'password':'p','raw':'trojan://p@old.example:443#same','source':'SRC_A','favorite':True,'pinned':True,'rating':4,'tags':['keep'],'note':'memo','endpoint_test':{'reachable':True},'performance_test':{'ok':True,'downloadMbps':99},'history':[{'healthy':True}]}
+  incoming={'id':'new-id','name':'upstream','protocol':'trojan','server':'old.example','port':443,'password':'p','raw':'trojan://p@old.example:443#same','source':'SRC_A','favorite':False,'pinned':False,'rating':0,'tags':[],'note':''}
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'data').mkdir();(root/'jobs').mkdir();E.write(root/'data'/'nodes.json',{'schema':1,'selected':'old-id','nodes':[old]})
+   with patch.object(E,'ROOT',root),patch.object(E,'PUBLIC_NODE_SOURCES',( ('SRC_A','family-a','https://a.invalid'), )),patch.object(E,'curl',return_value={'exit':0,'code':'200','body':'x'}),patch.object(E.NH,'parse_blob',return_value={'nodes':[incoming],'errors':[]}),patch.object(E,'node_batch_fast',return_value={'reachable':1}):
+    r=E.node_refresh_public(True);s=E.node_store()
+  self.assertTrue(r['refreshed']);self.assertEqual(len(s['nodes']),1);n=s['nodes'][0]
+  self.assertEqual(n['id'],'new-id');self.assertTrue(n['favorite']);self.assertTrue(n['pinned']);self.assertEqual(n['rating'],4);self.assertEqual(n['tags'],['keep']);self.assertEqual(n['note'],'memo')
+  self.assertNotIn('performance_test',n);self.assertNotIn('endpoint_test',n);self.assertNotIn('history',n)
+ def test_public_refresh_preserves_stale_nodes_from_failed_source(self):
+  oldnode={'id':'old-b','name':'old-b','protocol':'vless','server':'old.example','port':443,'uuid':'11111111-1111-1111-1111-111111111111','raw':'vless://x@old.example:443','source':'SRC_B','favorite':False,'pinned':False,'rating':0,'tags':[],'note':''}
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'data').mkdir();(root/'jobs').mkdir();E.write(root/'data'/'nodes.json',{'schema':1,'selected':'old-b','nodes':[oldnode]})
+   good={'exit':0,'code':'200','body':'vless://11111111-1111-1111-1111-111111111112@fresh.example:443?security=tls#fresh','seconds':.1}
+   bad={'exit':1,'code':'000','body':'','error':'TIMEOUT'}
+   def fc(url,**kwargs):return good if url.endswith('/a') else bad
+   with patch.object(E,'ROOT',root),patch.object(E,'PUBLIC_NODE_SOURCES',( ('SRC_A','family-a','https://x.invalid/a'),('SRC_B','family-b','https://x.invalid/b') )),patch.object(E,'curl',side_effect=fc),patch.object(E,'node_batch_fast',return_value={'reachable':1}):
+    r=E.node_refresh_public(True);ids={n['id'] for n in E.node_store()['nodes']}
+    self.assertIn('old-b',ids);self.assertEqual(r['failedSources'],['SRC_B']);self.assertEqual(r['staleDropped'],0)
+
+ def test_connect_smart_refreshes_node_pool_before_node_candidate(self):
+  healthy={'healthy':True,'mode':'NODE','country':'SG','error':'','seconds':.1}
+  with patch.object(E,'connect_candidates',return_value=['NODE']),patch.object(E,'node_refresh_public',return_value={'fresh':True}) as rr,patch.object(E,'ensure_node',return_value=healthy),patch.object(E,'write'):
+   r=E.dispatch('Connect','NODE','');self.assertTrue(r['healthy']);rr.assert_called_once_with(False)
+
  def test_node_stop_removes_sensitive_runtime_config_when_inactive(self):
   with tempfile.TemporaryDirectory() as td:
    root=pathlib.Path(td);d=root/'data'/'NODE';d.mkdir(parents=True);(d/'config.json').write_text('secret');(d/'node-id.txt').write_text('id');(d/'owner.json').write_text('{}')
@@ -207,6 +257,121 @@ class Unit(unittest.TestCase):
   tr={'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=IR\nwarp=on\ngateway=off','seconds':.1}
   with patch.object(E,'direct_route',return_value={'trustedPhysical':True}),patch.object(E,'curl',return_value=tr):
    with self.assertRaisesRegex(RuntimeError,'DIRECT_SPEED_SYSTEM_TUNNEL'):E.direct_speed()
+
+ def test_path_speed_uses_active_provider_proxy(self):
+  tr={'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=SG\nwarp=off','seconds':.1}
+  ping={'exit':0,'code':'204','bytes':0,'bps':0,'seconds':.05}
+  down={'exit':0,'code':'200','bytes':2000000,'bps':10000000,'seconds':.2}
+  up={'exit':0,'code':'200','bytes':500000,'bps':2500000,'seconds':.2}
+  with patch.object(E,'owned',return_value={'pid':1}),patch.object(E,'mode_proxy',return_value='socks5h://127.0.0.1:19410'),patch.object(E,'curl',side_effect=[tr,ping,down]) as c,patch.object(E,'cloudflare_upload',return_value=up) as u:
+   r=E.path_speed('WARP');self.assertTrue(r['ok']);self.assertTrue(r['proxyUsed']);self.assertEqual(r['country'],'SG');self.assertEqual(r['downloadMbps'],80.0);self.assertEqual(r['uploadMbps'],20.0)
+   self.assertEqual(c.call_args_list[0].args[1],'socks5h://127.0.0.1:19410');u.assert_called_once_with(500000,25,'socks5h://127.0.0.1:19410')
+ def test_connect_provider_warp_ignores_global_country(self):
+  health={'healthy':True,'mode':'WARP','country':'IR','error':''}
+  with patch.object(E,'country_target',return_value='SG'),patch.object(E,'ensure',return_value=health) as en,patch.object(E,'write') as wr:
+   r=E.dispatch('ConnectProvider','WARP','')
+  self.assertTrue(r['healthy']);en.assert_called_once_with('WARP');wr.assert_called_once()
+ def test_connect_provider_rejects_country_capable_modes(self):
+  with self.assertRaisesRegex(ValueError,'PROVIDER_CONNECT_MODE_UNSUPPORTED'):
+   E.dispatch('ConnectProvider','NODE','')
+ def test_provider_benchmark_auto_uses_smart_candidate_and_cleans_temporary(self):
+  health={'healthy':True,'mode':'NODE','country':'SG','error':''};perf={'ok':True,'mode':'NODE','country':'SG'}
+  with patch.object(E,'connect_candidates',return_value=['NODE','CFON']),patch.object(E,'country_target',return_value='SG'),patch.object(E,'owned',return_value=None),patch.object(E,'ensure_node',return_value=health) as en,patch.object(E,'path_speed',return_value=perf) as ps,patch.object(E,'stop') as st:
+   r=E.dispatch('ProviderBenchmark','AUTO','');self.assertEqual(r['provider'],'NODE');self.assertTrue(r['temporary']);self.assertEqual(r['attempts'],[]);en.assert_called_once_with('SG');ps.assert_called_once_with('NODE');st.assert_called_once_with('NODE')
+ def test_provider_benchmark_auto_falls_through_failed_candidate(self):
+  health={'healthy':True,'mode':'TOR','country':'','error':''};perf={'ok':True,'mode':'TOR'}
+  def ensure(mode):
+   if mode=='WARP':raise RuntimeError('WARP_FAIL')
+   return health
+  with patch.object(E,'connect_candidates',return_value=['WARP','TOR']),patch.object(E,'owned',return_value=None),patch.object(E,'ensure',side_effect=ensure),patch.object(E,'path_speed',return_value=perf),patch.object(E,'stop') as st:
+   r=E.dispatch('ProviderBenchmark','AUTO','');self.assertEqual(r['provider'],'TOR');self.assertEqual(r['attempts'][0]['mode'],'WARP');self.assertEqual(st.call_count,2)
+ def test_console_speed_dispatch_uses_console_path(self):
+  with patch.object(E,'console_speed',return_value={'ok':True,'mode':'CONSOLE'}) as cs:
+   r=E.dispatch('ConsoleSpeed','CONSOLE','');self.assertTrue(r['ok']);cs.assert_called_once_with()
+ def test_node_refresh_smart_uses_ttl_refresh_path(self):
+  with patch.object(E,'node_refresh_public',return_value={'refreshed':False,'fresh':True}) as rr:
+   r=E.dispatch('NodeRefreshSmart','NODE','');self.assertTrue(r['fresh']);rr.assert_called_once_with(False)
+ def test_provider_benchmark_temporary_managed_path_cleans_up(self):
+  health={'healthy':True,'mode':'WARP','country':'','error':''};perf={'ok':True,'mode':'WARP'}
+  with patch.object(E,'owned',return_value=None),patch.object(E,'ensure',return_value=health),patch.object(E,'path_speed',return_value=perf),patch.object(E,'stop') as st:
+   r=E.dispatch('ProviderBenchmark','WARP','');self.assertTrue(r['temporary']);self.assertEqual(r['provider'],'WARP');st.assert_called_once_with('WARP')
+ def test_provider_benchmark_existing_managed_path_is_preserved(self):
+  health={'healthy':True,'mode':'WARP','country':'','error':''};perf={'ok':True,'mode':'WARP'}
+  with patch.object(E,'owned',return_value={'pid':1}),patch.object(E,'ensure',return_value=health),patch.object(E,'path_speed',return_value=perf),patch.object(E,'stop') as st:
+   r=E.dispatch('ProviderBenchmark','WARP','');self.assertFalse(r['temporary']);st.assert_not_called()
+ def test_node_benchmark_batch_is_bounded_to_four_and_cleans_each(self):
+  nodes=[{'id':f'n{i}','protocol':'vless','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':i}} for i in range(12)]
+  store={'schema':1,'selected':'n0','nodes':nodes}
+  health={'healthy':True,'country':'SG','error':''};perf={'ok':True,'pingMs':10,'downloadMbps':20,'uploadMbps':5,'country':'SG'}
+  with patch.object(E,'node_store',return_value=store),patch.object(E,'node_batch_fast',return_value={'reachable':12}),patch.object(E,'owned',return_value=None),patch.object(E,'node_select'),patch.object(E,'ensure',return_value=health),patch.object(E,'node_record_test'),patch.object(E,'path_speed',return_value=perf) as ps,patch.object(E,'node_record_performance'),patch.object(E,'stop') as st:
+   r=E.dispatch('NodeBenchmarkBatch','NODE','');self.assertEqual(r['benchmarked'],4);self.assertEqual(r['eligible'],12);self.assertEqual(r['remainingUnbenchmarked'],12);self.assertEqual(ps.call_count,4);self.assertEqual(st.call_count,4)
+ def test_node_benchmark_failure_uses_na_for_throughput_and_keeps_tcp_delay(self):
+  nodes=[{'id':'n0','protocol':'vless','source':'SRC','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':37}}]
+  store={'schema':1,'selected':'n0','nodes':nodes};saved=[]
+  with patch.object(E,'node_store',return_value=store),patch.object(E,'node_batch_fast',return_value={'reachable':1}),patch.object(E,'owned',return_value=None),patch.object(E,'node_select'),patch.object(E,'ensure',side_effect=RuntimeError('PATH_NOT_VERIFIED_NODE')),patch.object(E,'node_record_test'),patch.object(E,'node_record_performance',side_effect=lambda nid,perf:saved.append((nid,perf))),patch.object(E,'stop'):
+   r=E.dispatch('NodeBenchmarkBatch','NODE','')
+  self.assertEqual(r['benchmarked'],1);self.assertEqual(r['passed'],0);self.assertEqual(r['failed'],1);self.assertEqual(r['results'][0]['pingMs'],37);self.assertIsNone(r['results'][0]['downloadMbps']);self.assertIsNone(r['results'][0]['uploadMbps']);self.assertEqual(saved[0][1]['pingType'],'TCP_CONNECT');self.assertIsNone(saved[0][1]['downloadMbps'])
+ def test_node_benchmark_prioritizes_protocols_with_fewer_prior_attempts(self):
+  nodes=[
+   {'id':'v0','protocol':'vless','source':'A','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':1},'performance_test':{'ok':False}},
+   {'id':'v1','protocol':'vless','source':'B','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':2}},
+   {'id':'t0','protocol':'trojan','source':'C','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':3}},
+   {'id':'m0','protocol':'vmess','source':'D','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':4}},
+   {'id':'s0','protocol':'ss','source':'E','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':5}},
+   {'id':'h0','protocol':'hysteria2','source':'F','pinned':False,'favorite':False,'endpoint_test':{'reachable':False,'latency_ms':None}},
+  ]
+  store={'schema':1,'selected':'v0','nodes':nodes};selected=[]
+  def sel(nid):selected.append(nid);return next(n for n in nodes if n['id']==nid)
+  health={'healthy':True,'country':'SG','error':''};perf={'ok':True,'pingMs':10,'downloadMbps':20,'uploadMbps':5,'country':'SG'}
+  with patch.object(E,'node_store',return_value=store),patch.object(E,'node_batch_fast',return_value={'reachable':5}),patch.object(E,'owned',return_value=None),patch.object(E,'node_select',side_effect=sel),patch.object(E,'ensure',return_value=health),patch.object(E,'node_record_test'),patch.object(E,'path_speed',return_value=perf),patch.object(E,'node_record_performance'),patch.object(E,'stop'):
+   E.dispatch('NodeBenchmarkBatch','NODE','')
+  self.assertEqual(len(selected),4)
+  selected_protocols={next(n['protocol'] for n in nodes if n['id']==nid) for nid in selected}
+  self.assertEqual(len(selected_protocols),4)
+  self.assertIn('vmess',selected_protocols);self.assertIn('ss',selected_protocols);self.assertNotIn('v0',selected)
+ def test_node_benchmark_spreads_first_wave_across_sources(self):
+  nodes=[]
+  for i,src in enumerate(['A','A','A','B','B','C','D','E']):
+   nodes.append({'id':f'n{i}','protocol':'vless','source':src,'pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':i+1}})
+  store={'schema':1,'selected':'n0','nodes':nodes};selected=[]
+  def sel(nid):selected.append(nid);return next(n for n in nodes if n['id']==nid)
+  health={'healthy':True,'country':'SG','error':''};perf={'ok':True,'pingMs':10,'downloadMbps':20,'uploadMbps':5,'country':'SG'}
+  with patch.object(E,'node_store',return_value=store),patch.object(E,'node_batch_fast',return_value={'reachable':8}),patch.object(E,'owned',return_value=None),patch.object(E,'node_select',side_effect=sel),patch.object(E,'ensure',return_value=health),patch.object(E,'node_record_test'),patch.object(E,'path_speed',return_value=perf),patch.object(E,'node_record_performance'),patch.object(E,'stop'):
+   E.dispatch('NodeBenchmarkBatch','NODE','')
+  self.assertEqual(selected,['n0','n3','n5','n6'])
+ def test_node_benchmark_prioritizes_unbenchmarked_before_pinned_old_metrics(self):
+  old={'id':'old','protocol':'vless','pinned':True,'favorite':True,'endpoint_test':{'reachable':True,'latency_ms':1},'performance_test':{'ok':True,'downloadMbps':99}}
+  fresh=[{'id':f'n{i}','protocol':'vless','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':10+i}} for i in range(5)]
+  store={'schema':1,'selected':'old','nodes':[old]+fresh};selected=[]
+  def sel(nid):selected.append(nid);return next(n for n in store['nodes'] if n['id']==nid)
+  health={'healthy':True,'country':'SG','error':''};perf={'ok':True,'pingMs':10,'downloadMbps':20,'uploadMbps':5,'country':'SG'}
+  with patch.object(E,'node_store',return_value=store),patch.object(E,'node_batch_fast',return_value={'reachable':6}),patch.object(E,'owned',return_value=None),patch.object(E,'node_select',side_effect=sel),patch.object(E,'ensure',return_value=health),patch.object(E,'node_record_test'),patch.object(E,'path_speed',return_value=perf),patch.object(E,'node_record_performance'),patch.object(E,'stop'):
+   E.dispatch('NodeBenchmarkBatch','NODE','')
+  self.assertNotIn('old',selected);self.assertEqual(selected,['n0','n1','n2','n3'])
+ def test_update_release_compares_r_revision(self):
+  body=json.dumps({'tag_name':'v4.2.0-r29','name':'R29','published_at':'x','html_url':'https://example.invalid','assets':[{'name':'FreeNetHub_4.2.0_R29_Setup.exe','browser_download_url':'https://example.invalid/x.exe','size':1,'digest':'sha256:'+'a'*64}]})
+  with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',return_value={'releaseRevision':'4.2.0-local-r28-final'}):
+   r=E.update_release();self.assertTrue(r['updateAvailable']);self.assertEqual(r['currentRevisionNumber'],28);self.assertEqual(r['remoteRevisionNumber'],29)
+ def test_update_release_uses_manifest_revision_when_release_file_missing(self):
+  body=json.dumps({'tag_name':'v4.2.0-r27','name':'R27','published_at':'x','html_url':'https://example.invalid','assets':[{'name':'FreeNetHub_4.2.0_R27_Setup.exe','browser_download_url':'https://example.invalid/x.exe','size':1,'digest':'sha256:'+'a'*64}]})
+  def fake_read(path,default=None):
+   return {'coreVersion':'4.0-r28-final-provider-capability'} if str(path).endswith('manifest.json') else {}
+  with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',side_effect=fake_read):
+   r=E.update_release();self.assertFalse(r['updateAvailable']);self.assertEqual(r['currentRevisionNumber'],28);self.assertEqual(r['remoteRevisionNumber'],27)
+ def test_update_download_requires_github_sha256_metadata(self):
+  rel={'tag':'v4.2.0-r29','name':'R29','published':'x','updateAvailable':True,'asset':{'name':'FreeNetHub_R29.exe','url':'https://example.invalid/x.exe','bytes':1,'digest':None}}
+  with patch.object(E,'update_release',return_value=rel),patch.object(E,'native') as n:
+   with self.assertRaisesRegex(RuntimeError,'UPDATE_SHA256_METADATA_MISSING'):E.update_download()
+   n.assert_not_called()
+ def test_update_download_rejects_hash_mismatch_and_deletes_file(self):
+  rel={'tag':'v4.2.0-r29','name':'R29','published':'x','updateAvailable':True,'asset':{'name':'FreeNetHub_R29.exe','url':'https://example.invalid/x.exe','bytes':3,'digest':'sha256:'+'0'*64}}
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'jobs').mkdir()
+   def fake_native(args,timeout):
+    pathlib.Path(args[args.index('-o')+1]).write_bytes(b'abc');return {'exit':0,'out':'','err':''}
+   with patch.object(E,'ROOT',root),patch.object(E,'update_release',return_value=rel),patch.object(E,'native',side_effect=fake_native):
+    with self.assertRaisesRegex(RuntimeError,'UPDATE_HASH_MISMATCH'):E.update_download()
+    self.assertFalse(any((root/'updates').rglob('*.exe')))
 
  def test_stop_one_only_requested_mode(self):
   with patch.object(E,'stop',return_value=True) as st:

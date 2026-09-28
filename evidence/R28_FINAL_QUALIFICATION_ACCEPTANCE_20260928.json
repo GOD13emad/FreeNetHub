@@ -1,0 +1,16 @@
+{
+  "schema": 3,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "compile": true,
+  "install": true,
+  "smoke": true,
+  "uninstall": true,
+  "residue": {
+    "rootExists": false,
+    "listeners": 0
+  },
+  "error": "",
+  "installerSha256": "A90290F191F5B2D5FB0AD76532CCE52075784439D4DBD7BAD022CF1E4EBF81F7",
+  "installerBytes": 15873202
+}

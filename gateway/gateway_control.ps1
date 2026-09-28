@@ -138,7 +138,7 @@ try{
     };Write-J $Session $sess;$out.exit=0;$out.result=Get-Status
    }else{
     $v=Run-Engine 'Verify' 'WARP' 60;$preexisting=($v.exit -eq 0 -and $v.record.result.healthy)
-    if(!$preexisting){$c=Run-Engine 'Connect' 'WARP' 220;Assert ($c.exit -eq 0 -and $c.record.result.healthy) 'WARP_CONNECT_FAIL';$started=$true}
+    if(!$preexisting){$c=Run-Engine 'ConnectProvider' 'WARP' 220;Assert ($c.exit -eq 0 -and $c.record.result.healthy) 'WARP_CONNECT_FAIL';$started=$true}
     $before=Trace;$cfg=Join-Path $Runtime 'pc_product.json'
     & $Python $Generator --mode PC_TUNNEL --provider WARP --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
     $SB=[string](Get-FnhSingBox).path;& $SB check -c $cfg;Assert ($LASTEXITCODE -eq 0) 'CONFIG_CHECK_FAIL'

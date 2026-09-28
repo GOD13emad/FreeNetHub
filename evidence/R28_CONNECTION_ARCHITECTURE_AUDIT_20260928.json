@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "milestone": "R28 connection architecture audit / implemented decision record",
+  "status": "IMPLEMENTED_AND_LOCALLY_ACCEPTED_R28",
+  "product": "FreeNet Hub",
+  "objective": "Refactor connection UX/backend from one shared Mode+country model into capability-driven provider modules, with provider-specific controls, metrics, refresh, sorting and testing.",
+  "localFindings": [
+    {
+      "status": "CONFIRMED",
+      "claim": "Current UI exposes a shared Mode dropdown plus a global country setting even though providers have different capabilities.",
+      "evidence": [
+        "app/View.xaml",
+        "app/engine.py::connect_candidates",
+        "app/engine.py::country_target"
+      ]
+    },
+    {
+      "status": "CONFIRMED",
+      "claim": "Country targeting is currently valid only for NODE/CFON/CUSTOM; WARP/TOR/GOOL and bridge transports do not share the same country semantics.",
+      "evidence": [
+        "app/engine.py::connect_candidates"
+      ]
+    },
+    {
+      "status": "CONFIRMED",
+      "claim": "Node Hub currently has list/import/filter/sort/metadata/history and fast endpoint tests, but no persisted per-node download/upload throughput columns.",
+      "evidence": [
+        "app/View.xaml Node Hub",
+        "app/FreeNetHub.ps1::Apply-NodeFilter",
+        "app/engine.py::NodeTestAll"
+      ]
+    },
+    {
+      "status": "CONFIRMED",
+      "claim": "Current Speed action is a direct-host ISP sample and intentionally bypasses FreeNet Hub browser proxies; it is not per-node throughput.",
+      "evidence": [
+        "app/engine.py::direct_speed",
+        "app/engine.py action Speed"
+      ]
+    },
+    {
+      "status": "CONFIRMED",
+      "claim": "R27 already supports SS/VMess/VLESS/Trojan/Hysteria2 and multi-source public refresh with strict actual-exit country verification.",
+      "evidence": [
+        "RELEASE.json r27",
+        "evidence/R27_FINAL_ACCEPTANCE_20260928.json"
+      ]
+    }
+  ],
+  "externalEvidence": [
+    {
+      "source": "ShadowShare Google Play",
+      "url": "https://play.google.com/store/apps/details?id=com.v2cross.shadowshare&hl=en",
+      "finding": "Node workspace; proxy pools; latency/speed testing; sort/filter; merge+dedupe; QR; export/conversion; tags/history/favorites; health monitor; Private Space."
+    },
+    {
+      "source": "Hiddify official wiki",
+      "url": "https://github.com/hiddify/hiddify-app/wiki/How-to-use-HiddifyNext-app",
+      "finding": "Proxy list is separate from profile management; delay is shown per proxy; users can manually test and sort by test result."
+    },
+    {
+      "source": "v2rayN official wiki/issues",
+      "url": "https://github.com/2dust/v2rayN/wiki/Description-of-subscription",
+      "finding": "Subscription architecture supports heterogeneous protocols; 2026 issue reports that unrestricted concurrent TCPing/real-delay tests can overload ISP/router/NAT and distort results."
+    },
+    {
+      "source": "Clash Verge Rev privacy/docs",
+      "url": "https://github.com/clash-verge-rev/clash-verge-rev/blob/dev/PRIVACY.md",
+      "finding": "Latency tests are explicit user/network actions through the selected proxy; separates delay testing from other availability tests."
+    },
+    {
+      "source": "sing-box official outbound docs",
+      "url": "https://sing-box.sagernet.org/configuration/outbound/",
+      "finding": "Different outbound types are modeled explicitly; supports selector/urltest and protocol-specific outbounds."
+    },
+    {
+      "source": "Pawdroid Free-servers public repository",
+      "url": "https://github.com/Pawdroid/Free-servers/blob/main/static/README-en.md",
+      "finding": "Public nodes/subscriptions are refreshed periodically but availability varies by operator/region; public source says its page shows only a subset."
+    }
+  ],
+  "proposedArchitecture": {
+    "principle": "Provider capability model; UI renders only controls/tests a provider actually supports.",
+    "providerContract": [
+      "capabilities()",
+      "refresh_sources()",
+      "list_candidates()",
+      "quick_test(candidate)",
+      "real_delay(candidate)",
+      "speed_sample(candidate)",
+      "connect(candidate/options)",
+      "verify_connection()",
+      "disconnect()"
+    ],
+    "providerFamilies": [
+      {
+        "id": "SMART",
+        "selection": "policy/orchestrator",
+        "country": "conditional",
+        "list": false
+      },
+      {
+        "id": "NODE_POOL",
+        "selection": "list+country+subscription",
+        "country": true,
+        "list": true
+      },
+      {
+        "id": "CFON",
+        "selection": "country",
+        "country": true,
+        "list": false
+      },
+      {
+        "id": "WARP",
+        "selection": "single service",
+        "country": false,
+        "list": false
+      },
+      {
+        "id": "TOR",
+        "selection": "transport/bridge",
+        "country": false,
+        "list": false
+      },
+      {
+        "id": "CUSTOM",
+        "selection": "user endpoint/subscription",
+        "country": "verify-only",
+        "list": "optional"
+      },
+      {
+        "id": "DIRECT",
+        "selection": "physical host route",
+        "country": "observed only",
+        "list": false
+      },
+      {
+        "id": "CONSOLE",
+        "selection": "gateway profile",
+        "country": "route dependent",
+        "list": false
+      }
+    ],
+    "nodeMetrics": [
+      "availability",
+      "protocol-aware endpoint/preflight",
+      "real HTTP delay",
+      "verified exit country",
+      "download sample Mbps",
+      "upload sample Mbps",
+      "stability/success ratio",
+      "last tested/freshness",
+      "source/protocol"
+    ],
+    "testPipeline": [
+      "refresh/import + dedupe",
+      "cheap protocol-aware preflight",
+      "real proxy HTTP delay for survivors",
+      "strict exit-country verification when relevant",
+      "bounded throughput sampling for top/visible/favorite candidates",
+      "persist history and freshness"
+    ],
+    "scheduling": "Adaptive/background: cheap health frequently; source refresh by source TTL; throughput less frequently and bounded/concurrency-limited. Never full-throughput all nodes simultaneously.",
+    "ui": "Home + connection-method cards; clicking a provider opens provider-specific panel. Node Pool uses a sortable/filterable table with Country/Protocol/Status/Real Delay/Download/Upload/Stability/Last Test and actions.",
+    "persistence": "Keep provider/user config separate from dynamic candidate metrics; use indexed local store for candidate/test history; secrets protected separately.",
+    "approvalState": "IMPLEMENTED_AND_ACCEPTED_LOCAL_R28"
+  },
+  "proposedDoD": [
+    "No global control is shown for a provider that cannot honor it.",
+    "Node list auto-refreshes and visibly marks freshness/stale results.",
+    "Quick Test All is bounded and fast; full throughput testing is controlled, cancellable and never floods all candidates at once.",
+    "Columns are sortable/filterable and preserve prior valid results across source refresh when candidate identity is unchanged.",
+    "Country-capable providers accept only verified actual exits; others do not imply country selection.",
+    "Provider-specific tests have protocol-correct semantics.",
+    "Existing R27 safety/at-rest/fail-closed behaviors remain regression-protected."
+  ],
+  "implementationEvidence": [
+    "app/engine.py",
+    "app/FreeNetHub.ps1",
+    "app/View.xaml",
+    "tests/test_engine.py",
+    "evidence/R28_FINAL_ACCEPTANCE_20260928.json"
+  ],
+  "finalDecision": "Adopt capability-driven provider UI and bounded source-diverse Node testing. Keep Browser Only default, explicit WARP-only Full System, and separate Console Gateway."
+}
