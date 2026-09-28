@@ -37,3 +37,5 @@ evidence/UI*.png
 evidence/gui.json
 
 crossplatform/android/.kotlin/
+
+.remote-commander-backups/

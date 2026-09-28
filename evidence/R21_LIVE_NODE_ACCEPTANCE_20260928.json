@@ -1,0 +1,48 @@
+{
+  "schema": 2,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "installedProduct": true,
+  "publicImport": {
+    "status": "PASS",
+    "imported": 20,
+    "total": 20,
+    "source": "V2CROSS_PUBLIC"
+  },
+  "fastBatch": {
+    "status": "PASS",
+    "type": "TCP_ENDPOINT_ONLY_NOT_PROXY_HEALTH",
+    "total": 20,
+    "reachable": 16
+  },
+  "realNode": {
+    "status": "PASS",
+    "attempts": 1,
+    "nodeIdSha256": "8ca7693987710e366f4480f6e275d1ec58be0a93b1be881b37d80fb2ff17f1bd",
+    "protocol": "vless",
+    "source": "V2CROSS_PUBLIC",
+    "exitCountry": "SG",
+    "httpsSeconds": 0.431679,
+    "verification": "HTTPS_AND_CLOUDFLARE_EXIT_TRACE",
+    "scope": "BROWSER_PROXY"
+  },
+  "connect": {
+    "status": "PASS",
+    "mode": "NODE",
+    "scope": "BROWSER_HTTPS",
+    "country": "SG",
+    "httpsSeconds": 0.415384
+  },
+  "cleanup": {
+    "status": "PASS",
+    "stopExit": 0,
+    "tcp19460Active": false,
+    "sensitiveRuntimeResidue": false,
+    "settingsRestorePending": true,
+    "nodePoolRestorePending": true,
+    "settingsRestored": true,
+    "nodePoolRestored": true
+  },
+  "privacy": "Raw node URIs, credentials, server address and raw exit IP are not persisted.",
+  "error": ""
+}

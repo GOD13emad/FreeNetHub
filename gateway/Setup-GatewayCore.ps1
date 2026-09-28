@@ -35,7 +35,7 @@ try{
   if($src){
    New-Item -ItemType Directory -Path $dir -Force|Out-Null;Copy-Item -LiteralPath $src -Destination $target -Force;$r.source='REUSED_PINNED_LOCAL'
   }else{
-   $tmp=Join-Path $env:TEMP ('FreeNetHub-core-'+[guid]::NewGuid().ToString('N'));New-Item -ItemType Directory -Path $tmp -Force|Out-Null
+   $tmp=Join-Path $Runtime ('bootstrap-'+[guid]::NewGuid().ToString('N'));New-Item -ItemType Directory -Path $tmp -Force|Out-Null
    try{
     $zip=Join-Path $tmp 'sing-box.zip'
     Download-Pinned ('https://github.com/SagerNet/sing-box/releases/download/v'+$SbVersion+'/sing-box-'+$SbVersion+'-windows-amd64.zip') $zip $ArchiveSha

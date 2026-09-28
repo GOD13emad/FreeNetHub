@@ -14,7 +14,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\..\delivery\github_v4.2.0
-OutputBaseFilename=FreeNetHub_4.2.0_R17_Final_Setup
+OutputBaseFilename=FreeNetHub_4.2.0_R21_Country_NodeHub_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -49,6 +49,7 @@ Type: filesandordirs; Name: "{app}\\runtime"
 Source: "..\standalone\FreeNetHub.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\standalone\FreeNetHub.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\app\engine.py"; DestDir: "{app}\app"; Flags: ignoreversion
+Source: "..\..\app\nodehub.py"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\FreeNetHub.ps1"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\View.xaml"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\manifest.json"; DestDir: "{app}\app"; Flags: ignoreversion
@@ -92,6 +93,11 @@ Name: "{autodesktop}\FreeNet Hub"; Filename: "{app}\FreeNetHub.exe"; Parameters:
 Filename: "{app}\FreeNetHub.exe"; Parameters: """{app}\app\FreeNetHub.ps1"""; Description: "Launch FreeNet Hub"; WorkingDir: "{app}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
+Type: files; Name: "{app}\last.json"
+Type: files; Name: "{app}\session.json"
+Type: filesandordirs; Name: "{app}\logs"
+Type: filesandordirs; Name: "{app}\app\__pycache__"
+Type: filesandordirs; Name: "{app}\app\runner_logs"
 Type: files; Name: "{app}\INSTALL_RUNTIME_STATUS.json"
 Type: files; Name: "{app}\PWSH_PATH.txt"
 Type: files; Name: "{app}\UNINSTALL_CLEANUP_STATUS.json"

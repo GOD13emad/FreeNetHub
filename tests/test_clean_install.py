@@ -22,6 +22,11 @@ class CleanRuntimePackagingTests(unittest.TestCase):
         self.assertIn('runtime\\WarpPlusFast\\*',text)
         self.assertIn('runtime\\TorSnowflake\\bundle\\*',text)
 
+    def test_uninstaller_removes_runtime_generated_residue(self):
+        text=(ROOT/"windows"/"installer"/"FreeNetHub.iss").read_text(encoding="utf-8-sig")
+        for token in ('{app}\\last.json','{app}\\session.json','{app}\\logs','{app}\\app\\__pycache__','{app}\\app\\runner_logs'):
+            self.assertIn(token,text)
+
     def test_setup_uses_self_contained_runtime_contract(self):
         text=(ROOT/"Setup-WindowsDependencies.ps1").read_text(encoding="utf-8-sig")
         self.assertIn("runtimeRoot=$Runtime",text)

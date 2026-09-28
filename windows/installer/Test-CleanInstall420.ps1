@@ -73,7 +73,7 @@ try{
  $restored=[FNHInstallU32]::IsWindowVisible($h) -and -not [FNHInstallU32]::IsIconic($h)
  $afterTerm=@(Get-Process WindowsTerminal,OpenConsole -ErrorAction SilentlyContinue|Select-Object Id)
  $newTerm=@($afterTerm|Where-Object{$id=$_.Id;-not ($beforeTerm|Where-Object{$_.Id -eq $id})})
- $ports=@(19410,19413,19414,19450,19452,19453,19591,19594)
+ $ports=@(19410,19413,19414,19450,19452,19453,19460,19591,19594)
  $listeners=@(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue|Where-Object{$ports -contains $_.LocalPort})
  $tun=@(Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq 'FreeNetHub'})
  $r=[ordered]@{

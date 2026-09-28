@@ -39,6 +39,10 @@ class GatewayTests(unittest.TestCase):
  def test_verified_wireguard_contract(self):
   p={"kind":"wireguard","country":"NL","capabilities":{"tcp":True,"udp":True,"country_verified":True},"endpoint":{"type":"wireguard","tag":"provider"}}
   x=M.console_contract("WARP",p,"NL");self.assertTrue(x["ready"])
+ def test_gateway_core_bootstrap_uses_canonical_runtime_temp(self):
+  text=(G/"Setup-GatewayCore.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("Join-Path $Runtime ('bootstrap-'",text)
+  self.assertNotIn("Join-Path $env:TEMP ('FreeNetHub-core-'",text)
  def test_unverified_wireguard_contract(self):
   p={"kind":"wireguard","country":"NL","capabilities":{"tcp":True,"udp":True,"country_verified":False},"endpoint":{"type":"wireguard","tag":"provider"}}
   x=M.console_contract("WARP",p,"NL");self.assertFalse(x["ready"]);self.assertIn("COUNTRY_NOT_RUNTIME_VERIFIED",x["reasons"])

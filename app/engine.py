@@ -1,11 +1,13 @@
 """FreeNet Hub 4: browser-scoped, bounded, explicit control. No system VPN mutation."""
 from __future__ import annotations
-import argparse, contextlib, ctypes as C, datetime as dt, hashlib, ipaddress, json, os, pathlib, re, shutil, socket, subprocess as sp, sys, time, uuid, zipfile
+import argparse, concurrent.futures, contextlib, ctypes as C, datetime as dt, hashlib, importlib.util, ipaddress, json, os, pathlib, re, shutil, socket, subprocess as sp, sys, time, uuid, zipfile
 from ctypes import wintypes as W
 ROOT=pathlib.Path(__file__).resolve().parent.parent
 APP=ROOT/'app'
-PORTS={'WARP':19410,'GOOL':19413,'CFON':19414,'TOR':19450,'WEBTUNNEL':19452,'OBFS4':19453}
-DEFAULT={'theme':'dark','country':'AT','home':'https://www.youtube.com/','monitor':False,'autoRepair':False,'showIp':False,'minimizeToTray':True,'order':['WARP','TOR','GOOL','CFON'],'localProxy':'socks5h://127.0.0.1:9909','includeDirect':False}
+_nhspec=importlib.util.spec_from_file_location("freenethub_nodehub",APP/"nodehub.py")
+NH=importlib.util.module_from_spec(_nhspec);_nhspec.loader.exec_module(NH)
+PORTS={'NODE':19460,'WARP':19410,'GOOL':19413,'CFON':19414,'TOR':19450,'WEBTUNNEL':19452,'OBFS4':19453}
+DEFAULT={'theme':'dark','country':'AUTO','home':'https://www.youtube.com/','monitor':False,'autoRepair':False,'showIp':False,'minimizeToTray':True,'order':['NODE','WARP','TOR','GOOL','CFON'],'localProxy':'socks5h://127.0.0.1:9909','includeDirect':False}
 ALLOWED_COUNTRIES={'AT','DE','NL','US','CA','GB','FR','SG','JP','AUTO'}
 FLAGS=0x08000000|0x00000200
 JOB=''; DEADLINE=float('inf'); STARTED=[]
@@ -31,7 +33,12 @@ def write(p,value):
  raise last
 def digest(p):
  with open(p,'rb') as f:return hashlib.file_digest(f,'sha256').hexdigest().upper()
-def settings():return DEFAULT|read(ROOT/'settings.json',{})
+def settings():
+ s=DEFAULT|read(ROOT/'settings.json',{})
+ order=[x for x in s.get('order',[]) if x in PORTS]
+ if 'NODE' not in order:order=['NODE']+order
+ s['order']=order
+ return s
 def deps():return read(APP/'dependencies.json',{}) or {}
 def dep_path(name):
  d=deps();x=d.get(name)
@@ -51,6 +58,111 @@ def local_proxy(uri):
  u=urlparse(uri)
  if u.scheme not in ('socks5h','http') or u.hostname not in ('127.0.0.1','::1') or not u.port or u.username or u.password or u.path not in ('','/') or u.query or u.fragment:raise ValueError('ONLY_LOCAL_UNAUTHENTICATED_PROXY_ALLOWED')
  return uri
+
+def node_store():
+ x=read(ROOT/'data'/'nodes.json',{'schema':1,'selected':'','nodes':[]}) or {}
+ nodes=x.get('nodes',[]) if isinstance(x.get('nodes',[]),list) else []
+ return {'schema':1,'selected':str(x.get('selected') or ''),'nodes':nodes[:NH.MAX_NODES]}
+
+def save_node_store(store):
+ write(ROOT/'data'/'nodes.json',{'schema':1,'selected':str(store.get('selected') or ''),'nodes':list(store.get('nodes') or [])[:NH.MAX_NODES]})
+
+def node_selected(store=None):
+ s=node_store() if store is None else store;sid=s.get('selected')
+ return next((x for x in s['nodes'] if x.get('id')==sid),None)
+
+def node_select(node_id):
+ s=node_store()
+ if not any(x.get('id')==node_id for x in s['nodes']):raise ValueError('NODE_NOT_FOUND')
+ s['selected']=node_id;save_node_store(s);return node_selected(s)
+
+def node_public_rows(store=None):
+ s=node_store() if store is None else store
+ def key(n):
+  ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
+  lt=n.get('last_test') if isinstance(n.get('last_test'),dict) else {}
+  return (0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if lt.get('healthy') else 1,0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),str(n.get('name','')).lower())
+ return [NH.public_node(x) for x in sorted(s['nodes'],key=key)]
+
+def node_endpoint_probe(n,timeout=1.25):
+ started=time.monotonic()
+ try:
+  with socket.create_connection((str(n.get('server','')),int(n.get('port',0))),timeout=timeout):pass
+  return {'reachable':True,'latency_ms':round((time.monotonic()-started)*1000,1),'checked':now(),'type':'TCP_ENDPOINT_ONLY'}
+ except (OSError,ValueError):
+  return {'reachable':False,'latency_ms':None,'checked':now(),'type':'TCP_ENDPOINT_ONLY'}
+
+def node_batch_fast():
+ s=node_store()
+ if not s['nodes']:raise ValueError('NODE_POOL_EMPTY')
+ progress('تست سریع همهٔ سرورهای Node؛ فقط TCP endpoint و بدون روشن کردن پروکسی','NODE')
+ workers=min(32,max(4,len(s['nodes'])))
+ with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+  futures={ex.submit(node_endpoint_probe,n):n.get('id') for n in s['nodes']}
+  results={}
+  for f in concurrent.futures.as_completed(futures):
+   check();results[futures[f]]=f.result()
+ for n in s['nodes']:
+  if n.get('id') in results:n['endpoint_test']=results[n['id']]
+ save_node_store(s)
+ reachable=sum(1 for x in results.values() if x.get('reachable'))
+ return {'total':len(s['nodes']),'reachable':reachable,'selected':s.get('selected'),'testType':'TCP_ENDPOINT_ONLY_NOT_PROXY_HEALTH','nodes':node_public_rows(s)}
+
+def node_import_text(text,source='import'):
+ parsed=NH.parse_blob(text,source);s=node_store();s['nodes']=NH.merge(s['nodes'],parsed['nodes'])
+ if not s.get('selected') and s['nodes']:s['selected']=s['nodes'][0]['id']
+ save_node_store(s)
+ return {'imported':len(parsed['nodes']),'total':len(s['nodes']),'errors':parsed['errors'],'selected':s.get('selected'),'nodes':node_public_rows(s)}
+
+def singbox_path():
+ g=read(ROOT/'gateway'/'runtime'/'local_gateway.json',{}) or {};sb=g.get('singbox') if isinstance(g,dict) else None
+ if not isinstance(sb,dict) or not sb.get('path') or not sb.get('sha256'):return ''
+ p=pathlib.Path(sb['path'])
+ if not p.is_file() or digest(p)!=str(sb['sha256']).upper():return ''
+ return str(p)
+
+def node_record_test(node_id,h):
+ s=node_store()
+ for n in s['nodes']:
+  if n.get('id')==node_id:n['last_test']={k:h.get(k) for k in ('healthy','country','ip','seconds','error','checked')}
+ save_node_store(s)
+
+def ensure_node(target='AUTO',limit=12):
+ s=node_store()
+ if not s['nodes']:raise ValueError('NODE_POOL_EMPTY')
+ target=str(target or 'AUTO').upper()
+ def score(n):
+  lt=n.get('last_test') if isinstance(n.get('last_test'),dict) else {}
+  exact=target!='AUTO' and lt.get('healthy') and str(lt.get('country','')).upper()==target
+  hint=target!='AUTO' and target.lower() in str(n.get('name','')).lower()
+  ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
+  healthy=bool(lt.get('healthy'));lat=lt.get('seconds')
+  return (0 if exact else 1,0 if hint else 1,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if healthy else 1,0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),float(lat) if isinstance(lat,(int,float)) else 9999)
+ nodes=sorted(s['nodes'],key=score)
+ last=[]
+ for n in nodes[:max(1,min(int(limit),24))]:
+  current=owned('NODE')
+  if current and current.get('nodeId')!=n['id']:stop('NODE')
+  node_select(n['id'])
+  try:
+   h=ensure('NODE');node_record_test(n['id'],h)
+   if h.get('healthy'):return h
+   last.append({'id':n['id'],'error':h.get('error'),'country':h.get('country')})
+  except (ValueError,RuntimeError) as e:
+   with contextlib.suppress(Exception):stop('NODE')
+   node_record_test(n['id'],{'healthy':False,'country':'','ip':'','seconds':None,'error':str(e),'checked':now()})
+   last.append({'id':n['id'],'error':str(e)})
+ raise RuntimeError('NODE_COUNTRY_NOT_FOUND' if target!='AUTO' else 'NODE_POOL_NO_HEALTHY_NODE')
+
+def country_target():
+ return str(settings().get('country','AUTO')).upper()
+
+def connect_candidates(mode):
+ c=country_target()
+ if c=='AUTO':return list(settings()['order']) if mode=='AUTO' else [mode]
+ if mode=='AUTO':return ['NODE','CFON']
+ if mode not in ('NODE','CFON','CUSTOM'):raise ValueError('COUNTRY_MODE_UNSUPPORTED')
+ return [mode]
 
 def check():
  if JOB and (ROOT/'jobs'/f'{JOB}.cancel').exists():raise InterruptedError('CANCELLED')
@@ -82,6 +194,53 @@ def curl(url,proxy='',seconds=7,body=True,size=262144):
   r=native(args,seconds+2);bodytext,sep,meta=r['out'].rpartition('\n__FNH__');parts=meta.split()
   return {'exit':r['exit'],'code':parts[0] if parts else '000','seconds':float(parts[1]) if len(parts)>1 else round(time.monotonic()-started,3),'bytes':int(float(parts[2])) if len(parts)>2 else 0,'bps':float(parts[3]) if len(parts)>3 else 0,'body':bodytext[:size],'error':r['err'][:700]}
  except TimeoutError:return {'exit':124,'code':'000','seconds':round(time.monotonic()-started,3),'body':'','error':'TIMEOUT'}
+def direct_route():
+ pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
+ if not pwsh:raise ValueError('DEPENDENCY_NOT_CONFIGURED_PWSH')
+ script="$r=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Sort-Object @{e={$_.RouteMetric + (Get-NetIPInterface -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv4).InterfaceMetric}} | Select-Object -First 1;if(!$r){exit 3};$a=Get-NetAdapter -InterfaceIndex $r.InterfaceIndex -IncludeHidden -ErrorAction SilentlyContinue;$ip=Get-NetIPAddress -InterfaceIndex $r.InterfaceIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.IPAddress -notlike '169.254.*'}|Select-Object -First 1;[pscustomobject]@{ifIndex=$r.InterfaceIndex;nextHop=$r.NextHop;routeMetric=$r.RouteMetric;adapterName=$a.Name;description=$a.InterfaceDescription;hardware=[bool]$a.HardwareInterface;status=[string]$a.Status;ip=$ip.IPAddress}|ConvertTo-Json -Compress"
+ r=native([pwsh,'-NoProfile','-Command',script],8)
+ if r['exit']!=0:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE')
+ try:x=json.loads(r['out'])
+ except (ValueError,TypeError) as ex:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE') from ex
+ label=(str(x.get('adapterName',''))+' '+str(x.get('description',''))).lower()
+ suspicious=bool(re.search(r'\b(vpn|warp|wireguard|openvpn|tap|tun|wintun|tailscale|zerotier|mihomo|sing-box)\b',label))
+ x['trustedPhysical']=bool(x.get('hardware') and str(x.get('status','')).lower()=='up' and not suspicious and x.get('ip'))
+ return x
+
+def ping_direct():
+ pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
+ if not pwsh:return {'ok':False,'avgMs':None,'note':'PowerShell unavailable'}
+ script="$r=Test-Connection -TargetName 1.1.1.1 -Count 3 -IPv4 -ErrorAction SilentlyContinue;if(!$r){exit 2};$v=@($r|ForEach-Object{$_.Latency}|Where-Object{$_ -ne $null});if(!$v){exit 3};[math]::Round((($v|Measure-Object -Average).Average),1)"
+ r=native([pwsh,'-NoProfile','-Command',script],7)
+ try:v=float(r['out'].strip()) if r['exit']==0 else None
+ except ValueError:v=None
+ return {'ok':v is not None,'avgMs':v,'target':'1.1.1.1','type':'ICMP'}
+
+def cloudflare_upload(sample_bytes=1000000,seconds=20):
+ sample_bytes=max(262144,min(int(sample_bytes),5000000));tmp=ROOT/'jobs'/f'{JOB or uuid.uuid4().hex}.speed-upload.bin'
+ tmp.parent.mkdir(parents=True,exist_ok=True)
+ try:
+  with open(tmp,'wb') as f:f.truncate(sample_bytes)
+  args=['curl.exe','-q','-4','-sS','--connect-timeout','3','--max-time',str(seconds),'--noproxy','*','-o','NUL','--data-binary','@'+str(tmp),'--write-out','\n__FNH__%{http_code} %{time_total} %{size_upload} %{speed_upload}','https://speed.cloudflare.com/__up']
+  r=native(args,seconds+2);bodytext,sep,meta=r['out'].rpartition('\n__FNH__');parts=meta.split()
+  return {'exit':r['exit'],'code':parts[0] if parts else '000','seconds':float(parts[1]) if len(parts)>1 else None,'bytes':int(float(parts[2])) if len(parts)>2 else 0,'bps':float(parts[3]) if len(parts)>3 else 0,'error':r['err'][:700]}
+ finally:
+  tmp.unlink(missing_ok=True)
+
+def direct_speed():
+ progress('Direct ISP speed test: no FreeNetHub browser proxy','DIRECT')
+ route=direct_route()
+ if not route.get('trustedPhysical'):raise RuntimeError('DIRECT_SPEED_NON_PHYSICAL_DEFAULT_ROUTE')
+ a=curl('https://www.cloudflare.com/cdn-cgi/trace','',seconds=8);tr=trace(a.get('body',''))
+ if a.get('exit')!=0 or a.get('code')!='200' or not tr:raise RuntimeError('DIRECT_SPEED_TRACE_FAILED')
+ if str(tr.get('warp','')).lower()=='on' or str(tr.get('gateway','')).lower()=='on':raise RuntimeError('DIRECT_SPEED_SYSTEM_TUNNEL_DETECTED')
+ ping=ping_direct()
+ down=curl('https://speed.cloudflare.com/__down?bytes=5000000','',seconds=20,body=False,size=5100000)
+ up=cloudflare_upload(1000000,20)
+ down_ok=down.get('exit')==0 and down.get('code')=='200' and down.get('bytes')==5000000
+ up_ok=up.get('exit')==0 and up.get('code')=='200' and up.get('bytes')==1000000
+ return {'mode':'DIRECT','path':'DIRECT_HOST_INTERNET','ok':bool(down_ok and up_ok),'proxyUsed':False,'freeNetHubBrowserProxyUsed':False,'defaultRoute':route,'exitIp':tr.get('ip',''),'country':tr.get('loc',''),'cloudflareWarp':tr.get('warp',''),'cloudflareGateway':tr.get('gateway',''),'httpsLatencyMs':round(float(a.get('seconds',0))*1000,1),'pingMs':ping.get('avgMs'),'downloadMbps':round(float(down.get('bps',0))*8/1e6,2),'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),'downloadSampleBytes':down.get('bytes',0),'uploadSampleBytes':up.get('bytes',0),'downloadSeconds':down.get('seconds'),'uploadSeconds':up.get('seconds'),'pathProof':'NO_PROXY_ENV+--noproxy_*+PHYSICAL_DEFAULT_ROUTE+CF_WARP_OFF','note':'Direct host Internet sample; FreeNetHub browser proxy is bypassed. Fails closed if the default route is not a physical adapter or Cloudflare reports WARP/Gateway on.'}
+
 def trace(text):
  out={}
  for line in text.splitlines():
@@ -97,7 +256,7 @@ def probe(mode,proxy=None,required_country=None):
  a=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy);t=trace(a['body'])
  b=curl('https://www.youtube.com/generate_204',proxy,body=False)
  good=bool(a['exit']==0 and a['code']=='200' and t and b['exit']==0 and b['code']=='204')
- c=required_country or (settings()['country'] if mode=='CFON' else '')
+ c=required_country or (country_target() if mode in ('NODE','CFON','CUSTOM') else '')
  country_bad=bool(c and c!='AUTO' and t.get('loc')!=c)
  if country_bad:good=False
  error=''
@@ -162,6 +321,8 @@ def recover_owned(mode,not_before=0):
  d=deps()
  if mode in ('WARP','GOOL','CFON'):
   expected=dep_path('warp');needle=f'--bind 127.0.0.1:{PORTS[mode]}';scope=str((ROOT/'data'/mode/'cache').resolve())
+ elif mode=='NODE':
+  expected=singbox_path();needle=str((ROOT/'data'/mode/'config.json').resolve());scope=needle
  else:
   expected=dep_path('tor');needle=str((ROOT/'data'/mode/'torrc').resolve());scope=needle
  try:
@@ -169,7 +330,11 @@ def recover_owned(mode,not_before=0):
  except (OSError,RuntimeError):return None
  cmd=process_commandline(pid)
  if not cmd or needle.lower() not in cmd.lower() or scope.lower() not in cmd.lower():return None
- r=cur|{'mode':mode,'scan':False,'started':now(),'recovered':True}
+ extra={}
+ if mode=='NODE':
+  marker=ROOT/'data'/mode/'node-id.txt'
+  if marker.is_file():extra['nodeId']=marker.read_text(encoding='utf-8',errors='replace').strip()[:64]
+ r=cur|{'mode':mode,'scan':False,'started':now(),'recovered':True}|extra
  write(ROOT/'data'/mode/'owner.json',r)
  return r
 
@@ -193,6 +358,11 @@ def children(pid):
  if not r['out'].strip():return []
  x=json.loads(r['out']);return x if isinstance(x,list) else [x]
 
+def cleanup_node_runtime():
+ data=ROOT/'data'/'NODE'
+ for name in ('config.json','node-id.txt'):
+  with contextlib.suppress(OSError):(data/name).unlink(missing_ok=True)
+
 def stop(mode):
  owner_path=ROOT/'data'/mode/'owner.json'
  r=owned(mode)
@@ -201,8 +371,9 @@ def stop(mode):
  if not r:
   # A stale owner record is not authority. Remove it only when there is no
   # listener to attribute, and never act on a foreign listener/process.
-  if not opened and owner_path.exists():
+  if not opened:
    owner_path.unlink(missing_ok=True)
+   if mode=='NODE':cleanup_node_runtime()
   return False
  pts=[]
  if mode in ('TOR','WEBTUNNEL','OBFS4'):
@@ -222,6 +393,7 @@ def stop(mode):
   time.sleep(.08)
  if port_open(PORTS[mode]):raise RuntimeError('OWNED_PROCESS_STOP_INCOMPLETE')
  owner_path.unlink(missing_ok=True)
+ if mode=='NODE':cleanup_node_runtime()
  return True
 
 def check_binary(name):
@@ -276,7 +448,15 @@ def bridge_lines(text,transport):
 
 def service_config(mode,scan=False):
  d=deps();data=ROOT/'data'/mode;data.mkdir(parents=True,exist_ok=True)
- if mode in ('WARP','GOOL','CFON'):
+ if mode=='NODE':
+  exe=singbox_path()
+  if not exe:raise ValueError('DEPENDENCY_NOT_CONFIGURED_SINGBOX')
+  n=node_selected()
+  if not n:raise ValueError('NODE_NOT_SELECTED')
+  cfg=data/'config.json';write(cfg,NH.sing_box_config(n,PORTS['NODE']))
+  (data/'node-id.txt').write_text(n['id'],encoding='utf-8')
+  args=[exe,'run','-c',str(cfg)]
+ elif mode in ('WARP','GOOL','CFON'):
   exe=check_binary('warp');cache=data/'cache';cache.mkdir(exist_ok=True)
   seed={'WARP':'162.159.192.165:987','GOOL':'188.114.98.35:1010','CFON':'188.114.98.15:8854'}
   ep=read(data/'endpoint.json',{}).get('endpoint',seed[mode])
@@ -320,7 +500,8 @@ def start(mode,scan=False):
   p=sp.Popen(args,stdin=sp.DEVNULL,stdout=out,stderr=err,creationflags=FLAGS,cwd=str(data),env=env(),close_fds=True)
   r=identity(p.pid)
   if not r:raise RuntimeError('ENGINE_EXITED_DURING_START')
-  write(data/'owner.json',r|{'mode':mode,'scan':scan,'started':now()});STARTED.append(mode);return r
+  extra={'nodeId':node_selected().get('id')} if mode=='NODE' and node_selected() else {}
+  write(data/'owner.json',r|{'mode':mode,'scan':scan,'started':now()}|extra);STARTED.append(mode);return r
 
 def ensure(mode):
  if mode in ('WEBTUNNEL','OBFS4') and not (ROOT/'data'/('bridges_'+mode.lower()+'.txt')).exists():raise ValueError('MISSING_PRIVATE_BRIDGES')
@@ -331,7 +512,7 @@ def ensure(mode):
   stop(mode)
  for scan in ((False,True) if mode in ('WARP','GOOL','CFON') else (False,)):
   check();progress('در حال راه‌اندازی و تأیید مسیر',mode);starter=start(mode,scan)
-  end=min(DEADLINE,time.monotonic()+(100 if scan else 65 if mode in ('WARP','GOOL') else 110));grace=time.monotonic()+5
+  end=min(DEADLINE,time.monotonic()+(100 if scan else 30 if mode=='NODE' else 65 if mode in ('WARP','GOOL') else 110));grace=time.monotonic()+5
   while time.monotonic()<end:
    check()
    r=owned(mode)
@@ -480,7 +661,7 @@ def inventory():
  for mode in PORTS:
   name='warp' if mode in ('WARP','GOOL','CFON') else 'tor'
   f=ROOT/'data'/('bridges_'+mode.lower()+'.txt');o=owned(mode);opened=port_open(PORTS[mode])
-  installed=bool(dep_path(name) and pathlib.Path(dep_path(name)).is_file())
+  installed=bool(singbox_path()) if mode=='NODE' else bool(dep_path(name) and pathlib.Path(dep_path(name)).is_file())
   state='CONNECTED_NOT_VERIFIED' if o and opened else 'STARTING_OR_UNREADY' if o else 'LISTENER_PRESENT_NOT_OWNED' if opened else 'AVAILABLE_NOT_CONNECTED' if installed else 'DEPENDENCY_NOT_CONFIGURED'
   if mode in ('WEBTUNNEL','OBFS4') and not f.exists() and not o and installed:state='MISSING_PRIVATE_BRIDGES'
   r.append({'mode':mode,'state':state,'port':PORTS[mode],'installed':installed})
@@ -512,16 +693,16 @@ def dispatch(action,mode,payload):
  if action=='Settings':
   new=validate_settings(read(payload));write(ROOT/'settings.json',new);return {'saved':True,'settings':new}
  if action=='Connect':
-  candidates=settings()['order'] if mode=='AUTO' else [mode];failed=[]
+  candidates=connect_candidates(mode);failed=[]
   for m in candidates:
    try:
-    h=probe(m) if m in ('CUSTOM','DIRECT') else ensure(m)
+    h=probe(m,required_country=country_target() if (m=='CUSTOM' and country_target()!='AUTO') else None) if m in ('CUSTOM','DIRECT') else ensure_node(country_target()) if m=='NODE' else ensure(m)
     if h['healthy']:
      if m not in PORTS:h['state']='HEALTHY'
      write(ROOT/'session.json',h);return h
     failed.append({'mode':m,'reason':h['error'] or 'HTTPS_FAILED'})
    except (ValueError,RuntimeError) as e:failed.append({'mode':m,'reason':str(e)})
-  h={'healthy':False,'connected':False,'state':'CONNECT_FAILED','mode':mode,'scope':'BROWSER_HTTPS','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':[],'countryPolicy':'','error':'ALL_PATHS_FAILED','attempts':failed,'applicationAcceptance':'NOT_TESTED'}
+  h={'healthy':False,'connected':False,'state':'CONNECT_FAILED','mode':mode,'scope':'BROWSER_HTTPS','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':[],'countryPolicy':country_target() if mode=='AUTO' else '','error':'ALL_PATHS_FAILED','attempts':failed,'applicationAcceptance':'NOT_TESTED'}
   write(ROOT/'session.json',h);return h
  if action=='Verify':
   h=verify(mode);write(ROOT/'session.json',h);return h
@@ -553,7 +734,7 @@ def dispatch(action,mode,payload):
  if action=='Scan':
   old=[m for m in PORTS if owned(m)];rows=[]
   try:
-   for m in ('WARP','GOOL','CFON','TOR'):
+   for m in ('NODE','WARP','GOOL','CFON','TOR'):
     try:rows.append(ensure(m))
     except (RuntimeError,ValueError) as e:rows.append({'mode':m,'healthy':False,'error':str(e)})
     finally:
@@ -566,10 +747,7 @@ def dispatch(action,mode,payload):
    s=settings();s['order']=rank+[x for x in DEFAULT['order'] if x not in rank];write(ROOT/'settings.json',s)
   return {'results':rows,'rank':rank,'note':'Sample HTTPS latency, not guaranteed application speed.'}
  if action=='Speed':
-  if mode not in ('DIRECT','CUSTOM') and not owned(mode):raise ValueError('CONNECT_FIRST')
-  proxy='' if mode=='DIRECT' else settings()['localProxy'] if mode=='CUSTOM' else f'socks5h://127.0.0.1:{PORTS[mode]}'
-  r=curl('https://speed.cloudflare.com/__down?bytes=2000000',proxy,seconds=25,body=False,size=2100000)
-  return {'mode':mode,'ok':r['exit']==0 and r['code']=='200' and r.get('bytes')==2000000,'mbps':round(r.get('bps',0)*8/1e6,2),'seconds':r['seconds'],'sampleBytes':r.get('bytes',0),'note':'2 MB sample; not continuous throughput.'}
+  return direct_speed()
  if action=='Doctor':return diagnostics()
  if action=='Import':
   if mode not in ('WEBTUNNEL','OBFS4'):raise ValueError('INVALID_IMPORT_MODE')
@@ -580,6 +758,57 @@ def dispatch(action,mode,payload):
   dest=ROOT/'data'/('bridges_'+mode.lower()+'.txt')
   if dest.exists():shutil.copyfile(dest,ROOT/'backup'/f'{mode}_{uuid.uuid4().hex}.txt')
   dest.write_text('\n'.join(lines)+'\n',encoding='utf8');return {'imported':len(lines),'connection':'NOT_TESTED','mode':mode}
+ if action=='NodeList':
+  s=node_store();return {'total':len(s['nodes']),'selected':s.get('selected'),'nodes':node_public_rows(s)}
+ if action=='NodeTestAll':
+  return node_batch_fast()
+ if action=='NodeSelect':
+  current=owned('NODE')
+  if current and current.get('nodeId')!=str(payload):raise ValueError('NODE_ACTIVE_STOP_FIRST')
+  n=node_select(str(payload));return {'selected':n['id'],'node':NH.public_node(n)}
+ if action=='NodeFavorite':
+  s=node_store();found=False
+  for n in s['nodes']:
+   if n.get('id')==str(payload):n['favorite']=not bool(n.get('favorite'));found=True;break
+  if not found:raise ValueError('NODE_NOT_FOUND')
+  save_node_store(s);return {'id':str(payload),'favorite':bool(n.get('favorite'))}
+ if action=='NodeImport':
+  f=pathlib.Path(payload)
+  if not f.is_file() or f.stat().st_size>NH.MAX_NODE_TEXT:raise ValueError('NODE_IMPORT_FILE_INVALID')
+  temporary=f.parent.resolve()==(ROOT/'jobs').resolve() and f.name.startswith('node-import-')
+  try:return node_import_text(f.read_text(encoding='utf-8-sig',errors='replace'),f.name)
+  finally:
+   if temporary:f.unlink(missing_ok=True)
+ if action=='NodeImportUrl':
+  f=pathlib.Path(payload);temporary=f.parent.resolve()==(ROOT/'jobs').resolve() and f.name.startswith('node-sub-')
+  try:
+   req=read(f,{}) or {};url=str(req.get('url') or '')
+   from urllib.parse import urlparse
+   u=urlparse(url)
+   if u.scheme!='https' or not u.hostname or u.username or u.password:raise ValueError('NODE_SUBSCRIPTION_HTTPS_REQUIRED')
+   r=curl(url,seconds=25,size=NH.MAX_NODE_TEXT)
+   if r['exit']!=0 or r['code']!='200':raise ValueError('NODE_SUBSCRIPTION_FETCH_FAILED')
+   return node_import_text(r['body'],u.hostname)
+  finally:
+   if temporary:f.unlink(missing_ok=True)
+ if action=='NodeRefreshPublic':
+  url='https://v2cross.com/en/free-v2ray-nodes/'
+  r=curl(url,seconds=25,size=NH.MAX_NODE_TEXT)
+  if r['exit']!=0 or r['code']!='200':raise ValueError('PUBLIC_NODE_SOURCE_UNREACHABLE')
+  x=node_import_text(r['body'],'V2CROSS_PUBLIC');x['warning']='Public shared nodes are untrusted and temporary; avoid sensitive logins/payments.'
+  return x
+ if action=='NodeTest':
+  s=node_store();n=node_selected(s)
+  if not n:raise ValueError('NODE_NOT_SELECTED')
+  current=owned('NODE')
+  if current and current.get('nodeId')!=n['id']:raise ValueError('NODE_ACTIVE_STOP_FIRST')
+  was=bool(current)
+  try:
+   h=ensure('NODE');node_record_test(n['id'],h)
+   return {'test':h,'node':NH.public_node(node_selected() or n),'temporary':not was}
+  finally:
+   if not was:
+    with contextlib.suppress(Exception):stop('NODE')
  if action=='Export':return safe_export()
  if action=='Updates':
   rows=[]

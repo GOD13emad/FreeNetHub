@@ -60,3 +60,15 @@ FreeNet Hub 4.2.0 — ۲۱ سپتامبر ۲۰۲۶
 - providerهای مرورگری WARP/Tor/GOOL/CFON در installer بازتوزیع نمی‌شوند و در نبود dependency باید Missing/fail-closed باشند. Gateway core و sing-box پین‌شده داخل installer هستند.
 - installer Authenticode-signed نیست چون گواهی code-signing trusted در اختیار پروژه نبود؛ SHA-256 release authority است.
 - Authority: evidence/FINAL_420_ACCEPTANCE.json.
+
+
+=== R21 — Country Strict + Node Hub (2026-09-28) ===
+- اصلاح کشور: کشور انتخابی دیگر صرفاً به CFON پاس داده نمی‌شود؛ AUTO در حالت کشور مشخص فقط Node Hub/CFON را امتحان می‌کند و exit واقعی باید همان کشور باشد.
+- کشور پیش‌فرض از AT به AUTO تغییر کرد تا برنامه بدون درخواست کاربر کشور خاصی را وانمود نکند.
+- Node Hub جدید با هستهٔ sing-box پین‌شدهٔ موجود: SS، VMess، VLESS، Trojan.
+- import از Clipboard، فایل/plain text/Base64، Subscription HTTPS و pool عمومی V2CROSS؛ dedup و favorite حفظ می‌شود.
+- «تست همه سریع» = TCP endpoint screening و latency، بدون ادعای سلامت proxy.
+- «تست نود انتخابی» = اجرای موقت Node و تأیید HTTPS + exit country واقعی؛ process آزمایشی پس از تست جمع می‌شود.
+- Node browser-only است و Full System همچنان فقط WARP صریح است.
+- نودهای عمومی untrusted/temporary تلقی می‌شوند و برای حساب‌های حساس/پرداخت توصیه نمی‌شوند.
+- static acceptance: NodeHub unit/lifecycle PASS، country strict PASS، engine 55/55 PASS، gateway 9/9 PASS، scope UI 2/2 PASS، cross-platform fail-closed PASS.

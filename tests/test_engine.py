@@ -34,10 +34,10 @@ class Unit(unittest.TestCase):
  def test_bridge_port_range(self):
   with self.assertRaises(ValueError):E.bridge_lines('obfs4 192.0.2.1:99999 '+('A'*40)+' cert=abc iat-mode=0','obfs4')
  def test_country_mismatch_rejected(self):
-  with patch.object(E,'curl',side_effect=[{'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=IR','seconds':.2},{'exit':0,'code':'204','seconds':.3}]),patch.object(E,'settings',return_value=E.DEFAULT):
+  with patch.object(E,'curl',side_effect=[{'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=IR','seconds':.2},{'exit':0,'code':'204','seconds':.3}]),patch.object(E,'settings',return_value=E.DEFAULT|{'country':'AT'}):
    r=E.probe('CFON');self.assertFalse(r['healthy']);self.assertEqual(r['error'],'COUNTRY_MISMATCH_OR_UNKNOWN')
  def test_country_valid(self):
-  with patch.object(E,'curl',side_effect=[{'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=AT','seconds':.2},{'exit':0,'code':'204','seconds':.3}]),patch.object(E,'settings',return_value=E.DEFAULT):self.assertTrue(E.probe('CFON')['healthy'])
+  with patch.object(E,'curl',side_effect=[{'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=AT','seconds':.2},{'exit':0,'code':'204','seconds':.3}]),patch.object(E,'settings',return_value=E.DEFAULT|{'country':'AT'}):self.assertTrue(E.probe('CFON')['healthy'])
  def test_curl_http_error_not_healthy(self):
   with patch.object(E,'curl',side_effect=[{'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=AT','seconds':.2},{'exit':0,'code':'403','seconds':.3}]):self.assertFalse(E.probe('WARP')['healthy'])
  def test_native_failure_not_healthy(self):
@@ -134,7 +134,7 @@ class Unit(unittest.TestCase):
 
 
  def test_inventory_missing_optional_dependencies_is_safe(self):
-  with patch.object(E,'deps',return_value={'pwsh':sys.executable}),patch.object(E,'owned',return_value=None),patch.object(E,'port_open',return_value=False),patch.object(E,'settings',return_value=E.DEFAULT):
+  with patch.object(E,'deps',return_value={'pwsh':sys.executable}),patch.object(E,'singbox_path',return_value=''),patch.object(E,'owned',return_value=None),patch.object(E,'port_open',return_value=False),patch.object(E,'settings',return_value=E.DEFAULT):
    rows=E.inventory()['providers'];self.assertEqual(len(rows),len(E.PORTS));self.assertTrue(all(x['installed'] is False for x in rows));self.assertTrue(all(x['state']=='DEPENDENCY_NOT_CONFIGURED' for x in rows))
  def test_missing_provider_dependency_is_structured(self):
   with patch.object(E,'deps',return_value={}):
@@ -173,6 +173,30 @@ class Unit(unittest.TestCase):
   app={'healthy':True,'mode':'TOR','error':'','state':'CHATGPT_EDGE_REACHABLE'}
   with patch.object(E,'emergency_candidates',return_value=['TOR','WARP']),patch.object(E,'owned',return_value=None),patch.object(E,'ensure',return_value=health) as en,patch.object(E,'chatgpt_probe',return_value=app),patch.object(E,'browser',return_value={'launched':True}),patch.object(E,'write'),patch.object(E,'stop') as st:
    r=E.dispatch('ChatGPT','AUTO','');self.assertTrue(r['healthy']);self.assertTrue(r['launched']);en.assert_called_once_with('TOR');st.assert_not_called()
+
+ def test_node_stop_removes_sensitive_runtime_config_when_inactive(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);d=root/'data'/'NODE';d.mkdir(parents=True);(d/'config.json').write_text('secret');(d/'node-id.txt').write_text('id');(d/'owner.json').write_text('{}')
+   with patch.object(E,'ROOT',root),patch.object(E,'owned',return_value=None),patch.object(E,'port_open',return_value=False):
+    self.assertFalse(E.stop('NODE'))
+   self.assertFalse((d/'config.json').exists());self.assertFalse((d/'node-id.txt').exists());self.assertFalse((d/'owner.json').exists())
+ def test_speed_dispatch_always_uses_direct_measurement(self):
+  with patch.object(E,'direct_speed',return_value={'ok':True,'mode':'DIRECT'}) as ds:
+   r=E.dispatch('Speed','WARP','');self.assertEqual(r['mode'],'DIRECT');ds.assert_called_once_with()
+ def test_direct_speed_rejects_nonphysical_default_route(self):
+  with patch.object(E,'direct_route',return_value={'trustedPhysical':False}):
+   with self.assertRaisesRegex(RuntimeError,'DIRECT_SPEED_NON_PHYSICAL'):E.direct_speed()
+ def test_direct_speed_reports_download_upload_and_path(self):
+  tr={'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=IR\nwarp=off\ngateway=off','seconds':.1}
+  down={'exit':0,'code':'200','bytes':5000000,'bps':12500000,'seconds':.4}
+  up={'exit':0,'code':'200','bytes':1000000,'bps':2500000,'seconds':.4}
+  route={'trustedPhysical':True,'adapterName':'Ethernet','description':'Intel','hardware':True,'status':'Up','ip':'192.0.2.10'}
+  with patch.object(E,'direct_route',return_value=route),patch.object(E,'curl',side_effect=[tr,down]),patch.object(E,'ping_direct',return_value={'ok':True,'avgMs':12.5}),patch.object(E,'cloudflare_upload',return_value=up):
+   r=E.direct_speed();self.assertTrue(r['ok']);self.assertFalse(r['proxyUsed']);self.assertEqual(r['downloadMbps'],100.0);self.assertEqual(r['uploadMbps'],20.0);self.assertEqual(r['pingMs'],12.5)
+ def test_direct_speed_rejects_cloudflare_warp(self):
+  tr={'exit':0,'code':'200','body':'ip=1.2.3.4\nloc=IR\nwarp=on\ngateway=off','seconds':.1}
+  with patch.object(E,'direct_route',return_value={'trustedPhysical':True}),patch.object(E,'curl',return_value=tr):
+   with self.assertRaisesRegex(RuntimeError,'DIRECT_SPEED_SYSTEM_TUNNEL'):E.direct_speed()
 
  def test_stop_one_only_requested_mode(self):
   with patch.object(E,'stop',return_value=True) as st:

@@ -16,8 +16,8 @@
     },
     {
       "file": "Setup-GatewayCore.ps1",
-      "bytes": 4233,
-      "sha256": "35EAC2E2E5390A369BD05FE324235D74AD4A3E93B76BBA57B38BF2BA9CC9795B"
+      "bytes": 4226,
+      "sha256": "9554D1356C4DAD9F92E1DEF8379EB0B938DFED77E643C2C6090594813E857E40"
     },
     {
       "file": "Setup-ConsoleGateway.ps1",

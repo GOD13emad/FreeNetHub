@@ -1,0 +1,39 @@
+{
+  "schema": 2,
+  "product": "FreeNet Hub",
+  "platform": "Windows",
+  "installedProduct": true,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "test": "DIRECT_SPEED_PATH_ATTRIBUTED",
+  "route": {
+    "ifIndex": 18,
+    "adapterName": "Ethernet 3",
+    "description": "Intel(R) Ethernet Controller I226-V",
+    "hardware": true,
+    "status": "Up",
+    "trustedPhysical": true
+  },
+  "path": {
+    "mode": "DIRECT",
+    "path": "DIRECT_HOST_INTERNET",
+    "proxyUsed": false,
+    "freeNetHubBrowserProxyUsed": false,
+    "cloudflareWarp": "off",
+    "cloudflareGateway": "off",
+    "country": "IR",
+    "proof": "NO_PROXY_ENV+--noproxy_*+PHYSICAL_DEFAULT_ROUTE+CF_WARP_OFF"
+  },
+  "metrics": {
+    "pingMs": 84,
+    "httpsLatencyMs": 296.3,
+    "downloadMbps": 45.55,
+    "uploadMbps": 5.27,
+    "downloadSampleBytes": 5000000,
+    "uploadSampleBytes": 1000000,
+    "downloadSeconds": 0.878076,
+    "uploadSeconds": 1.518992
+  },
+  "privacy": "Raw public exit IP omitted from persisted evidence.",
+  "limitation": "One bounded sample; not a long-duration ISP benchmark."
+}

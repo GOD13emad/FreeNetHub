@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "releaseRevision": "R21_COUNTRY_NODEHUB",
+  "installer": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R21_Country_NodeHub_Setup.exe",
+  "installerBytes": 15863438,
+  "installerSha256": "FAB01B0DF69F6EEB2A6E78CC2572D4ADDEA371949803EEA565247BBD9B598F5A",
+  "authenticodeStatus": "NotSigned",
+  "runtimeBootstrap": "PASS",
+  "gatewayCore": "PASS",
+  "singBoxSha256": "AAD0EDE010EAFA7B277E520464F3A66FDE820103D737EFF739F40F3CC9451DCC",
+  "installedAppManifestFiles": 5,
+  "installedGatewayManifestFiles": 17,
+  "installedHashes": {
+    "engine": "421923C5D4FB244DA0E749CAD238645EB3C3129CD1BE44A0238F7CD836BEB292",
+    "nodehub": "22C602A4221ECC4B7A0F428C05B7DA1B6FCB706EA974081198AB611CCB330C8D",
+    "controller": "4A8F07D485AC2EDCC0E2CDAB6FACA080B894EB5914B7DDBE2C0BF02AAFB11660",
+    "view": "7CC57D90588CD0B8376337D9F6051D9F314482AB43919A7D545C34E01CEAD05F"
+  },
+  "shellSmoke": {
+    "singleInstance": true,
+    "minimizeHiddenToTray": true,
+    "restoredVisible": true,
+    "taskbarWindowIconSet": true,
+    "noNewTerminalProcesses": true
+  },
+  "atRestNetwork": {
+    "requested": false,
+    "tunCount": 0,
+    "projectPortListeners": 0,
+    "nodePort19460IncludedInCheck": true,
+    "wslOwner": false,
+    "providerOwner": false
+  },
+  "accepted": true,
+  "limitations": [
+    "Windows installer remains unsigned until the external Public Trust signing gate is completed."
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "version": "4.2.0",
+  "status": "R21_RELEASE_CANDIDATE_STATIC_PASS",
+  "date": "2026-09-28",
+  "scope": "STATIC_SOURCE_ACCEPTANCE_PENDING_LIVE_AND_INSTALLER",
+  "tests": {
+    "nodehub_unit": "PASS",
+    "nodehub_engine_policy": "PASS",
+    "country_strict": "PASS",
+    "engine": "60/60 PASS",
+    "gateway": "10/10 PASS",
+    "scope_ui": "2/2 PASS",
+    "crossplatform_fail_closed": "PASS",
+    "xaml_parse": "PASS",
+    "powershell_parse": "PASS"
+  },
+  "claims": {
+    "countrySuccessRequiresRealExitMatch": true,
+    "nodeProtocols": [
+      "SS",
+      "VMess",
+      "VLESS",
+      "Trojan"
+    ],
+    "nodeImport": [
+      "file",
+      "clipboard",
+      "base64",
+      "https_subscription",
+      "public_pool"
+    ],
+    "nodeFastBatchTest": "TCP_ENDPOINT_ONLY_NOT_PROXY_HEALTH",
+    "nodeRealTest": "HTTPS_AND_EXIT_COUNTRY",
+    "nodeDefaultScope": "BROWSER_ONLY",
+    "directSpeed": "PING+DOWNLOAD+UPLOAD_DIRECT_NO_BROWSER_PROXY_FAIL_CLOSED_ON_NONPHYSICAL_OR_CF_WARP"
+  },
+  "liveNodeValidation": "PENDING",
+  "speedLiveValidation": "PENDING",
+  "installerValidation": "PENDING"
+}

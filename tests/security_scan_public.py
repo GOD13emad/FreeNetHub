@@ -1,22 +1,26 @@
 from pathlib import Path
-import re, json, sys
+import re, json, subprocess, sys
 R=Path(__file__).resolve().parent.parent
 forbidden=[]
 hits=[]
 binary_ext={".exe",".dll",".ico",".png",".jpg",".jpeg",".zip",".pdf"}
 
 path_patterns=[
-    ("windows_user_path", re.compile(r"C:\\Users\\(?!<USER>)[A-Za-z0-9._-]+\\", re.I)),
+    ("windows_user_path", re.compile(r"C:\\{1,2}Users\\{1,2}(?!<USER>)[A-Za-z0-9._-]+\\{1,2}", re.I)),
     ("linux_home_path", re.compile(r"/home/[A-Za-z0-9._-]+/")),
     ("github_token", re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b")),
     ("private_key_pem", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----")),
     ("wireguard_private_key", re.compile(r"(?im)^\s*PrivateKey\s*=\s*[A-Za-z0-9+/]{40,}={0,2}\s*$")),
     ("json_private_key_value", re.compile(r'(?i)"private_key"\s*:\s*"[A-Za-z0-9+/]{32,}={0,2}"')),
 ]
-for f in R.rglob("*"):
-    if not f.is_file() or ".git" in f.parts:
+candidate_raw=subprocess.check_output(["git","ls-files","-z","--cached","--others","--exclude-standard"],cwd=R)
+for item in candidate_raw.decode("utf-8").split("\0"):
+    if not item:
         continue
-    rel=f.relative_to(R).as_posix()
+    rel=Path(item).as_posix()
+    f=R/rel
+    if not f.is_file():
+        continue
     low=rel.lower()
     if low=="app/dependencies.json" or low.startswith("gateway/runtime/") or low.startswith("backup/") or low.startswith("delivery/") or (low.startswith("data/") and low!="data/.gitkeep") or (low.startswith("jobs/") and low!="jobs/.gitkeep"):
         forbidden.append(rel)

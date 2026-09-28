@@ -9,7 +9,7 @@ $ErrorActionPreference='Stop'
 $script:Root=Split-Path $PSScriptRoot -Parent
 New-Item -ItemType Directory -Path (Join-Path $script:Root 'logs'),(Join-Path $script:Root 'jobs'),(Join-Path $script:Root 'evidence') -Force|Out-Null
 
-$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
+$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
 
 function Read-Json([string]$p){if(!(Test-Path -LiteralPath $p)){return $null};if((Get-Item $p).Length -gt 4194304){throw 'RESULT_TOO_LARGE'};Get-Content -LiteralPath $p -Raw -Encoding utf8|ConvertFrom-Json -AsHashtable}
 
@@ -63,7 +63,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  $work=[Windows.SystemParameters]::WorkArea;$script:Window.MinWidth=[Math]::Min(850,$work.Width);$script:Window.MinHeight=[Math]::Min(600,$work.Height);$script:Window.Width=[Math]::Min(1180,$work.Width);$script:Window.Height=[Math]::Min(840,$work.Height)
 
- $script:Settings=@{theme='dark';country='AT';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false}
+ $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false}
 
  $stored=Read-Json (Join-Path $script:Root 'settings.json');if($stored){foreach($k in @($script:Settings.Keys)){if($stored.ContainsKey($k)){$script:Settings[$k]=$stored[$k]}}}
 
@@ -85,7 +85,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewayImportProfile')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodeTest','NodeConnect','NodeStop')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
 
@@ -104,6 +104,18 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
    'PORT_OWNED_BY_ANOTHER_PROCESS'{return 'پورت محلی این مسیر توسط پردازشی خارج از مالکیت تأییدشدهٔ FreeNet Hub اشغال شده است.'}
 
    'COUNTRY_MISMATCH_OR_UNKNOWN'{return 'HTTPS برقرار است، اما کشور خروجی با سیاست انتخاب‌شده تطابق ندارد یا قابل تأیید نیست.'}
+
+   'COUNTRY_MODE_UNSUPPORTED'{return 'کشور هدف فعال است. برای اتصال به همان کشور، AUTO، Node Hub، CFON یا پروکسی شخصیِ قابل‌تأیید را انتخاب کنید؛ WARP/Tor کشور مشخصی را تضمین نمی‌کنند.'}
+   'NODE_POOL_EMPTY'{return 'هیچ نودی وارد نشده است. از فایل، کلیپ‌بورد، Subscription HTTPS یا منبع عمومی نود اضافه کنید.'}
+   'NODE_NOT_FOUND'{return 'نود انتخاب‌شده دیگر در فهرست موجود نیست؛ لیست را تازه‌سازی کنید.'}
+   'NODE_NOT_SELECTED'{return 'ابتدا یک نود را از فهرست انتخاب کنید.'}
+   'NODE_ACTIVE_STOP_FIRST'{return 'یک Node دیگر اکنون فعال است. ابتدا Node فعال را قطع کنید، سپس انتخاب را عوض کنید.'}
+   'DEPENDENCY_NOT_CONFIGURED_SINGBOX'{return 'هستهٔ sing-box پین‌شده آماده نیست. Setup وابستگی‌های FreeNet Hub را اجرا کنید.'}
+   'NODE_SUBSCRIPTION_HTTPS_REQUIRED'{return 'آدرس Subscription باید HTTPS معتبر و بدون نام‌کاربری/رمز در خود URL باشد.'}
+   'NODE_SUBSCRIPTION_FETCH_FAILED'{return 'دریافت Subscription کامل نشد؛ URL یا دسترسی شبکه را بررسی کنید.'}
+   'PUBLIC_NODE_SOURCE_UNREACHABLE'{return 'منبع عمومی نودها در این لحظه در دسترس نبود.'}
+   'NODE_COUNTRY_NOT_FOUND'{return 'هیچ نود آزموده‌شده‌ای با کشور هدف تطابق نداشت؛ اتصال به کشور دیگری موفق اعلام نشد.'}
+   'NODE_POOL_NO_HEALTHY_NODE'{return 'در نودهای بررسی‌شده مسیر سالمی پیدا نشد.'}
 
    'HTTPS_VERIFICATION_FAILED'{return 'مسیر متصل است، اما آزمون HTTPS کامل تأیید نشد. جزئیات آزمون را بررسی کنید.'}
 
@@ -189,13 +201,39 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $script:C.StatusTitle.Text=if($h.healthy -and $fresh){'مسیر HTTPS تأیید شد'}elseif($h.healthy){'شاهد قبلی؛ وضعیت اکنون بررسی نشده'}else{'مسیر متصل است؛ HTTPS تأیید نشد'}
 
-  $script:C.StatusDetail.Text=if(!$h.healthy){Friendly-Error ([string]$h.error) $h}elseif($h.mode -eq 'CFON'){'کشور خروجی مطابق سیاست بررسی می‌شود؛ ترافیک بازی UDP تأیید نشده.'}else{'این نتیجهٔ آزمون وب است؛ ورود به حساب، رسانه و همهٔ انواع نشت آزمون جدا دارند.'}
+  $script:C.StatusDetail.Text=if(!$h.healthy){Friendly-Error ([string]$h.error) $h}elseif($h.mode -in @('CFON','NODE')){'کشور خروجی با exit واقعی بررسی شده است؛ این شاهد مربوط به HTTPS است.'}else{'این نتیجهٔ آزمون وب است؛ ورود به حساب، رسانه و همهٔ انواع نشت آزمون جدا دارند.'}
 
   $script:C.SidebarState.Text=if($h.healthy -and $fresh){'بررسی موفق'}elseif($h.healthy){'متصل / شاهد قدیمی'}else{'متصل / نیاز به بررسی'}
 
   $script:C.SidebarDetail.Text='آخرین شاهد: '+$h.checked
 
  }
+
+ function Paint-Nodes($h){
+  if(!$h){return}
+  if($h.ContainsKey('nodes')){
+   $script:C.NodeList.Items.Clear()
+   $selected=$(if($h.ContainsKey('selected')){[string]$h.selected}else{''})
+   foreach($n in @($h.nodes)){
+    $lt=$(if($n.ContainsKey('last_test')){$n.last_test}else{$null});$ep=$(if($n.ContainsKey('endpoint_test')){$n.endpoint_test}else{$null})
+    $state=$(if($lt -and $lt.healthy){'✓ '+[string]$lt.country+' '+$(if($null -ne $lt.seconds){([math]::Round([double]$lt.seconds*1000)).ToString()+'ms'}else{''})}elseif($lt){'× proxy'}elseif($ep -and $ep.reachable){'TCP '+[string]$ep.latency_ms+'ms'}elseif($ep){'× TCP'}else{'?'} )
+    $marks=$(if($n.pinned){'📌 '}else{''})+$(if($n.favorite){'★ '}else{''})
+    $display=$marks+$state+'  ['+[string]$n.protocol+'] '+[string]$n.name+'  ·  '+[string]$n.server+':'+[string]$n.port
+    $o=[pscustomobject]@{Id=[string]$n.id;Display=$display;Node=$n}
+    [void]$script:C.NodeList.Items.Add($o)
+    if($selected -and [string]$n.id -eq $selected){$script:C.NodeList.SelectedItem=$o}
+   }
+   $script:C.NodeSummary.Text='نودها: '+[string]$h.total+$(if($h.ContainsKey('reachable')){' · TCP قابل‌دسترسی: '+[string]$h.reachable}else{''})+' · انتخاب‌شده: '+$(if($selected){$selected}else{'ندارد'})
+  }
+  if($h.ContainsKey('node')){$n=$h.node;$script:C.NodeDetail.Text='انتخاب: ['+[string]$n.protocol+'] '+[string]$n.name+' · '+[string]$n.server+':'+[string]$n.port}
+  if($h.ContainsKey('test')){
+   $q=$h.test;$ms=$(if($null -ne $q.seconds){([math]::Round([double]$q.seconds*1000)).ToString()+' ms'}else{'—'})
+   $script:C.NodeDetail.Text=$(if($q.healthy){'تست واقعی PASS · کشور خروجی: '+[string]$q.country+' · HTTPS: '+$ms}else{'تست واقعی FAIL · '+(Friendly-Error ([string]$q.error) $q)})
+  }
+  if($h.ContainsKey('warning')){$script:C.NodeDetail.Text=[string]$h.warning}
+ }
+
+ function Selected-NodeId{if($script:C.NodeList.SelectedItem){return [string]$script:C.NodeList.SelectedItem.Id};return ''}
 
  function Start-Work([string]$action,[string]$mode='AUTO',[string]$payload=''){
 
@@ -326,6 +364,36 @@ $script:C.QuickConnect.Add_Click({
 
  $script:C.EmergencyChatGPT.Add_Click({$script:DesiredMode='CHATGPT';$script:Repairs=0;Start-Work 'ChatGPT' 'AUTO'})
 
+ $script:C.NodeRefreshList.Add_Click({Start-Work 'NodeList'})
+ $script:C.NodeTestAll.Add_Click({Start-Work 'NodeTestAll' 'NODE'})
+ $script:C.NodeImportClipboard.Add_Click({
+  try{$txt=[Windows.Clipboard]::GetText()}catch{$txt=''}
+  if([string]::IsNullOrWhiteSpace($txt)){$script:C.NodeDetail.Text='کلیپ‌بورد متن قابل وارد کردن ندارد.';return}
+  $p=Join-Path $script:Root ('jobs\node-import-'+[guid]::NewGuid().ToString('N')+'.txt')
+  [IO.File]::WriteAllText($p,$txt,[Text.UTF8Encoding]::new($false));Start-Work 'NodeImport' 'AUTO' $p
+ })
+ $script:C.NodeImportFile.Add_Click({
+  $d=[Microsoft.Win32.OpenFileDialog]::new();$d.Filter='Node/subscription text (*.txt;*.conf)|*.txt;*.conf|All files (*.*)|*.*'
+  if($d.ShowDialog($script:Window)){Start-Work 'NodeImport' 'AUTO' $d.FileName}
+ })
+ $script:C.NodeImportUrl.Add_Click({
+  $url=$script:C.NodeSourceUrl.Text.Trim()
+  if(!$url){$script:C.NodeDetail.Text='آدرس Subscription HTTPS را وارد کنید.';return}
+  $p=Join-Path $script:Root ('jobs\node-sub-'+[guid]::NewGuid().ToString('N')+'.json');Write-Json $p @{url=$url};Start-Work 'NodeImportUrl' 'AUTO' $p
+ })
+ $script:C.NodeRefreshPublic.Add_Click({
+  if([Windows.MessageBox]::Show('نودهای عمومی موقت و غیرقابل‌اعتمادند و فقط به‌عنوان کاندید وارد می‌شوند. ادامه؟','FreeNet Hub · Public Nodes','YesNo','Warning') -eq 'Yes'){Start-Work 'NodeRefreshPublic'}
+ })
+ $script:C.NodeSelect.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return};Start-Work 'NodeSelect' 'NODE' $id})
+ $script:C.NodeFavorite.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return};Start-Work 'NodeFavorite' 'NODE' $id})
+ $script:C.NodeTest.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب و «انتخاب نود» را بزنید.';return};Start-Work 'NodeTest' 'NODE'})
+ $script:C.NodeConnect.Add_Click({
+  if(Scope-IsFullSystem){$script:C.NodeDetail.Text='Node Hub مرورگر-only است؛ برای استفاده از Node سوییچ «تونل کل سیستم» را خاموش کنید.';return}
+  $id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return}
+  $script:NodeConnectAfterSelect=$true;Start-Work 'NodeSelect' 'NODE' $id
+ })
+ $script:C.NodeStop.Add_Click({Start-Work 'StopOne' 'NODE'})
+
  $script:C.Browser.Add_Click({if($script:FullSystemActive){Start-Work 'Browser' 'DIRECT';return};if(!$script:CurrentMode){$script:C.StatusTitle.Text='مرورگر باز نشد';$script:C.StatusDetail.Text=Friendly-Error 'CONNECT_FIRST';return};Start-Work 'Browser' $script:CurrentMode})
 
  $script:C.QuickStop.Add_Click({if($script:FullSystemActive){if([Windows.MessageBox]::Show('تونل کل سیستم متعلق به FreeNetHub خاموش و rollback شود؟','توقف محدود','YesNo','Question') -eq 'Yes'){Start-GatewayRequest 'Stop'};return};if([Windows.MessageBox]::Show('فقط مسیرهای مرورگر متعلق به FreeNet Hub متوقف شوند؟ سایر VPNها و Chrome شخصی تغییر نمی‌کنند.','توقف محدود','YesNo','Question') -eq 'Yes'){Start-Work 'Stop'}})
@@ -338,7 +406,7 @@ $script:C.QuickConnect.Add_Click({
 
  $script:C.Doctor.Add_Click({Start-Work 'Doctor'})
 
- $script:C.Speed.Add_Click({if(!$script:CurrentMode){$script:C.StatusTitle.Text='آزمون سرعت اجرا نشد';$script:C.StatusDetail.Text=Friendly-Error 'CONNECT_FIRST';return};Start-Work 'Speed' $script:CurrentMode})
+ $script:C.Speed.Add_Click({Start-Work 'Speed' 'DIRECT'})
 
  $script:C.Updates.Add_Click({Start-Work 'Updates'})
 
@@ -445,6 +513,15 @@ $script:C.QuickConnect.Add_Click({
       $script:C.StatusTitle.Text='عملیات انجام شد';$script:C.StatusDetail.Text='تغییر فقط در محدودهٔ اعلام‌شده انجام شد؛ برای نتیجهٔ شبکه از دکمه بررسی استفاده کنید.'
 
       if($r.action -eq 'Stop'){$script:CurrentMode='';$script:DesiredMode='';$script:Health=$null;$script:C.SidebarState.Text='بدون اتصال'}
+      if($r.action -eq 'StopOne' -and $script:CurrentMode -eq 'NODE'){$script:CurrentMode='';$script:DesiredMode='';$script:Health=$null;$script:C.SidebarState.Text='Node قطع شد'}
+      if([string]$r.action -like 'Node*'){Paint-Nodes $r.result}
+      if($r.action -eq 'NodeSelect' -and $script:NodeConnectAfterSelect){$script:NodeConnectAfterSelect=$false;$script:DesiredMode='NODE';Start-Work 'Connect' 'NODE'}
+
+      if($r.action -eq 'Speed'){
+       $script:C.StatusTitle.Text=$(if($r.result.ok){'تست سرعت مستقیم کامل شد'}else{'تست سرعت مستقیم ناقص بود'})
+       $script:C.StatusDetail.Text='اینترنت مستقیم · دانلود '+[string]$r.result.downloadMbps+' Mbps · آپلود '+[string]$r.result.uploadMbps+' Mbps · Ping '+$(if($null -ne $r.result.pingMs){[string]$r.result.pingMs+' ms'}else{'نامشخص'})+' · مسیر '+[string]$r.result.defaultRoute.adapterName
+       $script:C.SidebarState.Text='Speed · DIRECT'
+      }
 
       if($r.action -eq 'Scan'){$script:C.ScanSummary.Text='ترتیب پیشنهادی فعلی: '+($r.result.rank -join ' ← ')}
 

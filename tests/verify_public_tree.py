@@ -1,5 +1,5 @@
 from pathlib import Path
-import hashlib,json,sys,xml.etree.ElementTree as ET
+import hashlib,json,subprocess,sys,xml.etree.ElementTree as ET
 R=Path(__file__).resolve().parent.parent
 
 def h(p): return hashlib.sha256(p.read_bytes()).hexdigest().upper()
@@ -45,6 +45,7 @@ checks={
  "engineSha256":R/"app"/"engine.py",
  "uiSha256":R/"app"/"FreeNetHub.ps1",
  "viewSha256":R/"app"/"View.xaml",
+ "nodeHubSha256":R/"app"/"nodehub.py",
  "desktopShellSha256":R/"windows"/"standalone"/"FreeNetHub.exe",
  "gatewayManifestSha256":R/"gateway"/"manifest.json",
  "crossPlatformManifestSha256":R/"crossplatform"/"MANIFEST.json",
@@ -55,13 +56,14 @@ if not ev.is_file():
     relbad.append("acceptanceEvidence")
 else:
     ej=json.loads(ev.read_text(encoding="utf-8-sig"))
-    if ej.get("version")!="4.2.0" or ej.get("status")!="ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE":
+    if ej.get("version")!=rel.get("version") or ej.get("status")!=rel.get("status"):
         relbad.append("acceptanceEvidenceContent")
 forbidden=[]
-for p in R.rglob("*"):
-    if not p.is_file() or ".git" in p.parts:
+candidate_raw=subprocess.check_output(["git","ls-files","-z","--cached","--others","--exclude-standard"],cwd=R)
+for item in candidate_raw.decode("utf-8").split("\0"):
+    if not item:
         continue
-    relp=p.relative_to(R).as_posix()
+    relp=Path(item).as_posix()
     low=relp.lower()
     if low=="app/dependencies.json" or low.startswith("gateway/runtime/") or low.startswith("backup/") or low.startswith("delivery/") or (low.startswith("data/") and low!="data/.gitkeep") or (low.startswith("jobs/") and low!="jobs/.gitkeep"):
         forbidden.append(relp)
@@ -75,12 +77,13 @@ if pm_path.is_file():
         if not fp.is_file() or fp.stat().st_size!=int(row["bytes"]) or h(fp)!=row["sha256"].upper():
             publicbad.append(relp)
     actual=set()
-    for p in R.rglob("*"):
-        if not p.is_file() or ".git" in p.parts or p.name=="PUBLIC_MANIFEST.json":
+    raw=subprocess.check_output(["git","ls-files","-z","--cached","--others","--exclude-standard"],cwd=R)
+    for item in raw.decode("utf-8").split("\0"):
+        if not item:
             continue
-        relx=p.relative_to(R).as_posix()
-        lowx=relx.lower()
-        if "__pycache__/" in lowx or "/.gradle/" in lowx or "/.kotlin/" in lowx or "/build/" in lowx or lowx.endswith(".pyc") or lowx.startswith("gateway/runtime/") or lowx.startswith("backup/") or lowx.startswith("delivery/") or lowx.endswith(".log"):
+        relx=Path(item).as_posix()
+        fp=R/relx
+        if not fp.is_file() or relx=="PUBLIC_MANIFEST.json":
             continue
         actual.add(relx)
     if listed!=actual:
