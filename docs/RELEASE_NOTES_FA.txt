@@ -72,3 +72,16 @@ FreeNet Hub 4.2.0 — ۲۱ سپتامبر ۲۰۲۶
 - Node browser-only است و Full System همچنان فقط WARP صریح است.
 - نودهای عمومی untrusted/temporary تلقی می‌شوند و برای حساب‌های حساس/پرداخت توصیه نمی‌شوند.
 - static acceptance: NodeHub unit/lifecycle PASS، country strict PASS، engine 55/55 PASS، gateway 9/9 PASS، scope UI 2/2 PASS، cross-platform fail-closed PASS.
+
+- Country UI follow-up: تغییر «کشور هدف» همان لحظه در settings.json ذخیره می‌شود؛ اگر exit فعلی با انتخاب کاربر متفاوت باشد، UI اتصال را سالم نشان نمی‌دهد و اتصال مجدد برای کشور هدف درخواست می‌شود.
+
+
+=== R22 — Country Immediate + Node Workspace (2026-09-28) ===
+- تغییر کشور هدف همان لحظه ذخیره می‌شود؛ اگر exit واقعی با کشور انتخابی یکی نباشد UI اتصال را سالم نشان نمی‌دهد.
+- Node Hub مدیریت محلی نود را گسترش می‌دهد: Pin، Favorite، نام سفارشی، Tags، Note، Rating 0..5 و تاریخچهٔ محدود 20 تست.
+- فیلتر و مرتب‌سازی بر اساس latency/name/country/protocol اضافه شد.
+- Copy link و export محلی Raw/Base64 اضافه شد؛ خروجی‌ها credential دارند و محرمانه محسوب می‌شوند.
+- پروتکل‌های SS/VMess/VLESS/Trojan و import از subscription/Base64/plain text/clipboard/public pool حفظ شدند.
+- Test All همچنان screening سریع TCP است و سلامت proxy ادعا نمی‌کند؛ تست واقعی نود با HTTPS + exit-country انجام می‌شود.
+- مقایسه با ShadowShare بر اساس Google Play 2026-08-22: قابلیت‌های مدیریت نود فوق پوشش داده شده‌اند؛ QR، multi-client subscription conversion، Private Space و health recommendation در این release ادعای parity ندارند.
+- سیاست ایمنی بدون تغییر: Node browser-only؛ Full System فقط WARP صریح؛ نود عمومی untrusted/temporary.

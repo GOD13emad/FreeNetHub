@@ -39,3 +39,6 @@ evidence/gui.json
 crossplatform/android/.kotlin/
 
 .remote-commander-backups/
+windows/installer/*Qualification.iss
+project-brain.*.json
+windows/installer/*.Qualification.iss

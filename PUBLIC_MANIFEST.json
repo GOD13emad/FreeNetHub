@@ -1,7 +1,7 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-r21-country-nodehub-final",
-  "source": "git-candidate-working-tree",
+  "version": "4.2.0-public-r22-country-node-workspace-rc1",
+  "source": "git-index-canonical",
   "files": [
     {
       "file": ".gitattributes",
@@ -15,8 +15,8 @@
     },
     {
       "file": ".gitignore",
-      "bytes": 584,
-      "sha256": "985AF731D5D1001441858062911E60E5CA4E93DB45131DE7690FC51B9B98B6A6"
+      "bytes": 680,
+      "sha256": "52519E8EC61BA1F5B59DC1A13C2EA4488ECBC4398FB215DB0EC2A31B0BC17174"
     },
     {
       "file": "app/assets/FreeNetHub.ico",
@@ -35,28 +35,28 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 47638,
-      "sha256": "421923C5D4FB244DA0E749CAD238645EB3C3129CD1BE44A0238F7CD836BEB292"
+      "bytes": 49268,
+      "sha256": "3960E59606DBEA4812E1EFE6FED9EAFCFB63EADB777A5EE9FCA1C1DED2B0ADC2"
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 45589,
-      "sha256": "4A8F07D485AC2EDCC0E2CDAB6FACA080B894EB5914B7DDBE2C0BF02AAFB11660"
+      "bytes": 53049,
+      "sha256": "30624181E46A86D6C2228D740A22F2B013DF06F9EF6E853E0010D48AFCA6203F"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 925,
-      "sha256": "FE0858516E42A9229587DB73962C46A71C546C883321E90CE59A11329737390F"
+      "bytes": 932,
+      "sha256": "AF94B46F21068C8C42D5B40A71CE6D323F483E73981968FEAA1E794C9F7CCF60"
     },
     {
       "file": "app/nodehub.py",
-      "bytes": 10776,
-      "sha256": "22C602A4221ECC4B7A0F428C05B7DA1B6FCB706EA974081198AB611CCB330C8D"
+      "bytes": 10923,
+      "sha256": "FE3CABB648286BDB0DE15965CFD4165F450DCAEE0FA72BBF1FB70FFA007A29F4"
     },
     {
       "file": "app/View.xaml",
-      "bytes": 26217,
-      "sha256": "7CC57D90588CD0B8376337D9F6051D9F314482AB43919A7D545C34E01CEAD05F"
+      "bytes": 28246,
+      "sha256": "7FDF3BAFE325147C130E1C4A657181177377747FDDFE61A0FD2D4B4CAB0533C0"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -270,13 +270,13 @@
     },
     {
       "file": "docs/HELP_FA.txt",
-      "bytes": 7332,
-      "sha256": "DEAA6148C46FD9C07EAE90449F540472CB0473E860CD53B22C758906686D7273"
+      "bytes": 7317,
+      "sha256": "60B4817BD4073065E4E5559E4223902138AC27A34D9ECDAC57565A8C3A38B7FF"
     },
     {
       "file": "docs/RELEASE_NOTES_FA.txt",
-      "bytes": 10056,
-      "sha256": "8D0F27717462154F87F5BD973C3E9EBA977FB50AD4F0664A909E538567D2FB17"
+      "bytes": 11792,
+      "sha256": "1975F3D9AF6C2D08C5B0BB58319967944BD4DE157F9557F77909EFA88F2DEC02"
     },
     {
       "file": "docs/research.json",
@@ -319,6 +319,11 @@
       "sha256": "A8932FE0C2AB70A07D034689D2E18229D9DF733A1E71D37145EB4274CCD4BFDA"
     },
     {
+      "file": "evidence/PROJECT_KNOWLEDGE_R22_20260928.json",
+      "bytes": 5067,
+      "sha256": "A09C8696A979EC4473F2200724D1471769AA2E072181713ED13245A4303A3245"
+    },
+    {
       "file": "evidence/PUBLIC_STAGE_VALIDATION_20260921.json",
       "bytes": 769,
       "sha256": "8367B940E343A94EA6F1BE01B9CEF09E759051E1E9E82C7558C6C2A49CC33191"
@@ -350,8 +355,8 @@
     },
     {
       "file": "evidence/R21_LIVE_NODE_ACCEPTANCE_20260928.json",
-      "bytes": 1238,
-      "sha256": "90F52594D87667CD4996B36F9D17F2001F4E50B030BCBF22DE078D466490F369"
+      "bytes": 1191,
+      "sha256": "126F46B1BF9470FCF731D93BB0F16B45F93EF6F74081E4437A9C65EC756D4DFB"
     },
     {
       "file": "evidence/R21_SOURCE_STATIC_ACCEPTANCE_20260928.json",
@@ -360,8 +365,18 @@
     },
     {
       "file": "evidence/R21_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
-      "bytes": 563,
-      "sha256": "1BB0001A8971C544E49996DDA20CC19E10B75F359EE8C0118939AE8F908F56CB"
+      "bytes": 545,
+      "sha256": "AEB6396EE17120C20A00FEF0EA076E3695497362B6B8AC824C653A669F60C607"
+    },
+    {
+      "file": "evidence/R22_SOURCE_ACCEPTANCE_20260928.json",
+      "bytes": 1726,
+      "sha256": "F07730B8D162D5C72F18D2AAB4F29E30F4337FF5A68F453379D6F70E5E65A0D2"
+    },
+    {
+      "file": "evidence/R22_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
+      "bytes": 545,
+      "sha256": "4873C8AF03D9C7BDF812D92B468CA4B34FAB90CB887CA560BF06A12B00CDE62E"
     },
     {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
@@ -370,8 +385,8 @@
     },
     {
       "file": "evidence/unit_tests.json",
-      "bytes": 228,
-      "sha256": "DC9ABE76BDB9BC3EB4D94CAB08CB57AC8423FABBA223D4977E2EA974BC689383"
+      "bytes": 587,
+      "sha256": "4E5BFF8E06B6481C3797EA3A01AC03575B86E876AD3016F06075F9CD5033ED50"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -420,8 +435,8 @@
     },
     {
       "file": "gateway/manifest.json",
-      "bytes": 3013,
-      "sha256": "CCA7A97D4455A680090DA40F81AF24D0DA1FD6C444214434195A3C782B943BB4"
+      "bytes": 2912,
+      "sha256": "87C45F6B26BE1BAC9EC0A7E0B3D6FBDD3E4B8D495A3AD82922F0B3BA5A4499C3"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -520,8 +535,8 @@
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
-      "bytes": 1236,
-      "sha256": "0AA5D9CC46623ADB7D762866C188331E254DDCB30D8DA78F16745C5201CF6A9E"
+      "bytes": 1972,
+      "sha256": "B29A9062F1BDFACE647ABB5992B516F5F68D5D949B442999DAFAE2ED919B1D4D"
     },
     {
       "file": "gateway/tests/virtual_console_e2e.py",
@@ -554,6 +569,11 @@
       "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
     },
     {
+      "file": "PROJECT_BRAIN.md",
+      "bytes": 8979,
+      "sha256": "65AC6C2CCB0A537ECCF700A8F961A4BDD2F195622EEBF36B9AF457EEE727CADC"
+    },
+    {
       "file": "README.md",
       "bytes": 4810,
       "sha256": "0FD1E045B2C7AF00BFE314C06101308D4244BB9B14AB6E44D9FFE2EC31B65FC0"
@@ -565,8 +585,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 8916,
-      "sha256": "6207154D5017670D606BF6FD3C52357047D2304EAC9CEB9E554A277295F77008"
+      "bytes": 9954,
+      "sha256": "D49A42C79F33465006FD914DCF094AF4793F849EBD6BAB173FD1E85FCDA08ED5"
     },
     {
       "file": "SECURITY.md",
@@ -582,6 +602,21 @@
       "file": "tests/build_r21_metadata.py",
       "bytes": 8526,
       "sha256": "5C3EA02DF822393253BBBDA86A24D4D39F8FD10C78F02C1D99A2D9D4E01F9A38"
+    },
+    {
+      "file": "tests/build_r22_installer.ps1",
+      "bytes": 781,
+      "sha256": "0D6AB2D21E4720DD0515D11208E42127287FA37629692819DF04ECCDAB14513F"
+    },
+    {
+      "file": "tests/build_r22_metadata.py",
+      "bytes": 4170,
+      "sha256": "0B1CD552F2C118ED9A7669E4D85FA1226013CE0517CD285459E0EB7404715C17"
+    },
+    {
+      "file": "tests/seal_r22_index.py",
+      "bytes": 3413,
+      "sha256": "518AE2B6F669C71B1C96FFBC874150636BFA731DB7A7546B74DB1764885BB79B"
     },
     {
       "file": "tests/security_scan_public.py",
@@ -600,8 +635,8 @@
     },
     {
       "file": "tests/test_engine.py",
-      "bytes": 19084,
-      "sha256": "1D2BEB31375EBDF1A952524835F7FBBC6990C1706E43C1701C3AFB08DB51A0FC"
+      "bytes": 20272,
+      "sha256": "C68BE2B01AC104B301C3B3198832E653E8A23EA5E6428D58B5733FB204EA31AD"
     },
     {
       "file": "tests/test_nodehub.py",
@@ -612,6 +647,11 @@
       "file": "tests/test_nodehub_engine_policy.py",
       "bytes": 3326,
       "sha256": "674386D5239879A08582C3A9804E244A5175DD77515512EA602C12B09308A0CB"
+    },
+    {
+      "file": "tests/test_r22_country_shadowshare.py",
+      "bytes": 3082,
+      "sha256": "90C4E5C0D0B79D7D5A2A8853895039A754D7E2DC4DB297BF1E4BD35723727996"
     },
     {
       "file": "tests/verify_public_tree.py",
@@ -635,8 +675,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 10482,
-      "sha256": "A235030527E547CC43A99A521407EA9EA99C5AA6A5BC5D0CC2268451FDFC974E"
+      "bytes": 10484,
+      "sha256": "BBD5F5DA562668690CEE099B3525BC5E6E7C9C43BD1031DAD58165D14E42AEFD"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",

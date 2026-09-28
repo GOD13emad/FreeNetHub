@@ -45,15 +45,27 @@
 <Button Grid.Column="1" Name="NodeImportUrl" Content="افزودن Subscription HTTPS" Margin="8,0,0,0"/>
 </Grid>
 <TextBlock Name="NodeSummary" Text="لیست نودها هنوز خوانده نشده است." Foreground="{DynamicResource Muted}" Margin="0,12,0,6"/>
+<Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="190"/></Grid.ColumnDefinitions>
+<TextBox Name="NodeFilter" ToolTip="فیلتر نام، پروتکل، کشور، تگ یا یادداشت" MinHeight="34" VerticalContentAlignment="Center"/>
+<ComboBox Grid.Column="1" Name="NodeSort" Margin="8,0,0,0" Height="34" SelectedIndex="0"><ComboBoxItem Tag="SMART" Content="مرتب‌سازی هوشمند"/><ComboBoxItem Tag="LATENCY" Content="کمترین تاخیر"/><ComboBoxItem Tag="NAME" Content="نام"/><ComboBoxItem Tag="COUNTRY" Content="کشور خروجی"/><ComboBoxItem Tag="PROTOCOL" Content="پروتکل"/></ComboBox>
+</Grid>
 <ListBox Name="NodeList" Height="270" DisplayMemberPath="Display" FlowDirection="LeftToRight"/>
 <WrapPanel Margin="0,10,0,0">
 <Button Name="NodeSelect" Content="انتخاب نود"/>
 <Button Name="NodeFavorite" Content="★ علاقه‌مندی"/>
+<Button Name="NodePin" Content="📌 سنجاق"/>
 <Button Name="NodeTest" Content="تست نود انتخابی"/>
 <Button Name="NodeConnect" Content="اتصال مرورگر با این نود" Background="#147F70" Foreground="White" FontWeight="Bold"/>
 <Button Name="NodeStop" Content="قطع Node"/>
 </WrapPanel>
-<TextBlock Name="NodeDetail" Text="تست نود: HTTPS + exit country واقعی. فهرست عمومی فقط منبع کاندیداست و سالم/قابل‌اعتماد بودن آن از قبل فرض نمی‌شود." TextWrapping="Wrap" Foreground="{DynamicResource Muted}" Margin="0,10,0,0"/>
+<Border Background="{DynamicResource Soft}" CornerRadius="8" Padding="10" Margin="0,10,0,0"><StackPanel>
+<TextBlock Text="اطلاعات نود" FontWeight="SemiBold"/>
+<Grid Margin="0,8,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions><TextBox Name="NodeNameEdit" ToolTip="نام دلخواه"/><ComboBox Grid.Column="1" Name="NodeRating" Margin="8,0,0,0" SelectedIndex="0"><ComboBoxItem Tag="0" Content="بدون امتیاز"/><ComboBoxItem Tag="1" Content="★"/><ComboBoxItem Tag="2" Content="★★"/><ComboBoxItem Tag="3" Content="★★★"/><ComboBoxItem Tag="4" Content="★★★★"/><ComboBoxItem Tag="5" Content="★★★★★"/></ComboBox></Grid>
+<TextBox Name="NodeTags" Margin="0,6,0,0" ToolTip="تگ‌ها با کاما جدا شوند"/>
+<TextBox Name="NodeNote" Margin="0,6,0,0" ToolTip="یادداشت" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="70"/>
+<WrapPanel Margin="0,8,0,0"><Button Name="NodeSaveMeta" Content="ذخیره مشخصات"/><Button Name="NodeHistory" Content="تاریخچه تست"/><Button Name="NodeCopyLink" Content="کپی لینک نود"/><Button Name="NodeExportRaw" Content="خروجی Raw"/><Button Name="NodeExportBase64" Content="خروجی Base64"/></WrapPanel>
+</StackPanel></Border>
+<TextBlock Name="NodeDetail" Text="تست نود: HTTPS + exit country واقعی. نام/پرچم نود فقط hint است و هرگز جایگزین تأیید کشور خروجی نمی‌شود." TextWrapping="Wrap" Foreground="{DynamicResource Muted}" Margin="0,10,0,0"/>
 </StackPanel></Border>
 <Border Style="{StaticResource Card}" Margin="0,14,0,0"><StackPanel>
 <TextBlock Text="ایمنی نودهای عمومی" FontSize="17" FontWeight="SemiBold"/>

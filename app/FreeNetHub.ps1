@@ -9,7 +9,7 @@ $ErrorActionPreference='Stop'
 $script:Root=Split-Path $PSScriptRoot -Parent
 New-Item -ItemType Directory -Path (Join-Path $script:Root 'logs'),(Join-Path $script:Root 'jobs'),(Join-Path $script:Root 'evidence') -Force|Out-Null
 
-$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
+$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:NodeRows=@();$script:NodeSelected='';$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
 
 function Read-Json([string]$p){if(!(Test-Path -LiteralPath $p)){return $null};if((Get-Item $p).Length -gt 4194304){throw 'RESULT_TOO_LARGE'};Get-Content -LiteralPath $p -Raw -Encoding utf8|ConvertFrom-Json -AsHashtable}
 
@@ -85,7 +85,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodeTest','NodeConnect','NodeStop')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
 
@@ -178,6 +178,16 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   $fresh=$false;try{$age=([DateTimeOffset]::UtcNow-[DateTimeOffset]::Parse($h.checked)).TotalSeconds;$fresh=$age -ge 0 -and $age -lt 65}catch{}
 
   $script:C.RouteValue.Text=[string]$h.mode
+  $uiCountry=$(if($script:C.Country.SelectedItem){[string]$script:C.Country.SelectedItem.Content}else{'AUTO'})
+  $countryMismatch=[bool]($connected -and $uiCountry -ne 'AUTO' -and [string]$h.country -ne $uiCountry)
+  if($countryMismatch){
+   $script:C.CountryValue.Text=$(if($h.country){[string]$h.country}else{'نامشخص'})
+   $script:C.LatencyValue.Text='—';$script:C.IpValue.Text='—'
+   $script:C.StatusTitle.Text='کشور خروجی با انتخاب شما یکی نیست'
+   $script:C.StatusDetail.Text='هدف: '+$uiCountry+' · خروجی فعلی: '+$(if($h.country){[string]$h.country}else{'نامشخص'})+' · این اتصال برای کشور هدف سالم اعلام نمی‌شود؛ دوباره متصل شوید.'
+   $script:C.SidebarState.Text='نیاز به اتصال مجدد';$script:C.SidebarDetail.Text='کشور انتخاب‌شده باید با exit واقعی تطابق داشته باشد.'
+   return
+  }
 
   if(!$connected -or $state -in @('NOT_CONNECTED','STARTING_OR_UNREADY','FOREIGN_OR_STALE_LISTENER','CONNECT_FAILED')){
 
@@ -209,20 +219,44 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  }
 
+ function Node-StateText($n){
+  $lt=$(if($n.ContainsKey('last_test')){$n.last_test}else{$null});$ep=$(if($n.ContainsKey('endpoint_test')){$n.endpoint_test}else{$null})
+  return $(if($lt -and $lt.healthy){'✓ '+[string]$lt.country+' '+$(if($null -ne $lt.seconds){([math]::Round([double]$lt.seconds*1000)).ToString()+'ms'}else{''})}elseif($lt){'× proxy'}elseif($ep -and $ep.reachable){'TCP '+[string]$ep.latency_ms+'ms'}elseif($ep){'× TCP'}else{'?'})
+ }
+
+ function Apply-NodeFilter{
+  if(!$script:C.ContainsKey('NodeList')){return}
+  $keep=Selected-NodeId;$script:C.NodeList.Items.Clear()
+  $q=$(if($script:C.NodeFilter){$script:C.NodeFilter.Text.Trim().ToLowerInvariant()}else{''})
+  $sort=$(if($script:C.NodeSort.SelectedItem){[string]$script:C.NodeSort.SelectedItem.Tag}else{'SMART'})
+  $rows=@($script:NodeRows)
+  if($q){
+   $rows=@($rows|Where-Object{
+    $n=$_.Node;$blob=([string]$n.name+' '+[string]$n.protocol+' '+[string]$n.server+' '+([string]::Join(' ',@($n.tags)))+' '+[string]$n.note+' '+$(if($n.last_test){[string]$n.last_test.country}else{''})).ToLowerInvariant()
+    $blob.Contains($q)
+   })
+  }
+  switch($sort){
+   'LATENCY'{$rows=@($rows|Sort-Object @{Expression={if($_.Node.last_test -and $_.Node.last_test.healthy -and $null -ne $_.Node.last_test.seconds){[double]$_.Node.last_test.seconds}else{9999}}},Display)}
+   'NAME'{$rows=@($rows|Sort-Object @{Expression={[string]$_.Node.name}})}
+   'COUNTRY'{$rows=@($rows|Sort-Object @{Expression={if($_.Node.last_test){[string]$_.Node.last_test.country}else{'ZZ'}}},Display)}
+   'PROTOCOL'{$rows=@($rows|Sort-Object @{Expression={[string]$_.Node.protocol}},Display)}
+  }
+  foreach($o in $rows){[void]$script:C.NodeList.Items.Add($o);if($keep -and [string]$o.Id -eq $keep){$script:C.NodeList.SelectedItem=$o}}
+ }
+
  function Paint-Nodes($h){
   if(!$h){return}
   if($h.ContainsKey('nodes')){
-   $script:C.NodeList.Items.Clear()
-   $selected=$(if($h.ContainsKey('selected')){[string]$h.selected}else{''})
+   $selected=$(if($h.ContainsKey('selected')){[string]$h.selected}else{''});$script:NodeSelected=$selected;$script:NodeRows=@()
    foreach($n in @($h.nodes)){
-    $lt=$(if($n.ContainsKey('last_test')){$n.last_test}else{$null});$ep=$(if($n.ContainsKey('endpoint_test')){$n.endpoint_test}else{$null})
-    $state=$(if($lt -and $lt.healthy){'✓ '+[string]$lt.country+' '+$(if($null -ne $lt.seconds){([math]::Round([double]$lt.seconds*1000)).ToString()+'ms'}else{''})}elseif($lt){'× proxy'}elseif($ep -and $ep.reachable){'TCP '+[string]$ep.latency_ms+'ms'}elseif($ep){'× TCP'}else{'?'} )
+    $state=Node-StateText $n
     $marks=$(if($n.pinned){'📌 '}else{''})+$(if($n.favorite){'★ '}else{''})
-    $display=$marks+$state+'  ['+[string]$n.protocol+'] '+[string]$n.name+'  ·  '+[string]$n.server+':'+[string]$n.port
-    $o=[pscustomobject]@{Id=[string]$n.id;Display=$display;Node=$n}
-    [void]$script:C.NodeList.Items.Add($o)
-    if($selected -and [string]$n.id -eq $selected){$script:C.NodeList.SelectedItem=$o}
+    $rating=$(if([int]$n.rating -gt 0){' '+('★'*[int]$n.rating)}else{''})
+    $display=$marks+$state+'  ['+[string]$n.protocol+'] '+[string]$n.name+$rating+'  ·  '+[string]$n.server+':'+[string]$n.port
+    $script:NodeRows+=,[pscustomobject]@{Id=[string]$n.id;Display=$display;Node=$n}
    }
+   Apply-NodeFilter
    $script:C.NodeSummary.Text='نودها: '+[string]$h.total+$(if($h.ContainsKey('reachable')){' · TCP قابل‌دسترسی: '+[string]$h.reachable}else{''})+' · انتخاب‌شده: '+$(if($selected){$selected}else{'ندارد'})
   }
   if($h.ContainsKey('node')){$n=$h.node;$script:C.NodeDetail.Text='انتخاب: ['+[string]$n.protocol+'] '+[string]$n.name+' · '+[string]$n.server+':'+[string]$n.port}
@@ -231,6 +265,29 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
    $script:C.NodeDetail.Text=$(if($q.healthy){'تست واقعی PASS · کشور خروجی: '+[string]$q.country+' · HTTPS: '+$ms}else{'تست واقعی FAIL · '+(Friendly-Error ([string]$q.error) $q)})
   }
   if($h.ContainsKey('warning')){$script:C.NodeDetail.Text=[string]$h.warning}
+ }
+
+ function Selected-NodeObject{if($script:C.NodeList.SelectedItem){return $script:C.NodeList.SelectedItem.Node};return $null}
+
+ function Fill-NodeEditor{
+  $n=Selected-NodeObject;if(!$n){return}
+  $script:C.NodeNameEdit.Text=[string]$n.name;$script:C.NodeTags.Text=([string]::Join(', ',@($n.tags)));$script:C.NodeNote.Text=[string]$n.note
+  $rating=[Math]::Max(0,[Math]::Min(5,[int]$n.rating));$script:C.NodeRating.SelectedIndex=$rating
+ }
+
+ function Get-RawNodeById([string]$id){
+  if(!$id){return $null};$store=Read-Json (Join-Path $script:Root 'data\nodes.json');if(!$store){return $null}
+  foreach($n in @($store.nodes)){if([string]$n.id -eq $id){return $n}}
+  return $null
+ }
+
+ function Export-NodeLinks([bool]$base64){
+  $store=Read-Json (Join-Path $script:Root 'data\nodes.json');if(!$store -or !@($store.nodes).Count){$script:C.NodeDetail.Text='نودی برای خروجی وجود ندارد.';return}
+  $rows=@($store.nodes|Where-Object{![string]::IsNullOrWhiteSpace([string]$_.raw)}|ForEach-Object{[string]$_.raw})
+  $d=[Microsoft.Win32.SaveFileDialog]::new();$d.Filter='Text (*.txt)|*.txt';$d.FileName=$(if($base64){'freenethub-nodes-base64.txt'}else{'freenethub-nodes.txt'})
+  if(!$d.ShowDialog($script:Window)){return}
+  $text=$rows -join "`n";if($base64){$text=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($text))}
+  [IO.File]::WriteAllText($d.FileName,$text,[Text.UTF8Encoding]::new($false));$script:C.NodeDetail.Text='خروجی محلی ذخیره شد: '+[IO.Path]::GetFileName($d.FileName)+' · شامل credential نود است؛ محرمانه نگه دارید.'
  }
 
  function Selected-NodeId{if($script:C.NodeList.SelectedItem){return [string]$script:C.NodeList.SelectedItem.Id};return ''}
@@ -254,6 +311,25 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
  }
 
  function Selected{return [string]$script:C.Mode.SelectedItem.Tag}
+
+ function Sync-CountrySelection{
+  if(!$script:C.Country.SelectedItem){return}
+  $newCountry=[string]$script:C.Country.SelectedItem.Content
+  if($newCountry -notin @('AT','DE','NL','US','CA','GB','FR','SG','JP','AUTO')){return}
+  if([string]$script:Settings.country -eq $newCountry){return}
+  $script:Settings.country=$newCountry
+  Write-Json (Join-Path $script:Root 'settings.json') $script:Settings
+  $script:C.StatusTitle.Text='کشور هدف تغییر کرد'
+  $actual=$(if($script:Health -and $script:Health.ContainsKey('country')){[string]$script:Health.country}else{''})
+  if($newCountry -eq 'AUTO'){
+   $script:C.StatusDetail.Text='انتخاب خودکار فعال شد؛ اتصال بعدی بهترین مسیر سالم را انتخاب می‌کند.'
+  }elseif($actual -and $actual -eq $newCountry){
+   $script:C.StatusDetail.Text='خروجی فعلی با کشور انتخاب‌شده هم‌خوان است؛ در اتصال بعدی نیز دوباره راستی‌آزمایی می‌شود.'
+  }else{
+   $script:C.StatusDetail.Text='اتصال فعلی برای کشور '+$newCountry+' معتبر نیست؛ «شروع اتصال» را بزنید تا خروجی واقعی همان کشور پیدا و تأیید شود.'
+  }
+ }
+ $script:C.Country.Add_SelectionChanged({Sync-CountrySelection})
 
  function Cancel-Work{if($script:Task){[IO.File]::WriteAllText((Join-Path $script:Root ('jobs\'+$script:Job+'.cancel')),'user cancel');$script:Cancelled=$true;$script:C.Cancel.IsEnabled=$false;$script:C.StatusDetail.Text='لغو درخواست شد؛ منتظر ثبت نتیجه و پاک‌سازی محدود هستیم.'}}
 
@@ -386,6 +462,25 @@ $script:C.QuickConnect.Add_Click({
  })
  $script:C.NodeSelect.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return};Start-Work 'NodeSelect' 'NODE' $id})
  $script:C.NodeFavorite.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return};Start-Work 'NodeFavorite' 'NODE' $id})
+ $script:C.NodePin.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return};Start-Work 'NodePin' 'NODE' $id})
+ $script:C.NodeList.Add_SelectionChanged({Fill-NodeEditor})
+ $script:C.NodeFilter.Add_TextChanged({Apply-NodeFilter})
+ $script:C.NodeSort.Add_SelectionChanged({Apply-NodeFilter})
+ $script:C.NodeSaveMeta.Add_Click({
+  $id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return}
+  $rating=$(if($script:C.NodeRating.SelectedItem){[int]$script:C.NodeRating.SelectedItem.Tag}else{0})
+  $tags=@($script:C.NodeTags.Text.Split(',')|ForEach-Object{$_.Trim()}|Where-Object{$_})
+  $p=Join-Path $script:Root ('jobs\node-meta-'+[guid]::NewGuid().ToString('N')+'.json')
+  Write-Json $p @{id=$id;name=$script:C.NodeNameEdit.Text;note=$script:C.NodeNote.Text;tags=$tags;rating=$rating};Start-Work 'NodeMeta' 'NODE' $p
+ })
+ $script:C.NodeHistory.Add_Click({
+  $n=Selected-NodeObject;if(!$n){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return}
+  $hist=@($n.history);if(!$hist.Count){$script:C.NodeDetail.Text='برای این نود هنوز تاریخچهٔ تست واقعی وجود ندارد.';return}
+  $script:C.NodeDetail.Text=(@($hist|Select-Object -Last 8|ForEach-Object{[string]$_.checked+' · '+$(if($_.healthy){'PASS '+[string]$_.country}else{'FAIL '+[string]$_.error})+' · '+$(if($null -ne $_.seconds){([math]::Round([double]$_.seconds*1000)).ToString()+'ms'}else{'—'})}) -join "`r`n")
+ })
+ $script:C.NodeCopyLink.Add_Click({$n=Get-RawNodeById (Selected-NodeId);if(!$n){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return};[Windows.Clipboard]::SetText([string]$n.raw);$script:C.NodeDetail.Text='لینک نود فقط در کلیپ‌بورد کپی شد؛ در گزارش FreeNet Hub ذخیره نشد.'})
+ $script:C.NodeExportRaw.Add_Click({Export-NodeLinks $false})
+ $script:C.NodeExportBase64.Add_Click({Export-NodeLinks $true})
  $script:C.NodeTest.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب و «انتخاب نود» را بزنید.';return};Start-Work 'NodeTest' 'NODE'})
  $script:C.NodeConnect.Add_Click({
   if(Scope-IsFullSystem){$script:C.NodeDetail.Text='Node Hub مرورگر-only است؛ برای استفاده از Node سوییچ «تونل کل سیستم» را خاموش کنید.';return}

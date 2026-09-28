@@ -174,6 +174,16 @@ class Unit(unittest.TestCase):
   with patch.object(E,'emergency_candidates',return_value=['TOR','WARP']),patch.object(E,'owned',return_value=None),patch.object(E,'ensure',return_value=health) as en,patch.object(E,'chatgpt_probe',return_value=app),patch.object(E,'browser',return_value={'launched':True}),patch.object(E,'write'),patch.object(E,'stop') as st:
    r=E.dispatch('ChatGPT','AUTO','');self.assertTrue(r['healthy']);self.assertTrue(r['launched']);en.assert_called_once_with('TOR');st.assert_not_called()
 
+ def test_node_pin_meta_and_history_persist(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);(root/'data').mkdir();(root/'jobs').mkdir()
+   E.write(root/'data'/'nodes.json',{'schema':1,'selected':'n1','nodes':[{'id':'n1','name':'old','protocol':'vless','server':'example.com','port':443,'raw':'vless://example','favorite':False,'pinned':False,'rating':0,'tags':[],'note':'','source':'unit'}]})
+   with patch.object(E,'ROOT',root):
+    r=E.dispatch('NodePin','NODE','n1');self.assertTrue(r['pinned']);self.assertTrue(E.node_store()['nodes'][0]['pinned'])
+    meta=root/'jobs'/'node-meta-unit.json';E.write(meta,{'id':'n1','name':'Home SG','note':'stable','tags':['home','sg'],'rating':4})
+    r=E.dispatch('NodeMeta','NODE',str(meta));self.assertEqual(r['node']['name'],'Home SG');self.assertEqual(r['node']['rating'],4);self.assertFalse(meta.exists())
+    E.node_record_test('n1',{'healthy':True,'country':'SG','ip':'203.0.113.9','seconds':0.2,'error':'','checked':'2026-09-28T00:00:00Z'})
+    pub=E.node_public_rows()[0];self.assertEqual(pub['history'][-1]['country'],'SG');self.assertNotIn('ip',pub['history'][-1]);self.assertEqual(pub['tags'],['home','sg'])
  def test_node_stop_removes_sensitive_runtime_config_when_inactive(self):
   with tempfile.TemporaryDirectory() as td:
    root=pathlib.Path(td);d=root/'data'/'NODE';d.mkdir(parents=True);(d/'config.json').write_text('secret');(d/'node-id.txt').write_text('id');(d/'owner.json').write_text('{}')

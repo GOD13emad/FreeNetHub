@@ -1,22 +1,22 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-r21-country-nodehub-final",
-  "status": "ACCEPTED_WINDOWS_4.2_R21_SOFTWARE_RELEASE",
+  "releaseRevision": "4.2.0-public-r22-country-node-workspace-rc1",
+  "status": "R22_RELEASE_CANDIDATE_COUNTRY_NODE_WORKSPACE",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
     "CONSOLE_GATEWAY_SOFTWARE",
     "NODE_HUB_BROWSER_PROXY"
   ],
-  "engineSha256": "421923C5D4FB244DA0E749CAD238645EB3C3129CD1BE44A0238F7CD836BEB292",
-  "uiSha256": "4A8F07D485AC2EDCC0E2CDAB6FACA080B894EB5914B7DDBE2C0BF02AAFB11660",
-  "viewSha256": "7CC57D90588CD0B8376337D9F6051D9F314482AB43919A7D545C34E01CEAD05F",
+  "engineSha256": "3960E59606DBEA4812E1EFE6FED9EAFCFB63EADB777A5EE9FCA1C1DED2B0ADC2",
+  "uiSha256": "30624181E46A86D6C2228D740A22F2B013DF06F9EF6E853E0010D48AFCA6203F",
+  "viewSha256": "7FDF3BAFE325147C130E1C4A657181177377747FDDFE61A0FD2D4B4CAB0533C0",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
-  "gatewayManifestSha256": "CCA7A97D4455A680090DA40F81AF24D0DA1FD6C444214434195A3C782B943BB4",
+  "gatewayManifestSha256": "87C45F6B26BE1BAC9EC0A7E0B3D6FBDD3E4B8D495A3AD82922F0B3BA5A4499C3",
   "crossPlatformManifestSha256": "9E1D262F9836407CBA3C624922B9AC4A58B37376CF3799A009F9757662EAFC2D",
-  "installerSha256": "FAB01B0DF69F6EEB2A6E78CC2572D4ADDEA371949803EEA565247BBD9B598F5A",
-  "acceptanceEvidence": "evidence/R21_FINAL_ACCEPTANCE_20260928.json",
+  "installerSha256": "2A6548AFFE8F2CFC483E9C3CE6EED121577488B3FE3DEC015361144A54A44EFF",
+  "acceptanceEvidence": "evidence/R22_SOURCE_ACCEPTANCE_20260928.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
@@ -168,10 +168,10 @@
       "productionCredentialGatesRemainExternal": true
     }
   },
-  "appManifestSha256": "5C416367DC0FE7BC9DD696C83874DA274EB5FCF23CEE0D0A265471A1101C9406",
-  "nodeHubSha256": "22C602A4221ECC4B7A0F428C05B7DA1B6FCB706EA974081198AB611CCB330C8D",
+  "appManifestSha256": "AF94B46F21068C8C42D5B40A71CE6D323F483E73981968FEAA1E794C9F7CCF60",
+  "nodeHubSha256": "FE3CABB648286BDB0DE15965CFD4165F450DCAEE0FA72BBF1FB70FFA007A29F4",
   "previousAcceptedInstallerSha256": "2A6548AFFE8F2CFC483E9C3CE6EED121577488B3FE3DEC015361144A54A44EFF",
-  "installerStatus": "R21_BUILT_AND_SMOKE_ACCEPTED",
+  "installerStatus": "R21_ACCEPTED_PREVIOUS__R22_BUILD_PENDING",
   "r21": {
     "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH",
     "countryAutoOrder": [
@@ -203,5 +203,47 @@
     "liveAcceptance": "PASS",
     "installerAcceptance": "PASS",
     "speedLiveAcceptance": "PASS"
+  },
+  "r22": {
+    "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH_AND_IMMEDIATE_UI_PERSIST",
+    "strictCountryLiveEvidence": "evidence/R22_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
+    "nodeHub": {
+      "protocols": [
+        "SS",
+        "VMess",
+        "VLESS",
+        "Trojan"
+      ],
+      "imports": [
+        "clipboard",
+        "file",
+        "plain_text",
+        "base64",
+        "https_subscription",
+        "V2CROSS_public_pool"
+      ],
+      "management": [
+        "dedupe",
+        "favorites",
+        "pin",
+        "custom_name",
+        "tags",
+        "note",
+        "rating_0_5",
+        "history",
+        "filter",
+        "sort"
+      ],
+      "exports": [
+        "raw",
+        "base64"
+      ],
+      "selectedRealTest": "HTTPS+EXIT_COUNTRY",
+      "fastBatch": "TCP_ENDPOINT_ONLY",
+      "scope": "BROWSER_ONLY"
+    },
+    "shadowShareReference": "GOOGLE_PLAY_PUBLIC_FEATURE_SET_REIMPLEMENTED_INDEPENDENTLY",
+    "sourceAcceptance": "PASS",
+    "installerAcceptance": "PENDING"
   }
 }

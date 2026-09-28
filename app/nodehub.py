@@ -210,6 +210,8 @@ def merge(existing: list[dict], incoming: list[dict]) -> list[dict]:
             x["last_test"] = old["last_test"]
         if old.get("endpoint_test"):
             x["endpoint_test"] = old["endpoint_test"]
+        if old.get("history"):
+            x["history"] = list(old["history"])[-20:]
         by_id[n["id"]] = x
     return list(by_id.values())[:MAX_NODES]
 
@@ -222,6 +224,7 @@ def public_node(node: dict) -> dict:
         "tags": list(node.get("tags", []) or [])[:16], "note": str(node.get("note", "") or "")[:500],
         "source": node.get("source", ""), "last_test": last,
         "endpoint_test": node.get("endpoint_test") if isinstance(node.get("endpoint_test"), dict) else None,
+        "history": list(node.get("history", []) or [])[-20:],
     }
 
 def _outbound(node: dict) -> dict:

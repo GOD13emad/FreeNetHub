@@ -1,0 +1,109 @@
+{
+  "schema": 2,
+  "project": "FreeNet Hub / Open Internet Gateway",
+  "date": "2026-09-28",
+  "status": "CURRENT",
+  "authorityBase": "762da6dfeeab11755fc92c45c1df0160626f49dd",
+  "records": [
+    {
+      "context": "R22 country semantics",
+      "claimDecision": "Country selection is persisted immediately; a connected exit that differs from the selected non-AUTO country is not presented as healthy.",
+      "evidenceSource": [
+        "app/FreeNetHub.ps1",
+        "gateway/tests/test_scope_ui_policy.py",
+        "tests/test_r22_country_shadowshare.py",
+        "evidence/R22_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json"
+      ],
+      "confidenceStatus": "CONFIRMED/PASS",
+      "reuseTargets": [
+        "release notes",
+        "support",
+        "country semantics"
+      ],
+      "provenance": "Static/dynamic regression plus bounded live SG target/actual match."
+    },
+    {
+      "context": "R22 Node Workspace",
+      "claimDecision": "Local node management supports SS/VMess/VLESS/Trojan, favorites, pin, custom name/tags/note/rating, bounded 20-entry safe history, filter/sort, clipboard import/copy, and local Raw/Base64 export. Public projection excludes raw credentials and IP from history.",
+      "evidenceSource": [
+        "app/nodehub.py",
+        "app/engine.py",
+        "app/FreeNetHub.ps1",
+        "app/View.xaml",
+        "tests/test_engine.py",
+        "tests/test_r22_country_shadowshare.py"
+      ],
+      "confidenceStatus": "CONFIRMED/PASS",
+      "reuseTargets": [
+        "release notes",
+        "security review",
+        "feature matrix"
+      ],
+      "provenance": "65/65 Windows tests including dynamic node store/action checks; 13/13 gateway/scope checks."
+    },
+    {
+      "context": "ShadowShare benchmark",
+      "claimDecision": "R22 implements the desktop-relevant core of ShadowShare-style node management, but does not claim complete parity.",
+      "evidenceSource": [
+        "https://play.google.com/store/apps/details?id=com.v2cross.shadowshare&hl=en_US"
+      ],
+      "confidenceStatus": "CONFIRMED source / scoped comparison",
+      "reuseTargets": [
+        "roadmap",
+        "feature matrix",
+        "product positioning"
+      ],
+      "provenance": "Google Play listing observed 2026-09-28; listing updated 2026-08-22. Matched: protocol set, subscription/Base64/plain import, favorites/history, latency sort/filter, Raw/Base64 export, tags/name/note/rating/pin. Not claimed: QR creation, multi-client format conversion, subscription merge UI, Private Space/PIN/biometric, favorite health-monitor/smart recommendations."
+    },
+    {
+      "context": "Direct host speed",
+      "claimDecision": "Speed diagnostic measures ping, bounded download and upload via direct host Internet, bypassing the FreeNetHub browser proxy and failing closed on nonphysical default route or Cloudflare WARP/Gateway detection.",
+      "evidenceSource": [
+        "app/engine.py",
+        "evidence/R21_DIRECT_SPEED_ACCEPTANCE_20260928.json"
+      ],
+      "confidenceStatus": "CONFIRMED/PASS R21 base; R22 installed rerun required before final promotion",
+      "reuseTargets": [
+        "support",
+        "diagnostics",
+        "release notes"
+      ],
+      "provenance": "R21 installed-product live proof retained in accepted base; R22 will re-run after immutable package build."
+    },
+    {
+      "context": "Installer cleanup failure prevention",
+      "claimDecision": "Uninstaller explicitly removes generated last/session/log/cache residue in addition to network/runtime state.",
+      "evidenceSource": [
+        "windows/installer/FreeNetHub.iss",
+        "tests/test_clean_install.py"
+      ],
+      "confidenceStatus": "CONFIRMED/PASS unit; R22 clean-install/uninstall rerun required",
+      "reuseTargets": [
+        "installer QA",
+        "failure prevention"
+      ],
+      "provenance": "Earlier qualification exposed residue; root cause converted to explicit Inno cleanup guards."
+    },
+    {
+      "context": "Platform boundary",
+      "claimDecision": "Linux remains accepted for its existing 4.2.0-linux.8 scope; R22 Windows Node Workspace is not claimed as Linux parity. Android/iOS forwarding cores remain fail-closed/not production-ready.",
+      "evidenceSource": [
+        "crossplatform/linux/*",
+        "crossplatform/common/verify_fail_closed.py"
+      ],
+      "confidenceStatus": "CONFIRMED existing scope / MISSING R22 Linux parity",
+      "reuseTargets": [
+        "platform matrix",
+        "roadmap"
+      ],
+      "provenance": "Linux existing-scope tests PASS earlier in this finalization; cross-platform fail-closed PASS."
+    }
+  ],
+  "limitations": [
+    "Windows public-trust Authenticode signing is external and currently OPEN.",
+    "Physical console DHCP/TCP/UDP/game/country E2E remains UNPROVEN without attached console traffic.",
+    "Linux R22 Node Workspace parity is deferred.",
+    "Android/iOS production forwarding and real-device signing remain open.",
+    "ShadowShare QR/multi-format conversion/Private Space/health recommendation are not claimed in R22."
+  ]
+}

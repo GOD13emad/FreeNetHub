@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "targetCountry": "SG",
+  "actualCountry": "SG",
+  "protocol": "vless",
+  "nodeId": "44bdc29c5ff349d0d6f9",
+  "httpsSeconds": 1.028691,
+  "exitIpSha256": "d5d178d3bf57d846a7cde71ad138bbde8f346fa1c3c51c783084ab8b620a6f88",
+  "verification": "HTTPS_AND_CLOUDFLARE_EXIT_TRACE",
+  "scope": "BROWSER_PROXY",
+  "cleanup": {
+    "tcp19460Active": false,
+    "settingsRestored": true
+  },
+  "error": "",
+  "privacy": "Raw node credentials and raw exit IP are not written to this evidence."
+}

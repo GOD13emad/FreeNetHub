@@ -124,7 +124,12 @@ def singbox_path():
 def node_record_test(node_id,h):
  s=node_store()
  for n in s['nodes']:
-  if n.get('id')==node_id:n['last_test']={k:h.get(k) for k in ('healthy','country','ip','seconds','error','checked')}
+  if n.get('id')==node_id:
+   n['last_test']={k:h.get(k) for k in ('healthy','country','ip','seconds','error','checked')}
+   event={k:h.get(k) for k in ('healthy','country','seconds','error','checked')}
+   hist=list(n.get('history') or [])
+   hist.append(event)
+   n['history']=hist[-20:]
  save_node_store(s)
 
 def ensure_node(target='AUTO',limit=12):
@@ -771,7 +776,32 @@ def dispatch(action,mode,payload):
   for n in s['nodes']:
    if n.get('id')==str(payload):n['favorite']=not bool(n.get('favorite'));found=True;break
   if not found:raise ValueError('NODE_NOT_FOUND')
-  save_node_store(s);return {'id':str(payload),'favorite':bool(n.get('favorite'))}
+  save_node_store(s);return {'id':str(payload),'favorite':bool(n.get('favorite')),'nodes':node_public_rows(s),'selected':s.get('selected'),'total':len(s['nodes'])}
+ if action=='NodePin':
+  s=node_store();found=False
+  for n in s['nodes']:
+   if n.get('id')==str(payload):n['pinned']=not bool(n.get('pinned'));found=True;break
+  if not found:raise ValueError('NODE_NOT_FOUND')
+  save_node_store(s);return {'id':str(payload),'pinned':bool(n.get('pinned')),'nodes':node_public_rows(s),'selected':s.get('selected'),'total':len(s['nodes'])}
+ if action=='NodeMeta':
+  f=pathlib.Path(payload);temporary=f.parent.resolve()==(ROOT/'jobs').resolve() and f.name.startswith('node-meta-')
+  try:
+   req=read(f,{}) or {};node_id=str(req.get('id') or '')
+   name=str(req.get('name') or '').strip()[:120]
+   note=str(req.get('note') or '').strip()[:500]
+   tags=[str(x).strip()[:32] for x in (req.get('tags') or []) if str(x).strip()][:16]
+   try:rating=int(req.get('rating') or 0)
+   except (TypeError,ValueError):raise ValueError('NODE_RATING_INVALID')
+   if rating<0 or rating>5:raise ValueError('NODE_RATING_INVALID')
+   s=node_store();found=False
+   for n in s['nodes']:
+    if n.get('id')==node_id:
+     if name:n['name']=name
+     n['note']=note;n['tags']=tags;n['rating']=rating;found=True;break
+   if not found:raise ValueError('NODE_NOT_FOUND')
+   save_node_store(s);return {'id':node_id,'node':NH.public_node(n),'nodes':node_public_rows(s),'selected':s.get('selected'),'total':len(s['nodes'])}
+  finally:
+   if temporary:f.unlink(missing_ok=True)
  if action=='NodeImport':
   f=pathlib.Path(payload)
   if not f.is_file() or f.stat().st_size>NH.MAX_NODE_TEXT:raise ValueError('NODE_IMPORT_FILE_INVALID')

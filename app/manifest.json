@@ -4,23 +4,23 @@
   "code": [
     {
       "file": "engine.py",
-      "bytes": 47638,
-      "sha256": "421923C5D4FB244DA0E749CAD238645EB3C3129CD1BE44A0238F7CD836BEB292"
+      "bytes": 49268,
+      "sha256": "3960E59606DBEA4812E1EFE6FED9EAFCFB63EADB777A5EE9FCA1C1DED2B0ADC2"
     },
     {
       "file": "nodehub.py",
-      "bytes": 10776,
-      "sha256": "22C602A4221ECC4B7A0F428C05B7DA1B6FCB706EA974081198AB611CCB330C8D"
+      "bytes": 10923,
+      "sha256": "FE3CABB648286BDB0DE15965CFD4165F450DCAEE0FA72BBF1FB70FFA007A29F4"
     },
     {
       "file": "FreeNetHub.ps1",
-      "bytes": 45589,
-      "sha256": "4A8F07D485AC2EDCC0E2CDAB6FACA080B894EB5914B7DDBE2C0BF02AAFB11660"
+      "bytes": 53049,
+      "sha256": "30624181E46A86D6C2228D740A22F2B013DF06F9EF6E853E0010D48AFCA6203F"
     },
     {
       "file": "View.xaml",
-      "bytes": 26217,
-      "sha256": "7CC57D90588CD0B8376337D9F6051D9F314482AB43919A7D545C34E01CEAD05F"
+      "bytes": 28246,
+      "sha256": "7FDF3BAFE325147C130E1C4A657181177377747FDDFE61A0FD2D4B4CAB0533C0"
     },
     {
       "file": "assets/FreeNetHub.ico",
@@ -28,5 +28,5 @@
       "sha256": "30BDD9DD5BE732C49D5F56BC56DA799158D628A40502479973D6AD3E982175CC"
     }
   ],
-  "coreVersion": "4.0-scope-ui4-country-strict-nodehub-r21"
+  "coreVersion": "4.0-scope-ui4-country-strict-node-workspace-r22"
 }
