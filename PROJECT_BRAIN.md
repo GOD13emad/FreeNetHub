@@ -3,7 +3,7 @@
 Status: CURRENT
 Brain version: R27-country-shadowshare-hy2-final-2026-09-28
 Project root: %PROJECT_ROOT%
-Current base authority: LOCAL R27 accepted candidate; origin/main remains prior authority until follow-up commit/push.
+Current base authority: R27 is on GitHub main; hosted CI/public-manifest promotion is the current gate.
 
 ## Objective / DoD
 A self-contained, user-friendly connectivity hub with Browser Only as default, explicit Full System WARP, isolated Console Gateway, strict real-exit country semantics, robust Node Hub management, direct host speed diagnostics, reproducible installer/uninstaller behavior, and evidence-backed promotion.
@@ -19,8 +19,8 @@ A self-contained, user-friendly connectivity hub with Browser Only as default, e
 8. Follow-up commit/push + hosted CI; publish follow-up asset only after gates — ← CURRENT.
 
 ## Evidence / V&V
-- Engine/Country/NodeHub suite: 60/60 PASS.
-- Gateway unit: 10/10 PASS.
+- Engine/Country/NodeHub suite: 65/65 PASS.
+- Gateway unit: 13/13 PASS.
 - Scope UI policy: 3/3 PASS.
 - R22 country/ShadowShare static contract: PASS.
 - R21 live public Node HTTPS/exit validation: PASS; observed SG; sensitive raw credentials/IP omitted.
@@ -40,7 +40,7 @@ A self-contained, user-friendly connectivity hub with Browser Only as default, e
 - Final follow-up authority requires manifest regeneration, rebuild, installed parity/smoke, public-tree/security PASS, then commit/push.
 
 ## Exact Next Action
-Commit/push the accepted R27 delta and run hosted CI. Publish the R27 installer asset only after CI; trusted Windows signing remains a separate external gate.
+Repair and pass hosted CI public-tree verification for R27, then publish the accepted installer asset; trusted Windows signing remains a separate external gate.
 ## R27 Accepted Local Milestone — 2026-09-28
 - Status: LOCAL_ACCEPTED / functional Windows R27.
 - Installer: FreeNetHub_4.2.0_R27_Country_ShadowShare_Final_Setup.exe; SHA-256 151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996; Authenticode NotSigned.
@@ -54,6 +54,7 @@ Commit/push the accepted R27 delta and run hosted CI. Publish the R27 installer 
 - External gate: PUBLIC_TRUST_WINDOWS_CODE_SIGNING remains OPEN (NotSigned).
 
 ## HISTORY (append-only)
+- 2026-09-28: Hosted CI run 36412879164 exposed public-manifest EOL/order drift and missing R27 evidence version; root cause repaired by Git-clean-filtered manifest bytes, manifest-last ordering, LF normalization, and release/evidence schema parity.
 - 2026-09-28: R27 local acceptance completed: strict SG live PASS, ShadowShare-style multi-source Node refresh + Hysteria2 PASS, installed parity/smoke PASS; trusted signing remains OPEN.
 - 2026-09-28: R21 commit 762da6d… created and pushed by another writer while this audit was running; reconciled without overwrite.
 - 2026-09-28: late concurrent country-UI and ShadowShare-style node-management delta detected; promotion stopped whenever public-tree hash mismatch appeared.

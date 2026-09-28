@@ -16,9 +16,15 @@ E_KNOW=R/"evidence"/"R27_PROJECT_KNOWLEDGE_20260928.json"
 def sha(p): return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest().upper()
 def load(p): return json.loads(pathlib.Path(p).read_text(encoding="utf-8-sig"))
 def writej(p,o): pathlib.Path(p).write_text(json.dumps(o,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
-def row(rel):
+def canonical_bytes(rel):
+ rel=pathlib.PurePosixPath(rel).as_posix()
  p=R/rel
- return {"file":rel.replace("\\","/"),"bytes":p.stat().st_size,"sha256":sha(p)}
+ oid=subprocess.check_output(["git","hash-object","-w",f"--path={rel}",str(p)],cwd=R,text=True).strip()
+ return subprocess.check_output(["git","cat-file","blob",oid],cwd=R)
+def row(rel):
+ rel=pathlib.PurePosixPath(rel).as_posix()
+ data=canonical_bytes(rel)
+ return {"file":rel,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest().upper()}
 def candidates():
  raw=subprocess.check_output(["git","ls-files","-z","--cached","--others","--exclude-standard"],cwd=R)
  out=[]
@@ -38,7 +44,7 @@ if el.get("status")!="PASS" or el.get("target")!="SG" or el.get("actual")!="SG" 
 if not es.get("accepted"): raise SystemExit("R27_SMOKE_EVIDENCE")
 
 final={
- "schema":1,"date":DATE,"status":"LOCAL_ACCEPTED_WINDOWS_4.2_R27_COUNTRY_SHADOWSHARE_HY2",
+ "schema":1,"version":"4.2.0","date":DATE,"status":"LOCAL_ACCEPTED_WINDOWS_4.2_R27_COUNTRY_SHADOWSHARE_HY2",
  "installer":{"file":"delivery/github_v4.2.0/FreeNetHub_4.2.0_R27_Country_ShadowShare_Final_Setup.exe","bytes":INSTALLER.stat().st_size,"sha256":EXPECTED_INSTALLER,"authenticode":"NotSigned"},
  "source":{"engineSha256":EXPECTED_ENGINE,"nodeHubSha256":EXPECTED_NODEHUB,"appManifestSha256":EXPECTED_MANIFEST},
  "regression":{"strictRunner":"tests/verify_r24_strict.ps1","operationId":"cf4b2f11-d1e4-43fd-9b86-0a7d8a9f6b78","windowsCore":"65/65 PASS","gateway":"13/13 PASS","hysteria2Fidelity":"PASS","countryStrict":"PASS","nodeFailFast":"PASS","hy2PreflightPolicy":"PASS","failClosed":"PASS"},
@@ -60,7 +66,8 @@ knowledge={
   {"context":"Protocol coverage","claimDecision":"Hysteria2/hy2 is supported with sing-box-compatible password/TLS/obfs mapping. TCP endpoint preflight is not used to reject Hysteria2 because its transport is UDP/QUIC.","evidenceSource":["app/nodehub.py","tests/test_r24_hysteria2.py","tests/test_r26_hy2_preflight.py"],"confidence":"CONFIRMED","status":"PASS","reuseTargets":["protocol matrix","developer docs"]},
   {"context":"Failure prevention","claimDecision":"Broken Node paths fail fast after bounded completed probes rather than consuming the full retry window; wrong-country paths remain fail-closed.","evidenceSource":["app/engine.py","tests/test_country_policy.py"],"confidence":"CONFIRMED","status":"PASS","reuseTargets":["operations guide","test plan"]},
   {"context":"Installed product","claimDecision":"R27 installer preserves settings and node data; installed engine/nodehub/UI/view/manifest match source; idle UI smoke creates no project network listeners or new terminal windows.","evidenceSource":["evidence/R27_INSTALL_ACCEPTANCE_20260928.json","evidence/R27_INSTALLED_PRODUCT_SMOKE_20260928.json"],"confidence":"CONFIRMED","status":"PASS","reuseTargets":["release checklist","support guide"]},
-  {"context":"Distribution trust","claimDecision":"Functional/local acceptance does not imply public code-signing trust. The R27 installer is Authenticode NotSigned; obtaining a trusted signing certificate remains an external gate.","evidenceSource":["evidence/R27_FINAL_ACCEPTANCE_20260928.json"],"confidence":"CONFIRMED","status":"OPEN_EXTERNAL_GATE","reuseTargets":["release notes","distribution checklist"]}
+  {"context":"Distribution trust","claimDecision":"Functional/local acceptance does not imply public code-signing trust. The R27 installer is Authenticode NotSigned; obtaining a trusted signing certificate remains an external gate.","evidenceSource":["evidence/R27_FINAL_ACCEPTANCE_20260928.json"],"confidence":"CONFIRMED","status":"OPEN_EXTERNAL_GATE","reuseTargets":["release notes","distribution checklist"]},
+  {"context":"Hosted CI public-tree integrity","claimDecision":"GitHub run 36412879164 failed because PUBLIC_MANIFEST hashed Windows working-tree CRLF bytes and was generated before the final Project Brain mutation, while fresh checkout enforces LF; R27 acceptance evidence also omitted the version field required by verify_public_tree.py. Prevention: generate PUBLIC_MANIFEST last, hash Git-clean-filtered bytes under .gitattributes, and require acceptance evidence version/status to match RELEASE.","evidenceSource":["tests/verify_public_tree.py","tests/finalize_r27_metadata.py","GitHub Actions run 36412879164"],"confidence":"CONFIRMED","status":"PASS_LOCAL_REPAIR","reuseTargets":["failure postmortem","release engineering guide","CI design"]}
  ],
  "externalReferences":[
   {"name":"ShadowShare Google Play","url":"https://play.google.com/store/apps/details?id=com.v2cross.shadowshare&hl=en"},
@@ -70,7 +77,7 @@ knowledge={
 writej(E_KNOW,knowledge)
 
 rel=load(R/"RELEASE.json")
-old_inst=rel.get("installerSha256")
+old_inst=rel.get("previousAcceptedInstallerSha256") if rel.get("installerSha256")==EXPECTED_INSTALLER else rel.get("installerSha256")
 rel.update({
  "releaseRevision":"4.2.0-local-r27-country-shadowshare-hy2-final",
  "status":"LOCAL_ACCEPTED_WINDOWS_4.2_R27_COUNTRY_SHADOWSHARE_HY2",
@@ -91,16 +98,17 @@ rel["r27"]={
  "knowledgeRecord":"evidence/R27_PROJECT_KNOWLEDGE_20260928.json"
 }
 writej(R/"RELEASE.json",rel)
-writej(R/"PUBLIC_MANIFEST.json",{"schema":3,"version":"4.2.0-local-r27-country-shadowshare-hy2-final","source":"git-candidate-working-tree","files":[row(x) for x in candidates()]})
 
 brain=R/"PROJECT_BRAIN.md"
 bt=brain.read_text(encoding="utf-8")
 bt=re.sub(r"Brain version: .*","Brain version: R27-country-shadowshare-hy2-final-2026-09-28",bt,count=1)
-bt=re.sub(r"Current base authority: .*","Current base authority: LOCAL R27 accepted candidate; origin/main remains prior authority until follow-up commit/push.",bt,count=1)
+bt=re.sub(r"Current base authority: .*","Current base authority: R27 is on GitHub main; hosted CI/public-manifest promotion is the current gate.",bt,count=1)
+bt=bt.replace("- Engine/Country/NodeHub suite: 60/60 PASS.","- Engine/Country/NodeHub suite: 65/65 PASS.")
+bt=bt.replace("- Gateway unit: 10/10 PASS.","- Gateway unit: 13/13 PASS.")
 bt=bt.replace("7. Final manifest/installer/installed-product regression — ← CURRENT.","7. Final manifest/installer/installed-product regression — Completed/PASS (R27).")
 bt=bt.replace("8. Follow-up commit/push + hosted CI; publish follow-up asset only after gates — OPEN.","8. Follow-up commit/push + hosted CI; publish follow-up asset only after gates — ← CURRENT.")
 head,hist=(bt.split("## HISTORY (append-only)",1) if "## HISTORY (append-only)" in bt else (bt,""))
-head=re.sub(r"## Exact Next Action\n[^\n]*(?:\n(?!(?:## )).*)*","## Exact Next Action\nCommit/push the accepted R27 delta and run hosted CI. Publish the R27 installer asset only after CI; trusted Windows signing remains a separate external gate.",head,count=1)
+head=re.sub(r"## Exact Next Action\n[^\n]*(?:\n(?!(?:## )).*)*","## Exact Next Action\nRepair and pass hosted CI public-tree verification for R27, then publish the accepted installer asset; trusted Windows signing remains a separate external gate.",head,count=1)
 milestone=f"""\n## R27 Accepted Local Milestone — 2026-09-28
 - Status: LOCAL_ACCEPTED / functional Windows R27.
 - Installer: FreeNetHub_4.2.0_R27_Country_ShadowShare_Final_Setup.exe; SHA-256 {EXPECTED_INSTALLER}; Authenticode NotSigned.
@@ -122,7 +130,18 @@ if history_line.strip() not in bt:
  if pos>=0:
   nl=bt.find("\n",pos)
   bt=bt[:nl+1]+history_line.lstrip("\n")+bt[nl+1:]
+ci_history="- 2026-09-28: Hosted CI run 36412879164 exposed public-manifest EOL/order drift and missing R27 evidence version; root cause repaired by Git-clean-filtered manifest bytes, manifest-last ordering, LF normalization, and release/evidence schema parity.\n"
+if ci_history.strip() not in bt:
+ pos=bt.find("## HISTORY (append-only)")
+ if pos>=0:
+  nl=bt.find("\n",pos)
+  bt=bt[:nl+1]+ci_history+bt[nl+1:]
 brain.write_text(bt,encoding="utf-8",newline="\n")
+
+# PUBLIC_MANIFEST must be last: it covers the final Brain/Release/evidence state.
+# Hash Git-clean-filtered bytes so Windows working-tree line endings cannot drift
+# from the LF bytes seen in a fresh GitHub Actions checkout.
+writej(R/"PUBLIC_MANIFEST.json",{"schema":3,"version":"4.2.0-local-r27-country-shadowshare-hy2-final","source":"git-clean-filtered-candidate","files":[row(x) for x in candidates()]})
 
 print(json.dumps({
  "status":"PASS","finalEvidenceSha256":sha(E_FINAL),"knowledgeSha256":sha(E_KNOW),

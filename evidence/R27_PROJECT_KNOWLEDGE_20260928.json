@@ -108,6 +108,22 @@
         "release notes",
         "distribution checklist"
       ]
+    },
+    {
+      "context": "Hosted CI public-tree integrity",
+      "claimDecision": "GitHub run 36412879164 failed because PUBLIC_MANIFEST hashed Windows working-tree CRLF bytes and was generated before the final Project Brain mutation, while fresh checkout enforces LF; R27 acceptance evidence also omitted the version field required by verify_public_tree.py. Prevention: generate PUBLIC_MANIFEST last, hash Git-clean-filtered bytes under .gitattributes, and require acceptance evidence version/status to match RELEASE.",
+      "evidenceSource": [
+        "tests/verify_public_tree.py",
+        "tests/finalize_r27_metadata.py",
+        "GitHub Actions run 36412879164"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_REPAIR",
+      "reuseTargets": [
+        "failure postmortem",
+        "release engineering guide",
+        "CI design"
+      ]
     }
   ],
   "externalReferences": [
