@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "LOCAL_ACCEPTED_WINDOWS_4.2_R27_COUNTRY_SHADOWSHARE_HY2",
+  "installer": {
+    "file": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R27_Country_ShadowShare_Final_Setup.exe",
+    "bytes": 15874079,
+    "sha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
+    "authenticode": "NotSigned"
+  },
+  "source": {
+    "engineSha256": "F5B2E69948830BFE103A76BE23D4BAF542C45B75C4B70D61C71177337A78C82D",
+    "nodeHubSha256": "C016F0975720505F0FD9901F25458AA98B6BCBE99387D952592517307CF3FBC2",
+    "appManifestSha256": "E3E8206F413B2E0830E821D63EEAC396D4BE1ECF86FA8CDB15682507EEC413AE"
+  },
+  "regression": {
+    "strictRunner": "tests/verify_r24_strict.ps1",
+    "operationId": "cf4b2f11-d1e4-43fd-9b86-0a7d8a9f6b78",
+    "windowsCore": "65/65 PASS",
+    "gateway": "13/13 PASS",
+    "hysteria2Fidelity": "PASS",
+    "countryStrict": "PASS",
+    "nodeFailFast": "PASS",
+    "hy2PreflightPolicy": "PASS",
+    "failClosed": "PASS"
+  },
+  "installed": {
+    "parity": "PASS",
+    "settingsPreserved": true,
+    "nodesPreserved": true,
+    "smoke": "PASS",
+    "idleProjectListeners": 0,
+    "newTerminalProcesses": false
+  },
+  "country": {
+    "policy": "STRICT_ACTUAL_EXIT_MATCH",
+    "liveTarget": "SG",
+    "liveActual": "SG",
+    "healthy": true,
+    "mode": "NODE"
+  },
+  "nodeHub": {
+    "protocols": [
+      "SS",
+      "VMess",
+      "VLESS",
+      "Trojan",
+      "Hysteria2"
+    ],
+    "publicSources": [
+      "V2CROSS_PAGE",
+      "SHADOWSHARE_SUB_EN",
+      "SHADOWSHARE_SUB_DE",
+      "SHADOWSHARE_SUB_FR",
+      "SHADOWSHARE_README_ID",
+      "SHADOWSHARE_README_BN",
+      "SHADOWSHARE_README_ES"
+    ],
+    "lastRefreshTotal": 145,
+    "lastRefreshImported": 137,
+    "failedSources": [],
+    "scope": "BROWSER_ONLY",
+    "management": [
+      "dedupe",
+      "favorites",
+      "pin",
+      "custom_name",
+      "tags",
+      "note",
+      "rating_0_5",
+      "history",
+      "filter",
+      "sort"
+    ],
+    "exports": [
+      "raw",
+      "base64"
+    ]
+  },
+  "evidence": {
+    "install": {
+      "path": "evidence/R27_INSTALL_ACCEPTANCE_20260928.json",
+      "sha256": "197F6D7CF9FFAB4CE9A5D0EFFF5AE8F71ACADB96CE6EEF5A79EC41A3952C63CD"
+    },
+    "live": {
+      "path": "evidence/R27_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
+      "sha256": "230384F8CC6690D71CAB361F0A7719E4A5EAACC9FED65AB6934182AD7056D1EC"
+    },
+    "smoke": {
+      "path": "evidence/R27_INSTALLED_PRODUCT_SMOKE_20260928.json",
+      "sha256": "943D57CF9D47AE2D4456C1ACAAD1F2BE62D3A7E8F9A1F3CF55A624CAE1F30731"
+    }
+  },
+  "openExternalGates": {
+    "PUBLIC_TRUST_WINDOWS_CODE_SIGNING": "OPEN_NOTSIGNED",
+    "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E": "UNPROVEN",
+    "ANDROID_IOS_PRODUCTION_RUNTIME_SIGNING": "OPEN"
+  },
+  "privacy": "No raw node credentials or raw exit IP are included in acceptance evidence."
+}

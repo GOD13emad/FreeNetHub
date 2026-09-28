@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "utc": "2026-09-28T09:47:12.4265896+00:00",
+  "installRoot": "%LOCALAPPDATA%\\Programs\\FreeNetHub-R22-Qualification",
+  "version": "4.2.0.0",
+  "exeSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
+  "appManifestFiles": 5,
+  "gatewayManifestFiles": 17,
+  "runtimeBootstrap": "PASS",
+  "gatewayCore": "PASS",
+  "pwshPathRecorded": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+  "singBoxSha256": "AAD0EDE010EAFA7B277E520464F3A66FDE820103D737EFF739F40F3CC9451DCC",
+  "shell": {
+    "singleInstance": true,
+    "minimizeHiddenToTray": true,
+    "restoredVisible": true,
+    "taskbarWindowIconSet": true,
+    "appUserModelId": "FreeNetHub.Desktop",
+    "appUserModelIdResult": 0,
+    "noNewTerminalProcesses": true
+  },
+  "network": {
+    "requested": false,
+    "tunCount": 0,
+    "projectPortListeners": 0,
+    "wslOwner": false,
+    "providerOwner": false
+  },
+  "accepted": true
+}

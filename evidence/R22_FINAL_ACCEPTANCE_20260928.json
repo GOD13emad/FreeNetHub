@@ -1,0 +1,90 @@
+{
+  "schema": 2,
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "releaseRevision": "R22_COUNTRY_SHADOWHUB_FINAL",
+  "date": "2026-09-28",
+  "status": "ACCEPTED_WINDOWS_4.2_R22_COUNTRY_SHADOWHUB",
+  "validatedSourceCommit": "5a6f2120240bf41edcb9bf8535eacc3081acd65a",
+  "previousPublishedCommit": "762da6dfeeab11755fc92c45c1df0160626f49dd",
+  "country": {
+    "policy": "STRICT_ACTUAL_EXIT_MATCH_AND_IMMEDIATE_UI_PERSIST",
+    "liveTarget": "SG",
+    "liveActual": "SG",
+    "evidence": "evidence/R22_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
+    "evidenceSha256": "A95E70DDCB14661FB747397D06FD40A9C73347456BDCFB0BD5470339A87DFED2"
+  },
+  "nodeHub": {
+    "protocols": [
+      "SS",
+      "VMess",
+      "VLESS",
+      "Trojan"
+    ],
+    "imports": [
+      "clipboard",
+      "file",
+      "plain_text",
+      "base64",
+      "https_subscription",
+      "V2CROSS_public_pool"
+    ],
+    "management": [
+      "dedupe",
+      "favorites",
+      "pin",
+      "custom_name",
+      "tags",
+      "note",
+      "rating_0_5",
+      "history",
+      "filter",
+      "sort"
+    ],
+    "exports": [
+      "raw",
+      "base64"
+    ],
+    "selectedRealTest": "HTTPS+EXIT_COUNTRY",
+    "fastBatch": "TCP_ENDPOINT_ONLY",
+    "scope": "BROWSER_ONLY"
+  },
+  "regression": {
+    "publicTree": "PASS",
+    "security": "PASS",
+    "engine": "61/61 PASS",
+    "gatewayAndScope": "13/13 PASS",
+    "powershellParse": "PASS",
+    "r22Dynamic": "PASS"
+  },
+  "installer": {
+    "path": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R22_Country_ShadowHub_Setup.exe",
+    "bytes": 15870075,
+    "sha256": "214B05E0A48B75C66275F914BFF571A70EE478F6D84F48B132063AD362AF9CDF",
+    "authenticode": "NotSigned",
+    "buildCompiler": "Inno Setup 6.7.3",
+    "cleanInstallQualification": "PASS",
+    "qualificationEvidence": "evidence/R22_INSTALLER_QUALIFICATION_ACCEPTANCE_20260928.json",
+    "qualificationEvidenceSha256": "7CEC7D3A52E9FA201FC48B161AE27911AD6AE00EF75FB6641D6D0934AE9230E9",
+    "uninstallCleanup": "PASS",
+    "uninstallEvidence": "evidence/R22_UNINSTALL_ACCEPTANCE_20260928.json",
+    "uninstallEvidenceSha256": "93ECFD5B64C9598D0132FC0D55B1CD2E4B5FF61ACB1F36ED8C8163D9EB5F87B6",
+    "installedUpgrade": "PASS",
+    "installedSmokeEvidence": "evidence/R22_INSTALLED_PRODUCT_SMOKE_20260928.json",
+    "installedSmokeEvidenceSha256": "B76E76B0B76DFC99FE9BDC88194EB9969C8535D53C5C55BA62C56E9F8C642384",
+    "installedBytesMatchSource": true,
+    "installedUiSmoke": "PASS",
+    "atRestNetwork": "PASS"
+  },
+  "deferred": {
+    "qr": "Local credential-safe QR generation not promoted without a reviewed local QR dependency.",
+    "multiClientConversion": "Clash/Surge/etc conversion not promoted until Reality/transport variants have protocol-fidelity regression fixtures.",
+    "privateSpace": "PIN/biometric vault deferred pending a desktop credential-vault design.",
+    "linuxR22NodeHubParity": "Windows R22 Node/ShadowHub capability is not claimed for Linux."
+  },
+  "externalGates": [
+    "PUBLIC_TRUST_WINDOWS_CODE_SIGNING",
+    "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
+    "ANDROID_IOS_PRODUCTION_FORWARDING_AND_REAL_DEVICE_SIGNING"
+  ]
+}

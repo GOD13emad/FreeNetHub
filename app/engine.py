@@ -85,6 +85,8 @@ def node_public_rows(store=None):
  return [NH.public_node(x) for x in sorted(s['nodes'],key=key)]
 
 def node_endpoint_probe(n,timeout=1.25):
+ if str(n.get('protocol','')).lower()=='hysteria2':
+  return {'reachable':None,'latency_ms':None,'checked':now(),'type':'UDP_QUIC_PREFLIGHT_NOT_APPLICABLE'}
  started=time.monotonic()
  try:
   with socket.create_connection((str(n.get('server','')),int(n.get('port',0))),timeout=timeout):pass
@@ -136,10 +138,20 @@ def ensure_node(target='AUTO',limit=12):
  s=node_store()
  if not s['nodes']:raise ValueError('NODE_POOL_EMPTY')
  target=str(target or 'AUTO').upper()
+ if target!='AUTO':
+  # Strict-country connect first performs the same concurrent TCP endpoint screen
+  # as Test All, so dead public nodes do not consume the real HTTPS/country budget.
+  node_batch_fast()
+  s=node_store()
+  candidates=[n for n in s['nodes'] if isinstance(n.get('endpoint_test'),dict) and (n['endpoint_test'].get('reachable') is True or str(n.get('protocol','')).lower()=='hysteria2')]
+  if not candidates:raise RuntimeError('NODE_POOL_NO_REACHABLE_ENDPOINTS')
+  s=dict(s);s['nodes']=candidates
  def score(n):
   lt=n.get('last_test') if isinstance(n.get('last_test'),dict) else {}
   exact=target!='AUTO' and lt.get('healthy') and str(lt.get('country','')).upper()==target
-  hint=target!='AUTO' and target.lower() in str(n.get('name','')).lower()
+  aliases={'AT':('austria','österreich','autriche'),'DE':('germany','deutschland','allemagne'),'NL':('netherlands','niederlande','pays-bas','holland'),'US':('united states','usa','états unis','estados unidos'),'CA':('canada','kanada'),'GB':('united kingdom','uk','royaume-uni','vereinigtes königreich'),'FR':('france','frankreich','francia'),'SG':('singapore','singapour','singapur'),'JP':('japan','japon','japan')}
+  name=str(n.get('name','')).lower()
+  hint=target!='AUTO' and (target.lower() in name or any(x in name for x in aliases.get(target,())))
   ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
   healthy=bool(lt.get('healthy'));lat=lt.get('seconds')
   return (0 if exact else 1,0 if hint else 1,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if healthy else 1,0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),float(lat) if isinstance(lat,(int,float)) else 9999)
@@ -151,7 +163,12 @@ def ensure_node(target='AUTO',limit=12):
   node_select(n['id'])
   try:
    h=ensure('NODE');node_record_test(n['id'],h)
-   if h.get('healthy'):return h
+   actual=str(h.get('country') or '').upper()
+   if h.get('healthy') and (target=='AUTO' or actual==target):return h
+   if h.get('healthy') and target!='AUTO' and actual!=target:
+    with contextlib.suppress(Exception):stop('NODE')
+    h=dict(h);h['healthy']=False;h['error']='COUNTRY_MISMATCH_OR_UNKNOWN'
+    node_record_test(n['id'],h)
    last.append({'id':n['id'],'error':h.get('error'),'country':h.get('country')})
   except (ValueError,RuntimeError) as e:
    with contextlib.suppress(Exception):stop('NODE')
@@ -517,7 +534,7 @@ def ensure(mode):
   stop(mode)
  for scan in ((False,True) if mode in ('WARP','GOOL','CFON') else (False,)):
   check();progress('در حال راه‌اندازی و تأیید مسیر',mode);starter=start(mode,scan)
-  end=min(DEADLINE,time.monotonic()+(100 if scan else 30 if mode=='NODE' else 65 if mode in ('WARP','GOOL') else 110));grace=time.monotonic()+5
+  end=min(DEADLINE,time.monotonic()+(100 if scan else 30 if mode=='NODE' else 65 if mode in ('WARP','GOOL') else 110));grace=time.monotonic()+5;node_bad_probes=0
   while time.monotonic()<end:
    check()
    r=owned(mode)
@@ -536,6 +553,9 @@ def ensure(mode):
       if matches:write(ROOT/'data'/mode/'endpoint.json',{'endpoint':matches[-1],'tested':now()})
      write(ROOT/'data'/mode/'health.json',h);return h
     if h['error']=='COUNTRY_MISMATCH_OR_UNKNOWN' and h['ip']:break
+    if mode=='NODE' and h['error']!='LOCAL_PROXY_UNREACHABLE':
+     node_bad_probes+=1
+     if node_bad_probes>=2:break
    time.sleep(.65)
   stop(mode)
  raise RuntimeError('PATH_NOT_VERIFIED_'+mode)
@@ -822,11 +842,32 @@ def dispatch(action,mode,payload):
   finally:
    if temporary:f.unlink(missing_ok=True)
  if action=='NodeRefreshPublic':
-  url='https://v2cross.com/en/free-v2ray-nodes/'
-  r=curl(url,seconds=25,size=NH.MAX_NODE_TEXT)
-  if r['exit']!=0 or r['code']!='200':raise ValueError('PUBLIC_NODE_SOURCE_UNREACHABLE')
-  x=node_import_text(r['body'],'V2CROSS_PUBLIC');x['warning']='Public shared nodes are untrusted and temporary; avoid sensitive logins/payments.'
-  return x
+  sources=[
+   ('V2CROSS_PAGE','https://v2cross.com/en/free-v2ray-nodes/'),
+   ('SHADOWSHARE_SUB_EN','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_en'),
+   ('SHADOWSHARE_SUB_DE','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_de'),
+   ('SHADOWSHARE_SUB_FR','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_fr'),
+   ('SHADOWSHARE_README_ID','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-id.md'),
+   ('SHADOWSHARE_README_BN','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-bn.md'),
+   ('SHADOWSHARE_README_ES','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-es.md'),
+  ]
+  fetched={}
+  with concurrent.futures.ThreadPoolExecutor(max_workers=len(sources)) as ex:
+   fs={ex.submit(curl,url,seconds=18,size=NH.MAX_NODE_TEXT):(name,url) for name,url in sources}
+   for f in concurrent.futures.as_completed(fs):
+    check();name,url=fs[f]
+    try:fetched[name]=f.result()
+    except Exception as e:fetched[name]={'exit':1,'code':'','body':'','error':str(e)}
+  ok=[];errors=[];parsed=0
+  for name,_ in sources:
+   r=fetched.get(name,{})
+   if r.get('exit')==0 and r.get('code')=='200':
+    x=node_import_text(r.get('body',''),name);parsed+=int(x.get('imported') or 0);ok.append(name)
+   else:errors.append(name)
+  if not ok:raise ValueError('PUBLIC_NODE_SOURCE_UNREACHABLE')
+  node_batch_fast()
+  s=node_store()
+  return {'imported':parsed,'total':len(s['nodes']),'sources':ok,'failedSources':errors,'selected':s.get('selected'),'nodes':node_public_rows(s),'warning':'Public shared nodes are untrusted and temporary; avoid sensitive logins/payments.'}
  if action=='NodeTest':
   s=node_store();n=node_selected(s)
   if not n:raise ValueError('NODE_NOT_SELECTED')

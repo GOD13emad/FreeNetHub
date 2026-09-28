@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "installerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
+  "installExit": 0,
+  "parity": {
+    "engine.py": true,
+    "nodehub.py": true,
+    "FreeNetHub.ps1": true,
+    "View.xaml": true,
+    "manifest.json": true
+  },
+  "settingsPreserved": true,
+  "nodesPreserved": true,
+  "engineSha256": "F5B2E69948830BFE103A76BE23D4BAF542C45B75C4B70D61C71177337A78C82D",
+  "nodeHubSha256": "C016F0975720505F0FD9901F25458AA98B6BCBE99387D952592517307CF3FBC2",
+  "manifestSha256": "E3E8206F413B2E0830E821D63EEAC396D4BE1ECF86FA8CDB15682507EEC413AE"
+}

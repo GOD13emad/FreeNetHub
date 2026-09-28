@@ -4,13 +4,13 @@
   "code": [
     {
       "file": "engine.py",
-      "bytes": 49268,
-      "sha256": "3960E59606DBEA4812E1EFE6FED9EAFCFB63EADB777A5EE9FCA1C1DED2B0ADC2"
+      "bytes": 52228,
+      "sha256": "F5B2E69948830BFE103A76BE23D4BAF542C45B75C4B70D61C71177337A78C82D"
     },
     {
       "file": "nodehub.py",
-      "bytes": 10923,
-      "sha256": "FE3CABB648286BDB0DE15965CFD4165F450DCAEE0FA72BBF1FB70FFA007A29F4"
+      "bytes": 12214,
+      "sha256": "C016F0975720505F0FD9901F25458AA98B6BCBE99387D952592517307CF3FBC2"
     },
     {
       "file": "FreeNetHub.ps1",
@@ -28,5 +28,5 @@
       "sha256": "30BDD9DD5BE732C49D5F56BC56DA799158D628A40502479973D6AD3E982175CC"
     }
   ],
-  "coreVersion": "4.0-scope-ui4-country-strict-node-workspace-r22"
+  "coreVersion": "4.0-country-strict-shadowshare-hysteria2-failfast-r27-final-candidate"
 }

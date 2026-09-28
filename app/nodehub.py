@@ -2,7 +2,7 @@ from __future__ import annotations
 import base64, hashlib, html, json, re
 from urllib.parse import parse_qs, unquote, urlsplit
 
-SUPPORTED_PROTOCOLS = ("ss", "vmess", "vless", "trojan")
+SUPPORTED_PROTOCOLS = ("ss", "vmess", "vless", "trojan", "hysteria2", "hy2")
 MAX_NODE_TEXT = 2 * 1024 * 1024
 MAX_NODES = 2000
 
@@ -78,6 +78,8 @@ def parse_uri(uri: str) -> dict:
     scheme = raw.split(":", 1)[0].lower() if ":" in raw else ""
     if scheme not in SUPPORTED_PROTOCOLS:
         raise ValueError("NODE_PROTOCOL_UNSUPPORTED")
+    if scheme == "hy2":
+        scheme = "hysteria2"
 
     if scheme == "vmess":
         payload = raw.split("://", 1)[1].split("#", 1)[0]
@@ -140,19 +142,37 @@ def parse_uri(uri: str) -> dict:
         user = unquote(parts.username or "").strip()
         if not user:
             raise ValueError("NODE_CREDENTIAL_REQUIRED")
-        node = {
-            "protocol": scheme, "name": _name(parts.fragment, f"{scheme.upper()} {server}"),
-            "server": server, "port": port, "tls": _tls(q, server), "transport": _transport(q),
-        }
-        if scheme == "vless":
-            node["uuid"] = user
-            if q.get("flow"):
-                node["flow"] = q["flow"]
-            pe = q.get("packetEncoding") or q.get("packet_encoding")
-            if pe:
-                node["packet_encoding"] = pe
+        if scheme == "hysteria2":
+            tls = {"enabled": True, "server_name": q.get("sni") or server}
+            insecure = str(q.get("insecure") or q.get("allowInsecure") or "").lower()
+            if insecure in ("1", "true", "yes"):
+                tls["insecure"] = True
+            node = {
+                "protocol": "hysteria2", "name": _name(parts.fragment, f"Hysteria2 {server}"),
+                "server": server, "port": port, "password": user, "tls": tls, "transport": None,
+            }
+            obfs = str(q.get("obfs") or "").strip().lower()
+            obfs_password = str(q.get("obfs-password") or q.get("obfs_password") or "").strip()
+            if obfs:
+                if obfs not in ("salamander", "gecko"):
+                    raise ValueError("HYSTERIA2_OBFS_UNSUPPORTED")
+                if not obfs_password:
+                    raise ValueError("HYSTERIA2_OBFS_PASSWORD_REQUIRED")
+                node["obfs"] = {"type": obfs, "password": obfs_password}
         else:
-            node["password"] = user
+            node = {
+                "protocol": scheme, "name": _name(parts.fragment, f"{scheme.upper()} {server}"),
+                "server": server, "port": port, "tls": _tls(q, server), "transport": _transport(q),
+            }
+            if scheme == "vless":
+                node["uuid"] = user
+                if q.get("flow"):
+                    node["flow"] = q["flow"]
+                pe = q.get("packetEncoding") or q.get("packet_encoding")
+                if pe:
+                    node["packet_encoding"] = pe
+            else:
+                node["password"] = user
 
     node["id"] = _id(node)
     node["raw"] = raw
@@ -164,7 +184,7 @@ def parse_uri(uri: str) -> dict:
     node["source"] = "import"
     return node
 
-_URI_RE = re.compile(r"(?i)(?:vmess|vless|trojan|ss)://[^\s<>\"']+")
+_URI_RE = re.compile(r"(?i)(?:vmess|vless|trojan|ss|hysteria2|hy2)://[^\s<>\"']+")
 
 def extract_uris(text: str) -> list[str]:
     s = html.unescape(str(text))
@@ -242,6 +262,10 @@ def _outbound(node: dict) -> dict:
             base["packet_encoding"] = node["packet_encoding"]
     elif proto == "trojan":
         base["password"] = node["password"]
+    elif proto == "hysteria2":
+        base["password"] = node["password"]
+        if node.get("obfs"):
+            base["obfs"] = node["obfs"]
     else:
         raise ValueError("NODE_PROTOCOL_UNSUPPORTED")
     if node.get("tls"):

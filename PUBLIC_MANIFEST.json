@@ -1,7 +1,7 @@
 {
   "schema": 3,
-  "version": "4.2.0-public-r22-country-node-workspace-rc1",
-  "source": "git-index-canonical",
+  "version": "4.2.0-local-r27-country-shadowshare-hy2-final",
+  "source": "git-candidate-working-tree",
   "files": [
     {
       "file": ".gitattributes",
@@ -35,8 +35,8 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 49268,
-      "sha256": "3960E59606DBEA4812E1EFE6FED9EAFCFB63EADB777A5EE9FCA1C1DED2B0ADC2"
+      "bytes": 52228,
+      "sha256": "F5B2E69948830BFE103A76BE23D4BAF542C45B75C4B70D61C71177337A78C82D"
     },
     {
       "file": "app/FreeNetHub.ps1",
@@ -45,13 +45,13 @@
     },
     {
       "file": "app/manifest.json",
-      "bytes": 932,
-      "sha256": "AF94B46F21068C8C42D5B40A71CE6D323F483E73981968FEAA1E794C9F7CCF60"
+      "bytes": 954,
+      "sha256": "E3E8206F413B2E0830E821D63EEAC396D4BE1ECF86FA8CDB15682507EEC413AE"
     },
     {
       "file": "app/nodehub.py",
-      "bytes": 10923,
-      "sha256": "FE3CABB648286BDB0DE15965CFD4165F450DCAEE0FA72BBF1FB70FFA007A29F4"
+      "bytes": 12214,
+      "sha256": "C016F0975720505F0FD9901F25458AA98B6BCBE99387D952592517307CF3FBC2"
     },
     {
       "file": "app/View.xaml",
@@ -270,13 +270,13 @@
     },
     {
       "file": "docs/HELP_FA.txt",
-      "bytes": 7317,
-      "sha256": "60B4817BD4073065E4E5559E4223902138AC27A34D9ECDAC57565A8C3A38B7FF"
+      "bytes": 7332,
+      "sha256": "DEAA6148C46FD9C07EAE90449F540472CB0473E860CD53B22C758906686D7273"
     },
     {
       "file": "docs/RELEASE_NOTES_FA.txt",
-      "bytes": 11792,
-      "sha256": "1975F3D9AF6C2D08C5B0BB58319967944BD4DE157F9557F77909EFA88F2DEC02"
+      "bytes": 11806,
+      "sha256": "4EA76943A99E1EAEE0BE10EB4917E2309B3AC5E1A89A1FDEEFB1E9DA4CBFF425"
     },
     {
       "file": "docs/research.json",
@@ -355,8 +355,8 @@
     },
     {
       "file": "evidence/R21_LIVE_NODE_ACCEPTANCE_20260928.json",
-      "bytes": 1191,
-      "sha256": "126F46B1BF9470FCF731D93BB0F16B45F93EF6F74081E4437A9C65EC756D4DFB"
+      "bytes": 1238,
+      "sha256": "90F52594D87667CD4996B36F9D17F2001F4E50B030BCBF22DE078D466490F369"
     },
     {
       "file": "evidence/R21_SOURCE_STATIC_ACCEPTANCE_20260928.json",
@@ -365,8 +365,23 @@
     },
     {
       "file": "evidence/R21_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
-      "bytes": 545,
-      "sha256": "AEB6396EE17120C20A00FEF0EA076E3695497362B6B8AC824C653A669F60C607"
+      "bytes": 563,
+      "sha256": "1BB0001A8971C544E49996DDA20CC19E10B75F359EE8C0118939AE8F908F56CB"
+    },
+    {
+      "file": "evidence/R22_FINAL_ACCEPTANCE_20260928.json",
+      "bytes": 3131,
+      "sha256": "DEFD2DC80C13B34195721041582F24F3B9B298846122E1D3CDA163E5F40DCC48"
+    },
+    {
+      "file": "evidence/R22_INSTALLED_PRODUCT_SMOKE_20260928.json",
+      "bytes": 957,
+      "sha256": "B76E76B0B76DFC99FE9BDC88194EB9969C8535D53C5C55BA62C56E9F8C642384"
+    },
+    {
+      "file": "evidence/R22_INSTALLER_QUALIFICATION_ACCEPTANCE_20260928.json",
+      "bytes": 975,
+      "sha256": "7CEC7D3A52E9FA201FC48B161AE27911AD6AE00EF75FB6641D6D0934AE9230E9"
     },
     {
       "file": "evidence/R22_SOURCE_ACCEPTANCE_20260928.json",
@@ -375,8 +390,68 @@
     },
     {
       "file": "evidence/R22_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
-      "bytes": 545,
-      "sha256": "4873C8AF03D9C7BDF812D92B468CA4B34FAB90CB887CA560BF06A12B00CDE62E"
+      "bytes": 563,
+      "sha256": "A95E70DDCB14661FB747397D06FD40A9C73347456BDCFB0BD5470339A87DFED2"
+    },
+    {
+      "file": "evidence/R22_UNINSTALL_ACCEPTANCE_20260928.json",
+      "bytes": 843,
+      "sha256": "93ECFD5B64C9598D0132FC0D55B1CD2E4B5FF61ACB1F36ED8C8163D9EB5F87B6"
+    },
+    {
+      "file": "evidence/R23_INSTALLED_PRODUCT_SMOKE_20260928.json",
+      "bytes": 957,
+      "sha256": "0FCBBE829041ABF523B2A3C023065295BA397B1B12E97313E822AECEDB3FF2AB"
+    },
+    {
+      "file": "evidence/R23_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
+      "bytes": 427,
+      "sha256": "6EB466D48A45CE6D066C97C4FC028736F495A1B25E881DA57710B824EFD36E2A"
+    },
+    {
+      "file": "evidence/R24_INSTALLED_PRODUCT_SMOKE_20260928.json",
+      "bytes": 957,
+      "sha256": "8BCD254C857F0D29D0835CF52E6C5CD055A8F83E214DD03D8A7EA01D87792EFA"
+    },
+    {
+      "file": "evidence/R24_SHADOWSHARE_REFRESH_ACCEPTANCE_20260928.json",
+      "bytes": 566,
+      "sha256": "684EDE29DBE5185C0AF7F07D33C0F4D30A89283227389F24B70C6AD358CC70C0"
+    },
+    {
+      "file": "evidence/R24_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
+      "bytes": 427,
+      "sha256": "6EB466D48A45CE6D066C97C4FC028736F495A1B25E881DA57710B824EFD36E2A"
+    },
+    {
+      "file": "evidence/R25_INSTALLED_PRODUCT_SMOKE_20260928.json",
+      "bytes": 957,
+      "sha256": "E3BA916C445FAC912239F9516C36061828F4BAC4F3E645F17A1C85E5F70697BE"
+    },
+    {
+      "file": "evidence/R27_FINAL_ACCEPTANCE_20260928.json",
+      "bytes": 2870,
+      "sha256": "F3955571A3852ED0E11B20B4AEAFE3F95EF4359A5F35CAE5A42785ED7E564A48"
+    },
+    {
+      "file": "evidence/R27_INSTALL_ACCEPTANCE_20260928.json",
+      "bytes": 649,
+      "sha256": "197F6D7CF9FFAB4CE9A5D0EFFF5AE8F71ACADB96CE6EEF5A79EC41A3952C63CD"
+    },
+    {
+      "file": "evidence/R27_INSTALLED_PRODUCT_SMOKE_20260928.json",
+      "bytes": 957,
+      "sha256": "943D57CF9D47AE2D4456C1ACAAD1F2BE62D3A7E8F9A1F3CF55A624CAE1F30731"
+    },
+    {
+      "file": "evidence/R27_PROJECT_KNOWLEDGE_20260928.json",
+      "bytes": 4409,
+      "sha256": "10ECE1A1E8FC9F8054B3E159A2221CAB4B36AD5FD8A0A468F2367F90541282A1"
+    },
+    {
+      "file": "evidence/R27_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json",
+      "bytes": 698,
+      "sha256": "230384F8CC6690D71CAB361F0A7719E4A5EAACC9FED65AB6934182AD7056D1EC"
     },
     {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
@@ -435,8 +510,8 @@
     },
     {
       "file": "gateway/manifest.json",
-      "bytes": 2912,
-      "sha256": "87C45F6B26BE1BAC9EC0A7E0B3D6FBDD3E4B8D495A3AD82922F0B3BA5A4499C3"
+      "bytes": 3013,
+      "sha256": "CCA7A97D4455A680090DA40F81AF24D0DA1FD6C444214434195A3C782B943BB4"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -570,8 +645,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 8979,
-      "sha256": "65AC6C2CCB0A537ECCF700A8F961A4BDD2F195622EEBF36B9AF457EEE727CADC"
+      "bytes": 12424,
+      "sha256": "84FE5AC9C6BD24C5E517746A8F14CD40E3A3FC016A633897929FDB9E399BCAED"
     },
     {
       "file": "README.md",
@@ -585,8 +660,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 9954,
-      "sha256": "D49A42C79F33465006FD914DCF094AF4793F849EBD6BAB173FD1E85FCDA08ED5"
+      "bytes": 11481,
+      "sha256": "FC06FEB151ABF5C30CFD4B636DC8630972517DAFE26D7642F3C46E3518B9D3BA"
     },
     {
       "file": "SECURITY.md",
@@ -605,13 +680,128 @@
     },
     {
       "file": "tests/build_r22_installer.ps1",
-      "bytes": 781,
-      "sha256": "0D6AB2D21E4720DD0515D11208E42127287FA37629692819DF04ECCDAB14513F"
+      "bytes": 802,
+      "sha256": "653DC11E9E82AB04D8FFF1CBD5D82A20845F60036FEE37195501C252DC0C0EA1"
     },
     {
       "file": "tests/build_r22_metadata.py",
       "bytes": 4170,
       "sha256": "0B1CD552F2C118ED9A7669E4D85FA1226013CE0517CD285459E0EB7404715C17"
+    },
+    {
+      "file": "tests/build_r23_countryfix_installer.ps1",
+      "bytes": 961,
+      "sha256": "3D63FAEAAA215B2F7300F91EF791CBFEAF181D6183CC6B8FF80BE8E205287AEF"
+    },
+    {
+      "file": "tests/build_r23_countryfix_metadata.py",
+      "bytes": 936,
+      "sha256": "4380F28F2A95FAB6D5A90B3FE0130DA8973B8CC94D813554CEAB6A9DBC3239DA"
+    },
+    {
+      "file": "tests/build_r25_installer.ps1",
+      "bytes": 957,
+      "sha256": "82DE3069812003C496A52125F91D723AD7E04A57D333619B693D61BF69C7222F"
+    },
+    {
+      "file": "tests/build_r25_metadata.py",
+      "bytes": 991,
+      "sha256": "C9A3D721C8C09F1A8EE8B04DB1584C2F563B07B859295DCC56A804E74474AAE9"
+    },
+    {
+      "file": "tests/build_r26_installer.ps1",
+      "bytes": 873,
+      "sha256": "93ADF6E118857180E10DDCEBD1C2288EC9281A4DA0A56265B4DC18B8277BBE61"
+    },
+    {
+      "file": "tests/build_r26_metadata.py",
+      "bytes": 1002,
+      "sha256": "0967117C36FDD1D7DC52EF533CC1079E8049EC68351CEBB80DC7BBD89AC30AB3"
+    },
+    {
+      "file": "tests/build_r27_installer.ps1",
+      "bytes": 1034,
+      "sha256": "6584A38A1C57B7DA19715E697EB13BCD70A5754ED5C8DB62EF8F9BE999F6ABD1"
+    },
+    {
+      "file": "tests/build_r27_metadata.py",
+      "bytes": 1017,
+      "sha256": "3272CACAC6BE37A23BEE72834D3E87CCE318234F30475F5A9CAE54952D42BFAA"
+    },
+    {
+      "file": "tests/finalize_r22_metadata.py",
+      "bytes": 2270,
+      "sha256": "7EA8C9459A012C16ED1D7D3F68E09F32D4A3FCD752AB96836A261CB2DBAC4B5D"
+    },
+    {
+      "file": "tests/finalize_r27_metadata.py",
+      "bytes": 12247,
+      "sha256": "93B25601E35262C59259F18F2C20CC1A3EE27EAB6E4C6CA3B0B111F72448DA61"
+    },
+    {
+      "file": "tests/r23_install.ps1",
+      "bytes": 395,
+      "sha256": "19F951483FA21DAD7BB887A2136AC2AF89C8BA8582981EA019B88C533DD1C449"
+    },
+    {
+      "file": "tests/r23_live_country.ps1",
+      "bytes": 3233,
+      "sha256": "00C5057673306DF4CF30C3E5FD30F81532E51A372A8F720BC907FB3D998C1437"
+    },
+    {
+      "file": "tests/r23_prestate.ps1",
+      "bytes": 1589,
+      "sha256": "D6D1208FD06D82AC6337D9C8DF49574B956213AC531CC8C7A6CC0FFA01CD2A6D"
+    },
+    {
+      "file": "tests/r23_verify_install.ps1",
+      "bytes": 1353,
+      "sha256": "41728B80BC1ACC784BB37FE23DA588EE0EBC1A43EA418C1C1054EC2703F03EA0"
+    },
+    {
+      "file": "tests/r24_refresh_public.ps1",
+      "bytes": 528,
+      "sha256": "9F749944EA1F201E76CD0375B4FA6F399635AA42E1EB48006901C3A3C1BC5BAD"
+    },
+    {
+      "file": "tests/r25_install.ps1",
+      "bytes": 391,
+      "sha256": "BD705BFF41C6935969C9AEBF8F5B29B5DE7084E69D145066D96C594C4A79FB39"
+    },
+    {
+      "file": "tests/r25_prestate.ps1",
+      "bytes": 911,
+      "sha256": "EDAC3C1F5FBC08DE8157B4AD5CB8021E5268F4000DD5B688E1BE51AC01D90F6F"
+    },
+    {
+      "file": "tests/r25_verify_install.ps1",
+      "bytes": 1213,
+      "sha256": "945C60FDDC5DBDF8F852F2D5EF021F01638D74194C512234AF23F132531A9189"
+    },
+    {
+      "file": "tests/r26_install_verify.ps1",
+      "bytes": 2056,
+      "sha256": "03C3B335ABFB69DA6D86D76667B03920B52F8BDA0CC885F712890B472763D722"
+    },
+    {
+      "file": "tests/r26_live_sg.ps1",
+      "bytes": 2482,
+      "sha256": "DBBFB5ABF1BF73D4696026EF8E5FA175A9496FF4416FF16C4C57F225BBC4845A"
+    },
+    {
+      "file": "tests/r27_install_verify.ps1",
+      "bytes": 2783,
+      "sha256": "D5E57DCD67D12B1B0E058AB52E5502185E639905E5CB4611613AE3B5BD29D1AC"
+    },
+    {
+      "file": "tests/r27_live_sg.ps1",
+      "bytes": 2706,
+      "sha256": "2EC9DE8A44B78B0E776CC5C00FA623D0FD8C1551885D077616F9D900B4B67123"
+    },
+    {
+      "file": "tests/sanitize_public_evidence.py",
+      "bytes": 1768,
+      "sha256": "844F91AB5AF18BC998065D0CE6ABFB7F5E3793ED3EF38CF85518CB4A4C42C7CA"
     },
     {
       "file": "tests/seal_r22_index.py",
@@ -630,8 +820,8 @@
     },
     {
       "file": "tests/test_country_policy.py",
-      "bytes": 2243,
-      "sha256": "BC8B5EC5A5D7A47586DEAE5AF21AF63FA36B9A20AFC9A8F789EA80844D2B6CAC"
+      "bytes": 6589,
+      "sha256": "6D7BD7FC23A92E61C68EF51F2D93915BFD443943F180945867C248EF07B72ED3"
     },
     {
       "file": "tests/test_engine.py",
@@ -640,13 +830,13 @@
     },
     {
       "file": "tests/test_nodehub.py",
-      "bytes": 2551,
-      "sha256": "E88DCCEF083E242AE517F06482E623774F71BA5B32080229DACFA2A29B085F09"
+      "bytes": 2853,
+      "sha256": "E46BD15B7D643D6A3DF55ED65A659431929D98BC7B0E6E424A5BEB45B79E3AE5"
     },
     {
       "file": "tests/test_nodehub_engine_policy.py",
-      "bytes": 3326,
-      "sha256": "674386D5239879A08582C3A9804E244A5175DD77515512EA602C12B09308A0CB"
+      "bytes": 3509,
+      "sha256": "6323DD2454DD5D9DA53B7A084FD937B8BE63D6E7652522B56EFDB7C6755BD465"
     },
     {
       "file": "tests/test_r22_country_shadowshare.py",
@@ -654,9 +844,39 @@
       "sha256": "90C4E5C0D0B79D7D5A2A8853895039A754D7E2DC4DB297BF1E4BD35723727996"
     },
     {
+      "file": "tests/test_r24_hysteria2.py",
+      "bytes": 1331,
+      "sha256": "B34B43A9618B98428A657ED2BD8B5A83CC06954939F0E9E898EC951B019F9668"
+    },
+    {
+      "file": "tests/test_r25_country_availability.py",
+      "bytes": 393,
+      "sha256": "B2C03E76818F971B6DE681A3A511B0E45512637E5DED7986CEFF170DFC7509D2"
+    },
+    {
+      "file": "tests/test_r26_hy2_preflight.py",
+      "bytes": 482,
+      "sha256": "8513B8368B3D585D39A3038F9CB3A70065A4F9F10C022E5461FBE42AFDAD75AF"
+    },
+    {
       "file": "tests/verify_public_tree.py",
       "bytes": 4573,
       "sha256": "20C9D051A97020BA4B908F682BAD94F4C49E62D79B552CB0F0C36D2C89033E4A"
+    },
+    {
+      "file": "tests/verify_r23_artifact.ps1",
+      "bytes": 677,
+      "sha256": "935C00CC74E72D96B5EF638CA27D94CBED1D6C1CD7986059564D17030C4C60DC"
+    },
+    {
+      "file": "tests/verify_r24_clean.ps1",
+      "bytes": 720,
+      "sha256": "A8EE987C794A17CCD4908CE998B14911D43D5D71A4EAEBD4C8AA925F910A046A"
+    },
+    {
+      "file": "tests/verify_r24_strict.ps1",
+      "bytes": 765,
+      "sha256": "C8FBE962C3238A0C45F53912DFF03E1610C63619BA90E467DF1E647DD4CA3423"
     },
     {
       "file": "tests/virtual_codesign.ps1",
@@ -675,8 +895,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 10484,
-      "sha256": "BBD5F5DA562668690CEE099B3525BC5E6E7C9C43BD1031DAD58165D14E42AEFD"
+      "bytes": 10492,
+      "sha256": "C25897D010D539A8B1EDA854C4E3A83FB9D54D1EFACF9EDC8D119505A2BE4C66"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",

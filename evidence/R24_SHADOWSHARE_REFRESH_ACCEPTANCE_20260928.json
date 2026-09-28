@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "sources": [
+    "V2CROSS_PAGE",
+    "SHADOWSHARE_SUB_EN",
+    "SHADOWSHARE_SUB_DE",
+    "SHADOWSHARE_SUB_FR"
+  ],
+  "failedSources": [],
+  "imported": 79,
+  "total": 78,
+  "reachable": 36,
+  "protocolCounts": {
+    "vmess": 3,
+    "hysteria2": 10,
+    "trojan": 6,
+    "vless": 49,
+    "ss": 10
+  },
+  "hysteria2Count": 10,
+  "cleanup": {
+    "nodeStoreRestored": true,
+    "nodePort19460Active": false
+  },
+  "error": "",
+  "privacy": "No raw node credentials persisted."
+}

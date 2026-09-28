@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "test": "R22_CLEAN_INSTALL_UNINSTALL_CLEANUP",
+  "qualificationEvidence": "evidence/R22_INSTALLER_QUALIFICATION_ACCEPTANCE_20260928.json",
+  "qualificationEvidenceSha256": "A09E9F54DB35C27E072C6741FB0FFFA9418E68620A118455E7D34B003FABAB46",
+  "qualificationInstallRoot": "%LOCALAPPDATA%\\Programs\\FreeNetHub-R22-Qualification",
+  "rootExistsAfterUninstall": false,
+  "startMenuShortcutExistsAfterUninstall": false,
+  "nodePort19460ActiveAfterUninstall": false,
+  "cleanupRegression": "PASS",
+  "inheritedPrevention": "R21 residue fix retained: last.json, session.json, logs, app/__pycache__, app/runner_logs are explicitly removed.",
+  "provenance": "Fresh R22 qualification install + Test-CleanInstall420 + silent uninstall on 2026-09-28; post-uninstall explicit state probe."
+}

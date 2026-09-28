@@ -10,8 +10,8 @@ E = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(E)
 
 nodes = [
-    {"id":"de1","name":"DE fast","protocol":"vless","favorite":False,"pinned":False,"last_test":{}},
-    {"id":"us1","name":"US backup","protocol":"trojan","favorite":False,"pinned":False,"last_test":{}},
+    {"id":"de1","name":"DE fast","protocol":"vless","favorite":False,"pinned":False,"last_test":{},"endpoint_test":{"reachable":True,"latency_ms":20}},
+    {"id":"us1","name":"US backup","protocol":"trojan","favorite":False,"pinned":False,"last_test":{},"endpoint_test":{"reachable":True,"latency_ms":30}},
 ]
 selected = {"id": None}
 events = []
@@ -28,7 +28,7 @@ def ensure(mode):
     events.append(("ensure", mode, selected["id"]))
     return {"healthy":True,"mode":"NODE","country":"DE","ip":"203.0.113.20","seconds":0.2,"checked":"2026-09-28T00:00:00+00:00","error":""}
 
-with patch.object(E, "node_store", side_effect=store),      patch.object(E, "node_select", side_effect=select),      patch.object(E, "node_record_test", side_effect=lambda *a, **k: None),      patch.object(E, "owned", return_value={"nodeId":"old"}),      patch.object(E, "stop", side_effect=lambda mode: events.append(("stop", mode)) or True),      patch.object(E, "ensure", side_effect=ensure):
+with patch.object(E, "node_store", side_effect=store),      patch.object(E, "node_batch_fast", return_value={"total":2,"reachable":2}),      patch.object(E, "node_select", side_effect=select),      patch.object(E, "node_record_test", side_effect=lambda *a, **k: None),      patch.object(E, "owned", return_value={"nodeId":"old"}),      patch.object(E, "stop", side_effect=lambda mode: events.append(("stop", mode)) or True),      patch.object(E, "ensure", side_effect=ensure):
     h = E.ensure_node("DE", limit=1)
     assert h["healthy"] is True and h["country"] == "DE"
     assert events[0] == ("stop", "NODE")

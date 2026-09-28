@@ -1,22 +1,22 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-public-r22-country-node-workspace-rc1",
-  "status": "R22_RELEASE_CANDIDATE_COUNTRY_NODE_WORKSPACE",
+  "releaseRevision": "4.2.0-local-r27-country-shadowshare-hy2-final",
+  "status": "LOCAL_ACCEPTED_WINDOWS_4.2_R27_COUNTRY_SHADOWSHARE_HY2",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
     "CONSOLE_GATEWAY_SOFTWARE",
     "NODE_HUB_BROWSER_PROXY"
   ],
-  "engineSha256": "3960E59606DBEA4812E1EFE6FED9EAFCFB63EADB777A5EE9FCA1C1DED2B0ADC2",
+  "engineSha256": "F5B2E69948830BFE103A76BE23D4BAF542C45B75C4B70D61C71177337A78C82D",
   "uiSha256": "30624181E46A86D6C2228D740A22F2B013DF06F9EF6E853E0010D48AFCA6203F",
   "viewSha256": "7FDF3BAFE325147C130E1C4A657181177377747FDDFE61A0FD2D4B4CAB0533C0",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "87C45F6B26BE1BAC9EC0A7E0B3D6FBDD3E4B8D495A3AD82922F0B3BA5A4499C3",
   "crossPlatformManifestSha256": "9E1D262F9836407CBA3C624922B9AC4A58B37376CF3799A009F9757662EAFC2D",
-  "installerSha256": "2A6548AFFE8F2CFC483E9C3CE6EED121577488B3FE3DEC015361144A54A44EFF",
-  "acceptanceEvidence": "evidence/R22_SOURCE_ACCEPTANCE_20260928.json",
+  "installerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
+  "acceptanceEvidence": "evidence/R27_FINAL_ACCEPTANCE_20260928.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
@@ -168,10 +168,10 @@
       "productionCredentialGatesRemainExternal": true
     }
   },
-  "appManifestSha256": "AF94B46F21068C8C42D5B40A71CE6D323F483E73981968FEAA1E794C9F7CCF60",
-  "nodeHubSha256": "FE3CABB648286BDB0DE15965CFD4165F450DCAEE0FA72BBF1FB70FFA007A29F4",
-  "previousAcceptedInstallerSha256": "2A6548AFFE8F2CFC483E9C3CE6EED121577488B3FE3DEC015361144A54A44EFF",
-  "installerStatus": "R21_ACCEPTED_PREVIOUS__R22_BUILD_PENDING",
+  "appManifestSha256": "E3E8206F413B2E0830E821D63EEAC396D4BE1ECF86FA8CDB15682507EEC413AE",
+  "nodeHubSha256": "C016F0975720505F0FD9901F25458AA98B6BCBE99387D952592517307CF3FBC2",
+  "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
+  "installerStatus": "R27_BUILT_INSTALLED_LIVE_SMOKE_ACCEPTED",
   "r21": {
     "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH",
     "countryAutoOrder": [
@@ -244,6 +244,65 @@
     },
     "shadowShareReference": "GOOGLE_PLAY_PUBLIC_FEATURE_SET_REIMPLEMENTED_INDEPENDENTLY",
     "sourceAcceptance": "PASS",
-    "installerAcceptance": "PENDING"
+    "installerAcceptance": "PASS",
+    "installedBytesMatchSource": true,
+    "installedUiSmoke": "PASS",
+    "atRestNetwork": "PASS"
+  },
+  "r27": {
+    "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH",
+    "liveStrictCountry": {
+      "target": "SG",
+      "actual": "SG",
+      "status": "PASS",
+      "evidence": "evidence/R27_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json"
+    },
+    "nodeHub": {
+      "protocols": [
+        "SS",
+        "VMess",
+        "VLESS",
+        "Trojan",
+        "Hysteria2"
+      ],
+      "publicSources": [
+        "V2CROSS_PAGE",
+        "SHADOWSHARE_SUB_EN",
+        "SHADOWSHARE_SUB_DE",
+        "SHADOWSHARE_SUB_FR",
+        "SHADOWSHARE_README_ID",
+        "SHADOWSHARE_README_BN",
+        "SHADOWSHARE_README_ES"
+      ],
+      "lastRefreshTotal": 145,
+      "lastRefreshImported": 137,
+      "failedSources": [],
+      "scope": "BROWSER_ONLY",
+      "management": [
+        "dedupe",
+        "favorites",
+        "pin",
+        "custom_name",
+        "tags",
+        "note",
+        "rating_0_5",
+        "history",
+        "filter",
+        "sort"
+      ],
+      "exports": [
+        "raw",
+        "base64"
+      ]
+    },
+    "hysteria2": "PASS_PROTOCOL_AWARE_PREFLIGHT",
+    "failFast": "PASS_BOUNDED_NODE_VERIFICATION",
+    "sourceRegression": "PASS_65_CORE_13_GATEWAY",
+    "installerAcceptance": "PASS",
+    "installedParity": "PASS",
+    "installedUiSmoke": "PASS",
+    "atRestNetwork": "PASS",
+    "trustedWindowsSigning": "OPEN_NOTSIGNED",
+    "knowledgeRecord": "evidence/R27_PROJECT_KNOWLEDGE_20260928.json"
   }
 }

@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "project": "FreeNet Hub / Open Internet Gateway",
+  "milestone": "R27 country + ShadowShare-style Node Hub",
+  "records": [
+    {
+      "context": "Country selection correctness",
+      "claimDecision": "A selected non-AUTO country is accepted only when the verified actual exit country equals the selected country; healthy wrong-country exits are stopped and rejected.",
+      "evidenceSource": [
+        "app/engine.py",
+        "tests/test_country_policy.py",
+        "evidence/R27_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "release notes",
+        "technical report",
+        "troubleshooting",
+        "thesis methods"
+      ],
+      "provenance": {
+        "engineSha256": "F5B2E69948830BFE103A76BE23D4BAF542C45B75C4B70D61C71177337A78C82D"
+      }
+    },
+    {
+      "context": "Root cause / prevention",
+      "claimDecision": "The earlier defect was an acceptance bug: strict-country scanning could return any healthy Node. Prevention is fail-closed actual-exit comparison plus regression for healthy wrong-country nodes.",
+      "evidenceSource": [
+        "tests/test_country_policy.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "postmortem",
+        "testing guide",
+        "engineering report"
+      ]
+    },
+    {
+      "context": "Country availability",
+      "claimDecision": "A small single public pool was insufficient for reliable country availability. The minimum useful change was merge+dedupe across audited public Pawdroid/ShadowShare-family sources and V2CROSS, not blind retries.",
+      "evidenceSource": [
+        "app/engine.py",
+        "evidence/R24_SHADOWSHARE_REFRESH_ACCEPTANCE_20260928.json",
+        "evidence/R27_STRICT_COUNTRY_SG_ACCEPTANCE_20260928.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "architecture rationale",
+        "release notes"
+      ]
+    },
+    {
+      "context": "Protocol coverage",
+      "claimDecision": "Hysteria2/hy2 is supported with sing-box-compatible password/TLS/obfs mapping. TCP endpoint preflight is not used to reject Hysteria2 because its transport is UDP/QUIC.",
+      "evidenceSource": [
+        "app/nodehub.py",
+        "tests/test_r24_hysteria2.py",
+        "tests/test_r26_hy2_preflight.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "protocol matrix",
+        "developer docs"
+      ]
+    },
+    {
+      "context": "Failure prevention",
+      "claimDecision": "Broken Node paths fail fast after bounded completed probes rather than consuming the full retry window; wrong-country paths remain fail-closed.",
+      "evidenceSource": [
+        "app/engine.py",
+        "tests/test_country_policy.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "operations guide",
+        "test plan"
+      ]
+    },
+    {
+      "context": "Installed product",
+      "claimDecision": "R27 installer preserves settings and node data; installed engine/nodehub/UI/view/manifest match source; idle UI smoke creates no project network listeners or new terminal windows.",
+      "evidenceSource": [
+        "evidence/R27_INSTALL_ACCEPTANCE_20260928.json",
+        "evidence/R27_INSTALLED_PRODUCT_SMOKE_20260928.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "release checklist",
+        "support guide"
+      ]
+    },
+    {
+      "context": "Distribution trust",
+      "claimDecision": "Functional/local acceptance does not imply public code-signing trust. The R27 installer is Authenticode NotSigned; obtaining a trusted signing certificate remains an external gate.",
+      "evidenceSource": [
+        "evidence/R27_FINAL_ACCEPTANCE_20260928.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "OPEN_EXTERNAL_GATE",
+      "reuseTargets": [
+        "release notes",
+        "distribution checklist"
+      ]
+    }
+  ],
+  "externalReferences": [
+    {
+      "name": "ShadowShare Google Play",
+      "url": "https://play.google.com/store/apps/details?id=com.v2cross.shadowshare&hl=en"
+    },
+    {
+      "name": "Pawdroid Free-servers public repository",
+      "url": "https://github.com/Pawdroid/Free-servers"
+    }
+  ]
+}

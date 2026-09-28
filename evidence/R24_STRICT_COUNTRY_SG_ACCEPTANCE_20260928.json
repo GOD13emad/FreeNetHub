@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "targetCountry": "SG",
+  "actualCountry": "SG",
+  "mode": "NODE",
+  "scope": "BROWSER_HTTPS",
+  "healthy": true,
+  "cleanup": {
+    "settingsRestored": true,
+    "nodePoolRestored": true,
+    "nodePort19460Active": false,
+    "warpPort19410Active": false
+  },
+  "error": "",
+  "privacy": "Raw node credentials and raw exit IP are not persisted."
+}

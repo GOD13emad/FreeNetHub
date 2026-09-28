@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "target": "SG",
+  "actual": "SG",
+  "mode": "NODE",
+  "healthy": true,
+  "error": "",
+  "refresh": {
+    "exit": 0,
+    "total": 145,
+    "imported": 137,
+    "sources": [
+      "V2CROSS_PAGE",
+      "SHADOWSHARE_SUB_EN",
+      "SHADOWSHARE_SUB_DE",
+      "SHADOWSHARE_SUB_FR",
+      "SHADOWSHARE_README_ID",
+      "SHADOWSHARE_README_BN",
+      "SHADOWSHARE_README_ES"
+    ],
+    "failedSources": []
+  },
+  "cleanup": {
+    "nodePort19460": false,
+    "warpPort19410": false,
+    "settingsRestored": true,
+    "nodesRestored": true
+  },
+  "privacy": "No raw node credentials or raw exit IP persisted."
+}

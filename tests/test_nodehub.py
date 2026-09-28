@@ -52,8 +52,13 @@ assert cfg["route"]["final"] == "provider"
 pub = n.public_node(a)
 assert "password" not in pub and "uuid" not in pub
 
+hy = n.parse_uri("hysteria2://secret@hy.example.com:443?security=tls&sni=hy.example.com#SG-HY2")
+assert hy["protocol"] == "hysteria2" and hy["password"] == "secret"
+hycfg = n.sing_box_config(hy, 19460)
+assert hycfg["outbounds"][0]["type"] == "hysteria2" and hycfg["outbounds"][0]["tls"]["enabled"] is True
+
 try:
-    n.parse_uri("hysteria2://x@example.com:443")
+    n.parse_uri("tuic://x@example.com:443")
     raise AssertionError("unsupported protocol must fail closed")
 except ValueError as e:
     assert str(e) == "NODE_PROTOCOL_UNSUPPORTED"
