@@ -22,7 +22,7 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 
-VERSION = "4.2.0-linux.11-r37"
+VERSION = "4.2.0-linux.12-r38"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -331,7 +331,7 @@ def _upload(proxy=None, timeout=30, bytes_count=350000, interface=None):
             args += _proxy_args(proxy)
         if interface:
             args += ["--interface", interface]
-        args += ["--data-binary","@"+name,"-w",fmt,"https://speed.cloudflare.com/__up"]
+        args += ["--data-binary","@"+name,"-w",fmt,f"https://speed.cloudflare.com/__up?bytes={int(bytes_count)}"]
         p = legacy.run(args, int(timeout)+5)
         parts=(p.stdout or "").strip().split("\t")
         return {
@@ -349,10 +349,12 @@ def _bench(proxy=None, ping_only=False, interface=None):
     s = settings()
     tr, trace = _trace(proxy, interface, s["pingTimeoutSec"])
     ping = _curl("https://www.youtube.com/generate_204", s["pingTimeoutSec"], proxy, False, interface)
-    ok_ping = tr["exit"]==0 and tr["code"]=="200" and bool(trace) and ping["exit"]==0 and ping["code"] in ("200","204")
+    trace_ok = tr["exit"]==0 and tr["code"]=="200" and bool(trace)
+    youtube_ok = ping["exit"]==0 and ping["code"] in ("200","204")
+    latency = ping if youtube_ok else tr
     result = {
-        "ok": ok_ping,
-        "pingMs": round((ping["seconds"] or 0)*1000,1) if ping["seconds"] is not None else None,
+        "ok": trace_ok,
+        "pingMs": round((latency.get("seconds") or 0)*1000,1) if latency.get("seconds") is not None else None,
         "downloadMbps": None,
         "uploadMbps": None,
         "country": trace.get("loc",""),
@@ -361,17 +363,19 @@ def _bench(proxy=None, ping_only=False, interface=None):
         "checked": _now(),
         "proxyUsed": bool(proxy),
         "interface": interface or "",
-        "error": "" if ok_ping else "PING_OR_TRACE_FAILED",
+        "youtubeReachable": youtube_ok,
+        "error": "" if trace_ok else "TRACE_FAILED",
     }
-    if ping_only or not ok_ping:
+    if ping_only or not trace_ok:
         return result
     down = _curl("https://speed.cloudflare.com/__down?bytes=2000000", s["downloadTimeoutSec"], proxy, False, interface)
-    up = _upload(proxy, s["uploadTimeoutSec"], 350000, interface)
+    upload_bytes = 100000 if proxy else 350000
+    up = _upload(proxy, s["uploadTimeoutSec"], upload_bytes, interface)
     down_ok = down["exit"]==0 and down["code"]=="200" and down["speedDown"]>0
     up_ok = up["exit"]==0 and up["code"]=="200" and up["speed"]>0
     result["downloadMbps"] = round(down["speedDown"]*8/1e6,2) if down_ok else None
     result["uploadMbps"] = round(up["speed"]*8/1e6,2) if up_ok else None
-    result["ok"] = bool(ok_ping and down_ok and up_ok)
+    result["ok"] = bool(trace_ok and down_ok and up_ok)
     if not result["ok"]:
         result["error"] = "THROUGHPUT_INCOMPLETE"
     return result
@@ -757,7 +761,7 @@ def benchmark_node(ping_only=False):
         if temp: node_stop()
 
 def benchmark_tor(ping_only=False):
-    ts=legacy.tor_status(); temp=not bool(ts.get("ok"))
+    ts=legacy.tor_status(); temp=not bool(ts.get("ok") and ts.get("state")=="running")
     if temp:
         r=legacy.start_tor()
         if not r.get("ok"): return r
@@ -1008,7 +1012,7 @@ def update_check():
     linux_assets=[a for a in assets if _linux_revision_from_name(a.get("name")) is not None]
     linux=max(linux_assets,key=lambda a:_linux_revision_from_name(a.get("name")),default=None)
     remote_rev=_linux_revision_from_name(linux.get("name")) if linux else None
-    local_rev=11
+    local_rev=12
     return {"ok":True,"current":VERSION,"localRevision":local_rev,"tag":j.get("tag_name"),"published":j.get("published_at"),"linuxAsset":linux,"remoteRevision":remote_rev,"updateAvailable":bool(remote_rev is not None and remote_rev>local_rev),"assets":assets}
 
 def update_install():

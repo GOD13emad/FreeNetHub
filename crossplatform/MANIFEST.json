@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r37-linux-r9",
+  "version": "4.2.0-crossplatform-r38-linux-r12",
   "files": [
     {
       "file": "android/app/build.gradle.kts",
@@ -49,8 +49,8 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 3991,
-      "sha256": "A287294C5D2D577A68718077FFB477ABE07B0331EB399124ECC1172C7325347F"
+      "bytes": 3993,
+      "sha256": "5378FA419E3F7F57C41411C23569DA68FACC26DB4D71768EE37E8B9A761402A4"
     },
     {
       "file": "common/verify_fail_closed.py",
@@ -110,17 +110,17 @@
     {
       "file": "linux/freenet_hub_linux.py",
       "bytes": 42640,
-      "sha256": "927ADE33064931122D1C1F767D3A5B7DE934D35748471057EA4EB3AC23B15CC9"
+      "sha256": "3C6045872722A4BCFA85C5FF23854CBD1F91A0880133E43527FB0805AE3DBB12"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
       "bytes": 55317,
-      "sha256": "984C1E942ABD01998BD89AF6A0781035D731F0025910C9CF59724374A474CC28"
+      "sha256": "9838DC0FF5EC70EDAD377C7497813F257D743C8F700BC91D6BB4C3887934AB25"
     },
     {
       "file": "linux/freenet_hub_linux_r37.py",
-      "bytes": 50392,
-      "sha256": "02A8FBF0AECED7CE5AE4D91DD9EE3FC5AB40333923ADC4A1B5F0ADD019BD020C"
+      "bytes": 50581,
+      "sha256": "C566C64B009008AAD1EDF4E50539336498F06D19E2735C56D61D9AA2BB2CF5F9"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -134,8 +134,8 @@
     },
     {
       "file": "linux/install.sh",
-      "bytes": 5624,
-      "sha256": "1115F7A094FEE99038571BCDEEA9DD8F9C78A0ABD38A49423B3BDDAAAD08693E"
+      "bytes": 5625,
+      "sha256": "53424AED93F221251D60F9DE28949978E3DDE963DF35392E6BA5E9321A0FBA07"
     },
     {
       "file": "linux/install_singbox_pinned.sh",
@@ -160,7 +160,7 @@
     {
       "file": "linux/README_FA.md",
       "bytes": 3449,
-      "sha256": "AAA649E5BD96DFD34B344B598044A2B715EAAD5F9FA170C0C2D347219729AD66"
+      "sha256": "1713D089CB41A2964C7C1E35914E88D8CF3DCD54CF25880753B1E46515614FF3"
     },
     {
       "file": "linux/recover_warp_remote.sh",
@@ -170,7 +170,7 @@
     {
       "file": "linux/selftest.py",
       "bytes": 1829,
-      "sha256": "981644AF06EA8A2FB534505D7F1C10153BF186DF73120C2E5554F68847C2C9DF"
+      "sha256": "128898511D09F3865B0DD558EFAF30A32BE4F2F1E48D4D8FE698BDC7F1A3E24A"
     },
     {
       "file": "linux/test_browser_profile.py",
@@ -189,8 +189,8 @@
     },
     {
       "file": "linux/test_r37_parity.py",
-      "bytes": 4460,
-      "sha256": "BDEB5B20C2EEA7A33AC1EE1BB51D61AA54EAE1B82D4AA959A656AA5E858C8F87"
+      "bytes": 7175,
+      "sha256": "CB997C47AEB7A4E192DA6F9BFB13FAAE7A17F9DFA33B479C07D56996233E7604"
     },
     {
       "file": "linux/test_scope_policy.py",
@@ -210,7 +210,7 @@
     {
       "file": "README_FA.md",
       "bytes": 1291,
-      "sha256": "443ED37384FB7621976B1A9F245ADBA1E8B59F7919B8143D44EB1C42E219401D"
+      "sha256": "8D17069C722960AA48FA551079F3249C3D653551F53764A1BA50594F8B01C40C"
     }
   ]
 }

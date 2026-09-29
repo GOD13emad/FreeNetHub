@@ -104,6 +104,51 @@
         "sanitizedCycle2Sha256": "FF230420F5E54CE352B5AE0057E9A017E0851E81590BE7DD9487D704F1C723BF",
         "sanitizedIntegrationAcceptanceSha256": "60549CEECA76A55B06EE4E896891E8CEC7644712341068DC8C4EBDEE9F83C5C6"
       }
+    },
+    {
+      "context": "Cross-platform deep audit - Linux R11 runtime defects",
+      "claimDecision": "Live all-method audit on the actual Linux R11 install preserved the external tun0 and FreeNetHub cleanup but exposed two reproducible method-test defects: Tor benchmark treated status ok/state stopped as active and never started Tor; GOOL proxy upload used a 350KB sample that exceeded the 30s timeout on a slow but working path.",
+      "evidenceSource": [
+        "installed:evidence/R11_LIVE_METHOD_AUDIT_20260929.py output",
+        "installed:evidence/R11_TOR_FIX_LIVE_20260929.py output",
+        "installed:evidence/R11_GOOL_UPLOAD_RAW_20260929.py output",
+        "installed:evidence/R11_GOOL_POSTFIX_20260929.py output",
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "crossplatform/linux/test_r37_parity.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_FIXED_AND_LIVE_REGRESSED",
+      "rootCause": "Tor lifecycle predicate checked only tor_status.ok, although stopped is a valid ok status. Proxy upload benchmark used the same 350KB payload as direct access; GOOL uploaded at about 11.7KB/s and timed out before receiving HTTP 200, while a 100KB sample completed with HTTP 200.",
+      "prevention": "Require Tor running state, not status-ok alone, before reusing Tor. Use a 100KB upload sample for proxy benchmarks and retain 350KB for direct/base. Keep explicit cleanup and physical-route preservation checks.",
+      "reuseTargets": [
+        "Linux R12",
+        "benchmark semantics",
+        "UI Test All",
+        "future regression",
+        "release notes"
+      ]
+    },
+    {
+      "context": "Cross-platform deep audit - Windows R38 protected active session",
+      "claimDecision": "Windows R38 source/public-tree gates pass, and the final installer builds with frozen inputs, but the currently installed payload is older than the final R38 Windows source. A browser WARP FreeNetHub session is currently CONNECTED_HEALTHY, so force-closing the app or forcing installer promotion is intentionally deferred to preserve the user's active connection.",
+      "evidenceSource": [
+        "python -m pytest tests -q => 145 passed",
+        "tests/test_r36_directdpi_product.py => 5 passed",
+        "tests/verify_public_tree.py => PASS",
+        "tests/security_scan_public.py => PASS",
+        "evidence/R38_PARITY_DIAG_20260929.py local diagnostic",
+        "installed session.json read-only audit"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "SOURCE_PASS_INSTALLED_PROMOTION_DEFERRED_ACTIVE_SESSION",
+      "rootCause": "The currently running installed app holds the product single-instance/app mutex and is actively carrying a browser WARP session. The protected installed payload predates final R38 FreeNetHub.ps1 and DirectDPI Start/Stop bytes.",
+      "prevention": "Do not terminate or replace an active user session for release validation. Promote the hash-pinned installer only after the active FreeNetHub session is naturally stopped, then require exact installed parity and five-tab route-preserving smoke before public Windows R38 promotion.",
+      "reuseTargets": [
+        "Windows R38 release gate",
+        "handoff",
+        "PROJECT_BRAIN",
+        "installer acceptance"
+      ]
     }
   ]
 }

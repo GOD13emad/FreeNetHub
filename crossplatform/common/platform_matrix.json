@@ -14,8 +14,8 @@
       "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R11_R37_UX_FINAL",
-      "version": "4.2.0-linux.11-r37",
+      "status": "CANDIDATE_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R12_R38_AUDIT_FIX",
+      "version": "4.2.0-linux.12-r38",
       "environments": {
         "native": "Ubuntu 24.04"
       },

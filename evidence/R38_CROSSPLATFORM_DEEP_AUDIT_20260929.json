@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "revision": "R38",
+  "status": "R38_CROSSPLATFORM_SOURCE_ACCEPTED_WINDOWS_INSTALL_DEFERRED",
+  "objective": "Deep front-to-back audit of Windows R38 and Linux R11/R12 while preserving active external/user network state.",
+  "windows": {
+    "sourceRegression": "PASS_145_OF_145",
+    "directMethodContract": "PASS_5_OF_5",
+    "publicTree": "PASS",
+    "securityScan": "PASS",
+    "powershellParse": "PASS",
+    "installer": {
+      "status": "PASS_BUILD_FROZEN",
+      "bytes": 24257930,
+      "sha256": "E56AE358FDD1E75BAE1AFAFCFE04E8DC9D3D6EC7D2DC3E690DC4FAADD04D7094",
+      "authenticode": "NotSigned"
+    },
+    "installed": {
+      "runtimeStatus": "PASS",
+      "parity": "FAIL_STALE_CURRENT_INSTALL",
+      "reason": "Protected active FreeNetHub WARP browser session; force promotion intentionally deferred.",
+      "activeSession": "WARP/BROWSER_HTTPS/CONNECTED_HEALTHY"
+    },
+    "networkMutationDuringFinalAudit": false,
+    "promotion": "DEFERRED_ACTIVE_SESSION"
+  },
+  "linux": {
+    "priorPublished": "4.2.0-linux.11-r37",
+    "candidate": "4.2.0-linux.12-r38",
+    "fullLiveAudit": {
+      "methods": 7,
+      "baselineExternalTun0Preserved": true,
+      "initialFailures": [
+        "TOR lifecycle predicate",
+        "GOOL 350KB upload timeout"
+      ]
+    },
+    "torFix": {
+      "status": "PASS_STATIC_AND_LIVE",
+      "rootCause": "tor_status ok/stopped was mistaken for running"
+    },
+    "goolFix": {
+      "status": "PASS_STATIC_AND_LIVE",
+      "rootCause": "350KB proxy upload exceeded 30s on slow working path",
+      "policy": "100KB proxy upload sample; 350KB direct/base"
+    },
+    "permissions": "PASS_0700_STATE_0600_SESSION",
+    "integrity": "PASS_AFTER_LOCAL_FIX",
+    "uiLauncherSmoke": "PASS_GTK_PROCESS_NO_STDERR",
+    "package": {
+      "status": "PASS_LOCAL_CANDIDATE",
+      "name": "FreeNetHub_4.2.0_Linux_R12.zip",
+      "bytes": 64648,
+      "sha256": "95AE600AFC80AC1315604ACBAA43AE74DFB3D86C715CA21DF4EF4139A80A9F37"
+    },
+    "publicRelease": false
+  },
+  "openGates": [
+    "WINDOWS_R38_INSTALLED_PARITY_AFTER_ACTIVE_SESSION_STOPS",
+    "WINDOWS_R38_FIVE_TAB_SMOKE_AFTER_PROMOTION",
+    "LINUX_R12_EXACT_PACKAGE_INSTALL_ACCEPTANCE",
+    "HOSTED_CI_R38_R12",
+    "TRUSTED_WINDOWS_AUTHENTICODE"
+  ],
+  "evidence": [
+    "evidence/R38_PROJECT_KNOWLEDGE_20260929.json",
+    "evidence/R38_INSTALLER_BUILD_20260929.json",
+    "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json"
+  ]
+}
