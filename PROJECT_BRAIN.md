@@ -4,7 +4,7 @@ Status: CURRENT
 Brain version: r37-windows-runtime-final-2026-09-29
 Installed authority: 4.2.0-local-r37-final
 Source authority: 4.2.0-local-r37-final
-Promotion state: WINDOWS R37 RUNTIME + FINAL INSTALLER ACCEPTED LOCALLY; PUBLIC R28; LINUX INSTALLED 4.2.0-linux.8; RELEASE HYGIENE PASS; PUBLIC R37 PROMOTION ← CURRENT
+Promotion state: PUBLIC R37 FINAL RELEASED; WINDOWS R37 RUNTIME + FINAL INSTALLER ACCEPTED; HOSTED CI PASS; LINUX 4.2.0-linux.8 UNCHANGED ACCEPTED; RELEASE HYGIENE PASS
 
 ## Final Objective / DoD
 FreeNet Hub is the comprehensive free multi-transport connectivity product. It must expose the widest practical set of independent censorship-resilient paths under one understandable UI, with explicit Browser / Full System / Console capability boundaries, pre-connect measurement where technically meaningful, fail-closed behavior, rollback for network mutation, and no hidden DIRECT fallback.
@@ -115,9 +115,9 @@ Fix:
 6. Final source/installed metadata promotion + parity + five-tab smoke — Completed/PASS.
 7. R37 Final installer build + exact final installer execution — Completed/PASS.
 8. Canonical public manifest + local public release gate — Completed/PASS.
-9. ← CURRENT: Git commit/push, hosted CI and GitHub release asset promotion.
-10. Trusted Authenticode and physical Console field E2E — external gates.
-11. Android forwarding-core runtime acceptance and iOS signing/device runtime acceptance.
+9. Git commit/push + corrective dual-hash CI contract + hosted CI — Completed/PASS.
+10. GitHub release `v4.2.0-r37-final` + asset digest verification + post-publish self-update check — Completed/PASS.
+11. ← CURRENT EXTERNAL GATES ONLY: trusted Authenticode, physical Console field E2E, Android/iOS production forwarding/signing.
 
 ## Open Gates / Critical Path
 - R37 Windows runtime/product behavior — CLOSED_PASS.
@@ -125,21 +125,22 @@ Fix:
 - Five-tab UI smoke and no-route-mutation launch — CLOSED_PASS.
 - Node refresh fast fetch/merge behavior — CLOSED_PASS.
 - Full-System WARP + update-through-pre-TUN-base-route + rollback — CLOSED_PASS.
-- Final installer exact execution — CLOSED_PASS. Current final SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64`; installer exit 0, runtime bootstrap PASS, parity PASS, five-tab smoke PASS, route unchanged.
+- Final installer exact execution — CLOSED_PASS. SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64`.
 - Canonical PUBLIC_MANIFEST / RELEASE verifier — CLOSED_PASS.
-- Initial R37 public commit/push — CLOSED_PASS at `c70a4238d0ccaf7b835866ab34c382383c05219d`.
-- Hosted CI attempt #1 — FAIL_WINDOWS_UNIT_ONLY due runtime deployed-byte hash vs Git-normalized source-byte hash contract mismatch; root cause fixed locally with dual `sha256` / `sourceSha256` manifest fields.
-- Follow-up CI fix commit + hosted CI + release asset promotion — ← CURRENT.
+- Hosted CI follow-up #99 / run `36546861061` — CLOSED_PASS, including aggregate virtual-acceptance.
+- Public GitHub release `v4.2.0-r37-final` targeting `45e21a1bc64aefaf3276751754c0f4f4fd1fb649` — CLOSED_PASS.
+- Post-publish installed UpdateCheck — CLOSED_PASS: local=37, remote=37, selected asset digest matches, `updateAvailable=false`.
 - Trusted Windows Authenticode — OPEN_NOTSIGNED external gate.
 - Physical console game/country E2E — UNPROVEN external hardware gate.
 - Direct-DPI installed lifecycle — UNPROVEN optional extension; fail-closed and non-blocking for core product.
-- Android forwarding/VPN runtime — OPEN.
-- iOS signing/device runtime — OPEN.
+- Android production forwarding core/signing — OPEN external gate; hosted fail-closed emulator lifecycle PASS.
+- iOS production packet-forwarding core/device signing — OPEN external gate; hosted simulator lifecycle PASS.
 
 ## Exact Next Action
-Rebuild/verify the canonical public tree after the dual-hash CI fix, commit and push the follow-up source-integrity change, require the new hosted CI run to PASS all jobs, then publish the Windows installer asset SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64`. Do not claim trusted signing until a real Authenticode certificate is available.
+No in-scope Windows/public-release blocker remains for R37. Continue only when an external gate becomes actionable: obtain a real trusted Authenticode certificate; connect a physical console for DHCP/UDP/game/country field E2E; or link and sign production Android/iOS forwarding cores. Do not reopen accepted R37 runtime/network work without new failure evidence.
 
 ## HISTORY
+- 2026-09-29 R37 PUBLIC FINAL: corrective source/runtime dual-hash commit `45e21a1bc64aefaf3276751754c0f4f4fd1fb649` passed hosted CI #99/run `36546861061` across Windows, Linux, Android build/emulator, iOS static/simulator, console virtual E2E, virtual signing and aggregate virtual acceptance. GitHub release `v4.2.0-r37-final` published as latest with Windows installer SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64` and unchanged accepted Linux R8 SHA-256 `BD9F1311F02D4AA874609D61116EC26C107C5ECD4ED36086C2C3347E0A0C695A`. Post-publish installed UpdateCheck PASS: local=37, remote=37, digest/size exact, updateAvailable=false. Evidence: `evidence/R37_PUBLIC_RELEASE_ACCEPTANCE_20260929.json`.
 - 2026-09-29 Hosted CI #98 root cause: Windows `Verify public manifests` failed because `app/manifest.json.sha256` intentionally represented deployed CRLF bytes while GitHub checkout normalized text files to LF. Runtime integrity was not weakened; R37 now carries dual hashes per app file: `sha256` for exact deployed/runtime bytes and `sourceSha256` for canonical Git-filtered source bytes. Exact rebuilt installer SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64` passed install/runtime/parity/five-tab/route acceptance. Follow-up hosted CI is current gate.
 - 2026-09-29 hosted CI attempt #1 root cause: run `36542733818` on public commit `c70a4238d0ccaf7b835866ab34c382383c05219d` failed only at Windows `Verify public manifests`; PUBLIC_MANIFEST, RELEASE, gateway, cross-platform, Windows package and forbidden-runtime checks passed. App manifest failed for five normalized text files because runtime `sha256` intentionally hashes deployed Windows bytes while GitHub checkout normalizes source text to LF. Prevention: preserve runtime `sha256` and add canonical Git `sourceSha256`; CI verifies `sourceSha256`. Runtime code unchanged. Rebuilt exact installer SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64` then installed/verified PASS with route unchanged.
 - 2026-09-29 R37 canonical public-tree gate CLOSED_PASS: PUBLIC_MANIFEST, app/gateway/cross-platform/windows package manifests, canonical RELEASE hashes and forbidden-runtime checks PASS; security scan zero hits; 165 regression tests PASS; git diff check PASS. Final installer SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64` exact execution PASS. Evidence: `evidence/R37_PUBLIC_TREE_ACCEPTANCE_20260929.json`.

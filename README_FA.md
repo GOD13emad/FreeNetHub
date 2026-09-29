@@ -1,15 +1,16 @@
 # FreeNet Hub 4.2.0
 
-نسخه Windows 4.2.0 برای Browser/Proxy، تونل کامل PC با WARP، و مسیر نرم‌افزاری Console Gateway پذیرش شده است.
+Windows R37 با رابط پنج‌بخشی Dashboard / Methods / Nodes / Tools / Settings و مرزبندی صریح Browser / Full System / Console پذیرش نهایی شده است.
 
-- PC_TUNNEL از clean install واقعی: warp=on، YouTube=204، UDP/STUN=PASS و rollback=PASS.
-- Installer: clean install/bootstrap/uninstall=PASS.
-- Console Gateway: شبیه‌سازی Linux-router و attach/detach آداپتور Realtek با WSL=PASS.
-- تست بازی از کنسول فیزیکی هنوز OPEN است چون لینک اختصاصی هنگام پذیرش نهایی قطع بود.
-- installer امضای Authenticode ندارد؛ SHA-256 منتشرشده را بررسی کنید.
-- providerهای مرورگری داخل repository/installer بازتوزیع نمی‌شوند؛ Gateway core و sing-box پین‌شده provision می‌شوند.
+- Full-System WARP از مسیر رسمی Gateway: PASS؛ دریافت آپدیت/نود هنگام TUN از مسیر pre-TUN پایه اثبات شده است.
+- Direct base-speed و benchmark مرورگر WARP: PASS.
+- Node refresh فقط fetch/parse/merge می‌کند و تست endpointها با Test All جداست.
+- Installer دقیق R37: exit=0، bootstrap=PASS، parity برای 17 فایل app + 17 فایل gateway=PASS، smoke هر پنج تب=PASS و route بدون تغییر.
+- Hosted CI #99 برای Windows، Linux، Android build/emulator fail-closed، iOS static/simulator، Console virtual E2E، virtual signing و aggregate acceptance همگی PASS است.
+- تست فیزیکی console/game/country و Authenticode قابل‌اعتماد همچنان gate خارجی هستند.
+- providerهای اختیاری در نبود runtime معتبر fail-closed می‌مانند و fallback پنهان به DIRECT ندارند.
 
-برای Windows از asset نهایی FreeNetHub_4.2.0_FINAL_Setup.exe در Release v4.2.0 استفاده کنید.
+برای Windows از `FreeNetHub_4.2.0_R37_Final_Setup.exe` در Release `v4.2.0-r37-final` استفاده کنید. SHA-256 پذیرفته‌شده: `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64`.
 
 ## به‌روزرسانی Linux روی main
 
@@ -27,7 +28,7 @@ Firefox Snap در R7 از profile مجاز Snap استفاده می‌کند و 
 
 ## به‌روزرسانی Android/iOS روی main
 
-Android 4.2.0 با JDK 17، Gradle 8.9، SDK/Build Tools 35 clean-build شده و APK debug با versionCode=420 و امضای v2 معتبر دارد. با این حال forwarding core هنوز لینک نشده و runtime VPN ادعا نمی‌شود. iOS نیز از نظر metadata به 4.2.0 همگام شده ولی build/signing/device runtime هنوز gate خارجی است.
+Android 4.2.0 علاوه بر clean build، در hosted emulator چرخه permission واقعی VpnService را به‌صورت fail-closed PASS کرده است؛ forwarding core و signing تولیدی هنوز gate خارجی‌اند. iOS نیز static و hosted simulator build/install/launch/relaunch را PASS کرده، اما forwarding core تولیدی، Apple signing/provisioning و runtime روی دستگاه فیزیکی همچنان gate خارجی هستند.
 
 ## iOS static gate
 

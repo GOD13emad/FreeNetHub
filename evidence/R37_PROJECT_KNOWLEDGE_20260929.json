@@ -234,14 +234,32 @@
         "app/manifest.json",
         "tests/build_r37_product_metadata.py",
         "tests/verify_public_tree.py",
-        "GitHub Actions run 36542733818"
+        "GitHub Actions run 36542733818",
+        "GitHub Actions run 36546861061"
       ],
       "confidence": "CONFIRMED",
-      "status": "FIXED_PENDING_FOLLOWUP_CI",
+      "status": "PASS_FOLLOWUP_CI",
       "reuseTargets": [
         "CI",
         "release engineering",
         "integrity architecture"
+      ]
+    },
+    {
+      "context": "R37 public release promotion",
+      "claimDecision": "R37 was published as the latest GitHub release at tag v4.2.0-r37-final targeting commit 45e21a1bc64aefaf3276751754c0f4f4fd1fb649. Hosted CI #99 passed all jobs. Release asset digests match local accepted artifacts, and installed post-publish UpdateCheck selects the R37 asset but correctly reports updateAvailable=false because local and remote revisions are both 37.",
+      "evidenceSource": [
+        "evidence/R37_PUBLIC_RELEASE_ACCEPTANCE_20260929.json",
+        "GitHub Actions run 36546861061",
+        "GitHub release v4.2.0-r37-final"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "handoff",
+        "release engineering",
+        "support",
+        "update troubleshooting"
       ]
     }
   ]

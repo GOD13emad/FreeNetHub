@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "revision": "R37",
+  "status": "PASS_PUBLIC_RELEASE",
+  "authority": {
+    "commit": "45e21a1bc64aefaf3276751754c0f4f4fd1fb649",
+    "tag": "v4.2.0-r37-final",
+    "releaseId": 398983738,
+    "releaseName": "FreeNet Hub 4.2.0 R37 Final",
+    "publishedAt": "2026-09-29T09:13:44Z",
+    "latest": true
+  },
+  "hostedCi": {
+    "runId": 36546861061,
+    "runNumber": 99,
+    "conclusion": "success",
+    "virtualAcceptance": "PASS"
+  },
+  "assets": {
+    "windows": {
+      "name": "FreeNetHub_4.2.0_R37_Final_Setup.exe",
+      "bytes": 24256059,
+      "sha256": "35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64",
+      "authenticode": "NotSigned"
+    },
+    "linux": {
+      "name": "FreeNetHub_4.2.0_Linux_R8.zip",
+      "bytes": 45976,
+      "sha256": "BD9F1311F02D4AA874609D61116EC26C107C5ECD4ED36086C2C3347E0A0C695A",
+      "status": "UNCHANGED_ACCEPTED_R8"
+    },
+    "hostedCiEvidence": {
+      "sha256": "16934790128214CEDB67D35E8D8B1F3A93217A541BF13C5E5BAF794042ACCBE6"
+    },
+    "windowsAcceptance": {
+      "sha256": "3D13EF970FF10E5FBE797418DB6EF599004FBE0C983C726675DDCD9247F1FEEF"
+    },
+    "publicTreeAcceptance": {
+      "sha256": "6AA5007C82CF1110A38290F50A803D933653F3D6C811E093DC09A44732C07B65"
+    }
+  },
+  "postPublishSelfUpdate": {
+    "status": "PASS",
+    "currentRevision": "4.2.0-local-r37-final",
+    "currentRevisionNumber": 37,
+    "remoteRevisionNumber": 37,
+    "updateAvailable": false,
+    "selectedAsset": "FreeNetHub_4.2.0_R37_Final_Setup.exe",
+    "selectedAssetBytes": 24256059,
+    "selectedAssetDigest": "sha256:35491b9bcad06263c063da7559d67b206f01028e613232f101d249d552ba0c64",
+    "rootPathProof": "SYSTEM_DEFAULT_NO_FNH_PC_TUNNEL"
+  },
+  "remainingExternalGates": [
+    "TRUSTED_WINDOWS_AUTHENTICODE",
+    "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
+    "ANDROID_PRODUCTION_FORWARDING_CORE_AND_SIGNING",
+    "IOS_PRODUCTION_PACKET_FORWARDING_CORE_AND_DEVICE_SIGNING"
+  ]
+}
