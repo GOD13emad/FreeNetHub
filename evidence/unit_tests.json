@@ -1,18 +1,9 @@
 {
-  "utc": "2026-09-28T09:29:00Z",
-  "tests": 78,
+  "utc": "2026-09-29T18:47:51.952119+00:00",
+  "tests": 120,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
-  "success": true,
-  "suites": {
-    "engine_country_nodehub": "61/61 PASS",
-    "gateway_scope_ui_clean_install": "17/17 PASS",
-    "r22_country_shadowshare_dynamic": "PASS",
-    "powershell_ui_parse": "PASS",
-    "xaml_xml_parse": "PASS",
-    "security_scan_public": "PASS",
-    "public_tree_candidate": "PASS"
-  },
-  "scope": "R22 local source/policy/packaging regression. Live Node, direct speed, installer qualification and installed-product smoke are separate acceptance records."
+  "scope": "Unit validation, ownership and bounded native child; no product tunnel start",
+  "success": true
 }

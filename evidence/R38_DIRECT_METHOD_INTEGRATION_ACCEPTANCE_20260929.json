@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "status": "PASS_SOURCE_AND_LIVE_INTEGRATION",
+  "objective": "Integrate the accepted standalone Direct Internet Method into the existing FreeNetHub Direct DPI method without changing adapter DNS, creating a VPN/proxy, or changing the default route.",
+  "architecture": "LOOPBACK_ULA_CTRLD_DOH_NRPT_PLUS_ZAPRET",
+  "authority": {
+    "standaloneAcceptance": "C:\\Users\\Aa.Emad\\source\\repos\\DirectDnsDpiHarness\\evidence\\FINAL_RELEASE_ACCEPTANCE_20260929.json",
+    "standaloneStatus": "PASS_FINAL_RELEASE"
+  },
+  "changes": {
+    "startScript": {
+      "path": "app/directdpi/Start-DirectDpi.ps1",
+      "sha256": "126EA704AA8BD394A7E021B5BB3BABB7FF5CAF4376D0DB8DDCAA764FC2FF54C2"
+    },
+    "stopScript": {
+      "path": "app/directdpi/Stop-DirectDpi.ps1",
+      "sha256": "BB728425600CAAEF3FAE960DC5DD48545313BE4A802C0C4F918C2BC4DC731B3B"
+    },
+    "controller": {
+      "path": "app/FreeNetHub.ps1",
+      "sha256": "4280249416BCD218C3A451B7FAF47E6AA2DCD213D5AA1E5BC3568A980B17AF1C"
+    },
+    "ula": "fd53:4444:48::53/128",
+    "nrptDisplayName": "FreeNetHub.DirectMethod",
+    "adapterDnsMutation": false,
+    "ctrldServiceInstall": false
+  },
+  "regression": {
+    "powershellParser": "PASS",
+    "test_r36_directdpi_product": "PASS",
+    "test_product_boundary": "PASS",
+    "gitDiffCheck": "PASS"
+  },
+  "cycles": [
+    {
+      "cycle": 1,
+      "runtime": {
+        "status": "PASS_ACTIVE",
+        "sha256": "2630D3987E57DD0FA6D1856C9589F274B707EC2CC3E3F0F1B2630426390CC900",
+        "path": "evidence/R38_DIRECT_METHOD_CYCLE1_RUNTIME_20260929.json"
+      },
+      "stop": {
+        "status": "PASS",
+        "sha256": "331EA287913293E6BDA674C6226635A014702E52B2C185481ACC81224BF2170D",
+        "path": "evidence/R38_DIRECT_METHOD_CYCLE1_STOP_20260929.json"
+      }
+    },
+    {
+      "cycle": 2,
+      "runtime": {
+        "status": "PASS_ACTIVE",
+        "sha256": "606E850278A788C6315BF72FD6D483D430A8C43E8857872FFB5D93A5D42A6FF8",
+        "path": "evidence/R38_DIRECT_METHOD_CYCLE2_RUNTIME_20260929.json"
+      },
+      "stop": {
+        "status": "PASS",
+        "sha256": "331EA287913293E6BDA674C6226635A014702E52B2C185481ACC81224BF2170D",
+        "path": "evidence/R38_DIRECT_METHOD_CYCLE2_STOP_20260929.json"
+      }
+    }
+  ],
+  "liveAssertions": {
+    "youtube": "HTTP 204",
+    "openai": "HTTP 401 reachable",
+    "github": "HTTP 200",
+    "systemDnsPublicAnswers": true,
+    "adapterDns": [
+      "192.168.20.1"
+    ],
+    "broadRouteCount": 0,
+    "winHttpDirect": true,
+    "ics": {
+      "state": "Running",
+      "pid": 5044
+    },
+    "rollback": {
+      "ownedUla": 0,
+      "ownedNrpt": 0,
+      "ownedCtrld": 0,
+      "ownedWinws": 0,
+      "ownedWinDivert": 0
+    },
+    "unrelatedNrptPreserved": true
+  },
+  "promotion": {
+    "sourceLiveIntegration": "PASS",
+    "installerPackage": "OPEN"
+  }
+}

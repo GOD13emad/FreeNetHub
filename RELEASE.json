@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-local-r37-final",
-  "status": "WINDOWS_4.2_R37_FINAL_PAYLOAD",
+  "releaseRevision": "4.2.0-local-r38-direct-method",
+  "status": "WINDOWS_4.2_R38_DIRECT_METHOD_LOCAL_FINAL",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -15,13 +15,13 @@
     "DIRECT_DPI_CANDIDATE"
   ],
   "engineSha256": "FA3C22B7AB96D346A3255C9A0A6FEF9020626F181B8D68BC8AF3710ECB60E2FE",
-  "uiSha256": "55F4D8A4244391FB1B23FBE9B05A592328A4D4442F839E83407170CEF794C77C",
+  "uiSha256": "C00B71E1075D8BB8FA2B0176760A143B3F5D00AB286FAC2457E00C4DA06751C7",
   "viewSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "33DEFA7B54BD60BB0BC61D7F0374BC2539DDB186EEA201B7910CA1186BC2267F",
   "crossPlatformManifestSha256": "5309370F5018561FB3D613412999D97F4D1437B13FDA114982D208F8A4675F04",
   "installerSha256": null,
-  "acceptanceEvidence": "evidence/R37_WINDOWS_FINAL_ACCEPTANCE_20260929.json",
+  "acceptanceEvidence": "evidence/R38_WINDOWS_DIRECT_METHOD_INSTALL_ACCEPTANCE_20260929.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
@@ -173,10 +173,10 @@
       "productionCredentialGatesRemainExternal": true
     }
   },
-  "appManifestSha256": "4B8F04ABA54662D511084DA7BC543BDC11C3A919061CFEDECAE0661D7DA2D081",
+  "appManifestSha256": "84A1962C07987ADD2A78C51938BBA16EB12004C85658D9495FACC9C011CE487E",
   "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
   "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
-  "installerStatus": "FINAL_PAYLOAD_REQUIRES_EXTERNAL_INSTALL_ACCEPTANCE",
+  "installerStatus": "R38_LOCAL_INSTALL_ACCEPTED_NOT_PUBLIC_RELEASE",
   "r21": {
     "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH",
     "countryAutoOrder": [
@@ -645,5 +645,16 @@
     "routePreserved": true,
     "networkMutationOnInstall": false,
     "hostedCi": "OPEN"
+  },
+  "r38DirectMethod": {
+    "status": "PASS_LOCAL_FINAL",
+    "publicRelease": false,
+    "architecture": "LOOPBACK_ULA_CTRLD_DOH_NRPT_PLUS_ZAPRET",
+    "twoCycleIntegration": "PASS",
+    "adapterDnsMutation": false,
+    "vpnProxyDefaultRoute": false,
+    "exactRollback": "PASS",
+    "installedAcceptance": "PASS",
+    "trustedSigning": "OPEN_NOTSIGNED"
   }
 }

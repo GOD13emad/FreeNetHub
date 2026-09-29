@@ -1,0 +1,163 @@
+{
+  "schema": 3,
+  "status": "PASS_ACTIVE",
+  "architecture": "LOOPBACK_ULA_CTRLD_DOH_NRPT_PLUS_ZAPRET",
+  "pre": {
+    "dnsV4": [
+      "192.168.20.1"
+    ],
+    "dnsV6": [],
+    "nrpt": [
+      {
+        "Name": "DNS_RESILIENCY_slscr.update.microsoft.com",
+        "DisplayName": "",
+        "Namespace": [
+          "slscr.update.microsoft.com"
+        ],
+        "NameServers": [
+          "162.159.36.2"
+        ],
+        "Comment": ""
+      }
+    ],
+    "ulaExists": false,
+    "ics": {
+      "exists": true,
+      "state": "Running",
+      "pid": 5044
+    },
+    "broadRouteCount": 0,
+    "winHttp": "Current WinHTTP proxy settings:\r\n\r\n    Direct access (no proxy server)."
+  },
+  "dnsStage": {
+    "ula": {
+      "IPAddress": "fd53:4444:48::53",
+      "PrefixLength": 128,
+      "AddressState": 4,
+      "SkipAsSource": true
+    },
+    "ctrldPid": 74084,
+    "udp": 1,
+    "tcp": 1,
+    "nrptRule": {
+      "Name": "{448AD924-37C2-411D-96D6-27889A0E92FA}",
+      "DisplayName": "FreeNetHub.DirectMethod",
+      "Namespace": [
+        "."
+      ],
+      "NameServers": {
+        "AddressFamily": 23,
+        "ScopeId": 0,
+        "IsIPv6Multicast": false,
+        "IsIPv6LinkLocal": false,
+        "IsIPv6SiteLocal": false,
+        "IsIPv6Teredo": false,
+        "IsIPv6UniqueLocal": true,
+        "IsIPv4MappedToIPv6": false,
+        "Address": null,
+        "IPAddressToString": "fd53:4444:48::53"
+      },
+      "Comment": "Owned by FreeNetHub Direct Method; safe to remove only by this method."
+    },
+    "dns": [
+      {
+        "name": "www.youtube.com",
+        "ok": true,
+        "ms": 241,
+        "answers": [
+          "142.251.150.4",
+          "142.251.156.4",
+          "142.251.155.4",
+          "142.251.152.4",
+          "142.251.153.4",
+          "142.251.157.4",
+          "142.251.154.4",
+          "142.251.151.4"
+        ],
+        "private": []
+      },
+      {
+        "name": "github.com",
+        "ok": true,
+        "ms": 89,
+        "answers": [
+          "140.82.121.4"
+        ],
+        "private": []
+      },
+      {
+        "name": "api.openai.com",
+        "ok": true,
+        "ms": 89,
+        "answers": [
+          "172.66.0.243",
+          "162.159.140.245"
+        ],
+        "private": []
+      }
+    ],
+    "adapterDns": [
+      "192.168.20.1"
+    ],
+    "controlD": {
+      "url": "https://76.76.10.11/p0",
+      "exit": 0,
+      "meta": "400|76.76.10.11|0.093931|0.194562|0.287533"
+    },
+    "ics": {
+      "exists": true,
+      "state": "Running",
+      "pid": 5044
+    }
+  },
+  "live": {
+    "ctrldPid": 74084,
+    "winwsPid": 7684,
+    "dns": {
+      "name": "www.youtube.com",
+      "ok": true,
+      "ms": 1,
+      "answers": [
+        "142.251.150.4",
+        "142.251.156.4",
+        "142.251.155.4",
+        "142.251.152.4",
+        "142.251.153.4",
+        "142.251.157.4",
+        "142.251.154.4",
+        "142.251.151.4"
+      ],
+      "private": []
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 0,
+      "meta": "204|142.251.150.4|0.095242|0.193241|0.272604"
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|172.66.0.243|0.042055|0.071742|0.310230"
+    },
+    "github": {
+      "url": "https://github.com/",
+      "exit": 0,
+      "meta": "200|140.82.121.4|0.088970|0.172261|0.620544"
+    },
+    "ics": {
+      "exists": true,
+      "state": "Running",
+      "pid": 5044
+    },
+    "proxy": "Current WinHTTP proxy settings:\r\n\r\n    Direct access (no proxy server).",
+    "broadRouteCount": 0,
+    "drivers": [
+      {
+        "Name": "WinDivert",
+        "State": "Running",
+        "PathName": "\\??\\C:\\Users\\Aa.Emad\\source\\repos\\FreeNetHub\\app\\directdpi\\tools\\WinDivert64.sys"
+      }
+    ]
+  },
+  "error": ""
+}

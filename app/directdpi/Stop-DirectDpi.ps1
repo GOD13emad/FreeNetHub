@@ -5,13 +5,17 @@ $ErrorActionPreference='Stop'
 
 $AppDir=Split-Path -Parent $PSScriptRoot
 $Root=Split-Path -Parent $AppDir
-$DirectDnsDir=Join-Path $AppDir 'directdns'
-$Ctrld=Join-Path $DirectDnsDir 'ctrld.exe'
-$DnsRuntimeDir=Join-Path $env:ProgramData 'FreeNetHub\directdns'
-$StateDir=Join-Path $env:ProgramData 'FreeNetHub\directdpi'
-$StatePath=Join-Path $StateDir 'state.json'
-$EvidencePath=Join-Path $Root 'evidence\R36_DIRECT_DPI_STOP.json'
-$ExpectedCtrld='FC966FD7DD5EE850A9709F632789CFB5BBC06C45D903D24B8ECFCE3306B658CD'
+$CtrldDir=Join-Path $AppDir 'directdns'
+$CtrldSock=Join-Path $CtrldDir 'ctrld_control.sock'
+$ZapretDir=Join-Path $PSScriptRoot 'tools'
+$Runtime=Join-Path $env:ProgramData 'FreeNetHub\directdpi'
+$RuntimeCtrld=Join-Path $Runtime 'ctrld'
+$StatePath=Join-Path $Runtime 'state.json'
+$Evidence=Join-Path $Root 'evidence\R38_DIRECT_METHOD_STOP.json'
+$Ula='fd53:4444:48::53'
+$LoopbackIndex=1
+$NrptDisplay='FreeNetHub.DirectMethod'
+$NrptComment='Owned by FreeNetHub Direct Method; safe to remove only by this method.'
 
 function Test-Admin{
  $id=[Security.Principal.WindowsIdentity]::GetCurrent()
@@ -19,21 +23,48 @@ function Test-Admin{
  return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 function Write-JsonAtomic([string]$Path,$Value){
- $dir=Split-Path -Parent $Path
- New-Item -ItemType Directory -Force -Path $dir|Out-Null
+ $d=Split-Path -Parent $Path
+ New-Item -ItemType Directory -Force -Path $d|Out-Null
  $tmp=$Path+'.'+[guid]::NewGuid().ToString('N')+'.tmp'
- [IO.File]::WriteAllText($tmp,($Value|ConvertTo-Json -Depth 14),[Text.UTF8Encoding]::new($false))
+ [IO.File]::WriteAllText($tmp,($Value|ConvertTo-Json -Depth 24),[Text.UTF8Encoding]::new($false))
  [IO.File]::Move($tmp,$Path,$true)
+}
+function Get-Ics{
+ $s=Get-CimInstance Win32_Service -Filter "Name='SharedAccess'" -ErrorAction SilentlyContinue
+ if(-not $s){return [ordered]@{exists=$false;state='';pid=0}}
+ [ordered]@{exists=$true;state=[string]$s.State;pid=[int64]$s.ProcessId}
+}
+function Get-NrptSignature{
+ @(
+  Get-DnsClientNrptRule -ErrorAction SilentlyContinue |
+   Sort-Object Name |
+   ForEach-Object {
+    [ordered]@{
+     Name=[string]$_.Name
+     DisplayName=[string]$_.DisplayName
+     Namespace=@($_.Namespace|ForEach-Object{[string]$_})
+     NameServers=@($_.NameServers|ForEach-Object{[string]$_})
+     Comment=[string]$_.Comment
+    }
+   }
+ )
+}
+function Same-Json($a,$b){($a|ConvertTo-Json -Depth 20 -Compress) -eq ($b|ConvertTo-Json -Depth 20 -Compress)}
+function Safe-StartsWith($Value,[string]$Prefix){
+ try{$s=[string]$Value;return ($s.Length -gt 0 -and $s.StartsWith($Prefix,[StringComparison]::OrdinalIgnoreCase))}catch{return $false}
+}
+function Safe-Contains($Value,[string]$Needle){
+ try{$s=[string]$Value;return ($s.Length -gt 0 -and $s.Contains($Needle,[StringComparison]::OrdinalIgnoreCase))}catch{return $false}
 }
 function Get-OwnedDrivers{
  @(
   Get-CimInstance Win32_SystemDriver -ErrorAction SilentlyContinue |
-   Where-Object {$_.Name -match '^WinDivert' -and $_.PathName -and $_.PathName.Contains($PSScriptRoot,[StringComparison]::OrdinalIgnoreCase)}
+   Where-Object {$_.Name -match '^WinDivert' -and (Safe-Contains $_.PathName $Root)}
  )
 }
 function Stop-OwnedWinws{
  Get-Process winws -ErrorAction SilentlyContinue |
-  Where-Object {$_.Path -and $_.Path.StartsWith($PSScriptRoot,[StringComparison]::OrdinalIgnoreCase)} |
+  Where-Object {Safe-StartsWith $_.Path $ZapretDir} |
   Stop-Process -Force -ErrorAction SilentlyContinue
  Start-Sleep -Milliseconds 350
  foreach($d in @(Get-OwnedDrivers)){
@@ -43,125 +74,106 @@ function Stop-OwnedWinws{
  }
  Start-Sleep -Milliseconds 500
 }
-function Get-CtrldService{
- Get-CimInstance Win32_Service -Filter "Name='ctrld'" -ErrorAction SilentlyContinue
-}
-function Test-OwnedCtrldService($svc){
- if(-not $svc -or -not $svc.PathName){return $false}
- return $svc.PathName.Contains($Ctrld,[StringComparison]::OrdinalIgnoreCase)
-}
-function Get-CtrldCatchAll{
+function Get-OwnedCtrld{
  @(
-  Get-DnsClientNrptRule -ErrorAction SilentlyContinue |
-   Where-Object {
-    $ns=@($_.Namespace)|ForEach-Object{[string]$_}
-    $sv=@($_.NameServers)|ForEach-Object{[string]$_}
-    ($ns -contains '.') -and ($sv -contains '::1')
-   } |
-   ForEach-Object {[pscustomobject]@{Name=[string]$_.Name;Namespace=@($_.Namespace);NameServers=@($_.NameServers)}}
+  Get-Process ctrld -ErrorAction SilentlyContinue |
+   Where-Object {Safe-StartsWith $_.Path $CtrldDir}
  )
 }
-function Cleanup-OwnedCtrld([string]$Iface){
- if(-not(Test-Path -LiteralPath $Ctrld)){throw 'DIRECT_DNS_BINARY_MISSING'}
- if((Get-FileHash -LiteralPath $Ctrld -Algorithm SHA256).Hash -ne $ExpectedCtrld){throw 'DIRECT_DNS_BINARY_HASH_MISMATCH'}
- $svc=Get-CtrldService
- if($svc -and -not(Test-OwnedCtrldService $svc)){throw 'DIRECT_DNS_FOREIGN_CTRLD_SERVICE'}
- if($svc){
-  if($Iface){$out=@(& $Ctrld uninstall --iface $Iface -v 2>&1)}
-  else{$out=@(& $Ctrld uninstall -v 2>&1)}
-  $code=$LASTEXITCODE
-  Start-Sleep -Seconds 2
-  $svc2=Get-CtrldService
-  if($svc2 -and (Test-OwnedCtrldService $svc2)){
-   & sc.exe stop ctrld|Out-Null
-   Start-Sleep -Milliseconds 500
-   & sc.exe delete ctrld|Out-Null
-   Start-Sleep -Milliseconds 700
-  }
-  if($code -ne 0 -and (Get-CtrldService)){throw ('DIRECT_DNS_UNINSTALL_EXIT_'+$code+'_'+($out -join ' | '))}
- }
- Get-Process ctrld -ErrorAction SilentlyContinue |
-  Where-Object {$_.Path -and $_.Path.StartsWith($DirectDnsDir,[StringComparison]::OrdinalIgnoreCase)} |
-  Stop-Process -Force -ErrorAction SilentlyContinue
- Start-Sleep -Milliseconds 300
-}
-function Get-IcsState{
- $s=Get-CimInstance Win32_Service -Filter "Name='SharedAccess'" -ErrorAction SilentlyContinue
- if(-not $s){return [ordered]@{exists=$false;state='';pid=0}}
- [ordered]@{exists=$true;state=[string]$s.State;pid=[int64]$s.ProcessId}
+function Get-Ula{
+ @(Get-NetIPAddress -InterfaceIndex $LoopbackIndex -AddressFamily IPv6 -ErrorAction SilentlyContinue|Where-Object IPAddress -eq $Ula)
 }
 
 if(-not(Test-Admin)){
- $pwsh=(Get-Command pwsh.exe -ErrorAction Stop).Source
- $args=@('-NoProfile','-ExecutionPolicy','Bypass','-File',$PSCommandPath)
- $p=Start-Process -FilePath $pwsh -Verb RunAs -ArgumentList $args -PassThru -Wait
+ $p=Start-Process pwsh.exe -Verb RunAs -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',$PSCommandPath) -PassThru -Wait
  exit $p.ExitCode
 }
 
-$actions=@()
 if(-not(Test-Path -LiteralPath $StatePath)){
+ $ownedRules=@(Get-DnsClientNrptRule -ErrorAction SilentlyContinue|Where-Object{$_.DisplayName -eq $NrptDisplay -and $_.Comment -eq $NrptComment})
+ foreach($r in $ownedRules){Remove-DnsClientNrptRule -Name $r.Name -Force -ErrorAction SilentlyContinue}
+ Clear-DnsClientCache -ErrorAction SilentlyContinue
+ Get-OwnedCtrld|Stop-Process -Force -ErrorAction SilentlyContinue
  Stop-OwnedWinws
- $svc=Get-CtrldService
- if($svc -and -not(Test-OwnedCtrldService $svc)){throw 'DIRECT_DNS_FOREIGN_CTRLD_SERVICE'}
- if($svc){
-  Cleanup-OwnedCtrld ''
-  $actions+='Removed FreeNetHub-owned encrypted DNS residue without touching interface DNS'
- }
- Remove-Item -LiteralPath $DnsRuntimeDir -Recurse -Force -ErrorAction SilentlyContinue
+ Remove-Item -LiteralPath $RuntimeCtrld -Recurse -Force -ErrorAction SilentlyContinue
  $r=[ordered]@{
-  schema=2;status='PASS_NO_STATE';actions=$actions
-  ctrldCatchAll=@(Get-CtrldCatchAll)
+  status='PASS_NO_STATE'
+  ownedNrptRemoved=$ownedRules.Count
+  note='ULA is not removed without state ownership evidence.'
  }
- Write-JsonAtomic $EvidencePath $r
- $r|ConvertTo-Json -Depth 8
- exit 0
+ Write-JsonAtomic $Evidence $r
+ $r|ConvertTo-Json -Depth 6
+ return
 }
 
 $s=Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8|ConvertFrom-Json
+$actions=@()
 try{
- if($s.pid){Stop-Process -Id ([int]$s.pid) -Force -ErrorAction SilentlyContinue}
- Stop-OwnedWinws
- $actions+='Stopped Direct-DPI winws and owned WinDivert driver'
-
- Cleanup-OwnedCtrld ([string]$s.interface)
- $actions+='Stopped and uninstalled FreeNetHub-owned encrypted DNS service'
-
- if([string]$s.preDnsMode -eq 'DHCP'){
-  Set-DnsClientServerAddress -InterfaceAlias ([string]$s.interface) -ResetServerAddresses
- }elseif(@($s.preDns).Count){
-  Set-DnsClientServerAddress -InterfaceAlias ([string]$s.interface) -ServerAddresses @($s.preDns)
+ if($s.nrptRuleName){
+  $r=Get-DnsClientNrptRule -Name ([string]$s.nrptRuleName) -ErrorAction SilentlyContinue
+  if($r){
+   if([string]$r.DisplayName -ne $NrptDisplay -or [string]$r.Comment -ne $NrptComment){throw 'NRPT_OWNERSHIP_MISMATCH'}
+   Remove-DnsClientNrptRule -Name ([string]$s.nrptRuleName) -Force
+  }
+  $actions+='Removed owned NRPT catch-all'
  }
  Clear-DnsClientCache -ErrorAction SilentlyContinue
- $actions+='Restored pre-Direct-DPI interface DNS state'
 
- Remove-Item -LiteralPath $DnsRuntimeDir -Recurse -Force -ErrorAction SilentlyContinue
- Remove-Item -LiteralPath $StatePath -Force
+ if($s.winwsPid){Stop-Process -Id ([int]$s.winwsPid) -Force -ErrorAction SilentlyContinue}
+ Stop-OwnedWinws
+ $actions+='Stopped winws and removed owned WinDivert driver'
 
- $leftProc=@(Get-Process winws -ErrorAction SilentlyContinue|Where-Object{$_.Path -and $_.Path.StartsWith($PSScriptRoot,[StringComparison]::OrdinalIgnoreCase)})
- $leftDrv=@(Get-OwnedDrivers)
- $leftRoute=@(Get-NetRoute -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.DestinationPrefix -in @('0.0.0.0/1','128.0.0.0/1')})
- $leftCtrldProc=@(Get-Process ctrld -ErrorAction SilentlyContinue|Where-Object{$_.Path -and $_.Path.StartsWith($DirectDnsDir,[StringComparison]::OrdinalIgnoreCase)})
- $leftCtrldSvc=Get-CtrldService
- $catchAll=@(Get-CtrldCatchAll)
- $allowedCatchAll=[int]$s.preCtrldCatchAllCount
- $ics=Get-IcsState
+ if($s.ctrldPid){Stop-Process -Id ([int]$s.ctrldPid) -Force -ErrorAction SilentlyContinue}
+ Get-OwnedCtrld|Stop-Process -Force -ErrorAction SilentlyContinue
+ Start-Sleep -Milliseconds 500
+ $actions+='Stopped ctrld foreground resolver'
+ Remove-Item -LiteralPath $CtrldSock -Force -ErrorAction SilentlyContinue
 
- if($leftProc.Count -or $leftDrv.Count -or $leftRoute.Count -or $leftCtrldProc.Count){throw 'DIRECT_DPI_ROLLBACK_INCOMPLETE'}
- if($leftCtrldSvc -and (Test-OwnedCtrldService $leftCtrldSvc)){throw 'DIRECT_DNS_SERVICE_REMAINS'}
- if($catchAll.Count -gt $allowedCatchAll){throw 'DIRECT_DNS_NRPT_RESIDUE'}
- if($s.preIcs.exists -and ($ics.state -ne [string]$s.preIcs.state -or $ics.pid -ne [int64]$s.preIcs.pid)){throw 'DIRECT_DNS_ICS_CHANGED_ON_STOP'}
-
- $r=[ordered]@{
-  schema=2;status='PASS';actions=$actions
-  dns=@((Get-DnsClientServerAddress -InterfaceAlias ([string]$s.interface) -AddressFamily IPv4).ServerAddresses)
-  ctrldCatchAll=$catchAll;ics=$ics
+ if([bool]$s.ulaCreated){
+  $a=@(Get-Ula)
+  if($a.Count){
+   if([int]$a[0].PrefixLength -ne 128 -or -not [bool]$a[0].SkipAsSource){throw 'ULA_OWNERSHIP_MISMATCH'}
+   Remove-NetIPAddress -InterfaceIndex $LoopbackIndex -IPAddress $Ula -AddressFamily IPv6 -Confirm:$false -ErrorAction Stop
+  }
+  $actions+='Removed owned loopback ULA'
  }
- Write-JsonAtomic $EvidencePath $r
- $r|ConvertTo-Json -Depth 10
- exit 0
+ Remove-Item -LiteralPath $RuntimeCtrld -Recurse -Force -ErrorAction SilentlyContinue
+ Clear-DnsClientCache -ErrorAction SilentlyContinue
+ Start-Sleep -Milliseconds 500
+
+ $post=[ordered]@{
+  dnsV4=@((Get-DnsClientServerAddress -InterfaceAlias ([string]$s.interface) -AddressFamily IPv4).ServerAddresses)
+  dnsV6=@((Get-DnsClientServerAddress -InterfaceAlias ([string]$s.interface) -AddressFamily IPv6).ServerAddresses)
+  nrpt=@(Get-NrptSignature)
+  ulaExists=(@(Get-Ula).Count -gt 0)
+  ics=Get-Ics
+  broadRouteCount=@(Get-NetRoute -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.DestinationPrefix -in @('0.0.0.0/1','128.0.0.0/1')}).Count
+  winHttp=(netsh winhttp show proxy|Out-String).Trim()
+  ctrldOwnedCount=@(Get-OwnedCtrld).Count
+  winwsOwnedCount=@(Get-Process winws -ErrorAction SilentlyContinue|Where-Object{Safe-StartsWith $_.Path $ZapretDir}).Count
+  driverOwnedCount=@(Get-OwnedDrivers).Count
+  runtimeCtrldExists=(Test-Path -LiteralPath $RuntimeCtrld)
+  ctrldSocketExists=(Test-Path -LiteralPath $CtrldSock)
+ }
+ $pre=$s.pre
+ if(($post.dnsV4 -join '|') -ne (@($pre.dnsV4) -join '|')){throw 'ROLLBACK_DNSV4_MISMATCH'}
+ if(($post.dnsV6 -join '|') -ne (@($pre.dnsV6) -join '|')){throw 'ROLLBACK_DNSV6_MISMATCH'}
+ if(-not(Same-Json @($post.nrpt) @($pre.nrpt))){throw 'ROLLBACK_NRPT_MISMATCH'}
+ if($post.ulaExists -ne [bool]$pre.ulaExists){throw 'ROLLBACK_ULA_MISMATCH'}
+ if($pre.ics.exists -and ($post.ics.state -ne [string]$pre.ics.state -or $post.ics.pid -ne [int64]$pre.ics.pid)){throw 'ROLLBACK_ICS_MISMATCH'}
+ if($post.broadRouteCount -ne [int]$pre.broadRouteCount){throw 'ROLLBACK_ROUTE_MISMATCH'}
+ if($post.winHttp -ne [string]$pre.winHttp){throw 'ROLLBACK_PROXY_MISMATCH'}
+ if($post.ctrldOwnedCount -or $post.winwsOwnedCount -or $post.driverOwnedCount -or $post.runtimeCtrldExists){throw 'ROLLBACK_RESIDUE'}
+ if($post.ctrldSocketExists){throw 'ROLLBACK_CTRLD_SOCKET_RESIDUE'}
+
+ Remove-Item -LiteralPath $StatePath -Force
+ $result=[ordered]@{status='PASS';actions=$actions;post=$post}
+ Write-JsonAtomic $Evidence $result
+ $result|ConvertTo-Json -Depth 16
+ return
 }catch{
- $r=[ordered]@{schema=2;status='FAIL';actions=$actions;error=$_.Exception.Message}
- Write-JsonAtomic $EvidencePath $r
- $r|ConvertTo-Json -Depth 8
- exit 9
+ $result=[ordered]@{status='FAIL';actions=$actions;error=$_.Exception.Message;stack=$_.ScriptStackTrace}
+ Write-JsonAtomic $Evidence $result
+ $result|ConvertTo-Json -Depth 10
+ throw ('STOP_FAIL_'+$result.error)
 }

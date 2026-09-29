@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "R38 Direct Method integration",
+  "status": "CURRENT",
+  "records": [
+    {
+      "claimDecision": "The authoritative Direct Method architecture is Loopback ULA + ctrld 1.5.7/DoH + NRPT + zapret/winws/WinDivert; the older Native-DoH handoff note is superseded.",
+      "evidenceSource": [
+        "DirectDnsDpiHarness/evidence/FINAL_RELEASE_ACCEPTANCE_20260929.json",
+        "DirectDnsDpiHarness/PROJECT_BRAIN.md"
+      ],
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "FreeNetHub architecture",
+        "release notes",
+        "handoff"
+      ]
+    },
+    {
+      "claimDecision": "Reuse the existing FreeNetHub Direct DPI method rather than add a duplicate method; replace only its obsolete service/adapter-DNS lifecycle.",
+      "evidenceSource": [
+        "app/FreeNetHub.ps1",
+        "app/View.xaml",
+        "app/directdpi/*",
+        "app/directdns/*"
+      ],
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "UI",
+        "maintenance"
+      ]
+    },
+    {
+      "claimDecision": "FreeNetHub integrated lifecycle passed two independent Start/active/Stop cycles with exact cleanup and preserved adapter DNS, WinHTTP direct, ICS PID 5044, broad-route zero, and unrelated NRPT.",
+      "evidenceSource": [
+        "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "release qualification",
+        "documentation",
+        "future regression"
+      ]
+    },
+    {
+      "claimDecision": "Source/live integration may be promoted only after package/installer parity; do not infer installed-release acceptance from source/live tests.",
+      "evidenceSource": [
+        "project release process"
+      ],
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "promotion gate"
+      ]
+    },
+    {
+      "context": "R38 regression contract reconciliation",
+      "claimDecision": "The two failing Direct-DPI product tests were stale: they still required the superseded adapter-DNS/ctrld-service lifecycle. The authoritative accepted R38 architecture preserves adapter DNS and runs ctrld foreground on an owned loopback ULA with a temporary owned NRPT catch-all. Tests were updated to assert the accepted ULA/NRPT ownership and exact pre/post DNS equality contract; runtime Start/Stop scripts were not changed.",
+      "evidenceSource": [
+        "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json",
+        "evidence/R38_WINDOWS_DIRECT_METHOD_INSTALL_ACCEPTANCE_20260929.json",
+        "tests/test_r36_directdpi_product.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_165_OF_165_SOURCE_REGRESSION",
+      "reuseTargets": [
+        "CI",
+        "release qualification",
+        "failure prevention"
+      ],
+      "provenance": {
+        "runtimeMutation": false,
+        "networkMutation": false,
+        "pytest": "165 passed in 4.94s"
+      }
+    }
+  ]
+}
