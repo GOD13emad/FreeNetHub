@@ -1,70 +1,64 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.8
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.9-r37
 
-نسخهٔ Linux با UI بومی GTK4/Libadwaita و اتصال صریح (explicit-connect).
+نسخهٔ Linux R9 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
 
-## وضعیت پذیرفته‌شده
+## رابط R37
 
-- WARP رسمی: اتصال `warp=on`، حفظ کانال کنترل، disconnect و بازگشت baseline تأیید شده است.
-- WARP safe-trial: watchdog توکن‌محور، stale-guard و ownership safety تست شده‌اند.
-- Tor Direct و obfs4 پشتیبانی می‌شوند؛ Direct دستی تا ۹۰ ثانیه فرصت bootstrap دارد و AUTO پس از ۳۰ ثانیه Direct ناموفق به transport مقاوم‌تر fallback می‌کند. obfs4 در acceptance نهایی bootstrap 100% و HTTPS egress داشته است.
-- Snowflake: provider و UI حفظ شده‌اند؛ بدون bridge runtime معتبر fail-closed می‌شود. bridge خصوصی در Git ذخیره نمی‌شود.
-- Firefox اختصاصی: پروفایل جداگانه با SOCKS remote-DNS؛ پروفایل اصلی Firefox تغییر نمی‌کند.
-- Console Gateway: Hotspot نرم‌افزاری روی آداپتور ثانویه با WARP، IPv4 forwarding و rollback تأیید شده است.
-- سازگاری Wi-Fi کنسول: profile Hotspot به‌صورت صریح WPA2/RSN با PMF غیرفعال ساخته/به‌روزرسانی می‌شود؛ cipherها برای سازگاری بیشتر به انتخاب NetworkManager سپرده می‌شوند.
-- پایداری credential: در profile owned، Prepare مجدد PSK معتبر قبلی را حفظ می‌کند و Start نیز policy امنیتی فعلی را قبل از activation enforce می‌کند.
-- مالکیت پروفایل Console Gateway با UUID پایدار NetworkManager کنترل می‌شود؛ profile هم‌نامِ بدون ownership هرگز حذف یا فعال نمی‌شود. ارتقا از profile قدیمی فقط وقتی migrate می‌شود که یک profile واحد با device/SSID/AP/WPA-PSK/PSK/IPv4/IPv6 ثبت‌شده دقیقاً تطبیق داشته باشد.
-- Window UX: single-instance، icon، `Terminal=false` و دکمه‌های minimize/maximize/close تأیید شده‌اند.
-- Integrity: launcher قبل از اجرا SHA-256 فایل‌های نصب‌شده را بررسی می‌کند.
-- حریم خصوصی state: directoryهای runtime/evidence/tor با mode 700 و state JSON/guard logs با mode 600 نگه‌داری می‌شوند؛ installer روی upgrade فایل‌های قدیمی را نیز بدون حذف به permissionهای خصوصی migrate می‌کند.
+پنج بخش اصلی:
+- Dashboard: وضعیت، Scope، روش، Ping و Benchmark.
+- Methods: AUTO / NODE / WARP / TOR / CUSTOM / DIRECT / GOOL / CFON.
+- Nodes: import URL/File/Clipboard، دریافت نود عمومی، Test All، Benchmark محدود، sort/filter، Favorite/Pin، metadata، History و Export Raw/Base64.
+- Tools: Update، Node refresh، Inventory/Doctor، Direct speed، Console Gateway و Tor/Bridges.
+- Settings: Theme، IP visibility، test path، timeoutها، country، home، custom proxy و monitor.
 
-گیت باز: اعتبارسنجی فیزیکی DHCP/UDP/game/country با یک کنسول واقعی هنوز جداگانه لازم است؛ این مانع پذیرش software gateway نیست.
+## Scopeها و backend واقعی
+
+- Browser:
+  - Node Pool با sing-box app-local و hash-pinned.
+  - WARP / GOOL / CFON با warp-plus app-local و hash-pinned.
+  - Tor Direct / obfs4 / Snowflake.
+  - Custom HTTP/SOCKS proxy و Direct.
+- Full System:
+  - WARP رسمی Cloudflare، با ownership/rollback موجود.
+  - Full-System Node در Linux R9 ادعا نمی‌شود؛ بدون helper privileged/CAP_NET_ADMIN fail-closed می‌ماند.
+- Console:
+  - NetworkManager-owned hotspot/gateway مستقل؛ physical game/country E2E همچنان gate خارجی است.
+
+## Node Pool
+
+Parser/config generator همان contract نود R37 را reuse می‌کند و پروتکل‌های VLESS، VMess، Shadowsocks، Trojan و Hysteria2 را می‌شناسد.
+
+«دریافت نودهای جدید» فقط fetch/parse/merge می‌کند. Test All جداست و endpoint reachability را می‌سنجد. HTTPS proxy-health و throughput جداگانه سنجیده می‌شوند؛ endpoint باز هرگز به معنی proxy سالم اعلام نمی‌شود.
+
+## Dependency integrity
+
+Installer دو dependency را app-local provision می‌کند:
+- sing-box 1.14.2 از release رسمی SagerNet با archive SHA-256 پین‌شده.
+- warp-plus 1.2.6 از release رسمی bepass-org با archive SHA-256 پین‌شده.
+
+Launcher قبل از اجرا `INSTALL.sha256` را روی source runtime و هر دو binary بررسی می‌کند.
+
+## Update
+
+UpdateCheck فقط assetهای Linux با الگوی `_Linux_RN.zip` را مقایسه می‌کند. revision پایین‌تر downgrade محسوب نمی‌شود. Install Update فقط asset جدیدتر HTTPS/GitHub را پس از SHA-256 معتبر دانلود و استخراج می‌کند و installer فقط UI FreeNet Hub را restart می‌کند؛ نصب، اتصال شبکه‌ای را خودکار روشن نمی‌کند.
 
 ## نصب
-
-روی Ubuntu 24.04:
 
 ```bash
 bash crossplatform/linux/install.sh
 ```
 
-اگر Cloudflare WARP نصب نیست، اسکریپت جداگانهٔ رسمی نیازمند احراز هویت مدیر است:
+اگر Cloudflare WARP رسمی برای Full-System نصب نیست:
 
 ```bash
 bash crossplatform/linux/install_warp_official.sh
 ```
 
-باز شدن FreeNet Hub هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
+## حریم خصوصی و rollback
 
-## bridgeها
+State خصوصی در `~/.local/share/FreeNetHub` نگه‌داری می‌شود. runtime/evidence/tor mode 700 و state JSON/logها mode 600 دارند. Installer قبل از upgrade فایل‌های قبلی را backup می‌کند و route را تغییر نمی‌دهد.
 
-فایل‌های داخل repository فقط template هستند. material واقعی obfs4/Snowflake باید در runtime وارد شود و در تاریخچهٔ Git قرار نمی‌گیرد.
+## Gateهای خارجی
 
-مسیر runtime:
-- `~/.local/share/FreeNetHub/bridges_obfs4.txt`
-- `~/.local/share/FreeNetHub/bridges_snowflake.txt`
-
-## بازیابی
-
-```bash
-~/.local/bin/freenethub-recover
-```
-
-این فرمان WARP را disconnect می‌کند و در صورت وجود، سرویس Remote Commander کاربر را restart می‌کند.
-
-
-## حذف برنامه
-
-برای حذف فایل‌های برنامه بدون حذف bridge/evidence خصوصی:
-
-```bash
-freenethub-uninstall
-```
-
-uninstaller فقط profile کنسول را در صورتی حذف می‌کند که UUID ثبت‌شدهٔ همان profile با ownership پروژه تطبیق داشته باشد. Cloudflare WARP به‌عنوان package سیستمی خارجی حذف نمی‌شود. اسکریپت نصب WARP codename سیستم را از `/etc/os-release` می‌خواند و از repository رسمی Cloudflare استفاده می‌کند.
-
-## Browser hotfix R7
-
-- Firefox Snap دیگر profile تونلی را زیر `~/.local/share` نمی‌گیرد؛ برای عبور از confinement رسمی Snap از `~/snap/firefox/common/FreeNetHub/firefox-tunneled` استفاده می‌شود.
-- profile فقط متعلق به FreeNet Hub است و `network.proxy.socks_remote_dns=true` برای Tor حفظ می‌شود.
-- هنگام تعویض route فقط Firefox دقیق همین profile restart می‌شود؛ Firefox شخصی کاربر لمس نمی‌شود.
-- installer اگر UI قدیمی FreeNet Hub باز باشد، فقط همان process دقیق را قبل از update می‌بندد و پس از نصب دوباره launcher واقعی desktop را اجرا می‌کند تا کد stale در حافظه نماند.
+- Physical console DHCP/UDP/game/country E2E.
+- Full-System Node privileged helper در Linux، تا زمانی که مستقل و fail-safe پذیرفته شود.

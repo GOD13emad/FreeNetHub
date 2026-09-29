@@ -61,16 +61,20 @@ find "$APP_HOME/evidence" "$APP_HOME/tor" -type f -exec chmod 0600 {} + 2>/dev/n
 find "$APP_HOME" -maxdepth 1 -type f \( -name 'warp_guard_*.log' -o -name 'warp_keep_*.ok' \) -exec chmod 0600 {} + 2>/dev/null || true
 if [ -f "$APP_HOME/freenet_hub_linux.py" ]; then
   mkdir -p "$BACKUP_HOME"
-  for f in freenet_hub_linux.py freenet_hub_linux_gtk.py warp_guard.py recover_warp_remote.sh uninstall.sh INSTALL.sha256 INSTALL.json; do
+  for f in freenet_hub_linux.py freenet_hub_linux_r37.py freenet_hub_linux_gtk.py nodehub_shared.py warp_guard.py recover_warp_remote.sh uninstall.sh INSTALL.sha256 INSTALL.json; do
     [ -f "$APP_HOME/$f" ] && cp -a "$APP_HOME/$f" "$BACKUP_HOME/$f"
   done
 fi
 
 install -m 0755 "$SRC/freenet_hub_linux.py" "$APP_HOME/freenet_hub_linux.py"
+install -m 0755 "$SRC/freenet_hub_linux_r37.py" "$APP_HOME/freenet_hub_linux_r37.py"
+install -m 0644 "$SRC/nodehub_shared.py" "$APP_HOME/nodehub_shared.py"
 install -m 0755 "$SRC/freenet_hub_linux_gtk.py" "$APP_HOME/freenet_hub_linux_gtk.py"
 install -m 0755 "$SRC/warp_guard.py" "$APP_HOME/warp_guard.py"
 install -m 0755 "$SRC/recover_warp_remote.sh" "$APP_HOME/recover_warp_remote.sh"
 install -m 0755 "$SRC/uninstall.sh" "$APP_HOME/uninstall.sh"
+bash "$SRC/install_singbox_pinned.sh" "$APP_HOME"
+bash "$SRC/install_warpplus_pinned.sh" "$APP_HOME"
 if [ ! -f "$APP_HOME/bridges_obfs4.txt" ]; then
   install -m 0600 "$SRC/bridges_obfs4.txt" "$APP_HOME/bridges_obfs4.txt"
 fi
@@ -81,15 +85,15 @@ install -m 0644 "$SRC/FreeNetHub.svg" "$ICON_HOME/freenethub.svg"
 
 (
   cd "$APP_HOME"
-  sha256sum freenet_hub_linux.py freenet_hub_linux_gtk.py warp_guard.py recover_warp_remote.sh uninstall.sh > INSTALL.sha256
+  sha256sum freenet_hub_linux.py freenet_hub_linux_r37.py freenet_hub_linux_gtk.py nodehub_shared.py warp_guard.py recover_warp_remote.sh uninstall.sh runtime/usr/bin/sing-box runtime/usr/bin/warp-plus > INSTALL.sha256
 )
 python3 - "$APP_HOME/INSTALL.json" <<'PY'
 import json,pathlib,sys,time
 p=pathlib.Path(sys.argv[1])
 p.write_text(json.dumps({
   "schema":1,
-  "version":"4.2.0-linux.8",
-  "release":"LINUX_4.2.0_R8",
+  "version":"4.2.0-linux.9-r37",
+  "release":"LINUX_4.2.0_R9_R37_PARITY",
   "installed_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
   "network_mutation_on_install":False,
   "integrity_manifest":"INSTALL.sha256"
@@ -129,5 +133,5 @@ command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "
 if [ "$RESTART_UI" = "1" ] && command -v gtk-launch >/dev/null 2>&1 && [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
   gtk-launch local.freenethub >/dev/null 2>&1 &
 fi
-echo "Installed FreeNet Hub Linux 4.2.0-linux.8"
+echo "Installed FreeNet Hub Linux 4.2.0-linux.9-r37"
 echo "No network connection was started."

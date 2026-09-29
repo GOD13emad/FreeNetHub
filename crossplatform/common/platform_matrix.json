@@ -14,14 +14,17 @@
       "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
-      "version": "4.2.0-linux.8",
+      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R9_R37_PARITY",
+      "version": "4.2.0-linux.9-r37",
       "environments": {
-        "wsl": "Ubuntu 24.04.4 LTS",
-        "native": "Ubuntu 24.04.5 LTS"
+        "native": "Ubuntu 24.04"
       },
       "providers": {
         "DIRECT_HTTPS": "PASS",
+        "NODE_BROWSER_SINGBOX": "PASS_LIVE_SAMPLE_AND_FAIL_CLOSED_BENCHMARK",
+        "WARP_BROWSER_WARPPLUS": "PASS",
+        "GOOL_BROWSER_WARPPLUS": "PASS",
+        "CFON_BROWSER_COUNTRY": "PASS",
         "TOR_DIRECT": "SUPPORTED_BOUNDED_TRANSIENT_POSSIBLE",
         "TOR_AUTO_FALLBACK": "PASS",
         "TOR_OBFS4": "PASS",
@@ -30,42 +33,58 @@
       },
       "desktop": {
         "toolkit": "GTK4+Libadwaita",
+        "architecture": [
+          "Dashboard",
+          "Methods",
+          "Nodes",
+          "Tools",
+          "Settings"
+        ],
         "singleInstance": true,
         "nativeWindowControls": true,
         "networkOnLaunch": false,
         "integrityLauncher": true,
-        "installUninstallLifecycle": "PASS",
-        "snapFirefoxProfile": "PASS",
+        "exactPackageInstallLifecycle": "PASS",
         "uiReloadOnUpdate": "PASS"
+      },
+      "nodePool": {
+        "protocols": [
+          "vless",
+          "vmess",
+          "ss",
+          "trojan",
+          "hysteria2"
+        ],
+        "refresh": "FETCH_PARSE_MERGE_ONLY",
+        "testAll": "EXPLICIT_TCP_ENDPOINT_ONLY",
+        "proxyHealth": "HTTPS_SEPARATE_GATE",
+        "singBox": "1.14.2_APP_LOCAL_HASH_PINNED",
+        "metadataHistoryExport": true
+      },
+      "warpPlus": {
+        "version": "1.2.6",
+        "appLocalHashPinned": true,
+        "browserModes": [
+          "WARP",
+          "GOOL",
+          "CFON"
+        ]
       },
       "consoleGateway": {
         "software": "PASS",
         "networkManagerUuidOwnership": true,
-        "legacyMigration": "EXACT_MATCH_ONLY",
         "rollback": "PASS",
-        "physicalConsoleValidated": false,
-        "wifiSecurity": "WPA2_PSK_RSN",
-        "pmf": "DISABLED_FOR_CONSOLE_COMPATIBILITY",
-        "stableCredentialAcrossPrepare": true,
-        "startReenforcesProfilePolicy": true
+        "physicalConsoleValidated": false
       },
       "privateBridgeFilesPublished": false,
       "evidence": [
-        "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",
-        "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
-        "evidence/LINUX_NATIVE_420_WARP_PUBLIC_ACCEPTANCE.json",
-        "evidence/LINUX_BROWSER_SNAP_HOTFIX_PUBLIC_ACCEPTANCE.json"
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
       ],
-      "privateState": {
-        "directoriesMode": "0700",
-        "sensitiveFilesMode": "0600",
-        "upgradeRemediation": "PASS"
-      },
       "scopePolicy": {
         "default": "BROWSER_ONLY",
-        "fullSystemToggle": "WARP_ONLY",
-        "console": "CONSOLE_ONLY_PAGE",
-        "warpBrowserOnly": "FAIL_CLOSED_RUNTIME_UNAVAILABLE"
+        "fullSystem": "WARP_ONLY_ACCEPTED",
+        "nodeFullSystem": "UNPROVEN_PRIVILEGED_HELPER_NOT_CLAIMED",
+        "console": "INDEPENDENT_CONSOLE_GATEWAY"
       }
     },
     "android": {

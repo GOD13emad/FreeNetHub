@@ -19,7 +19,7 @@
   "viewSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "33DEFA7B54BD60BB0BC61D7F0374BC2539DDB186EEA201B7910CA1186BC2267F",
-  "crossPlatformManifestSha256": "9E1D262F9836407CBA3C624922B9AC4A58B37376CF3799A009F9757662EAFC2D",
+  "crossPlatformManifestSha256": "5EEFBB0BD409AF310C8CC975DD50BF75A9736555BA8D3731FF7026B8C41C18A4",
   "installerSha256": null,
   "acceptanceEvidence": "evidence/R37_WINDOWS_FINAL_ACCEPTANCE_20260929.json",
   "consolePhysicalFieldValidated": false,
@@ -570,7 +570,7 @@
   },
   "r37WindowsFinal": {
     "status": "FINAL_PAYLOAD",
-    "publicRelease": false,
+    "publicRelease": true,
     "uiTarget": "OWNER_REFERENCE_3_SCREEN_DASHBOARD_METHODS_TOOLS",
     "uiSmoke": "DASHBOARD_METHODS_TOOLS_PASS",
     "securityScan": "PASS",
@@ -582,5 +582,38 @@
     "installedAcceptance": "SEE_ACCEPTANCE_EVIDENCE",
     "trustedSigning": "OPEN_NOTSIGNED",
     "physicalConsoleE2E": "UNPROVEN_EXTERNAL_HARDWARE_GATE"
+  },
+  "linuxR9R37Parity": {
+    "status": "LOCAL_PUBLIC_GATE_PASS",
+    "version": "4.2.0-linux.9-r37",
+    "release": "LINUX_4.2.0_R9_R37_PARITY",
+    "ui": [
+      "Dashboard",
+      "Methods",
+      "Nodes",
+      "Tools",
+      "Settings"
+    ],
+    "browserMethods": [
+      "AUTO",
+      "NODE",
+      "WARP",
+      "GOOL",
+      "CFON",
+      "TOR",
+      "CUSTOM",
+      "DIRECT"
+    ],
+    "fullSystem": "WARP_ONLY_ACCEPTED",
+    "nodeFullSystem": "UNPROVEN_PRIVILEGED_HELPER_NOT_CLAIMED",
+    "singBox": "1.14.2_APP_LOCAL_HASH_PINNED",
+    "warpPlus": "1.2.6_APP_LOCAL_HASH_PINNED",
+    "packagePromotion": "HOSTED_CI_PENDING",
+    "packageSha256": "7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8",
+    "package": "FreeNetHub_4.2.0_Linux_R9.zip",
+    "packageBytes": 61164,
+    "baseTestPath": "PHYSICAL_BASE_INTERFACE_PASS_WITH_EXTERNAL_TUN0_PRESENT",
+    "ciCoverage": "R9_BACKEND_PARITY_PINNED_INSTALLERS_PACKAGE_BUILD_INCLUDED",
+    "acceptanceEvidence": "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
   }
 }

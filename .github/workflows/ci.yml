@@ -42,13 +42,15 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Linux static checks
         run: |
-          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py
+          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_r37_parity.py
           python3 crossplatform/linux/selftest.py
           python3 crossplatform/linux/test_console_policy.py
           python3 crossplatform/linux/test_private_state_permissions.py
           python3 crossplatform/linux/test_browser_profile.py
           python3 crossplatform/linux/test_scope_policy.py
-          bash -n crossplatform/linux/install.sh crossplatform/linux/uninstall.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/recover_warp_remote.sh
+          python3 crossplatform/linux/test_r37_parity.py
+          python3 tests/build_linux_r9_package.py
+          bash -n crossplatform/linux/install.sh crossplatform/linux/uninstall.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/install_singbox_pinned.sh crossplatform/linux/install_warpplus_pinned.sh crossplatform/linux/recover_warp_remote.sh
   android-build:
     runs-on: ubuntu-24.04
     steps:

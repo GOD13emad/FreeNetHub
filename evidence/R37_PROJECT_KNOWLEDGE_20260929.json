@@ -261,6 +261,182 @@
         "support",
         "update troubleshooting"
       ]
+    },
+    {
+      "context": "Linux R9 R37 UI/backend parity",
+      "claimDecision": "Linux 4.2.0-linux.9-r37 replaces the old five-page Linux UI with the accepted R37 product architecture (Dashboard, Methods, Nodes, Tools, Settings) and connects it to a Linux-native parity backend. Node Pool reuses the same nodehub parser/config generator semantics as Windows. Node refresh fetch/parse/merge is separated from explicit Test All, and real proxy health remains distinct from TCP endpoint reachability and throughput completeness.",
+      "evidenceSource": [
+        "crossplatform/linux/freenet_hub_linux_gtk.py",
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "crossplatform/linux/nodehub_shared.py",
+        "crossplatform/linux/test_r37_parity.py",
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_FINAL_CANDIDATE",
+      "reuseTargets": [
+        "release notes",
+        "Linux architecture",
+        "QA",
+        "support"
+      ]
+    },
+    {
+      "context": "Linux pinned Node runtime",
+      "claimDecision": "Linux Node Pool provisions app-local sing-box 1.14.2 from the official SagerNet release only after archive SHA-256 verification. Installed binary integrity is rechecked at runtime. No system-wide package install is required.",
+      "evidenceSource": [
+        "crossplatform/linux/install_singbox_pinned.sh",
+        "SagerNet/sing-box official release v1.14.2",
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "provenance": {
+        "asset": "sing-box-1.14.2-linux-amd64-glibc.tar.gz",
+        "archiveSha256": "5c7bc18461827b28d0e5ee7e89d33b276d3ff7c818531104c8e8d26d85b0656e",
+        "installedBinarySha256": "07d2866a6c908281a56053f0e7d454918501592f2f258526f2ebe826dab58793"
+      },
+      "reuseTargets": [
+        "supply-chain docs",
+        "installer",
+        "release notes"
+      ]
+    },
+    {
+      "context": "Linux R9 installed acceptance",
+      "claimDecision": "Linux R9 exact ZIP payload installed on aliemad-Labtop with internal SHA256SUMS PASS, installed integrity PASS, GTK process restart, exact route preservation including pre-existing external tun0, and no auto-connect. Browser WARP/GOOL/CFON are real hash-pinned warp-plus paths; Node Pool uses hash-pinned sing-box. Node endpoint reachability and real HTTPS proxy health remain separate gates.",
+      "evidenceSource": [
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_EXACT_PACKAGE",
+      "reuseTargets": [
+        "handoff",
+        "release evidence",
+        "Linux QA"
+      ]
+    },
+    {
+      "context": "Linux R9 feature-complete R37 UI surface",
+      "claimDecision": "Linux R9 exposes Dashboard, Methods, Nodes, Tools and Settings with method connect/benchmark, Node URL/file/clipboard import, explicit Test All, bounded benchmark, sort/filter, favorite/pin, editable metadata, history, Raw/Base64 export, revision-aware update check/install, diagnostics, Console and Tor/bridges. Full-System Node remains explicitly unclaimed without a separately accepted privileged helper.",
+      "evidenceSource": [
+        "crossplatform/linux/freenet_hub_linux_gtk.py",
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "user guide",
+        "release notes",
+        "QA"
+      ]
+    },
+    {
+      "context": "Linux R9 exact release package",
+      "claimDecision": "FreeNetHub_4.2.0_Linux_R9.zip exact current superset package passed internal SHA256SUMS, exact install, UI restart, installed integrity, py_compile and route preservation. Earlier EF609D package is superseded by the final current-authority package.",
+      "evidenceSource": [
+        "tests/build_linux_r9_package.py",
+        "delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R9.zip",
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_PACKAGE",
+      "provenance": {
+        "bytes": 61164,
+        "sha256": "7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8",
+        "supersededSha256": "EF609D33F2EF2FC4DD094B5DA55BED41AF333071CB22A52D7AA0EDA63B8213D8"
+      },
+      "reuseTargets": [
+        "release engineering",
+        "handoff"
+      ]
+    },
+    {
+      "context": "Linux R9 test-path semantics",
+      "claimDecision": "Dashboard pre-connect testing honors Settings: BASE binds to the physical base interface and does not enter either a pre-existing tun0 or the selected provider; SELECTED benchmarks the selected provider. With external tun0 active and WARP selected, BASE produced IR/warp=off on enp1s0 with Ping 291.1 ms, Download 17.53 Mbps and Upload 4.55 Mbps, and routes were unchanged.",
+      "evidenceSource": [
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "crossplatform/linux/freenet_hub_linux_gtk.py",
+        "crossplatform/linux/test_r37_parity.py",
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LIVE_AND_REGRESSION",
+      "reuseTargets": [
+        "QA",
+        "user guide",
+        "architecture"
+      ],
+      "provenance": {
+        "interface": "enp1s0",
+        "country": "IR",
+        "warp": "off",
+        "pingMs": 291.1,
+        "downloadMbps": 17.53,
+        "uploadMbps": 4.55,
+        "routePreserved": true
+      }
+    },
+    {
+      "context": "Linux R9 clean-home package acceptance",
+      "claimDecision": "The exact deterministic Linux R9 ZIP was extracted into a fresh temporary HOME and installed from its payload. Internal PACKAGE_MANIFEST, both upstream archive pins, installed INSTALL.sha256, source/install parity and route preservation all passed; install performed no network-route mutation.",
+      "evidenceSource": [
+        "tests/build_linux_r9_package.py",
+        "delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R9.zip",
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_EXACT_CLEAN_HOME_INSTALL",
+      "provenance": {
+        "bytes": 61164,
+        "sha256": "7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8",
+        "payloadFiles": 22
+      },
+      "reuseTargets": [
+        "release engineering",
+        "support",
+        "handoff"
+      ]
+    },
+    {
+      "context": "Linux R9 hosted-CI coverage",
+      "claimDecision": "The Linux CI job was extended so a green hosted run must compile the R37 parity backend and shared node parser, run the R37 parity regression, syntax-check both pinned dependency installers, and deterministically build the R9 ZIP. The prior Linux CI surface was insufficient for R9 promotion.",
+      "evidenceSource": [
+        ".github/workflows/ci.yml",
+        "crossplatform/linux/test_r37_parity.py",
+        "tests/build_linux_r9_package.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "SOURCE_READY_HOSTED_RUN_PENDING",
+      "reuseTargets": [
+        "CI",
+        "release checklist",
+        "failure prevention"
+      ]
+    },
+    {
+      "context": "Linux R9 local public release gate",
+      "claimDecision": "The Linux R9 candidate passes the canonical public-tree verifier after cross-platform manifest regeneration, with app/gateway/cross-platform/windows package manifests, RELEASE hashes and forbidden-runtime checks all PASS. Security scan reports zero sensitive-pattern hits. Deterministic package rebuild reproduces the accepted SHA-256.",
+      "evidenceSource": [
+        "PUBLIC_MANIFEST.json",
+        "crossplatform/MANIFEST.json",
+        "RELEASE.json",
+        "tests/verify_public_tree.py",
+        "tests/security_scan_public.py",
+        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_PUBLIC_GATE",
+      "provenance": {
+        "packageSha256": "7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8",
+        "securityHits": 0
+      },
+      "reuseTargets": [
+        "hosted CI",
+        "release promotion",
+        "handoff"
+      ]
     }
   ]
 }

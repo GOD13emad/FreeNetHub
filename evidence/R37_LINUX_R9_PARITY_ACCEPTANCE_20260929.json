@@ -1,0 +1,251 @@
+{
+  "schema": 2,
+  "date": "2026-09-29",
+  "project": "FreeNet Hub",
+  "platform": "Linux",
+  "milestone": "R9 R37 feature/UI parity",
+  "status": "PASS_LOCAL_PUBLIC_GATE",
+  "version": "4.2.0-linux.9-r37",
+  "release": "LINUX_4.2.0_R9_R37_PARITY",
+  "installedHost": "aliemad-Labtop",
+  "ui": {
+    "toolkit": "GTK4+Libadwaita",
+    "pages": [
+      "Dashboard",
+      "Methods",
+      "Nodes",
+      "Tools",
+      "Settings"
+    ],
+    "scopes": [
+      "BROWSER",
+      "SYSTEM",
+      "CONSOLE"
+    ],
+    "controls": [
+      "method connect",
+      "ping",
+      "download/upload benchmark",
+      "method comparison",
+      "node URL/file/clipboard import",
+      "public node refresh",
+      "node Test All",
+      "bounded node benchmark",
+      "node filter/sort",
+      "favorite/pin",
+      "editable name/rating/tags/note",
+      "history",
+      "raw/base64 export",
+      "GitHub update check/install",
+      "inventory/doctor/direct speed",
+      "console gateway",
+      "Tor/bridges",
+      "settings"
+    ],
+    "startupProcess": "PASS_PID_654725",
+    "dbusApplication": "PASS_local.freenethub"
+  },
+  "methods": {
+    "browser": {
+      "AUTO": "PASS_POLICY_NODE_THEN_WARPPLUS_THEN_TOR",
+      "NODE": "REAL_SINGBOX_PROXY_HEALTH_GATE",
+      "WARP": "PASS_LIVE_WARPPLUS",
+      "GOOL": "PASS_LIVE_WARPPLUS",
+      "CFON": "PASS_LIVE_COUNTRY_AT",
+      "TOR": "SUPPORTED",
+      "CUSTOM": "SUPPORTED_VALIDATED",
+      "DIRECT": "PASS"
+    },
+    "system": {
+      "WARP": "ACCEPTED_EXISTING_RUNTIME",
+      "NODE": "UNPROVEN_PRIVILEGED_HELPER_NOT_CLAIMED",
+      "others": "FAIL_CLOSED"
+    },
+    "console": "SOFTWARE_GATEWAY_ACCEPTED_PHYSICAL_FIELD_GATE_OPEN"
+  },
+  "dependencies": {
+    "singBox": {
+      "version": "1.14.2",
+      "archiveSha256": "5c7bc18461827b28d0e5ee7e89d33b276d3ff7c818531104c8e8d26d85b0656e",
+      "binarySha256": "07d2866a6c908281a56053f0e7d454918501592f2f258526f2ebe826dab58793",
+      "source": "official SagerNet release",
+      "integrity": "PASS"
+    },
+    "warpPlus": {
+      "version": "1.2.6",
+      "archiveSha256": "380d2c8655b33db818adf407c706d52d14c2ab1764e702e91f356a7d7d9c3c98",
+      "binarySha256": "9b9fbc7d709966b2170c075c71ad3a78628bacf1daed3a960bfa8482faff4a1e",
+      "source": "official bepass-org release",
+      "integrity": "PASS"
+    }
+  },
+  "nodePool": {
+    "parserContract": "shared with Windows app/nodehub.py",
+    "protocols": [
+      "vless",
+      "vmess",
+      "ss",
+      "trojan",
+      "hysteria2"
+    ],
+    "refresh": {
+      "status": "PASS",
+      "parsedRaw": 3011,
+      "total": 2000,
+      "failedSources": 0,
+      "endpointTest": "DEFERRED_TO_NODE_TEST_ALL"
+    },
+    "endpointTest": {
+      "status": "PASS",
+      "total": 2000,
+      "reachable": 317,
+      "type": "TCP_ENDPOINT_ONLY_NOT_PROXY_HEALTH"
+    },
+    "realProxyHealth": {
+      "status": "PASS_SAMPLE",
+      "source": "AURX_HTTP_VERIFIED",
+      "protocol": "vless",
+      "exitCountry": "JP",
+      "proxyHealth": "PASS",
+      "throughput": "INCOMPLETE_FAIL_CLOSED"
+    },
+    "boundedBenchmarkMechanics": {
+      "status": "PASS",
+      "benchmarked": 1,
+      "passed": 0,
+      "failed": 1,
+      "eligible": 490,
+      "routePreserved": true,
+      "note": "sample node endpoint was reachable but HTTPS proxy health failed; no fake throughput recorded"
+    },
+    "metadataHistoryExport": "PASS"
+  },
+  "browserWarpPlusLive": {
+    "routeMutation": false,
+    "WARP": {
+      "status": "PASS",
+      "warp": "on",
+      "country": "FI"
+    },
+    "GOOL": {
+      "status": "PASS",
+      "warp": "on",
+      "country": "FI"
+    },
+    "CFON": {
+      "status": "PASS",
+      "country": "AT",
+      "countryPolicy": "MATCH"
+    }
+  },
+  "update": {
+    "status": "PASS",
+    "localRevision": 9,
+    "remoteRevisionAtTest": 8,
+    "updateAvailable": false,
+    "downgradeGuard": "PASS_NO_NEWER_LINUX_UPDATE",
+    "installPolicy": "HTTPS_GITHUB_ASSET_SHA256_REQUIRED_SAFE_ZIP_EXTRACTION"
+  },
+  "package": {
+    "file": "FreeNetHub_4.2.0_Linux_R9.zip",
+    "bytes": 61164,
+    "sha256": "7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8",
+    "payloadFiles": 22,
+    "internalSha256Sums": "PASS",
+    "exactPayloadInstall": "PASS",
+    "installedIntegrity": "PASS",
+    "installedUtc": "2026-09-29T11:27:36Z",
+    "guiRestart": "PASS",
+    "routePreserved": "PASS",
+    "networkMutationOnInstall": false,
+    "supersedes": "EF609D33F2EF2FC4DD094B5DA55BED41AF333071CB22A52D7AA0EDA63B8213D8",
+    "cleanHomeExactInstall": "PASS",
+    "cleanHomeDependencyPinning": "PASS_SINGBOX_AND_WARPPLUS",
+    "cleanHomeRoutePreserved": "PASS"
+  },
+  "routeAcceptance": {
+    "before": [
+      "default via 10.211.1.42 dev tun0 proto static metric 50",
+      "default via 192.168.20.1 dev enp1s0 proto dhcp src 192.168.20.6 metric 100"
+    ],
+    "after": [
+      "default via 10.211.1.42 dev tun0 proto static metric 50",
+      "default via 192.168.20.1 dev enp1s0 proto dhcp src 192.168.20.6 metric 100"
+    ],
+    "externalTun0": "PREEXISTING_LEFT_UNCHANGED"
+  },
+  "regression": {
+    "selftest": "PASS",
+    "browserProfile": "PASS",
+    "consolePolicy": "PASS",
+    "privateStatePermissions": "PASS",
+    "scopePolicy": "PASS",
+    "r37ParityContract": "PASS",
+    "pyCompile": "PASS",
+    "testPathModeContract": "PASS_BASE_VS_SELECTED",
+    "mobileFailClosed": "PASS",
+    "gitDiffCheck": "PASS",
+    "packageReproducible": "PASS_SHA256_7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8"
+  },
+  "failurePrevention": [
+    {
+      "failure": "R9 package SHA256SUMS contained literal newline escape; verifier stopped before install",
+      "rootCause": "package builder emitted escaped newline text",
+      "prevention": "builder corrected and exact ZIP must pass sha256sum -c before installation",
+      "status": "CLOSED"
+    },
+    {
+      "failure": "first Node sample had TCP endpoint reachability but failed HTTPS proxy-health",
+      "rootCause": "endpoint reachability is not proxy health",
+      "prevention": "keep endpoint Test All and HTTPS/throughput gates separate; failed nodes never receive fabricated speed",
+      "status": "EXPECTED_FAIL_CLOSED"
+    }
+  ],
+  "openExternalGates": [
+    "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
+    "LINUX_NODE_FULL_SYSTEM_PRIVILEGED_HELPER"
+  ],
+  "nextGate": "COMMIT_PUSH_HOSTED_CI_THEN_ATTACH_LINUX_R9_TO_EXISTING_V4.2.0_R37_FINAL_RELEASE",
+  "testPathLiveProof": {
+    "status": "PASS",
+    "requestedMethod": "WARP",
+    "configuredMode": "BASE",
+    "executedMode": "DIRECT",
+    "path": "PHYSICAL_BASE_INTERFACE",
+    "interface": "enp1s0",
+    "routeProof": "PHYSICAL_DEFAULT_ROUTE",
+    "country": "IR",
+    "exitIp": "86.57.5.218",
+    "warp": "off",
+    "pingMs": 291.1,
+    "downloadMbps": 17.53,
+    "uploadMbps": 4.55,
+    "externalTun0Preexisting": true,
+    "routePreserved": true,
+    "note": "Dashboard configured test bypassed the pre-existing tun0 and selected-provider path by binding to the physical base interface."
+  },
+  "ciCoverage": {
+    "status": "SOURCE_UPDATED_PENDING_HOSTED_RUN",
+    "linuxStaticNowCovers": [
+      "freenet_hub_linux_r37.py",
+      "nodehub_shared.py",
+      "test_r37_parity.py",
+      "install_singbox_pinned.sh",
+      "install_warpplus_pinned.sh",
+      "tests/build_linux_r9_package.py"
+    ]
+  },
+  "localPublicGate": {
+    "status": "PASS",
+    "publicManifest": "PASS",
+    "appManifest": "PASS",
+    "gatewayManifest": "PASS",
+    "crossPlatformManifest": "PASS",
+    "windowsPackageManifest": "PASS",
+    "releaseHashes": "PASS",
+    "forbiddenRuntimeArtifacts": "PASS",
+    "securitySensitivePatternHits": 0,
+    "gitDiffCheck": "PASS",
+    "deterministicPackageSha256": "7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8"
+  }
+}

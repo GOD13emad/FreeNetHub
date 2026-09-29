@@ -12,20 +12,19 @@ Windows R37 با رابط پنج‌بخشی Dashboard / Methods / Nodes / Tools 
 
 برای Windows از `FreeNetHub_4.2.0_R37_Final_Setup.exe` در Release `v4.2.0-r37-final` استفاده کنید. SHA-256 پذیرفته‌شده: `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64`.
 
-## به‌روزرسانی Linux روی main
+## Linux R9 / R37
 
-نسخهٔ native Linux 4.2.0-linux.8 روی Ubuntu 24.04.5 software-accepted است: UI بومی GTK4/Libadwaita، single-instance، دکمه‌های minimize/maximize/close، WARP safe-trial و rollback توکن‌محور، مالکیت Console Gateway بر اساس UUID، migration سخت‌گیرانهٔ profile قدیمی، Firefox profile جدا، integrity launcher و uninstaller محدود به منابع owned همگی تأیید شده‌اند.
+نسخهٔ فعلی Linux برابر `4.2.0-linux.9-r37` است و معماری UI ویندوز R37 را با پنج بخش Dashboard / Methods / Nodes / Tools / Settings روی GTK4/Libadwaita پیاده می‌کند.
 
-در شبکهٔ پذیرش نهایی، Direct Tor در پنجرهٔ دستی ۹۰ ثانیه تا bootstrap 55% رسید؛ AUTO فقط ۳۰ ثانیه Direct را probe کرد و سپس به obfs4 رفت و در مجموع 38.91 ثانیه به bootstrap 100% و HTTPS egress رسید. Snowflake بدون bridge runtime معتبر fail-closed می‌ماند. bridgeهای واقعی در source عمومی ذخیره نمی‌شوند.
+- Browser: AUTO، Node Pool، WARP، GOOL، CFON، Tor/obfs4/Snowflake، Custom و Direct.
+- Node Pool: import URL/File/Clipboard، public refresh، Test All مستقل، benchmark محدود، sort/filter، Favorite/Pin، metadata، History و Export Raw/Base64.
+- sing-box 1.14.2 و warp-plus 1.2.6 به‌صورت app-local و hash-pinned از release رسمی upstream provision می‌شوند.
+- Full-System در Linux R9 فقط WARP رسمی است؛ Full-System Node بدون helper privileged و acceptance مستقل ادعا نمی‌شود.
+- Console Gateway software policy و rollback حفظ شده‌اند؛ تست فیزیکی game/country همچنان external gate است.
+- UpdateCheck revision-aware است و downgrade را نصب نمی‌کند؛ Install Update فقط asset جدیدتر با SHA-256 معتبر را می‌پذیرد.
+- نصب و بازشدن برنامه هیچ VPN/proxy/Hotspot را خودکار روشن نمی‌کند و route موجود—including VPN خارجی—در acceptance دقیق package بدون تغییر باقی ماند.
 
-برای سازگاری کنسول، Hotspot به‌صورت صریح WPA2/RSN با PMF غیرفعال تنظیم می‌شود و برای profile owned، PSK در Prepareهای تکراری بدون درخواست کاربر تغییر نمی‌کند.
-
-state خصوصی Linux نیز harden شده است: directoryهای app/evidence/tor برابر 700 و state/guard files حساس برابر 600 هستند و upgrade فایل‌های قدیمی را migrate می‌کند.
-
-گیت باز Linux فقط اعتبارسنجی DHCP/UDP/game/country با کنسول فیزیکی است؛ software gateway خودش پذیرفته شده است.
-
-Firefox Snap در R7 از profile مجاز Snap استفاده می‌کند و installer UI قدیمی را پس از update reload می‌کند.
-
+بستهٔ پذیرفته‌شده: `FreeNetHub_4.2.0_Linux_R9.zip`.
 ## به‌روزرسانی Android/iOS روی main
 
 Android 4.2.0 علاوه بر clean build، در hosted emulator چرخه permission واقعی VpnService را به‌صورت fail-closed PASS کرده است؛ forwarding core و signing تولیدی هنوز gate خارجی‌اند. iOS نیز static و hosted simulator build/install/launch/relaunch را PASS کرده، اما forwarding core تولیدی، Apple signing/provisioning و runtime روی دستگاه فیزیکی همچنان gate خارجی هستند.
