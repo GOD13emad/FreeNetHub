@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-09-29",
-  "status": "PASS_INSTALLED_LIFECYCLE",
+  "status": "WINDOWS_4.2_R38_DIRECT_METHOD_LOCAL_FINAL",
   "objective": "Qualify the R38 FreeNetHub Direct Method from the actual installed payload while preserving the accepted R37 rollback baseline and clean Windows network state.",
   "architecture": "LOOPBACK_ULA_CTRLD_DOH_NRPT_PLUS_ZAPRET",
   "priorAcceptedBaseline": {
@@ -76,5 +76,16 @@
       "pid": 5044
     }
   },
-  "conclusion": "Installed R38 Direct Method behavior and rollback are accepted. A metadata-only final packaging pass may follow without repeating the already hash-stable network lifecycle code."
+  "conclusion": "Installed R38 Direct Method behavior and rollback are accepted. A metadata-only final packaging pass may follow without repeating the already hash-stable network lifecycle code.",
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "revision": "R38",
+  "lifecycleStatus": "PASS_INSTALLED_LIFECYCLE",
+  "acceptanceResult": "PASS",
+  "authority": {
+    "sourceRevision": "4.2.0-local-r38-direct-method",
+    "installedRevision": "4.2.0-local-r38-direct-method",
+    "installedLifecycle": "PASS",
+    "publicRelease": false
+  }
 }

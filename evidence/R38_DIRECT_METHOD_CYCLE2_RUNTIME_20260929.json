@@ -155,7 +155,7 @@
       {
         "Name": "WinDivert",
         "State": "Running",
-        "PathName": "\\??\\C:\\Users\\Aa.Emad\\source\\repos\\FreeNetHub\\app\\directdpi\\tools\\WinDivert64.sys"
+        "PathName": "app/directdpi/tools/WinDivert64.sys"
       }
     ]
   },

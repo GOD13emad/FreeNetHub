@@ -5,7 +5,7 @@
   "objective": "Integrate the accepted standalone Direct Internet Method into the existing FreeNetHub Direct DPI method without changing adapter DNS, creating a VPN/proxy, or changing the default route.",
   "architecture": "LOOPBACK_ULA_CTRLD_DOH_NRPT_PLUS_ZAPRET",
   "authority": {
-    "standaloneAcceptance": "C:\\Users\\Aa.Emad\\source\\repos\\DirectDnsDpiHarness\\evidence\\FINAL_RELEASE_ACCEPTANCE_20260929.json",
+    "standaloneAcceptance": "EXTERNAL:DirectDnsDpiHarness/evidence/FINAL_RELEASE_ACCEPTANCE_20260929.json",
     "standaloneStatus": "PASS_FINAL_RELEASE"
   },
   "changes": {
@@ -37,7 +37,7 @@
       "cycle": 1,
       "runtime": {
         "status": "PASS_ACTIVE",
-        "sha256": "2630D3987E57DD0FA6D1856C9589F274B707EC2CC3E3F0F1B2630426390CC900",
+        "sha256": "5052136AD643BC2672918F67367CD8E7F9BBD908ADDA387A79019E0B781F44AF",
         "path": "evidence/R38_DIRECT_METHOD_CYCLE1_RUNTIME_20260929.json"
       },
       "stop": {
@@ -50,7 +50,7 @@
       "cycle": 2,
       "runtime": {
         "status": "PASS_ACTIVE",
-        "sha256": "606E850278A788C6315BF72FD6D483D430A8C43E8857872FFB5D93A5D42A6FF8",
+        "sha256": "FF230420F5E54CE352B5AE0057E9A017E0851E81590BE7DD9487D704F1C723BF",
         "path": "evidence/R38_DIRECT_METHOD_CYCLE2_RUNTIME_20260929.json"
       },
       "stop": {

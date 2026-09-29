@@ -73,6 +73,37 @@
         "networkMutation": false,
         "pytest": "165 passed in 4.94s"
       }
+    },
+    {
+      "context": "R38 Linux-R11 rebase and public-evidence security reconciliation",
+      "claimDecision": "R38 Direct Method was rebased onto the accepted Linux R11 origin/main without runtime-code conflict. The former two rollback-contract failures remain closed after rebase (Windows/source tests 145/145 PASS; Direct-DPI contract 5/5 PASS). A separate pre-push security gate then found machine-local Windows paths embedded in four R38 evidence files. The evidence was sanitized to project-relative or EXTERNAL provenance while retaining the underlying measurements; cycle evidence hashes and the integration acceptance references were updated. No Windows VPN, route, adapter DNS, Connect, Disconnect, or Direct Method lifecycle action was executed during this reconciliation.",
+      "evidenceSource": [
+        "git rebase origin/main -> b9f1d14 before sanitation commit",
+        "python -m pytest tests -q => 145 passed",
+        "python -m pytest tests/test_r36_directdpi_product.py -q => 5 passed",
+        "python tests/security_scan_public.py => PASS after sanitation",
+        "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json",
+        "evidence/R38_DIRECT_METHOD_CYCLE1_RUNTIME_20260929.json",
+        "evidence/R38_DIRECT_METHOD_CYCLE2_RUNTIME_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_PREPUSH_SECURITY_AND_ROLLBACK_CONTRACT",
+      "rootCause": "Raw live evidence serialized an absolute WinDivert driver PathName and the integration acceptance stored an absolute standalone-authority path. These are valid local provenance but invalid public-tree material.",
+      "prevention": "Before any push or release, require tests/security_scan_public.py. Public evidence must encode project-owned paths relative to the repository and external authority as EXTERNAL:<project-relative-reference>; raw machine-local provenance remains private/local if needed. The existing security scan is the minimum sufficient regression guard; no duplicate gate is added.",
+      "reuseTargets": [
+        "CI",
+        "release qualification",
+        "PROJECT_BRAIN",
+        "handoff",
+        "failure prevention"
+      ],
+      "provenance": {
+        "runtimeMutation": false,
+        "networkMutation": false,
+        "sanitizedCycle1Sha256": "5052136AD643BC2672918F67367CD8E7F9BBD908ADDA387A79019E0B781F44AF",
+        "sanitizedCycle2Sha256": "FF230420F5E54CE352B5AE0057E9A017E0851E81590BE7DD9487D704F1C723BF",
+        "sanitizedIntegrationAcceptanceSha256": "60549CEECA76A55B06EE4E896891E8CEC7644712341068DC8C4EBDEE9F83C5C6"
+      }
     }
   ]
 }
