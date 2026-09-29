@@ -149,6 +149,38 @@
         "PROJECT_BRAIN",
         "installer acceptance"
       ]
+    },
+    {
+      "context": "R38/R12 deep-audit reconciliation after targeted Linux live diagnostics",
+      "claimDecision": "The earlier GOOL result was confounded by concurrent diagnostics and an orphaned project warp-plus listener. After strict-signature recovery, a clean isolated run showed Cloudflare upload reliability when the official upload bytes query parameter was supplied. The production upload URL was changed to __up?bytes=N, Tor proxy health was decoupled from site-specific YouTube reachability, and the final targeted live run passed Tor and GOOL with all FreeNetHub ports/session cleaned and the physical base route unchanged. Windows session.json's connected record is no longer treated as evidence of an active connection because no known runtime listeners were present; Windows installed promotion remains open until a final rebuilt installer is installed and verified.",
+      "evidenceSource": [
+        "installed:evidence/R12_GOOL_UPLOAD_DIAG_RESULT_20260929.json",
+        "installed:evidence/R12_GOOL_ORPHAN_RECOVERY_20260929.py output",
+        "installed:evidence/R12_GOOL_UPLOAD_BYTES_PARAM_DIAG_20260929.py output",
+        "installed:evidence/R12_FINAL_TARGETED_LIVE_20260929.py output",
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "crossplatform/linux/test_r37_parity.py",
+        "Cloudflare speedtest upstream measurement configuration",
+        "warp-plus upstream README"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LINUX_TARGETED_LIVE_WINDOWS_INSTALL_PROMOTION_OPEN",
+      "rootCause": "GOOL upload request semantics omitted bytes=N and the diagnostic environment briefly violated one-writer/one-provider-test isolation; Tor benchmark conflated provider health with a site-specific application probe.",
+      "prevention": "Serialize live provider diagnostics; recover only strictly proven project-owned orphans; send Cloudflare upload bytes=N; keep application reachability separate from provider-health evidence; never promote a Windows installer built before final cross-platform metadata/source stabilization.",
+      "reuseTargets": [
+        "Linux R12",
+        "Windows R38",
+        "CI",
+        "release qualification",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "linuxSourceSha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A",
+        "linuxPackageSha256": "01C9DDD2104853E7095A4C034138D98872B06FE3DEAF33B25862338997FA9820",
+        "crossPlatformManifestCanonicalSha256": "59618BDB16F1364E4B8269261D0083C792DCB11406BDC9263B05DCBCA4A4AC3C",
+        "networkMutationWindows": false
+      }
     }
   ]
 }

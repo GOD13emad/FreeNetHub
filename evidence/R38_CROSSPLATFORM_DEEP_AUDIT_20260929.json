@@ -4,7 +4,7 @@
   "product": "FreeNet Hub",
   "version": "4.2.0",
   "revision": "R38",
-  "status": "R38_CROSSPLATFORM_SOURCE_ACCEPTED_WINDOWS_INSTALL_DEFERRED",
+  "status": "R38_CROSSPLATFORM_SOURCE_ACCEPTED_INSTALL_PROMOTION_PENDING",
   "objective": "Deep front-to-back audit of Windows R38 and Linux R11/R12 while preserving active external/user network state.",
   "windows": {
     "sourceRegression": "PASS_145_OF_145",
@@ -13,19 +13,20 @@
     "securityScan": "PASS",
     "powershellParse": "PASS",
     "installer": {
-      "status": "PASS_BUILD_FROZEN",
-      "bytes": 24257930,
-      "sha256": "E56AE358FDD1E75BAE1AFAFCFE04E8DC9D3D6EC7D2DC3E690DC4FAADD04D7094",
+      "status": "SUPERSEDED_REBUILD_REQUIRED_AFTER_R12_SOURCE_FINALIZATION",
+      "previousBytes": 24257930,
+      "previousSha256": "E56AE358FDD1E75BAE1AFAFCFE04E8DC9D3D6EC7D2DC3E690DC4FAADD04D7094",
       "authenticode": "NotSigned"
     },
     "installed": {
-      "runtimeStatus": "PASS",
+      "runtimeStatus": "PASS_PRIOR_READONLY_CHECK",
       "parity": "FAIL_STALE_CURRENT_INSTALL",
-      "reason": "Protected active FreeNetHub WARP browser session; force promotion intentionally deferred.",
-      "activeSession": "WARP/BROWSER_HTTPS/CONNECTED_HEALTHY"
+      "sessionRecord": "STALE_OR_UNPROVEN_CONNECTED_RECORD",
+      "listenerCheck": "NO_KNOWN_FREENETHUB_RUNTIME_LISTENERS",
+      "finalPromotion": "PENDING_REBUILT_INSTALLER_AND_INSTALLED_PARITY"
     },
     "networkMutationDuringFinalAudit": false,
-    "promotion": "DEFERRED_ACTIVE_SESSION"
+    "promotion": "PENDING_FINAL_REBUILD_AND_INSTALLED_ACCEPTANCE"
   },
   "linux": {
     "priorPublished": "4.2.0-linux.11-r37",
@@ -40,27 +41,35 @@
     },
     "torFix": {
       "status": "PASS_STATIC_AND_LIVE",
-      "rootCause": "tor_status ok/stopped was mistaken for running"
+      "rootCause": "Stopped Tor status was reused as running; benchmark also over-coupled proxy health to a site-specific YouTube probe.",
+      "prevention": "Require running state; use Cloudflare trace as proxy-health criterion and report YouTube reachability separately."
     },
     "goolFix": {
       "status": "PASS_STATIC_AND_LIVE",
-      "rootCause": "350KB proxy upload exceeded 30s on slow working path",
-      "policy": "100KB proxy upload sample; 350KB direct/base"
+      "rootCause": "Upload request omitted Cloudflare speedtest bytes query parameter; one-shot behavior was intermittent. Upstream Cloudflare uses __up with bytes measurement semantics.",
+      "policy": "100KB proxy sample, 350KB direct/base, and __up?bytes=N"
     },
     "permissions": "PASS_0700_STATE_0600_SESSION",
     "integrity": "PASS_AFTER_LOCAL_FIX",
     "uiLauncherSmoke": "PASS_GTK_PROCESS_NO_STDERR",
     "package": {
-      "status": "PASS_LOCAL_CANDIDATE",
+      "status": "PASS_LOCAL_CANDIDATE_EXACT_INSTALL_REQUIRED",
       "name": "FreeNetHub_4.2.0_Linux_R12.zip",
-      "bytes": 64648,
-      "sha256": "95AE600AFC80AC1315604ACBAA43AE74DFB3D86C715CA21DF4EF4139A80A9F37"
+      "bytes": 64892,
+      "sha256": "01C9DDD2104853E7095A4C034138D98872B06FE3DEAF33B25862338997FA9820"
     },
-    "publicRelease": false
+    "publicRelease": false,
+    "latestTargetedLive": {
+      "sourceSha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A",
+      "tor": "PASS",
+      "gool": "PASS_4.12_DOWN_0.24_UP",
+      "sessionCleanup": "PASS",
+      "physicalBaseRoutePreserved": "PASS"
+    }
   },
   "openGates": [
-    "WINDOWS_R38_INSTALLED_PARITY_AFTER_ACTIVE_SESSION_STOPS",
-    "WINDOWS_R38_FIVE_TAB_SMOKE_AFTER_PROMOTION",
+    "WINDOWS_R38_FINAL_INSTALLER_REBUILD_AFTER_R12_SOURCE",
+    "WINDOWS_R38_INSTALLED_PARITY_AND_FIVE_TAB_SMOKE",
     "LINUX_R12_EXACT_PACKAGE_INSTALL_ACCEPTANCE",
     "HOSTED_CI_R38_R12",
     "TRUSTED_WINDOWS_AUTHENTICODE"

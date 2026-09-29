@@ -119,8 +119,8 @@
     },
     {
       "file": "linux/freenet_hub_linux_r37.py",
-      "bytes": 50581,
-      "sha256": "C566C64B009008AAD1EDF4E50539336498F06D19E2735C56D61D9AA2BB2CF5F9"
+      "bytes": 50607,
+      "sha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -189,8 +189,8 @@
     },
     {
       "file": "linux/test_r37_parity.py",
-      "bytes": 7175,
-      "sha256": "CB997C47AEB7A4E192DA6F9BFB13FAAE7A17F9DFA33B479C07D56996233E7604"
+      "bytes": 7307,
+      "sha256": "96E99237F2F46EDBB1BA6B3DC4ED67B96DE5EB4417BB543C64930508A57B69B0"
     },
     {
       "file": "linux/test_scope_policy.py",

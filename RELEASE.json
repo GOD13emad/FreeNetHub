@@ -2,7 +2,7 @@
   "product": "FreeNet Hub",
   "version": "4.2.0",
   "releaseRevision": "4.2.0-local-r38-direct-method",
-  "status": "R38_CROSSPLATFORM_SOURCE_ACCEPTED_WINDOWS_INSTALL_DEFERRED",
+  "status": "R38_CROSSPLATFORM_SOURCE_ACCEPTED_INSTALL_PROMOTION_PENDING",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -19,8 +19,8 @@
   "viewSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "33DEFA7B54BD60BB0BC61D7F0374BC2539DDB186EEA201B7910CA1186BC2267F",
-  "crossPlatformManifestSha256": "9C72E0C3F1C7DA886E8BBE1B651ED34E45F4F89D23699D546D0FD37E7651B7DB",
-  "installerSha256": "E56AE358FDD1E75BAE1AFAFCFE04E8DC9D3D6EC7D2DC3E690DC4FAADD04D7094",
+  "crossPlatformManifestSha256": "59618BDB16F1364E4B8269261D0083C792DCB11406BDC9263B05DCBCA4A4AC3C",
+  "installerSha256": null,
   "acceptanceEvidence": "evidence/R38_CROSSPLATFORM_DEEP_AUDIT_20260929.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
@@ -176,7 +176,7 @@
   "appManifestSha256": "84A1962C07987ADD2A78C51938BBA16EB12004C85658D9495FACC9C011CE487E",
   "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
   "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
-  "installerStatus": "R38_BUILT_HASH_PINNED_INSTALL_PROMOTION_DEFERRED_ACTIVE_SESSION",
+  "installerStatus": "R38_REBUILD_REQUIRED_AFTER_LINUX_R12_SOURCE_FINALIZATION",
   "r21": {
     "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH",
     "countryAutoOrder": [
@@ -647,7 +647,7 @@
     "hostedCi": "OPEN"
   },
   "r38DirectMethod": {
-    "status": "PASS_SOURCE_FINAL_INSTALL_PROMOTION_DEFERRED_ACTIVE_SESSION",
+    "status": "PASS_SOURCE_FINAL_INSTALL_PROMOTION_PENDING_FINAL_REBUILD",
     "publicRelease": false,
     "architecture": "LOOPBACK_ULA_CTRLD_DOH_NRPT_PLUS_ZAPRET",
     "twoCycleIntegration": "PASS",
@@ -658,15 +658,21 @@
     "trustedSigning": "OPEN_NOTSIGNED"
   },
   "linuxR12R38AuditFix": {
-    "status": "LOCAL_CANDIDATE_LIVE_FIX_PASS_PACKAGE_AND_CI_REQUIRED",
+    "status": "LOCAL_CANDIDATE_LIVE_PASS_PACKAGE_BUILT_EXACT_INSTALL_AND_CI_REQUIRED",
     "version": "4.2.0-linux.12-r38",
     "release": "LINUX_4.2.0_R12_R38_AUDIT_FIX",
     "package": "FreeNetHub_4.2.0_Linux_R12.zip",
     "supersedes": "Linux R11 for future promotion; published R11 remains immutable",
     "torStoppedStateFix": "PASS_STATIC_AND_LIVE",
     "proxyUploadSample": "100KB_PROXY_350KB_DIRECT",
-    "goolPostFixLive": "PASS",
+    "goolPostFixLive": "PASS_4.12_DOWN_0.24_UP",
     "externalTun0Preserved": "PASS",
-    "publicRelease": false
+    "publicRelease": false,
+    "packageBytes": 64892,
+    "packageSha256": "01C9DDD2104853E7095A4C034138D98872B06FE3DEAF33B25862338997FA9820",
+    "cloudflareUploadBytesParameter": "PASS_REQUIRED",
+    "physicalBaseRoutePreserved": "PASS",
+    "exactPackageInstall": "OPEN",
+    "hostedCi": "OPEN"
   }
 }
