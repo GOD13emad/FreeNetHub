@@ -2,7 +2,7 @@ $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
 $Root=Split-Path $PSScriptRoot -Parent
 $Installer=Join-Path $Root 'delivery\github_v4.2.0\FreeNetHub_4.2.0_R37_Final_Setup.exe'
-$Expected='9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D'
+$Expected='35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64'
 $Install=Join-Path $env:LOCALAPPDATA 'Programs\FreeNetHub'
 $Backup=Join-Path $env:LOCALAPPDATA 'FreeNetHub_R37_Verify_Backup_20260929_113607'
 $Evidence=Join-Path $Root 'evidence\R37_PUBLIC_METADATA_INSTALL_ACCEPTANCE_20260929.json'

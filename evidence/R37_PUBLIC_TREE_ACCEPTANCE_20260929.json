@@ -7,8 +7,8 @@
   "status": "PASS",
   "publicManifest": {
     "status": "PASS",
-    "files": 376,
-    "sha256": "3D71146253D2C5DC2E3066F44DAFEE02BD2E8E404589B8F57C0B96F728817AD8"
+    "files": 377,
+    "hashRecord": "EXTERNAL_AFTER_COMMIT_TO_AVOID_SELF_REFERENCE"
   },
   "manifests": {
     "app": "PASS",
@@ -29,10 +29,33 @@
   },
   "diffCheck": "PASS",
   "finalInstaller": {
-    "sha256": "9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D",
-    "bytes": 24248757,
+    "sha256": "35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64",
+    "bytes": 24256059,
     "authenticode": "NotSigned",
     "execution": "PASS"
   },
-  "nextGate": "PUBLIC_GIT_COMMIT_PUSH_HOSTED_CI_RELEASE"
+  "nextGate": "FOLLOWUP_COMMIT_HOSTED_CI",
+  "hostedCiAttempt1": {
+    "runId": 36542733818,
+    "commit": "c70a4238d0ccaf7b835866ab34c382383c05219d",
+    "status": "FAIL_WINDOWS_UNIT_ONLY",
+    "rootCause": "APP_RUNTIME_MANIFEST_DEPLOYED_BYTES_VS_GIT_NORMALIZED_SOURCE_BYTES",
+    "fix": "DUAL_HASH_CONTRACT_SHA256_RUNTIME_SOURCE_SHA256_CANONICAL",
+    "otherObservedPassingJobs": [
+      "ios-static",
+      "linux-static",
+      "console-virtual-e2e",
+      "windows-virtual-signing"
+    ]
+  },
+  "localCorrectiveGate": {
+    "status": "PASS",
+    "appManifestDualHash": "PASS",
+    "publicVerifier": "PASS",
+    "securityScan": "PASS_ZERO_HITS",
+    "regression": "165 PASS",
+    "diffCheck": "PASS",
+    "exactInstallerExecution": "PASS",
+    "finalInstallerSha256": "35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64"
+  }
 }

@@ -2,7 +2,7 @@
   "schema": 1,
   "date": "2026-09-29",
   "status": "PASS",
-  "installerSha256": "9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D",
+  "installerSha256": "35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64",
   "installerExit": 0,
   "runtimeStatus": "PASS",
   "parity": true,

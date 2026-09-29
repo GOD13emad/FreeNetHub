@@ -11,7 +11,7 @@ def canonical_sha(p):
     return hashlib.sha256(data).hexdigest().upper()
 def row(base,rel):
     p=pathlib.Path(base)/rel
-    return {"file":rel.replace("\\","/"),"bytes":p.stat().st_size,"sha256":sha(p)}
+    return {"file":rel.replace("\\","/"),"bytes":p.stat().st_size,"sha256":sha(p),"sourceSha256":canonical_sha(p)}
 appfiles=[
  "engine.py","directnet.py","nodehub.py","FreeNetHub.ps1","View.xaml","assets/FreeNetHub.ico",
  "directdpi/Start-DirectDpi.ps1","directdpi/Stop-DirectDpi.ps1","directdpi/hosts.txt","directdpi/LICENSE-zapret.txt",

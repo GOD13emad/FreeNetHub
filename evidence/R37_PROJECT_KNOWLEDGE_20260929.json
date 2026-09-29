@@ -148,8 +148,8 @@
       "confidence": "CONFIRMED",
       "status": "PASS",
       "provenance": {
-        "bytes": 24248757,
-        "sha256": "9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D",
+        "bytes": 24256059,
+        "sha256": "35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64",
         "authenticode": "NotSigned"
       },
       "reuseTargets": [
@@ -225,6 +225,23 @@
         "CI",
         "release notes",
         "handoff"
+      ]
+    },
+    {
+      "context": "Hosted CI app-manifest failure prevention",
+      "claimDecision": "Runtime integrity and source-checkout integrity use separate hashes. app manifest `sha256` remains exact deployed-byte hash consumed by FreeNetHub.ps1; new `sourceSha256` records canonical Git-filtered bytes consumed by verify_public_tree.py. This prevents LF/CRLF checkout normalization from weakening runtime integrity or causing false CI failures.",
+      "evidenceSource": [
+        "app/manifest.json",
+        "tests/build_r37_product_metadata.py",
+        "tests/verify_public_tree.py",
+        "GitHub Actions run 36542733818"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "FIXED_PENDING_FOLLOWUP_CI",
+      "reuseTargets": [
+        "CI",
+        "release engineering",
+        "integrity architecture"
       ]
     }
   ]

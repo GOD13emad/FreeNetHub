@@ -26,7 +26,8 @@ am=json.loads((R/"app"/"manifest.json").read_text(encoding="utf-8-sig"))
 appbad=[]
 for row in am["code"]:
     p=R/"app"/row["file"]
-    if not p.is_file() or p.stat().st_size!=int(row["bytes"]) or h(p)!=row["sha256"].upper():
+    source_sha=str(row.get("sourceSha256") or "").upper()
+    if not p.is_file() or not source_sha or hc(p)!=source_sha:
         appbad.append(row["file"])
 ET.parse(R/"app"/"View.xaml")
 

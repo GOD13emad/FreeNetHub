@@ -8,14 +8,14 @@
   "authority": {
     "sourceRevision": "4.2.0-local-r37-final",
     "installedRevision": "4.2.0-local-r37-final",
-    "sourceManifestSha256": "221B60BA2AC4E21330A0811A818844D0596077860F835F930CA4129367230C2D",
+    "sourceManifestSha256": "4B8F04ABA54662D511084DA7BC543BDC11C3A919061CFEDECAE0661D7DA2D081",
     "installedParity": "PASS",
     "publicRelease": false
   },
   "finalInstaller": {
     "relativePath": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R37_Final_Setup.exe",
-    "bytes": 24248757,
-    "sha256": "9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D",
+    "bytes": 24256059,
+    "sha256": "35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64",
     "authenticode": "NotSigned",
     "build": "PASS",
     "cleanInstallExecution": "PASS",
@@ -125,5 +125,10 @@
     "ANDROID_FORWARDING_CORE_RUNTIME",
     "IOS_SIGNING_DEVICE_RUNTIME"
   ],
-  "acceptanceResult": "PASS"
+  "acceptanceResult": "PASS",
+  "sourceRuntimeHashContract": {
+    "runtimeManifest": "sha256 = exact deployed bytes",
+    "publicSourceManifest": "sourceSha256 = canonical Git-filtered bytes",
+    "status": "PASS"
+  }
 }
