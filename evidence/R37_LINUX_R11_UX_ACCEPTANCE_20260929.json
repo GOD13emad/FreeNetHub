@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "platform": "Linux",
+  "status": "PASS_LOCAL_FINAL_CANDIDATE",
+  "version": "4.2.0-linux.11-r37",
+  "release": "LINUX_4.2.0_R11_R37_UX_FINAL",
+  "package": {
+    "name": "FreeNetHub_4.2.0_Linux_R11.zip",
+    "bytes": 63754,
+    "sha256": "F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70",
+    "internalSha256Sums": "PASS",
+    "exactInstall": "PASS"
+  },
+  "installed": {
+    "pid": 1162535,
+    "networkMutationOnInstall": false,
+    "routePreserved": true,
+    "singBox": true,
+    "warpPlus": true,
+    "nodes": 2000
+  },
+  "ux": {
+    "minimumWindow": "842x602",
+    "pages": [
+      "Dashboard",
+      "Methods",
+      "Nodes",
+      "Tools",
+      "Settings"
+    ],
+    "explicitScope": true,
+    "explicitMethodSelection": true,
+    "selectedMethodSync": "PASS",
+    "testBase": true,
+    "testSelected": true,
+    "testAllMethods": true,
+    "nodeTestInitialTcp": true,
+    "nodeBenchmarkTop4": true,
+    "nodeSortModes": [
+      "smart",
+      "ping",
+      "download",
+      "upload",
+      "country",
+      "protocol",
+      "name"
+    ],
+    "showIpInstant": true,
+    "directUpdate": true
+  },
+  "liveE2E": {
+    "warpPingFromUi": "PASS",
+    "warpPingMs": 1045.5,
+    "testAllMethods": "PASS_SEQUENTIAL_ROUTE_PRESERVED",
+    "nodeTcpTest": {
+      "total": 2000,
+      "reachable": 484,
+      "failed": 1506,
+      "unknown": 10
+    },
+    "nodeRealBenchmark": "PASS_MIXED_FAIL_CLOSED",
+    "nodeSamplesMbps": [
+      "1.86/0.64",
+      "2.20/0.58",
+      "3.33/1.37",
+      "4.46/0.58",
+      "9.02/3.85"
+    ],
+    "ipToggle": {
+      "status": "PASS",
+      "revealedIp": "84.251.51.12"
+    },
+    "update": {
+      "status": "PASS",
+      "localRevision": 11,
+      "remoteRevisionAtTest": 9,
+      "updateAvailable": false
+    },
+    "keyboard": "PASS_NAVIGATION_AND_FOCUS_CHAIN",
+    "mouse": "XWAYLAND_COORDINATE_LIMITATION_FOR_HEADER_CLICK; WINDOW_RESIZE_GEOMETRY_PASS"
+  },
+  "regressions": {
+    "pyCompile": "PASS",
+    "selftest": "PASS",
+    "browserProfile": "PASS",
+    "consolePolicy": "PASS",
+    "privateStatePermissions": "PASS",
+    "scopePolicy": "PASS",
+    "r37Parity": "PASS"
+  },
+  "openExternal": [
+    "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
+    "LINUX_NODE_FULL_SYSTEM_PRIVILEGED_HELPER"
+  ],
+  "nextGate": "PUBLIC_MANIFEST_COMMIT_HOSTED_CI_RELEASE"
+}

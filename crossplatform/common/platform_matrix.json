@@ -14,8 +14,8 @@
       "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
     },
     "linux": {
-      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R9_R37_PARITY",
-      "version": "4.2.0-linux.9-r37",
+      "status": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R11_R37_UX_FINAL",
+      "version": "4.2.0-linux.11-r37",
       "environments": {
         "native": "Ubuntu 24.04"
       },
@@ -45,7 +45,9 @@
         "networkOnLaunch": false,
         "integrityLauncher": true,
         "exactPackageInstallLifecycle": "PASS",
-        "uiReloadOnUpdate": "PASS"
+        "uiReloadOnUpdate": "PASS",
+        "minAcceptedWindow": "842x602",
+        "uxClarified": true
       },
       "nodePool": {
         "protocols": [
@@ -59,7 +61,17 @@
         "testAll": "EXPLICIT_TCP_ENDPOINT_ONLY",
         "proxyHealth": "HTTPS_SEPARATE_GATE",
         "singBox": "1.14.2_APP_LOCAL_HASH_PINNED",
-        "metadataHistoryExport": true
+        "metadataHistoryExport": true,
+        "testAllMethods": true,
+        "sortModes": [
+          "smart",
+          "ping",
+          "download",
+          "upload",
+          "country",
+          "protocol",
+          "name"
+        ]
       },
       "warpPlus": {
         "version": "1.2.6",
@@ -78,7 +90,7 @@
       },
       "privateBridgeFilesPublished": false,
       "evidence": [
-        "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+        "evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json"
       ],
       "scopePolicy": {
         "default": "BROWSER_ONLY",

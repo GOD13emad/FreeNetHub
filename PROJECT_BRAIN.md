@@ -4,7 +4,7 @@ Status: CURRENT
 Brain version: r37-windows-runtime-final-2026-09-29
 Installed authority: 4.2.0-local-r37-final
 Source authority: 4.2.0-local-r37-final
-Promotion state: PUBLIC WINDOWS R37 FINAL RELEASED; LINUX 4.2.0-linux.9-r37 EXACT PACKAGE + LOCAL PUBLIC GATE PASS; PUBLIC LINUX R9 CI/RELEASE ← CURRENT
+Promotion state: PUBLIC WINDOWS R37 FINAL RELEASED; LINUX 4.2.0-linux.11-r37 EXACT PACKAGE + UX E2E PASS; PUBLIC LINUX R11 CI/RELEASE ← CURRENT
 
 ## Final Objective / DoD
 FreeNet Hub is the comprehensive free multi-transport connectivity product. It must expose the widest practical set of independent censorship-resilient paths under one understandable UI, with explicit Browser / Full System / Console capability boundaries, pre-connect measurement where technically meaningful, fail-closed behavior, rollback for network mutation, and no hidden DIRECT fallback.
@@ -135,7 +135,7 @@ Fix:
 - Post-publish installed UpdateCheck — CLOSED_PASS: local=37, remote=37, selected asset digest matches, `updateAvailable=false`.
 - Trusted Windows Authenticode — OPEN_NOTSIGNED external gate.
 - Linux R9 R37-parity installed runtime — CLOSED_PASS: Dashboard/Methods/Nodes/Tools/Settings; Node metadata/history/export/bounded benchmark; revision-aware update; app-local pinned sing-box 1.14.2 and warp-plus 1.2.6; WARP/GOOL/CFON browser live PASS; route preserved.
-- Linux R9 exact package — CLOSED_PASS: `FreeNetHub_4.2.0_Linux_R9.zip`, SHA-256 `7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8`, internal SHA256SUMS PASS, exact install/integrity/UI-restart/route-preservation PASS.
+- Linux R9 historical package — SUPERSEDED by R11; prior CLOSED_PASS: `FreeNetHub_4.2.0_Linux_R9.zip`, SHA-256 `7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8`, internal SHA256SUMS PASS, exact install/integrity/UI-restart/route-preservation PASS.
 - Linux R9 local public verifier/security/regression — CLOSED_PASS.
 - Linux R9 Git/hosted CI/release — ← CURRENT.
 - Physical console game/country E2E — UNPROVEN external hardware gate.
@@ -144,9 +144,10 @@ Fix:
 - iOS production packet-forwarding core/device signing — OPEN external gate; hosted simulator lifecycle PASS.
 
 ## Exact Next Action
-Create the Linux R9 public commit from the exact locally verified candidate, push main, require hosted CI to PASS, then publish `FreeNetHub_4.2.0_Linux_R9.zip` with SHA-256 `7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8` without invalidating the accepted Windows R37 asset. After release, run installed UpdateCheck and require remoteRevision=9 with updateAvailable=false.
+Create the Linux R11 public commit from the exact locally verified candidate, require hosted CI to PASS, then publish `FreeNetHub_4.2.0_Linux_R11.zip` with SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` without invalidating Windows R37. After release, run installed UpdateCheck and require remoteRevision=11 with updateAvailable=false.
 
 ## HISTORY
+- 2026-09-29 Linux R11 UX final candidate: exact package SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` installed with zero route mutation; UI minimum 842x602; explicit scope/method selection; base/selected/all-method tests; two-stage node testing; seven sort modes; instant IP visibility; direct update flow. Live UI WARP Ping, sequential all-method testing, 2000-node endpoint test, real node benchmark, IP reveal and update check all exercised. Evidence: `evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json`.
 - 2026-09-29 Linux R9 local public gate CLOSED_PASS: R37-parity GTK UI/backend installed on aliemad-Labtop; pinned sing-box 1.14.2 and warp-plus 1.2.6; browser WARP/GOOL/CFON live PASS; BASE test bypassed pre-existing tun0 via physical enp1s0 with IR/warp=off and real Ping/Download/Upload; deterministic exact ZIP SHA-256 `7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8` passed clean-HOME install, integrity and route-preservation; canonical public/security gate PASS. Evidence: `evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json`.
 - 2026-09-29 R37 PUBLIC FINAL: corrective source/runtime dual-hash commit `45e21a1bc64aefaf3276751754c0f4f4fd1fb649` passed hosted CI #99/run `36546861061` across Windows, Linux, Android build/emulator, iOS static/simulator, console virtual E2E, virtual signing and aggregate virtual acceptance. GitHub release `v4.2.0-r37-final` published as latest with Windows installer SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64` and unchanged accepted Linux R8 SHA-256 `BD9F1311F02D4AA874609D61116EC26C107C5ECD4ED36086C2C3347E0A0C695A`. Post-publish installed UpdateCheck PASS: local=37, remote=37, digest/size exact, updateAvailable=false. Evidence: `evidence/R37_PUBLIC_RELEASE_ACCEPTANCE_20260929.json`.
 - 2026-09-29 Hosted CI #98 root cause: Windows `Verify public manifests` failed because `app/manifest.json.sha256` intentionally represented deployed CRLF bytes while GitHub checkout normalized text files to LF. Runtime integrity was not weakened; R37 now carries dual hashes per app file: `sha256` for exact deployed/runtime bytes and `sourceSha256` for canonical Git-filtered source bytes. Exact rebuilt installer SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64` passed install/runtime/parity/five-tab/route acceptance. Follow-up hosted CI is current gate.

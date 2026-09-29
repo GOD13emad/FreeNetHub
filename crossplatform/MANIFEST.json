@@ -49,8 +49,8 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 3716,
-      "sha256": "CBE64CC26170F03075BC442F9DDDE3C82374BFCA28B3074643221FF8D34B2598"
+      "bytes": 3991,
+      "sha256": "A287294C5D2D577A68718077FFB477ABE07B0331EB399124ECC1172C7325347F"
     },
     {
       "file": "common/verify_fail_closed.py",
@@ -109,18 +109,18 @@
     },
     {
       "file": "linux/freenet_hub_linux.py",
-      "bytes": 42639,
-      "sha256": "374390916732E2CA8C19D38F4D91962AED4A67F963D91F65B4A3CCE69B0DB322"
+      "bytes": 42640,
+      "sha256": "927ADE33064931122D1C1F767D3A5B7DE934D35748471057EA4EB3AC23B15CC9"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
-      "bytes": 45373,
-      "sha256": "1860C1A4CA72A346D59AD83BF633FFF00C1EC6AFC0F451EDFF9FBC8A37AF803D"
+      "bytes": 55317,
+      "sha256": "984C1E942ABD01998BD89AF6A0781035D731F0025910C9CF59724374A474CC28"
     },
     {
       "file": "linux/freenet_hub_linux_r37.py",
-      "bytes": 49415,
-      "sha256": "3E689311545416D6560D3E247DCB07B34C49968E999FB5C5D508FC3119258EEE"
+      "bytes": 50392,
+      "sha256": "02A8FBF0AECED7CE5AE4D91DD9EE3FC5AB40333923ADC4A1B5F0ADD019BD020C"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -134,8 +134,8 @@
     },
     {
       "file": "linux/install.sh",
-      "bytes": 5619,
-      "sha256": "C43789D744F6DF63166660BFA517D1E6BD26DE08D57C27E4E1D757F8226FCBD1"
+      "bytes": 5624,
+      "sha256": "1115F7A094FEE99038571BCDEEA9DD8F9C78A0ABD38A49423B3BDDAAAD08693E"
     },
     {
       "file": "linux/install_singbox_pinned.sh",
@@ -159,8 +159,8 @@
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 3446,
-      "sha256": "8641D56A3F1658665522B3E0F707403AD198BBC22CE14DB6CCA353203B3EB890"
+      "bytes": 3449,
+      "sha256": "AAA649E5BD96DFD34B344B598044A2B715EAAD5F9FA170C0C2D347219729AD66"
     },
     {
       "file": "linux/recover_warp_remote.sh",
@@ -169,8 +169,8 @@
     },
     {
       "file": "linux/selftest.py",
-      "bytes": 1828,
-      "sha256": "CD5504CF8B765C2FA60EA894383329FE5BD0F616C3507F131DDBFA0FE038F9D2"
+      "bytes": 1829,
+      "sha256": "981644AF06EA8A2FB534505D7F1C10153BF186DF73120C2E5554F68847C2C9DF"
     },
     {
       "file": "linux/test_browser_profile.py",
@@ -189,8 +189,8 @@
     },
     {
       "file": "linux/test_r37_parity.py",
-      "bytes": 3422,
-      "sha256": "808DE405A36FFF3D21B66177BBD6FBB15677EC9947BDFFB9926547136B2BC9E6"
+      "bytes": 4460,
+      "sha256": "BDEB5B20C2EEA7A33AC1EE1BB51D61AA54EAE1B82D4AA959A656AA5E858C8F87"
     },
     {
       "file": "linux/test_scope_policy.py",
@@ -209,8 +209,8 @@
     },
     {
       "file": "README_FA.md",
-      "bytes": 1289,
-      "sha256": "4BC91DF08959D6EDE1E13B7FBB7007CDE9DE02985C87B50AEE7727FAA75D524A"
+      "bytes": 1291,
+      "sha256": "443ED37384FB7621976B1A9F245ADBA1E8B59F7919B8143D44EB1C42E219401D"
     }
   ]
 }

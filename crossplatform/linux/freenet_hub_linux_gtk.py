@@ -104,6 +104,16 @@ def card():
 def scroll(child):
     s=Gtk.ScrolledWindow();s.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC);s.set_child(child);return s
 
+def flow(widgets=None,max_children=4,min_children=1,homogeneous=True,spacing=7):
+    f=Gtk.FlowBox()
+    f.set_selection_mode(Gtk.SelectionMode.NONE)
+    f.set_homogeneous(homogeneous)
+    f.set_min_children_per_line(min_children)
+    f.set_max_children_per_line(max_children)
+    f.set_column_spacing(spacing);f.set_row_spacing(spacing)
+    for w in widgets or []:f.append(w)
+    return f
+
 class FreeNetHub(Adw.Application):
     def __init__(self):
         super().__init__(application_id="local.freenethub")
@@ -121,8 +131,14 @@ class FreeNetHub(Adw.Application):
         self.method_cards={}
         self.method_metric={}
         self.compare_metric={}
+        self.scope_buttons={}
+        self.all_test_results={}
+        self.node_sort_idx=0
+        self.node_sort_buttons=[]
+        self._syncing_sort=False
         self.monitor_failures=0
         self.repairs=0
+        self._syncing_ip=False
 
     def do_activate(self):
         if self.win:
@@ -132,8 +148,8 @@ class FreeNetHub(Adw.Application):
 
         self.win=Adw.ApplicationWindow(application=self)
         self.win.set_title(f"FreeNet Hub · {core.VERSION}")
-        self.win.set_default_size(1360,860)
-        self.win.set_size_request(1020,680)
+        self.win.set_default_size(1000,650)
+        self.win.set_size_request(720,480)
 
         hb=Adw.HeaderBar()
         hb.set_show_start_title_buttons(False);hb.set_show_end_title_buttons(False)
@@ -148,7 +164,7 @@ class FreeNetHub(Adw.Application):
         outer=hbox(16);outer.set_margin_top(14);outer.set_margin_bottom(14);outer.set_margin_start(14);outer.set_margin_end(14)
         main=vbox(12);main.set_hexpand(True)
         outer.append(main)
-        side=self.build_sidebar();side.set_size_request(245,-1);outer.append(side)
+        side=self.build_sidebar();side.set_size_request(205,-1);outer.append(side)
 
         self.stack=Gtk.Stack();self.stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE);self.stack.set_vexpand(True)
         self.stack.add_named(self.build_dashboard(),"dashboard")
@@ -160,9 +176,12 @@ class FreeNetHub(Adw.Application):
 
         toolbar=Adw.ToolbarView();toolbar.add_top_bar(hb);toolbar.set_content(outer)
         self.win.set_content(toolbar)
+        self.select_method(self.method)
+        self.set_scope(self.scope)
         self.show_page("dashboard")
         self.win.present()
         self.refresh_all()
+        GLib.timeout_add_seconds(2,self.auto_update_check_once)
         GLib.timeout_add_seconds(20,self.periodic_refresh)
 
     def toggle_maximize(self,*_):
@@ -195,59 +214,70 @@ class FreeNetHub(Adw.Application):
         b.append(Gtk.Separator())
         self.sidebar_scope=label("Scope: مرورگر","muted");b.append(self.sidebar_scope)
         self.sidebar_method=label("Method: هوشمند","muted");b.append(self.sidebar_method)
-        f=label("Explicit connect · Fail-closed\nNo terminal window · No auto VPN","muted");f.set_vexpand(True);f.set_valign(Gtk.Align.END);b.append(f)
-        return b
+        f=label("Explicit connect · Fail-closed\nNo terminal window · No auto VPN","muted");f.set_valign(Gtk.Align.END);b.append(f)
+        sc=Gtk.ScrolledWindow();sc.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC);sc.set_propagate_natural_height(False);sc.set_child(b)
+        return sc
 
     def page_head(self,title,subtitle):
         h=vbox(2);h.append(label(title,"title-big"));h.append(label(subtitle,"muted"));return h
 
     def build_dashboard(self):
-        root=vbox(12);root.set_margin_bottom(12);root.append(self.page_head("داشبورد","اتصال، تست و وضعیت در یک نگاه"))
+        root=vbox(12);root.set_margin_bottom(12);root.append(self.page_head("داشبورد","۱) Scope را انتخاب کن  ۲) روش را انتخاب کن  ۳) تست کن  ۴) اتصال را بزن"))
 
         status=card()
         top=hbox(10);st=vbox(2);st.set_hexpand(True)
         self.status_title=label("در حال خواندن وضعیت","section-title");self.status_detail=label("—","muted")
         st.append(self.status_title);st.append(self.status_detail);top.append(st)
-        self.quick_browser=button("باز کردن مرورگر",lambda *_:self.run_async("Browser",core.open_browser));top.append(self.quick_browser)
+        top.append(button("باز کردن مرورگر",lambda *_:self.run_async("Browser",core.open_browser)))
         status.append(top)
 
-        metrics=hbox(8);metrics.set_homogeneous(True)
-        for title,attr in [("مسیر","dash_route"),("کشور","dash_country"),("WARP","dash_warp"),("IP","dash_ip"),("Ping","dash_ping")]:
+        metrics=flow(max_children=4,min_children=2,spacing=8)
+        for title,attr in [("مسیر","dash_route"),("کشور","dash_country"),("WARP","dash_warp"),("Ping","dash_ping")]:
             m=vbox(2);m.add_css_class("soft");m.append(label(title,"muted"));v=label("—","metric");setattr(self,attr,v);m.append(v);metrics.append(m)
         status.append(metrics)
+
+        iprow=hbox(8);iprow.add_css_class("soft")
+        iprow.append(label("IP عمومی","muted"));self.dash_ip=label("پنهان","metric",xalign=0.0);self.dash_ip.set_selectable(True);self.dash_ip.set_hexpand(True);iprow.append(self.dash_ip)
+        iprow.append(label("نمایش IP","muted"));self.dashboard_ip_switch=Gtk.Switch();self.dashboard_ip_switch.set_active(bool(core.settings().get("showIp")));self.dashboard_ip_switch.connect("notify::active",self.dashboard_ip_changed);iprow.append(self.dashboard_ip_switch)
+        status.append(iprow)
         root.append(status)
 
-        scopes=card();scopes.append(label("نوع اتصال","section-title"))
-        row=hbox(8);row.set_homogeneous(True)
+        scopes=card();scopes.append(label("۱ · محدوده اتصال (Scope)","section-title"));scopes.append(label("مرورگر امن‌ترین حالت پیش‌فرض است. «کل سیستم» در Linux R11 فقط WARP رسمی است.","muted"))
+        scope_widgets=[]
         for key,text,sub in [
-            ("BROWSER","◎  مرورگر","پیش‌فرض امن؛ فقط برنامه/پروفایل FreeNet Hub"),
-            ("SYSTEM","▣  کل سیستم","WARP رسمی؛ mutation فقط با اقدام صریح"),
-            ("CONSOLE",">_  کنسول","Gateway مستقل؛ مسیر کل سیستم دست‌نخورده"),
+            ("BROWSER","◎ مرورگر","فقط مرورگر/پروفایل FreeNet Hub"),
+            ("SYSTEM","▣ کل سیستم","WARP رسمی برای کل سیستم"),
+            ("CONSOLE",">_ کنسول","Hotspot/Gateway مستقل کنسول"),
         ]:
-            b=Gtk.ToggleButton();inner=vbox(2);inner.append(label(text,"metric",xalign=.5));inner.append(label(sub,"muted",xalign=.5));b.set_child(inner);b.add_css_class("scope");b.connect("clicked",lambda x,k=key:self.set_scope(k,x));row.append(b);setattr(self,"scope_"+key.lower(),b)
-        scopes.append(row);root.append(scopes)
+            b=Gtk.ToggleButton();inner=vbox(2);inner.append(label(text,"metric",xalign=.5));inner.append(label(sub,"muted",xalign=.5));b.set_child(inner);b.add_css_class("scope");b.connect("toggled",lambda x,k=key:self.scope_toggled(k,x));scope_widgets.append(b);self.scope_buttons.setdefault(key,[]).append(b)
+        scopes.append(flow(scope_widgets,max_children=3,min_children=1,spacing=8));root.append(scopes)
 
         choose=card()
-        ch=hbox(8);txt=vbox(2);txt.set_hexpand(True);txt.append(label("روش اتصال","section-title"));txt.append(label("کارت را انتخاب کن؛ تست قبل از اتصال مستقل است.","muted"));ch.append(txt)
-        ch.append(button("همه روش‌ها",lambda *_:self.show_page("methods")));choose.append(ch)
-        cards=Gtk.Grid(column_spacing=8,row_spacing=8)
-        for idx,key in enumerate(["AUTO","NODE","WARP","TOR","DIRECT"]):
+        ch=hbox(8);txt=vbox(2);txt.set_hexpand(True);txt.append(label("۲ · روش اتصال","section-title"));self.selected_method_label=label("روش انتخاب‌شده: هوشمند","good");txt.append(self.selected_method_label);txt.append(label("روی «انتخاب» هر کارت بزن؛ کارت انتخاب‌شده با کادر مشخص می‌شود.","muted"));ch.append(txt)
+        ch.append(button("نمایش همه روش‌ها",lambda *_:self.show_page("methods")));choose.append(ch)
+        quick=[]
+        for key in ["AUTO","NODE","WARP","TOR","DIRECT"]:
             title,desc,cap=next((x[1],x[2],x[3]) for x in METHODS if x[0]==key)
-            c=self.method_card(key,title,desc,cap,compact=True);cards.attach(c,idx%5,idx//5,1,1)
-        choose.append(cards);root.append(choose)
+            quick.append(self.method_card(key,title,desc,cap,compact=True))
+        choose.append(flow(quick,max_children=3,min_children=1,spacing=8));root.append(choose)
 
-        act=card();act.append(label("اقدام","section-title"))
-        ar=hbox(8);ar.set_homogeneous(True)
-        ar.append(button("⌁  تست Ping",lambda *_:self.test_selected(True)))
-        ar.append(button("✓  Ping + Download + Upload",lambda *_:self.test_selected(False),"primary"))
-        ar.append(button("▶  اتصال",lambda *_:self.connect_selected(),"primary"))
-        self.keep_btn=button("نگه‌داشتن WARP",self.keep_warp);self.keep_btn.set_sensitive(False);ar.append(self.keep_btn)
-        act.append(ar);root.append(act)
+        act=card();act.append(label("۳ · تست و ۴ · اتصال","section-title"))
+        act.append(label("«اینترنت اصلی» بدون ورود به provider تست می‌شود. «روش انتخاب‌شده» همان Node/WARP/Tor/... را واقعاً تست می‌کند.","muted"))
+        actions=[
+            button("تست اینترنت اصلی · Ping + Speed",lambda *_:self.test_base(False)),
+            button("Ping روش انتخاب‌شده",lambda *_:self.test_selected(True)),
+            button("تست کامل روش انتخاب‌شده",lambda *_:self.test_selected(False),"primary"),
+            button("تست سریع همه روش‌ها",lambda *_:self.test_all_methods(True)),
+            button("تست کامل همه روش‌ها",lambda *_:self.test_all_methods(False)),
+            button("▶ اتصال روش انتخاب‌شده",lambda *_:self.connect_selected(),"primary"),
+        ]
+        self.keep_btn=button("نگه‌داشتن WARP",self.keep_warp);self.keep_btn.set_sensitive(False);actions.append(self.keep_btn)
+        act.append(flow(actions,max_children=3,min_children=1,spacing=8));root.append(act)
 
-        cmp=card();cmp.append(label("مقایسه آخرین نتایج","section-title"))
+        cmp=card();cmp.append(label("نتیجه آخرین تست روش‌ها","section-title"))
         grid=Gtk.Grid(column_spacing=12,row_spacing=6)
         for cidx,t in enumerate(["روش","Ping","Download","Upload","وضعیت"]):grid.attach(label(t,"metric"),cidx,0,1,1)
-        for ridx,key in enumerate(["AUTO","WARP","NODE","TOR","DIRECT"],start=1):
+        for ridx,key in enumerate(["AUTO","NODE","WARP","GOOL","CFON","TOR","CUSTOM","DIRECT"],start=1):
             grid.attach(label(key,xalign=1.0),0,ridx,1,1)
             vals=[]
             for cidx in range(1,5):
@@ -259,116 +289,167 @@ class FreeNetHub(Adw.Application):
     def method_card(self,key,title,desc,cap,compact=False):
         c=vbox(7);c.add_css_class("card");c.set_hexpand(True)
         head=hbox(6);t=vbox(1);t.set_hexpand(True);t.append(label(title,"method-title"));t.append(label(desc,"muted"));head.append(t)
-        sel=Gtk.CheckButton();sel.set_tooltip_text("انتخاب روش");sel.connect("toggled",lambda b,k=key:self.method_toggle(k,b));head.append(sel);c.append(head)
-        met=label("Ping — · Down — · Up —","muted");c.append(met);self.method_metric[key]=met
+        sel=Gtk.ToggleButton(label="انتخاب");sel.set_tooltip_text("این روش را برای تست/اتصال انتخاب کن");sel.connect("toggled",lambda b,k=key:self.method_toggle(k,b));head.append(sel);c.append(head)
+        met=label("Ping — · Down — · Up —","muted");c.append(met);self.method_metric.setdefault(key,[]).append(met)
         pill=label(cap,"muted",xalign=.5);pill.add_css_class("pill");c.append(pill)
         if not compact:
-            ar=hbox(6)
-            connect=button("▶ اتصال",lambda *_k,k=key:self.connect_method(k),"primary")
-            test=button("◔ تست",lambda *_k,k=key:self.test_method(k,False))
-            ar.append(connect);ar.append(test);c.append(ar)
-        self.method_cards[key]=(c,sel)
+            ar=[
+                button("▶ اتصال",lambda *_k,k=key:self.connect_method(k),"primary"),
+                button("Ping",lambda *_k,k=key:self.test_method(k,True)),
+                button("Ping + Speed",lambda *_k,k=key:self.test_method(k,False)),
+            ]
+            c.append(flow(ar,max_children=3,min_children=1,spacing=6))
+        self.method_cards.setdefault(key,[]).append((c,sel))
         return c
 
     def build_methods(self):
-        root=vbox(12);root.set_margin_bottom(12);root.append(self.page_head("روش‌ها","انتخاب، تست قبل از اتصال و مقایسهٔ providerها"))
-        scope=card();scope.append(label("Scope فعال","section-title"))
-        r=hbox(8);r.set_homogeneous(True)
+        root=vbox(12);root.set_margin_bottom(12);root.append(self.page_head("روش‌ها","هر کارت: انتخاب، Ping، تست کامل و اتصال"))
+
+        current=card();current.append(label("روش و Scope فعال","section-title"));self.methods_current=label("هوشمند · مرورگر","good");current.append(self.methods_current)
+        sw=[]
         for key,text in [("BROWSER","◎ مرورگر"),("SYSTEM","▣ کل سیستم"),("CONSOLE",">_ کنسول")]:
-            b=button(text,lambda _b,k=key:self.set_scope(k));r.append(b)
-        scope.append(r);root.append(scope)
-        grid=Gtk.Grid(column_spacing=10,row_spacing=10)
-        for i,(key,title,desc,cap) in enumerate(METHODS):
-            grid.attach(self.method_card(key,title,desc,cap),i%2,i//2,1,1)
-        root.append(grid)
+            b=Gtk.ToggleButton(label=text);b.connect("toggled",lambda x,k=key:self.scope_toggled(k,x));sw.append(b);self.scope_buttons.setdefault(key,[]).append(b)
+        current.append(flow(sw,max_children=3,min_children=1));root.append(current)
+
+        alltests=card();alltests.append(label("تست همه روش‌ها","section-title"));alltests.append(label("تست‌ها به‌ترتیب اجرا می‌شوند تا port/providerها با هم تداخل نکنند. اگر اتصال FreeNet Hub فعال باشد، برای حفظ state تست همه متوقف می‌شود.","muted"))
+        alltests.append(flow([
+            button("تست سریع همه · Ping",lambda *_:self.test_all_methods(True)),
+            button("تست کامل همه · Ping + Download + Upload",lambda *_:self.test_all_methods(False),"primary"),
+            button("تست اینترنت اصلی",lambda *_:self.test_base(False)),
+        ],max_children=3,min_children=1))
+        root.append(alltests)
+
+        cards=[]
+        for key,title,desc,cap in METHODS:cards.append(self.method_card(key,title,desc,cap))
+        root.append(flow(cards,max_children=2,min_children=1,spacing=10))
         return scroll(root)
 
     def build_nodes(self):
-        root=vbox(10);root.set_margin_bottom(12);root.append(self.page_head("Node Pool","VLESS / VMess / Shadowsocks / Trojan / Hysteria2"))
+        root=vbox(10);root.set_margin_bottom(12);root.append(self.page_head("Node Pool","نودها را دریافت کن، تست اولیه بگیر، سپس نودهای برتر را با Ping/Speed واقعی بسنج"))
 
-        ctl=card()
-        row=hbox(7)
-        row.append(button("⇩ دریافت نودهای عمومی",lambda *_:self.run_async("Node Refresh",core.node_refresh_public,self.nodes_done),"primary"))
-        row.append(button("↻ تازه‌سازی لیست",lambda *_:self.refresh_nodes()))
-        row.append(button("تست سریع همه",lambda *_:self.run_async("Node Test All",core.node_test_all,self.nodes_done)))
-        row.append(button("Benchmark 4 نود",lambda *_:self.run_async("Node Benchmark Batch",lambda:core.node_benchmark_batch(4),self.nodes_done)))
-        row.append(button("Ping + Speed منتخب",lambda *_:self.test_method("NODE",False)))
-        ctl.append(row)
+        guide=card();guide.append(label("روش کار نودها","section-title"))
+        guide.append(label("۱) «تست اولیه همه» فقط دسترسی endpoint را سریع می‌سنجد.  ۲) «تست واقعی 4 نود برتر» از proxy واقعی Ping/Download/Upload می‌گیرد.  ۳) روی هر ردیف کلیک کنی همان نود برای اتصال/تست انتخاب می‌شود.","muted"))
+        guide.append(flow([
+            button("⇩ دریافت نودهای عمومی",lambda *_:self.run_async("Node Refresh",core.node_refresh_public,self.nodes_done),"primary"),
+            button("۱ · تست اولیه همه نودها (TCP)",lambda *_:self.run_async("Node Test All",core.node_test_all,self.nodes_done)),
+            button("۲ · تست واقعی 4 نود برتر",lambda *_:self.run_async("Node Benchmark Batch",lambda:core.node_benchmark_batch(4),self.nodes_done),"primary"),
+            button("تست کامل نود منتخب",lambda *_:self.test_method("NODE",False)),
+            button("↻ تازه‌سازی نمایش",lambda *_:self.refresh_nodes()),
+        ],max_children=3,min_children=1))
+        root.append(guide)
 
-        imp=hbox(7)
-        self.node_url=Gtk.Entry();self.node_url.set_placeholder_text("HTTPS subscription URL");self.node_url.set_hexpand(True);self.node_url.set_direction(Gtk.TextDirection.LTR)
-        imp.append(self.node_url);imp.append(button("افزودن URL",self.import_node_url));imp.append(button("Import File",self.import_node_file));imp.append(button("Clipboard",self.import_node_clipboard));ctl.append(imp)
-        ex=hbox(7);ex.append(button("Export Raw",lambda *_:self.export_nodes(False)));ex.append(button("Export Base64",lambda *_:self.export_nodes(True)));ctl.append(ex)
+        imp=card();imp.append(label("افزودن / خروجی گرفتن نود","section-title"))
+        self.node_url=Gtk.Entry();self.node_url.set_placeholder_text("HTTPS subscription URL");self.node_url.set_hexpand(True);self.node_url.set_direction(Gtk.TextDirection.LTR);imp.append(self.node_url)
+        imp.append(flow([
+            button("افزودن URL",self.import_node_url),
+            button("Import File",self.import_node_file),
+            button("Clipboard",self.import_node_clipboard),
+            button("Export Raw",lambda *_:self.export_nodes(False)),
+            button("Export Base64",lambda *_:self.export_nodes(True)),
+        ],max_children=5,min_children=1))
+        root.append(imp)
 
-        filt=hbox(7);self.node_filter=Gtk.Entry();self.node_filter.set_placeholder_text("فیلتر نام / کشور / protocol / source");self.node_filter.set_hexpand(True);self.node_filter.connect("changed",lambda *_:self.refresh_nodes())
-        self.node_sort=Gtk.DropDown.new_from_strings(["Smart","Ping","Download","Protocol","Name"]);self.node_sort.connect("notify::selected",lambda *_:self.refresh_nodes())
-        filt.append(self.node_filter);filt.append(self.node_sort);ctl.append(filt)
-        self.node_summary=label("لیست نودها هنوز خوانده نشده.","muted");ctl.append(self.node_summary)
-        root.append(ctl)
+        filt=card();filt.append(label("فیلتر و مرتب‌سازی","section-title"))
+        self.node_filter=Gtk.Entry();self.node_filter.set_placeholder_text("فیلتر: نام / کشور / پروتکل / منبع / سرور");self.node_filter.set_hexpand(True);self.node_filter.connect("changed",lambda *_:self.refresh_nodes());filt.append(self.node_filter)
+        filt.append(label("مرتب‌سازی بر اساس:","muted"))
+        self.node_sort_buttons=[]
+        sort_widgets=[]
+        sort_group=None
+        for i,text in enumerate(["هوشمند","کمترین Ping","بیشترین Download","بیشترین Upload","کشور","پروتکل","نام"]):
+            b=Gtk.ToggleButton(label=text)
+            if sort_group is None:sort_group=b
+            else:b.set_group(sort_group)
+            b.connect("toggled",lambda x,idx=i:self.node_sort_toggled(idx,x))
+            self.node_sort_buttons.append(b);sort_widgets.append(b)
+        filt.append(flow(sort_widgets,max_children=4,min_children=2,spacing=6))
+        self._syncing_sort=True
+        self.node_sort_buttons[0].set_active(True)
+        self._syncing_sort=False
+        self.node_summary=label("لیست نودها هنوز خوانده نشده.","muted");filt.append(self.node_summary);root.append(filt)
 
-        body=hbox(10)
-        listcard=card();listcard.set_hexpand(True)
+        listcard=card();listcard.append(label("لیست نودها · روی ردیف کلیک کن تا انتخاب شود","section-title"))
         self.node_list=Gtk.ListBox();self.node_list.set_selection_mode(Gtk.SelectionMode.SINGLE);self.node_list.connect("row-selected",self.node_row_selected)
-        ns=Gtk.ScrolledWindow();ns.set_vexpand(True);ns.set_min_content_height(360);ns.set_child(self.node_list);listcard.append(ns);body.append(listcard)
+        ns=Gtk.ScrolledWindow();ns.set_vexpand(True);ns.set_min_content_height(320);ns.set_max_content_height(430);ns.set_propagate_natural_height(True);ns.set_child(self.node_list);listcard.append(ns);root.append(listcard)
 
-        detail=card();detail.set_size_request(330,-1);detail.append(label("نود انتخاب‌شده","section-title"))
-        self.node_detail=label("یک نود را انتخاب کن.","muted");detail.append(self.node_detail)
-        nr=hbox(6);nr.append(button("انتخاب",self.select_current_node));nr.append(button("▶ اتصال",lambda *_:self.connect_method("NODE"),"primary"));detail.append(nr)
-        nr2=hbox(6);nr2.append(button("⌁ Ping",lambda *_:self.test_method("NODE",True)));nr2.append(button("Ping + Speed",lambda *_:self.test_method("NODE",False)));detail.append(nr2)
-        nr3=hbox(6);nr3.append(button("★ Favorite",lambda *_:self.toggle_node_meta("favorite")));nr3.append(button("📌 Pin",lambda *_:self.toggle_node_meta("pinned")));nr3.append(button("History",self.show_node_history));nr3.append(button("Copy Raw",self.copy_node_raw));detail.append(nr3)
+        detail=card();detail.append(label("نود انتخاب‌شده","section-title"))
+        self.node_detail=label("یک ردیف از لیست را انتخاب کن.","muted");detail.append(self.node_detail)
+        detail.append(flow([
+            button("✓ انتخاب این نود",self.select_current_node),
+            button("▶ اتصال Node",lambda *_:self.connect_method("NODE"),"primary"),
+            button("Ping نود منتخب",lambda *_:self.test_method("NODE",True)),
+            button("Ping + Download + Upload",lambda *_:self.test_method("NODE",False)),
+            button("★ Favorite",lambda *_:self.toggle_node_meta("favorite")),
+            button("📌 Pin",lambda *_:self.toggle_node_meta("pinned")),
+            button("History",self.show_node_history),
+            button("Copy Raw",self.copy_node_raw),
+            button("قطع Node",lambda *_:self.run_async("Node Stop",core.node_stop,self.nodes_done),"danger"),
+        ],max_children=4,min_children=1))
         detail.append(label("Metadata","metric"))
         self.node_name_entry=Gtk.Entry();self.node_name_entry.set_placeholder_text("نام نمایشی");detail.append(self.node_name_entry)
         mr=hbox(6);mr.append(label("Rating 0–5","muted"));self.node_rating=Gtk.SpinButton.new_with_range(0,5,1);mr.append(self.node_rating);detail.append(mr)
         self.node_tags_entry=Gtk.Entry();self.node_tags_entry.set_placeholder_text("tags, comma, separated");detail.append(self.node_tags_entry)
         self.node_note_entry=Gtk.Entry();self.node_note_entry.set_placeholder_text("یادداشت");detail.append(self.node_note_entry)
         detail.append(button("ذخیره Metadata",self.save_node_metadata))
-        detail.append(button("قطع Node",lambda *_:self.run_async("Node Stop",core.node_stop,self.nodes_done),"danger"))
-        self.singbox_state=label("sing-box: در حال بررسی","muted");detail.append(self.singbox_state)
-        body.append(detail);root.append(body)
-        return root
+        self.singbox_state=label("sing-box: در حال بررسی","muted");detail.append(self.singbox_state);root.append(detail)
+        return scroll(root)
 
     def build_tools(self):
         root=vbox(12);root.set_margin_bottom(12);root.append(self.page_head("ابزارها","Update / Diagnostics / Console / Bridges"))
 
-        up=card();up.append(label("آپدیت و مسیر پایه","section-title"));up.append(label("بررسی update و دریافت نود، عملیات مستقل‌اند. هیچ VPN با باز شدن صفحه تغییر نمی‌کند.","muted"))
-        rr=hbox(7);rr.append(button("↻ بررسی آپدیت GitHub",lambda *_:self.run_async("Update Check",core.update_check,self.update_done)));self.update_install_btn=button("⇧ نصب آپدیت",self.confirm_update_install,"primary");self.update_install_btn.set_sensitive(False);rr.append(self.update_install_btn);rr.append(button("⇩ دریافت نودهای جدید",lambda *_:self.run_async("Node Refresh",core.node_refresh_public,self.nodes_done),"primary"));up.append(rr)
-        self.update_label=label("هنوز بررسی نشده.","muted");up.append(self.update_label);root.append(up)
+        up=card();up.append(label("آپدیت مستقیم","section-title"));up.append(label("بررسی آپدیت خودکار و read-only است. نصب فقط با کلیک شما انجام می‌شود و asset باید SHA-256 معتبر GitHub داشته باشد.","muted"))
+        self.update_install_btn=button("نصب آپدیت پیدا‌شده",self.confirm_update_install,"primary");self.update_install_btn.set_sensitive(False)
+        up.append(flow([
+            button("↻ فقط بررسی آپدیت",lambda *_:self.run_async("Update Check",core.update_check,self.update_done)),
+            button("⬆ بررسی و نصب مستقیم آخرین نسخه",self.direct_update_clicked,"primary"),
+            self.update_install_btn,
+            button("⇩ دریافت نودهای جدید",lambda *_:self.run_async("Node Refresh",core.node_refresh_public,self.nodes_done)),
+        ],max_children=4,min_children=1))
+        self.update_label=label("در حال بررسی نسخه…","muted");up.append(self.update_label);root.append(up)
 
-        diag=card();diag.append(label("Diagnostics","section-title"))
-        r=hbox(7)
-        for text,name,fn in [
-            ("موجودی","Inventory",core.inventory),
-            ("Doctor","Doctor",core.doctor),
-            ("تست اینترنت پایه","Direct Speed",lambda:core.benchmark_direct(False)),
-            ("گزارش","Export",core.export_report),
-        ]:r.append(button(text,lambda _b,n=name,f=fn:self.run_async(n,f)))
-        diag.append(r);root.append(diag)
+        diag=card();diag.append(label("Diagnostics و تست مسیر","section-title"))
+        diag.append(flow([
+            button("Inventory",lambda *_:self.run_async("Inventory",core.inventory)),
+            button("Doctor",lambda *_:self.run_async("Doctor",core.doctor)),
+            button("تست اینترنت اصلی",lambda *_:self.test_base(False)),
+            button("گزارش",lambda *_:self.run_async("Export",core.export_report)),
+        ],max_children=4,min_children=1));root.append(diag)
 
-        con=card();con.append(label("اتصال کنسول","section-title"));con.append(label("Hotspot مستقل؛ فقط با اقدام صریح روشن می‌شود. Physical game/country E2E هنوز gate خارجی است.","muted"))
-        cr=hbox(7);cr.append(button("وضعیت",lambda *_:self.run_async("Console Status",core.console_status,self.console_done)));cr.append(button("آماده‌سازی",self.confirm_console_prepare));cr.append(button("▶ اتصال کنسول",self.confirm_console_start,"primary"));cr.append(button("توقف",lambda *_:self.run_async("Console Stop",core.console_stop,self.console_done),"danger"));con.append(cr)
+        con=card();con.append(label("اتصال کنسول","section-title"));con.append(label("Hotspot مستقل است و فقط با اقدام صریح روشن می‌شود. تست فیزیکی game/country یک gate جداست.","muted"))
+        con.append(flow([
+            button("وضعیت",lambda *_:self.run_async("Console Status",core.console_status,self.console_done)),
+            button("آماده‌سازی",self.confirm_console_prepare),
+            button("▶ اتصال کنسول",self.confirm_console_start,"primary"),
+            button("توقف",lambda *_:self.run_async("Console Stop",core.console_stop,self.console_done),"danger"),
+        ],max_children=4,min_children=1))
         self.console_label=label("در حال بررسی…","muted");con.append(self.console_label);root.append(con)
 
         br=card();br.append(label("Tor / Bridges","section-title"))
-        tr=hbox(7);tr.append(button("Tor Direct",lambda *_:self.run_async("Tor Direct",lambda:legacy.start_tor("direct"))));tr.append(button("Tor obfs4",lambda *_:self.run_async("Tor obfs4",lambda:legacy.start_tor("obfs4"))));tr.append(button("Tor Snowflake",lambda *_:self.run_async("Tor Snowflake",lambda:legacy.start_tor("snowflake"))));tr.append(button("توقف Tor",lambda *_:self.run_async("Tor Stop",legacy.stop_tor),"danger"));br.append(tr)
-        ir=hbox(7);ir.append(button("Import obfs4",self.import_bridges));ir.append(button("Import Snowflake",self.import_snowflake));br.append(ir)
+        br.append(flow([
+            button("Tor Direct",lambda *_:self.run_async("Tor Direct",lambda:legacy.start_tor("direct"))),
+            button("Tor obfs4",lambda *_:self.run_async("Tor obfs4",lambda:legacy.start_tor("obfs4"))),
+            button("Tor Snowflake",lambda *_:self.run_async("Tor Snowflake",lambda:legacy.start_tor("snowflake"))),
+            button("توقف Tor",lambda *_:self.run_async("Tor Stop",legacy.stop_tor),"danger"),
+            button("Import obfs4",self.import_bridges),
+            button("Import Snowflake",self.import_snowflake),
+        ],max_children=3,min_children=1))
         self.bridge_label=label("—","muted");br.append(self.bridge_label);root.append(br)
 
         logs=card();logs.append(label("خروجی عملیات","section-title"))
         self.details=Gtk.TextView();self.details.set_editable(False);self.details.set_monospace(True);self.details.set_direction(Gtk.TextDirection.LTR);self.details.get_buffer().set_text("No operation has started.")
-        ds=Gtk.ScrolledWindow();ds.set_min_content_height(230);ds.set_child(self.details);logs.append(ds)
-        lr=hbox(7);lr.append(button("کپی نتیجه",self.copy_details));lr.append(button("پوشه شواهد",self.open_evidence));logs.append(lr);root.append(logs)
+        ds=Gtk.ScrolledWindow();ds.set_min_content_height(180);ds.set_child(self.details);logs.append(ds)
+        logs.append(flow([button("کپی نتیجه",self.copy_details),button("پوشه شواهد",self.open_evidence)],max_children=2,min_children=1));root.append(logs)
         return scroll(root)
 
     def build_settings(self):
-        root=vbox(12);root.set_margin_bottom(12);root.append(self.page_head("تنظیمات","رفتار UI، تست و مسیر شخصی"))
+        root=vbox(12);root.set_margin_bottom(12);root.append(self.page_head("تنظیمات","ظاهر، حریم خصوصی، تست و مسیر شخصی"))
 
         s=core.settings()
-        ui=card();ui.append(label("ظاهر و حریم خصوصی","section-title"))
-        r=hbox(8);r.append(label("تم"));self.theme_drop=Gtk.DropDown.new_from_strings(["Dark","Light"]);self.theme_drop.set_selected(0 if s["theme"]=="dark" else 1);r.append(self.theme_drop)
-        r.append(label("نمایش IP"));self.show_ip_switch=Gtk.Switch();self.show_ip_switch.set_active(bool(s["showIp"]));r.append(self.show_ip_switch);ui.append(r);root.append(ui)
+        ui=card();ui.append(label("ظاهر و IP","section-title"))
+        tr=hbox(8);tr.append(label("تم"));self.theme_drop=Gtk.DropDown.new_from_strings(["Dark","Light"]);self.theme_drop.set_selected(0 if s["theme"]=="dark" else 1);tr.append(self.theme_drop);ui.append(tr)
+        ir=hbox(8);ir.append(label("نمایش IP عمومی"));self.show_ip_switch=Gtk.Switch();self.show_ip_switch.set_active(bool(s["showIp"]));self.show_ip_switch.connect("notify::active",self.settings_ip_changed);ir.append(self.show_ip_switch);ir.append(label("فوری اعمال می‌شود","muted"));ui.append(ir);root.append(ui)
 
-        test=card();test.append(label("تنظیمات تست","section-title"))
-        p=hbox(8);p.append(label("مسیر تست"));self.test_path=Gtk.DropDown.new_from_strings(["BASE · اینترنت فعلی سیستم","SELECTED · مسیر انتخاب‌شده"]);self.test_path.set_selected(0 if s["testPathMode"]=="BASE" else 1);p.append(self.test_path);test.append(p)
+        test=card();test.append(label("تنظیمات تست","section-title"));test.append(label("BASE = اینترنت فعلی سیستم بدون ورود به provider. SELECTED = خود روش انتخاب‌شده.","muted"))
+        p=hbox(8);p.append(label("مسیر تست پیش‌فرض"));self.test_path=Gtk.DropDown.new_from_strings(["BASE · اینترنت فعلی سیستم","SELECTED · روش انتخاب‌شده"]);self.test_path.set_selected(0 if s["testPathMode"]=="BASE" else 1);p.append(self.test_path);test.append(p)
         grid=Gtk.Grid(column_spacing=8,row_spacing=8)
         self.ping_spin=Gtk.SpinButton.new_with_range(3,30,1);self.ping_spin.set_value(s["pingTimeoutSec"])
         self.down_spin=Gtk.SpinButton.new_with_range(10,120,5);self.down_spin.set_value(s["downloadTimeoutSec"])
@@ -384,8 +465,10 @@ class FreeNetHub(Adw.Application):
         conn.append(label("Home URL","muted"));conn.append(self.home_entry);conn.append(label("Custom Proxy","muted"));conn.append(self.proxy_entry);root.append(conn)
 
         mon=card();mon.append(label("پایایی","section-title"))
-        mr=hbox(8);mr.append(label("بررسی دوره‌ای"));self.monitor_switch=Gtk.Switch();self.monitor_switch.set_active(bool(s["monitor"]));mr.append(self.monitor_switch);mr.append(label("Auto-repair محدود Tor"));self.repair_switch=Gtk.Switch();self.repair_switch.set_active(bool(s["autoRepair"]));mr.append(self.repair_switch);mon.append(mr);root.append(mon)
-        root.append(button("ذخیره تنظیمات",self.save_settings,"primary"))
+        mr=flow(max_children=2,min_children=1)
+        a=hbox(7);a.append(label("بررسی دوره‌ای"));self.monitor_switch=Gtk.Switch();self.monitor_switch.set_active(bool(s["monitor"]));a.append(self.monitor_switch);mr.append(a)
+        b=hbox(7);b.append(label("Auto-repair محدود Tor"));self.repair_switch=Gtk.Switch();self.repair_switch.set_active(bool(s["autoRepair"]));b.append(self.repair_switch);mr.append(b);mon.append(mr);root.append(mon)
+        root.append(button("ذخیره سایر تنظیمات",self.save_settings,"primary"))
         return scroll(root)
 
     def show_page(self,name):
@@ -395,16 +478,22 @@ class FreeNetHub(Adw.Application):
             else:b.remove_css_class("suggested-action")
         if name=="nodes":self.refresh_nodes()
 
+    def scope_toggled(self,scope,b):
+        if b.get_active():self.set_scope(scope)
+
     def set_scope(self,scope,widget=None):
         self.scope=scope
         names={"BROWSER":"مرورگر","SYSTEM":"کل سیستم","CONSOLE":"کنسول"}
         self.sidebar_scope.set_text("Scope: "+names.get(scope,scope))
-        for k in ("BROWSER","SYSTEM","CONSOLE"):
-            b=getattr(self,"scope_"+k.lower(),None)
-            if b and b.get_active()!=(k==scope):
-                b.set_active(k==scope)
+        for k,buttons in self.scope_buttons.items():
+            for b in buttons:
+                want=(k==scope)
+                if b.get_active()!=want:b.set_active(want)
+        if hasattr(self,"methods_current"):
+            title=next((x[1] for x in METHODS if x[0]==self.method),self.method)
+            self.methods_current.set_text(f"{title} · {names.get(scope,scope)}")
         if scope=="CONSOLE":self.status_detail.set_text("Console Gateway مستقل انتخاب شد.")
-        elif scope=="SYSTEM":self.status_detail.set_text("Full System در Linux برای WARP رسمی پذیرفته شده است.")
+        elif scope=="SYSTEM":self.status_detail.set_text("Full System در Linux R11 فقط WARP رسمی است.")
         else:self.status_detail.set_text("Browser scope پیش‌فرض امن است.")
         return False
 
@@ -414,11 +503,18 @@ class FreeNetHub(Adw.Application):
 
     def select_method(self,key):
         self.method=key
-        for k,(c,b) in self.method_cards.items():
-            if b.get_active()!=(k==key):b.set_active(k==key)
-            if k==key:c.add_css_class("card-selected")
-            else:c.remove_css_class("card-selected")
-        title=next((x[1] for x in METHODS if x[0]==key),key);self.sidebar_method.set_text("Method: "+title)
+        for k,pairs in self.method_cards.items():
+            for c,b in pairs:
+                want=(k==key)
+                if b.get_active()!=want:b.set_active(want)
+                if want:c.add_css_class("card-selected")
+                else:c.remove_css_class("card-selected")
+        title=next((x[1] for x in METHODS if x[0]==key),key)
+        self.sidebar_method.set_text("Method: "+title)
+        if hasattr(self,"selected_method_label"):self.selected_method_label.set_text("روش انتخاب‌شده: "+title)
+        if hasattr(self,"methods_current"):
+            names={"BROWSER":"مرورگر","SYSTEM":"کل سیستم","CONSOLE":"کنسول"}
+            self.methods_current.set_text(f"{title} · {names.get(self.scope,self.scope)}")
 
     def connect_selected(self):
         self.connect_method(self.method)
@@ -441,23 +537,32 @@ class FreeNetHub(Adw.Application):
             if r.get("ok"):self.pending_warp_token=None;self.keep_btn.set_sensitive(False)
         self.run_async("Keep WARP",lambda:legacy.warp_keep(token),done)
 
+    def test_base(self,ping_only=False):
+        self.run_async("Base Internet "+("Ping" if ping_only else "Ping + Speed"),lambda:core.benchmark_direct(ping_only),lambda r:self.metric_done("DIRECT",r))
+
     def test_selected(self,ping_only):
         self.select_method(self.method)
-        self.run_async(
-            ("Ping " if ping_only else "Benchmark ")+self.method+" · "+str(core.settings().get("testPathMode") or "BASE"),
-            lambda:core.benchmark_configured(self.method,ping_only),
-            lambda r,m=self.method:self.metric_done(m,r),
-        )
+        self.run_async(("Ping " if ping_only else "Benchmark ")+self.method,lambda:core.benchmark_method(self.method,ping_only),lambda r,m=self.method:self.metric_done(m,r))
 
     def test_method(self,method,ping_only=False):
         self.select_method(method)
         self.run_async(("Ping " if ping_only else "Benchmark ")+method,lambda:core.benchmark_method(method,ping_only),lambda r,m=method:self.metric_done(m,r))
 
+    def test_all_methods(self,ping_only=False):
+        self.run_async("Test All Methods · "+("Ping" if ping_only else "Full"),lambda:core.benchmark_all_methods(ping_only),self.all_methods_done)
+
+    def all_methods_done(self,result):
+        for item in result.get("results",[]) if isinstance(result,dict) else []:
+            method=str(item.get("method") or "")
+            if method:self.metric_done(method,item)
+        if isinstance(result,dict) and result.get("error"):
+            self.status_detail.set_text(str(result.get("error")))
+
     def metric_done(self,method,result):
         self.metrics[method]=result
         p=result.get("pingMs");d=result.get("downloadMbps");u=result.get("uploadMbps")
         fmt=f"Ping {p if p is not None else '—'} · Down {d if d is not None else '—'} · Up {u if u is not None else '—'}"
-        if method in self.method_metric:self.method_metric[method].set_text(fmt)
+        for met in self.method_metric.get(method,[]):met.set_text(fmt)
         key="AUTO" if method.startswith("AUTO") else method
         if key in self.compare_metric:
             vals=self.compare_metric[key];vals[0].set_text("—" if p is None else f"{p} ms");vals[1].set_text("—" if d is None else f"{d} Mbps");vals[2].set_text("—" if u is None else f"{u} Mbps");vals[3].set_text("PASS" if result.get("ok") else str(result.get("error") or "FAIL"))
@@ -517,14 +622,16 @@ class FreeNetHub(Adw.Application):
         rows=core.node_rows();flt=(self.node_filter.get_text().strip().lower() if hasattr(self,"node_filter") else "")
         if flt:
             rows=[n for n in rows if flt in " ".join(str(n.get(k) or "") for k in ("name","protocol","source","server","tags")).lower()]
-        idx=self.node_sort.get_selected() if hasattr(self,"node_sort") else 0
+        idx=int(getattr(self,"node_sort_idx",0))
         def key(n):
             ep=n.get("endpoint_test") or {};perf=n.get("performance_test") or {}
             if idx==1:return float(ep.get("latency_ms") or 999999)
             if idx==2:return -float(perf.get("downloadMbps") or 0)
-            if idx==3:return str(n.get("protocol") or "")
-            if idx==4:return str(n.get("name") or "").lower()
-            return (0 if n.get("pinned") else 1,0 if n.get("favorite") else 1,0 if ep.get("reachable") else 1,float(ep.get("latency_ms") or 999999))
+            if idx==3:return -float(perf.get("uploadMbps") or 0)
+            if idx==4:return str(perf.get("country") or n.get("country") or "ZZ")
+            if idx==5:return str(n.get("protocol") or "")
+            if idx==6:return str(n.get("name") or "").lower()
+            return (0 if n.get("pinned") else 1,0 if n.get("favorite") else 1,0 if ep.get("reachable") else 1,float(ep.get("latency_ms") or 999999),-float(perf.get("downloadMbps") or 0))
         rows=sorted(rows,key=key);self.node_cache=rows
         if hasattr(self,"node_list"):
             while True:
@@ -537,17 +644,47 @@ class FreeNetHub(Adw.Application):
                 box=hbox(8);box.add_css_class("node-row")
                 name=vbox(1);name.set_hexpand(True);name.append(label(("📌 " if n.get("pinned") else "")+("★ " if n.get("favorite") else "")+str(n.get("name") or "Node"),"metric"));name.append(label(f"{n.get('protocol')} · {n.get('server')}:{n.get('port')} · {n.get('source')}","muted"));box.append(name)
                 ep=n.get("endpoint_test") or {};perf=n.get("performance_test") or {};lat=ep.get("latency_ms")
-                box.append(label("—" if lat is None else f"{lat} ms","muted",xalign=.5));box.append(label("—" if perf.get("downloadMbps") is None else f"{perf.get('downloadMbps')} Mbps","muted",xalign=.5))
+                stats=label(
+                    f"Ping: {'—' if lat is None else str(lat)+' ms'} · ↓ {'—' if perf.get('downloadMbps') is None else str(perf.get('downloadMbps'))+' Mbps'} · ↑ {'—' if perf.get('uploadMbps') is None else str(perf.get('uploadMbps'))+' Mbps'} · کشور: {perf.get('country') or '—'}",
+                    "muted",xalign=0.0
+                )
+                stats.set_size_request(330,-1);box.append(stats)
                 if n.get("id")==selected:box.add_css_class("card-selected")
                 row.set_child(box);self.node_list.append(row)
             self.node_summary.set_text(f"{len(rows)} نود نمایش داده می‌شود · کل {len(core.node_store()['nodes'])} · selected={selected[:8] if selected else '—'}")
         return False
+
+    def node_sort_toggled(self,idx,b):
+        if self._syncing_sort:return
+        if b.get_active():
+            self.set_node_sort(idx)
+        elif int(idx)==int(self.node_sort_idx):
+            self._syncing_sort=True
+            try:b.set_active(True)
+            finally:self._syncing_sort=False
+
+    def set_node_sort(self,idx):
+        idx=max(0,min(6,int(idx)))
+        self._syncing_sort=True
+        try:
+            self.node_sort_idx=idx
+            for i,b in enumerate(self.node_sort_buttons):
+                want=(i==idx)
+                if b.get_active()!=want:b.set_active(want)
+        finally:
+            self._syncing_sort=False
+        self.refresh_nodes()
 
     def node_row_selected(self,_list,row):
         if not row:return
         self.selected_node_id=getattr(row,"node_id","")
         n=next((x for x in self.node_cache if x.get("id")==self.selected_node_id),None)
         if not n:return
+        try:
+            core.node_select(self.selected_node_id)
+            self.status_detail.set_text("نود انتخاب شد: "+str(n.get("name") or self.selected_node_id[:8]))
+        except Exception as e:
+            self.status_detail.set_text(str(e))
         ep=n.get("endpoint_test") or {};perf=n.get("performance_test") or {}
         self.node_detail.set_text(f"{n.get('name')}\n{n.get('protocol')} · {n.get('server')}:{n.get('port')}\nPing: {ep.get('latency_ms','—')} ms · Down: {perf.get('downloadMbps','—')} · Up: {perf.get('uploadMbps','—')}\nSource: {n.get('source')}")
         self.node_name_entry.set_text(str(n.get("name") or ""))
@@ -627,6 +764,40 @@ class FreeNetHub(Adw.Application):
 
     def confirm_update_install(self,*_):
         self.confirm("نصب آپدیت Linux","فقط اگر revision جدیدتر و SHA-256 معتبر باشد دانلود و نصب می‌شود. Installer فقط UI FreeNet Hub را restart می‌کند و اتصال شبکه را روشن نمی‌کند.",lambda:self.run_async("Install Update",core.update_install))
+
+    def _apply_show_ip(self,active):
+        if self._syncing_ip:return
+        self._syncing_ip=True
+        try:
+            core.save_settings({"showIp":bool(active)})
+            if hasattr(self,"dashboard_ip_switch") and self.dashboard_ip_switch.get_active()!=bool(active):self.dashboard_ip_switch.set_active(bool(active))
+            if hasattr(self,"show_ip_switch") and self.show_ip_switch.get_active()!=bool(active):self.show_ip_switch.set_active(bool(active))
+            self.refresh_snapshot()
+        finally:
+            self._syncing_ip=False
+
+    def dashboard_ip_changed(self,sw,*_):
+        self._apply_show_ip(sw.get_active())
+
+    def settings_ip_changed(self,sw,*_):
+        self._apply_show_ip(sw.get_active())
+
+    def direct_update_clicked(self,*_):
+        self.run_async("Check Update",core.update_check,self.direct_update_checked)
+
+    def direct_update_checked(self,result):
+        self.update_done(result)
+        if not result.get("ok"):return
+        if not result.get("updateAvailable"):
+            self.status_detail.set_text("همین نسخه آخرین Linux release است.")
+            return
+        asset=result.get("linuxAsset") or {}
+        name=str(asset.get("name") or "نسخه جدید")
+        self.confirm("نصب مستقیم آپدیت",f"{name} دانلود، SHA-256 بررسی و نصب شود؟",lambda:self.run_async("Install Update",core.update_install))
+
+    def auto_update_check_once(self):
+        if not self.busy:self.run_async("Update Check",core.update_check,self.update_done)
+        return False
 
     def console_done(self,result):
         if not hasattr(self,"console_label"):return

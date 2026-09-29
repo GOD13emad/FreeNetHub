@@ -437,6 +437,28 @@
         "release promotion",
         "handoff"
       ]
+    },
+    {
+      "context": "Linux R11 UX finalization",
+      "claimDecision": "Linux R11 resolves the R9 UX blockers: window minimum 842x602, explicit scope and method selection, separate base/selected/all-method tests, two-stage node testing, seven visible sort modes, instant IP visibility toggle, and direct update check/install. Exact package install preserves routes and starts no network connection.",
+      "evidenceSource": [
+        "crossplatform/linux/freenet_hub_linux_gtk.py",
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "crossplatform/linux/test_r37_parity.py",
+        "evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_FINAL_CANDIDATE",
+      "provenance": {
+        "packageSha256": "F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70",
+        "packageBytes": 63754
+      },
+      "reuseTargets": [
+        "release notes",
+        "QA",
+        "support",
+        "handoff"
+      ]
     }
   ]
 }

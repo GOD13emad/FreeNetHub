@@ -19,7 +19,7 @@
   "viewSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
   "gatewayManifestSha256": "33DEFA7B54BD60BB0BC61D7F0374BC2539DDB186EEA201B7910CA1186BC2267F",
-  "crossPlatformManifestSha256": "5EEFBB0BD409AF310C8CC975DD50BF75A9736555BA8D3731FF7026B8C41C18A4",
+  "crossPlatformManifestSha256": "5309370F5018561FB3D613412999D97F4D1437B13FDA114982D208F8A4675F04",
   "installerSha256": null,
   "acceptanceEvidence": "evidence/R37_WINDOWS_FINAL_ACCEPTANCE_20260929.json",
   "consolePhysicalFieldValidated": false,
@@ -615,5 +615,35 @@
     "baseTestPath": "PHYSICAL_BASE_INTERFACE_PASS_WITH_EXTERNAL_TUN0_PRESENT",
     "ciCoverage": "R9_BACKEND_PARITY_PINNED_INSTALLERS_PACKAGE_BUILD_INCLUDED",
     "acceptanceEvidence": "evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json"
+  },
+  "linuxR11R37UxFinal": {
+    "status": "LOCAL_EXACT_PACKAGE_ACCEPTED_CI_PENDING",
+    "version": "4.2.0-linux.11-r37",
+    "release": "LINUX_4.2.0_R11_R37_UX_FINAL",
+    "package": "FreeNetHub_4.2.0_Linux_R11.zip",
+    "packageBytes": 63754,
+    "packageSha256": "F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70",
+    "ui": [
+      "Dashboard",
+      "Methods",
+      "Nodes",
+      "Tools",
+      "Settings"
+    ],
+    "ux": [
+      "responsive_min_842x602",
+      "explicit_scope",
+      "explicit_method_selection",
+      "test_selected",
+      "test_all_methods",
+      "node_two_stage_tests",
+      "node_sort_buttons",
+      "instant_show_ip",
+      "direct_update_check_install"
+    ],
+    "exactInstall": "PASS",
+    "routePreserved": true,
+    "networkMutationOnInstall": false,
+    "hostedCi": "OPEN"
   }
 }

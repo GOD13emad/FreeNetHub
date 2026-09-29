@@ -22,7 +22,7 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 
-VERSION = "4.2.0-linux.9-r37"
+VERSION = "4.2.0-linux.11-r37"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -829,6 +829,29 @@ def benchmark_method(mode, ping_only=False):
         r=benchmark_tor(ping_only); r["mode"]="AUTO/TOR"; return r
     return {"ok":False,"error":"METHOD_UNAVAILABLE_ON_LINUX","mode":mode}
 
+def benchmark_all_methods(ping_only=False):
+    active=legacy.session()
+    if active.get("mode"):
+        return {"ok":False,"error":"STOP_FREENETHUB_CONNECTION_BEFORE_TEST_ALL","activeMode":active.get("mode"),"results":[]}
+    methods=["DIRECT","NODE","WARP","GOOL","CFON","TOR","AUTO"]
+    if str(settings().get("customProxy") or "").strip():methods.insert(-1,"CUSTOM")
+    rows=[]
+    for method in methods:
+        try:
+            item=benchmark_method(method,ping_only)
+            if not isinstance(item,dict):item={"ok":False,"error":"INVALID_BENCHMARK_RESULT"}
+        except Exception as e:
+            item={"ok":False,"error":type(e).__name__+": "+str(e)}
+        item=dict(item);item["method"]=method;rows.append(item)
+    return {
+        "ok":True,
+        "pingOnly":bool(ping_only),
+        "completed":len(rows),
+        "passed":sum(1 for x in rows if x.get("ok")),
+        "failed":sum(1 for x in rows if not x.get("ok")),
+        "results":rows,
+    }
+
 def connect_method(mode, scope="BROWSER"):
     mode=str(mode or "AUTO").upper(); scope=str(scope or "BROWSER").upper()
     if scope=="CONSOLE":
@@ -985,7 +1008,7 @@ def update_check():
     linux_assets=[a for a in assets if _linux_revision_from_name(a.get("name")) is not None]
     linux=max(linux_assets,key=lambda a:_linux_revision_from_name(a.get("name")),default=None)
     remote_rev=_linux_revision_from_name(linux.get("name")) if linux else None
-    local_rev=9
+    local_rev=11
     return {"ok":True,"current":VERSION,"localRevision":local_rev,"tag":j.get("tag_name"),"published":j.get("published_at"),"linuxAsset":linux,"remoteRevision":remote_rev,"updateAvailable":bool(remote_rev is not None and remote_rev>local_rev),"assets":assets}
 
 def update_install():
