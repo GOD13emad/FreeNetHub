@@ -668,11 +668,12 @@
     "goolPostFixLive": "PASS_4.12_DOWN_0.24_UP",
     "externalTun0Preserved": "PASS",
     "publicRelease": false,
-    "packageBytes": 64892,
-    "packageSha256": "01C9DDD2104853E7095A4C034138D98872B06FE3DEAF33B25862338997FA9820",
+    "packageBytes": 210029,
+    "packageSha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
     "cloudflareUploadBytesParameter": "PASS_REQUIRED",
     "physicalBaseRoutePreserved": "PASS",
-    "exactPackageInstall": "OPEN",
-    "hostedCi": "OPEN"
+    "exactPackageInstall": "PASS_REPRODUCIBLE_PACKAGE",
+    "hostedCi": "OPEN",
+    "packageReproducibility": "PASS_WINDOWS_LINUX_IDENTICAL"
   }
 }

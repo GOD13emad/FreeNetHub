@@ -181,6 +181,55 @@
         "crossPlatformManifestCanonicalSha256": "59618BDB16F1364E4B8269261D0083C792DCB11406BDC9263B05DCBCA4A4AC3C",
         "networkMutationWindows": false
       }
+    },
+    {
+      "context": "Linux R12 cross-platform package reproducibility closure",
+      "claimDecision": "The R12 package builder initially produced different ZIP digests on Windows and Linux despite identical committed payload bytes. Canonical Git bytes alone did not remove the difference because DEFLATE output can vary with platform/zlib implementation. The package is small, so the builder now uses canonical Git bytes plus ZIP_STORED and fixed ZIP metadata. Windows and Linux independently produced the identical 210029-byte ZIP with SHA-256 9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3.",
+      "evidenceSource": [
+        "tests/build_linux_r12_package.py",
+        "Windows build output: 210029 bytes / 9B0D413C...C4A4CC3",
+        "Linux build output: 210029 bytes / 9B0D413C...C4A4CC3"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_REPRODUCIBLE_PACKAGE_WINDOWS_LINUX",
+      "rootCause": "Compressed ZIP bytes were not a stable cross-platform artifact identity even with fixed timestamps and canonical source bytes.",
+      "prevention": "For this small release artifact, use ZIP_STORED, fixed ZipInfo metadata, and canonical Git-filtered payload bytes. This is the minimum sufficient reproducibility control; no extra archive-normalization stage is needed.",
+      "reuseTargets": [
+        "Linux R12 release",
+        "CI",
+        "release engineering",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "packageBytes": 210029,
+        "packageSha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+        "builderSha256": "D8F752E185DF5409F8651E6966972C919BF12D767930D081D538E398E8641350"
+      }
+    },
+    {
+      "context": "Linux R12 reproducible exact-package install acceptance",
+      "claimDecision": "The final reproducible R12 ZIP (ZIP_STORED canonical Git bytes) was installed on the Linux laptop. Installer-pinned sing-box 1.14.2 and warp-plus 1.2.6 verified, all INSTALL.sha256 entries passed, installed version is 4.2.0-linux.12-r38, installed freenet_hub_linux_r37.py SHA-256 is 5599ED9A...D257B1A, and IPv4 routes plus interface inventory were byte-for-byte unchanged before/after install. No network connection was started.",
+      "evidenceSource": [
+        "Linux terminal exact install output for 9B0D413C...C4A4CC3",
+        "installed:INSTALL.json",
+        "installed:INSTALL.sha256"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_EXACT_PACKAGE_INSTALL",
+      "reuseTargets": [
+        "Linux R12 release",
+        "CI",
+        "PROJECT_BRAIN",
+        "handoff"
+      ],
+      "provenance": {
+        "packageBytes": 210029,
+        "packageSha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+        "installedSourceSha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A",
+        "routeAndInterfacesPreserved": true,
+        "networkMutationOnInstall": false
+      }
     }
   ]
 }

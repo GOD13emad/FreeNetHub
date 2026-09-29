@@ -53,10 +53,15 @@
     "integrity": "PASS_AFTER_LOCAL_FIX",
     "uiLauncherSmoke": "PASS_GTK_PROCESS_NO_STDERR",
     "package": {
-      "status": "PASS_LOCAL_CANDIDATE_EXACT_INSTALL_REQUIRED",
+      "status": "PASS_REPRODUCIBLE_EXACT_INSTALL",
       "name": "FreeNetHub_4.2.0_Linux_R12.zip",
-      "bytes": 64892,
-      "sha256": "01C9DDD2104853E7095A4C034138D98872B06FE3DEAF33B25862338997FA9820"
+      "bytes": 210029,
+      "sha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+      "reproducibility": "PASS_WINDOWS_LINUX_IDENTICAL",
+      "supersededHashes": [
+        "01C9DDD2104853E7095A4C034138D98872B06FE3DEAF33B25862338997FA9820",
+        "C358FB2EEE614DC6DD5A8CE252CEFFC16924F0054F2E46C3DC2D37A38CF6092D"
+      ]
     },
     "publicRelease": false,
     "latestTargetedLive": {
@@ -65,12 +70,21 @@
       "gool": "PASS_4.12_DOWN_0.24_UP",
       "sessionCleanup": "PASS",
       "physicalBaseRoutePreserved": "PASS"
+    },
+    "exactPackageInstall": {
+      "status": "PASS",
+      "packageSha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+      "packageBytes": 210029,
+      "installedVersion": "4.2.0-linux.12-r38",
+      "installedSourceSha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A",
+      "integrity": "PASS",
+      "routeAndInterfacesPreserved": "PASS",
+      "networkMutationOnInstall": false
     }
   },
   "openGates": [
     "WINDOWS_R38_FINAL_INSTALLER_REBUILD_AFTER_R12_SOURCE",
     "WINDOWS_R38_INSTALLED_PARITY_AND_FIVE_TAB_SMOKE",
-    "LINUX_R12_EXACT_PACKAGE_INSTALL_ACCEPTANCE",
     "HOSTED_CI_R38_R12",
     "TRUSTED_WINDOWS_AUTHENTICODE"
   ],
