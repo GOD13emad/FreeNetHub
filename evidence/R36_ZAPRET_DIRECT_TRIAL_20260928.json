@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "status": "PASS_DIRECT_DPI_BYPASS",
+  "strategy": "OFFICIAL_DEFAULT_HTTPS_PROFILE",
+  "mode": "DIRECT_NO_VPN_NO_PROXY",
+  "before": [
+    {
+      "ip": "142.251.153.4",
+      "exit": 35,
+      "meta": "curl: (35) schannel: next InitializeSecurityContext failed: SEC_E_INVALID_TOKEN (0x80090308) - The token supplied to the function is invalid\r\n000||0.085815|0.000000|0.097474",
+      "bytes": 0
+    },
+    {
+      "ip": "142.251.154.4",
+      "exit": 35,
+      "meta": "curl: (35) schannel: next InitializeSecurityContext failed: SEC_E_INVALID_TOKEN (0x80090308) - The token supplied to the function is invalid\r\n000||0.076775|0.000000|0.088308",
+      "bytes": 0
+    },
+    {
+      "ip": "142.251.156.4",
+      "exit": 35,
+      "meta": "curl: (35) schannel: next InitializeSecurityContext failed: SEC_E_INVALID_TOKEN (0x80090308) - The token supplied to the function is invalid\r\n000||0.076839|0.000000|0.088298",
+      "bytes": 0
+    }
+  ],
+  "during": [
+    {
+      "ip": "142.251.153.4",
+      "exit": 0,
+      "meta": "204|142.251.153.4|0.076494|0.170160|0.246433",
+      "bytes": 0
+    },
+    {
+      "ip": "142.251.154.4",
+      "exit": 0,
+      "meta": "204|142.251.154.4|0.077040|0.170235|0.246810",
+      "bytes": 0
+    },
+    {
+      "ip": "142.251.156.4",
+      "exit": 0,
+      "meta": "204|142.251.156.4|0.076952|0.169677|0.249310",
+      "bytes": 0
+    }
+  ],
+  "after": {
+    "winws": 0,
+    "broadRoutes": 0,
+    "stagingWinDivertDrivers": 0,
+    "youtube": [
+      {
+        "ip": "142.251.153.4",
+        "exit": 35,
+        "meta": "curl: (35) Recv failure: Connection was reset\r\n000||0.086780|0.000000|0.095514",
+        "bytes": 0
+      },
+      {
+        "ip": "142.251.154.4",
+        "exit": 35,
+        "meta": "curl: (35) Recv failure: Connection was reset\r\n000||0.076887|0.000000|0.087485",
+        "bytes": 0
+      },
+      {
+        "ip": "142.251.156.4",
+        "exit": 35,
+        "meta": "curl: (35) schannel: next InitializeSecurityContext failed: SEC_E_INVALID_TOKEN (0x80090308) - The token supplied to the function is invalid\r\n000||0.085710|0.000000|0.097003",
+        "bytes": 0
+      }
+    ]
+  },
+  "rollback": true,
+  "error": ""
+}

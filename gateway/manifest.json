@@ -6,13 +6,13 @@
   "files": [
     {
       "file": "gateway_control.ps1",
-      "bytes": 11870,
-      "sha256": "478A02A00CB348689EBCE64E5C189090CEAC2DE165CDC94F9B56366852D18697"
+      "bytes": 16430,
+      "sha256": "52E477CC3508834D5C232E195287FA1BB7B97739BD3F102D9CB0F214597B73AF"
     },
     {
       "file": "gateway_request.ps1",
-      "bytes": 3086,
-      "sha256": "A7DE8B31734BE0597881B2C061E5ED7D9C69A7F5A81A5C47EA58A4A96969E32A"
+      "bytes": 3337,
+      "sha256": "E23D4341AF5DCDC243143925B7511E59BBB3CF0CFAECCDDF87F93AE338549F88"
     },
     {
       "file": "Setup-GatewayCore.ps1",
@@ -26,8 +26,8 @@
     },
     {
       "file": "gateway_defaults.json",
-      "bytes": 1245,
-      "sha256": "65197D07D2E6C8B636AE5AC22C2698566C2B60A384ACD3995B3CB899C39CE093"
+      "bytes": 1416,
+      "sha256": "70698A3A11C6C9812109C391F37DA5048E81C6365F8ACCB64FBBE5D3977DB476"
     },
     {
       "file": "runtime_config.ps1",

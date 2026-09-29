@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "FAIL",
+  "priorTrojan": "e704f17ab6dc42a47190:PATH_NOT_VERIFIED_NODE",
+  "results": [
+    {
+      "id": "44bdc29c5ff349d0d6f9",
+      "protocol": "vless",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": "",
+      "error": "PATH_NOT_VERIFIED_NODE"
+    },
+    {
+      "id": "017e0eca11e89f5651c9",
+      "protocol": "ss",
+      "status": "FAIL",
+      "pingMs": null,
+      "downloadMbps": null,
+      "uploadMbps": null,
+      "country": "",
+      "error": "PATH_NOT_VERIFIED_NODE"
+    }
+  ],
+  "restored": true
+}

@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "context": "R33 method/architecture decision after installed R32 audit closure",
+  "objective": "Extend Windows Full System beyond WARP without falsely claiming incomplete UDP/system coverage.",
+  "facts": [
+    {
+      "claim": "sing-box TUN auto_route is supported on Windows; routing-loop prevention is explicitly provided by route.auto_detect_interface/default_interface/outbound.bind_interface.",
+      "source": "https://sing-box.sagernet.org/configuration/inbound/tun/",
+      "status": "CONFIRMED_OFFICIAL"
+    },
+    {
+      "claim": "route.auto_detect_interface binds outbound connections to the default NIC to prevent routing loops under TUN on Windows.",
+      "source": "https://sing-box.sagernet.org/configuration/route/",
+      "status": "CONFIRMED_OFFICIAL"
+    },
+    {
+      "claim": "sing-box supports SOCKS and native Shadowsocks/VMess/VLESS/Trojan/Hysteria2 outbounds; config can be validated with sing-box check.",
+      "source": [
+        "https://sing-box.sagernet.org/configuration/outbound/",
+        "https://sing-box.sagernet.org/configuration/"
+      ],
+      "status": "CONFIRMED_OFFICIAL"
+    },
+    {
+      "claim": "FreeNet Hub Node runtime exposes a project-owned SOCKS inbound on 127.0.0.1:19460 and routes to the selected native Node outbound with auto_detect_interface.",
+      "sourcePath": "app/nodehub.py",
+      "status": "CONFIRMED_PROJECT"
+    },
+    {
+      "claim": "Current gateway PC_TUNNEL is hardcoded to WARP. CFON authoritative gateway config says udp=false; GOOL udp is unknown; Tor SOCKS path is not a general UDP-capable system tunnel.",
+      "sourcePath": [
+        "gateway/gateway_control.ps1",
+        "gateway/gateway_defaults.json",
+        "app/engine.py"
+      ],
+      "status": "CONFIRMED_PROJECT"
+    }
+  ],
+  "decision": {
+    "promoteNow": [
+      "WARP",
+      "NODE"
+    ],
+    "keepBrowserOnly": [
+      "CFON",
+      "TOR",
+      "CUSTOM",
+      "GOOL"
+    ],
+    "autoSystemPolicy": "If target country is explicit, AUTO resolves to NODE; otherwise AUTO resolves to WARP.",
+    "nodeSystemAcceptance": [
+      "selected NODE HTTPS health and strict TCP exit-country must pass before TUN",
+      "SOCKS5 UDP STUN through NODE must pass before TUN",
+      "if target country explicit, UDP public IP country must match target before TUN",
+      "generated PC_TUNNEL config must pass sing-box check",
+      "post-TUN HTTPS + YouTube + UDP STUN must pass",
+      "if target country explicit, post-TUN TCP and UDP countries must match target",
+      "all failure paths rollback TUN and only stop the exact provider started by this gateway"
+    ]
+  },
+  "rejected": [
+    {
+      "option": "Enable all methods as Full System immediately",
+      "reason": "Would overclaim capability where UDP is missing or unverified and could break games/console-like UDP traffic."
+    },
+    {
+      "option": "Treat Tor/CFON SOCKS as sufficient Full System",
+      "reason": "TCP-only/proxy reachability is not sufficient evidence for full system TCP+UDP semantics."
+    }
+  ],
+  "confidence": "HIGH_FOR_ARCHITECTURE; LIVE_NODE_SYSTEM_RUNTIME_NOT_YET_PROVEN",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "R33 release notes",
+    "system provider capability matrix",
+    "technical report"
+  ],
+  "provenance": {
+    "projectRoot": "C:\\Users\\<USER>\\source\\repos\\FreeNetHub",
+    "currentInstalled": "4.2.0-local-r32-audit-closure",
+    "r32Evidence": "evidence/R32_AUDIT_CLOSURE_ACCEPTANCE_20260928.json"
+  }
+}

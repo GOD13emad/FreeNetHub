@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "path": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R36_DirectDPI_Final_Setup.exe",
+  "bytes": 24261589,
+  "sha256": "8BDB02AEEC09E8403AFCE6238EDDB1EC7891F7B88357BF3FF113CF6F225FD87A",
+  "authenticode": "NotSigned",
+  "frozenFiles": 20,
+  "built": "2026-09-29T08:38:55.4069530+03:30"
+}

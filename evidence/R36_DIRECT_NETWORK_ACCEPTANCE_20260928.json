@@ -1,0 +1,295 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS_SOURCE_DIRECT_BLOCKCHECK_PASS_CURL_GATE_OWNER_APPROVAL_OPEN",
+  "context": "No-VPN/no-proxy direct network hardening on Emad-PC-Ultimate",
+  "authority": {
+    "installed": "4.2.0-local-r32-audit-closure",
+    "sourceCandidate": "4.2.0-local-r36-direct-network-hardening",
+    "directAuditJob": "jobs/34153415341534153415341534153415.json"
+  },
+  "confirmedFacts": {
+    "directPath": {
+      "interface": "Ethernet 3",
+      "ipv4": "192.168.20.5",
+      "gateway": "192.168.20.1",
+      "linkSpeed": "1 Gbps",
+      "broadVpnOverrideRoutes": 0,
+      "oigDesired": "off",
+      "oigService": "Stopped",
+      "adapterPacketErrors": 0,
+      "routeStable": true
+    },
+    "cgnat": {
+      "confirmed": true,
+      "cpeWanIpv4": "100.123.107.63",
+      "classification": "RFC6598 shared 100.64.0.0/10",
+      "stunPublicIpv4": "164.215.159.13",
+      "mappingStableAcrossCloudflareAndGoogle": true,
+      "sourcePortPreserved": true,
+      "pcp": false,
+      "natPmp": false,
+      "staticInboundFromWindows": "NOT_AVAILABLE_WITHOUT_UPSTREAM_SUPPORT"
+    },
+    "ipv6": {
+      "localBindingEnabled": false,
+      "defaultRouteCount": 0,
+      "conclusion": "ISP/router IPv6 availability cannot be judged until the local IPv6 binding is trial-enabled with administrator rights.",
+      "liveTrial": {
+        "status": "NO_NATIVE_PUBLIC_IPV6_ROLLED_BACK",
+        "evidence": "evidence/R34_IPV6_NATIVE_TRIAL_RESULT_20260928.json",
+        "globalIpv6": [],
+        "ipv6DefaultRoutes": [],
+        "ipv4Preserved": true,
+        "rollback": true,
+        "conclusion": "Native public IPv6 is not available on the current ISP/router path; local binding was restored to its original disabled state."
+      }
+    },
+    "dns": {
+      "interceptionConfirmed": true,
+      "youtubeSystemAnswer": "10.10.34.35",
+      "publicUdpResolversAlsoIntercepted": [
+        "1.1.1.1",
+        "8.8.8.8",
+        "9.9.9.9"
+      ],
+      "validatedEncryptedBootstrap": {
+        "endpoint": "https://76.76.10.11/p0",
+        "youtubeGlobalAnswers": true
+      },
+      "alternateUdp1253": {
+        "primary": "77.88.8.8:1253",
+        "secondary": "77.88.8.1:1253",
+        "youtube": true,
+        "chatgpt": true,
+        "github": true
+      },
+      "nativeWindowsDoh": {
+        "status": "PASS",
+        "server": "76.76.10.11",
+        "template": "https://76.76.10.11/p0",
+        "allowFallbackToUdp": false,
+        "autoUpgrade": true,
+        "evidence": "evidence/R36_ZAPRET_VALIDATION_HARNESS_AUDIT_20260928.json",
+        "observation": "System resolver returned public YouTube A records while ordinary poisoned DNS baseline had returned 10.10.34.35."
+      }
+    },
+    "dpi": {
+      "youtubeWithRealIpAndCorrectSni": "TLS_RESET",
+      "forcedChromeQuic": "ERR_QUIC_PROTOCOL_ERROR",
+      "openaiDirect": "HTTP_REACHED",
+      "githubDirect": "HTTP_200",
+      "conclusion": "YouTube failure is not DNS-only; destination-specific TLS/SNI/DPI interference is evidenced.",
+      "chromeDohEchQuicDisabled": "FAIL_NO_DOM_WITH_BOUNDED_HEADLESS_TRIAL",
+      "goodbyeDpiTrials": [
+        {
+          "mode": "-5",
+          "status": "FAIL_DIRECT_DPI_LIVE_ROLLBACK",
+          "dnsBypass": true,
+          "youtubeHttpCode": "000",
+          "openaiHttpCode": "401",
+          "githubHttpCode": "200",
+          "directPathPreserved": true,
+          "cleanup": "PASS",
+          "evidence": "evidence/R36_DIRECT_DPI_LIVE_TRIAL_20260928.json"
+        },
+        {
+          "mode": "-6",
+          "status": "FAIL_DIRECT_DPI_LIVE_ROLLBACK",
+          "dnsBypass": true,
+          "youtubeHttpCode": "000",
+          "openaiHttpCode": "401",
+          "githubHttpCode": "200",
+          "directPathPreserved": true,
+          "cleanup": "PASS",
+          "evidence": "evidence/R36_DIRECT_DPI_LIVE_TRIAL2_20260928.json"
+        }
+      ],
+      "zapretBlockcheck": {
+        "status": "PASS_STRATEGY_FOUND",
+        "evidence": "evidence/R36_ZAPRET_BLOCKCHECK_QUICK_20260928.json",
+        "target": "www.youtube.com",
+        "scope": "IPv4 HTTPS only; TLS1.2+TLS1.3; no HTTP; no QUIC; no tpws",
+        "strategy": "--wf-l3=ipv4 --wf-tcp=443 --dpi-desync=multisplit --dpi-desync-split-pos=sniext+1",
+        "tls12": "PASS",
+        "tls13": "PASS",
+        "cleanup": {
+          "winws": 0,
+          "winDivert": 0,
+          "splitRoutes": 0,
+          "tcpTimestamps": "allowed",
+          "routeRestored": true
+        }
+      }
+    },
+    "destinationDependentEgress": {
+      "status": "CONFIRMED",
+      "samePhysicalRoute": "Ethernet 3 -> 192.168.20.1; no /1 VPN overrides; OIG stopped",
+      "observations": [
+        {
+          "destination": "chatgpt.com",
+          "seenSourceIp": "31.171.100.189",
+          "cloudflareLoc": "AZ",
+          "cloudflareColo": "LLK"
+        },
+        {
+          "destination": "api.openai.com",
+          "seenSourceIp": "31.171.100.183",
+          "cloudflareLoc": "AZ",
+          "cloudflareColo": "LLK"
+        },
+        {
+          "destination": "auth.openai.com",
+          "seenSourceIp": "31.171.100.249",
+          "cloudflareLoc": "AZ",
+          "cloudflareColo": "LLK"
+        },
+        {
+          "destination": "api.ipify.org",
+          "seenSourceIp": "31.171.100.56"
+        },
+        {
+          "destination": "icanhazip.com",
+          "seenSourceIp": "164.215.159.13"
+        },
+        {
+          "destination": "cloudflare.com",
+          "seenSourceIp": "164.215.159.13",
+          "cloudflareLoc": "IR",
+          "cloudflareColo": "FRA"
+        },
+        {
+          "destination": "checkip.amazonaws.com",
+          "seenSourceIp": "164.215.159.13"
+        },
+        {
+          "destination": "ipinfo.io",
+          "seenSourceIp": "94.20.158.204"
+        }
+      ],
+      "interpretation": "Strong evidence of carrier/upstream destination-dependent egress/NAT or equivalent traffic steering. Exact ISP mechanism is not proven. OpenAI specifically sees the AZ egress, explaining coarse Baku/Azerbaijan geolocation despite other destinations seeing an Iranian egress."
+    }
+  },
+  "changesApplied": {
+    "product": [
+      "DirectNetworkAudit read-only path retained/validated.",
+      "Physical adapter snapshot now reports ipv6BindingEnabled separately from ipv6DefaultRoutes.",
+      "UI distinguishes IPv6 locally disabled vs upstream route unavailable.",
+      "Direct DNS fallback validates encrypted bootstrap answers and rejects non-global A records.",
+      "DirectNet regression coverage extended."
+    ],
+    "host": [
+      "Installed OpenInternetGateway was cleanly disconnected and desired-state set to off for direct-path testing.",
+      "No MTU, NIC offload, TCP, system DNS, firewall, or persistent routing mutation was applied."
+    ]
+  },
+  "verification": {
+    "directAudit": "PASS_READ_ONLY",
+    "directAuditPathProof": "NO_FREENETHUB_PROXY+PHYSICAL_DEFAULT_ROUTE+NO_BROAD_OVERRIDE_ROUTES+ROUTE_STABLE",
+    "priorRegression": "123 passed",
+    "goodbyeDpiStatic": {
+      "decision": "PREFER_GOODBYEDPI_OVER_ZAPRET_FOR_MINIMUM_SUFFICIENT_WINDOWS_DIRECT_DPI_TRIAL",
+      "upstream": "ValdikSS/GoodbyeDPI",
+      "stableTag": "0.2.2",
+      "releaseAsset": "goodbyedpi-0.2.2.zip",
+      "releaseAssetBytes": 635551,
+      "localZipSha256": "00A2F8B99CD817F8C7FC4C449033015F039D18AF213DE78CB66BF202277C0628",
+      "x64ExeSha256": "331AC6C1D22BA5A0A217F3F27D0D823051869CAFC8B8EF7F2002FA2ACCEBC74E",
+      "winDivertDllSha256": "A97859785A2DF1D4462E7D48D33CCBD89FEDD40DAC4970F4AFD89E63F59EE1EC",
+      "winDivert64SysSha256": "53AB28EC00BE6E6F8AEFA9EE76FC2735E94D7F3F9DBC06EB2B7AC8CD3084A6AF",
+      "winDivert64Signature": "VALID",
+      "exeSignature": "NOT_SIGNED",
+      "license": "Apache-2.0 (GoodbyeDPI); bundled third-party licenses preserved",
+      "runtimeStatus": "UNPROVEN_ADMIN_REQUIRED",
+      "promotion": "DEFERRED_UNTIL_BOUNDED_LIVE_PASS"
+    },
+    "regressionCoreDirect": "126 passed in 2.74s",
+    "regressionGateway": "18 passed in 0.07s",
+    "regressionAdditional": "4 passed in 0.26s",
+    "pyCompile": "PASS",
+    "gitDiffCheck": "PASS",
+    "sourceWpfSmoke": {
+      "status": "PASS",
+      "networkRequested": false,
+      "controls": 145,
+      "width": 1360,
+      "height": 900,
+      "theme": "dark",
+      "fullSystem": false
+    },
+    "metadata": {
+      "status": "PASS",
+      "engineSha256": "130D169D1FD87664C4BE11155F3E0D20BF34CAE124EF17081C1225150559CAEB",
+      "directNetSha256": "99FAC2E50F3B25101C3974E8361732301CE5E486731C9B98E225E390F9CFF956",
+      "uiSha256": "E2AA4377D213F38ECDB3DDCFB1F3CA3E41F753C7BA71021A4A0077475EEA1522",
+      "viewSha256": "1F226CD9E70EB043562404A23E13765DD35AE6E6E8F0619AD120DE780167C80C",
+      "manifestSha256": "B97B5AA6F6E9A731C15F6D657F0BCCDE52615866302B13182F946D682CC0CF4D",
+      "releaseSha256": "DBA0FCD618464E1A2650A81E3D9AD1B5805B237A2DC36120B1E9E95A71F6041E"
+    },
+    "zapretHarnessAudit": {
+      "status": "REDESIGNED_AFTER_THREE_HARNESS_FAILURES",
+      "evidence": "evidence/R36_ZAPRET_VALIDATION_HARNESS_AUDIT_20260928.json",
+      "evidenceSha256": "FFCB8D83CD94910D1E832484F2DB7372A403627D1D78A2C313B60CFD3E44BC81",
+      "note": "Failures were validation-harness defects, not strategy failures. Combined harness retired; curl and Chrome gates separated."
+    },
+    "zapretCurlGate": {
+      "status": "OPEN_OWNER_UAC",
+      "artifact": "artifacts/FNH_R36_ZAPRET_CURL_GATE_RUNNER.zip",
+      "artifactSha256": "9176B76997AE9D639BE0321D46E0121EE588081BF9957097C79498FB07AB7A70",
+      "selfContained": true,
+      "promotionRequirement": "PASS_ZAPRET_DOH_CURL_GATE with exact cleanup, then separate Chrome gate."
+    }
+  },
+  "sources": [
+    "https://github.com/ValdikSS/GoodbyeDPI/releases/tag/0.2.2",
+    "https://github.com/ValdikSS/GoodbyeDPI/blob/master/README.md",
+    "https://github.com/bol-van/zapret/blob/master/docs/windows.en.md"
+  ],
+  "openGates": [
+    "ONE_WINDOWS_UAC_APPROVAL_FOR_SELF_CONTAINED_R36_ZAPRET_DOH_CURL_GATE",
+    "Separate Chrome validation only after Curl Gate PASS.",
+    "Static inbound under CGNAT remains upstream-controlled; native IPv6 trial closed negative."
+  ],
+  "rejectedChanges": [
+    "No speculative MTU change: evidence did not justify it.",
+    "No ordinary public DNS switch: UDP/53 to public resolvers is transparently intercepted.",
+    "No forced QUIC: live Chrome trial failed with ERR_QUIC_PROTOCOL_ERROR.",
+    "Initial decision to defer zapret was SUPERSEDED after both bounded GoodbyeDPI stable trials failed; official ISP-specific zapret blockcheck then found a working strategy.",
+    "No VPN/proxy/tunnel added to this direct-network change set.",
+    "No browser-only ECH promotion: bounded Chrome DoH+ECH/QUIC-disabled trial did not reach YouTube.",
+    "GoodbyeDPI stable -5 and -6 are rejected for promotion on this ISP: both fixed DNS interception but did not restore YouTube HTTPS."
+  ],
+  "confidence": "CONFIRMED_DIRECT_AUDIT+NATIVE_DOH+ZAPRET_BLOCKCHECK; CURL/CHROME_RUNTIME_PROMOTION_UNPROVEN",
+  "research": {
+    "zapret": {
+      "upstream": "bol-van/zapret",
+      "latestStable": "v72.13",
+      "latestStablePublished": "2026-07-21",
+      "latestZipDigest": "sha256:c493e33a0dc4eba23a8686efdaba55f59755ad6ade3564aebd9d13f4c65e2e0c",
+      "windowsGuidance": "Use blockcheck on the actual ISP; avoid copied universal presets; minimize WinDivert filters.",
+      "winBundle": {
+        "repository": "bol-van/zapret-win-bundle",
+        "commit": "6eb463a6758fb48cd101bc55dfd057e6e9d98af1",
+        "commitDate": "2026-09-18",
+        "localPath": "third_party/staging/zapret-win-bundle-6eb463a6"
+      },
+      "plannedBlockcheck": {
+        "target": "www.youtube.com",
+        "ipv4Only": true,
+        "httpsOnly": true,
+        "tls12": true,
+        "tls13": true,
+        "quic": false,
+        "tpws": false,
+        "scanLevel": "quick",
+        "secureDns": "https://76.76.10.11/p0",
+        "tcpTimestampRollback": true
+      },
+      "blockcheckResult": {
+        "status": "PASS_STRATEGY_FOUND",
+        "evidence": "evidence/R36_ZAPRET_BLOCKCHECK_QUICK_20260928.json",
+        "strategy": "--wf-l3=ipv4 --wf-tcp=443 --dpi-desync=multisplit --dpi-desync-split-pos=sniext+1"
+      }
+    }
+  }
+}

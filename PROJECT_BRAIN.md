@@ -1,44 +1,168 @@
-# PROJECT BRAIN — Open Internet Gateway / FreeNet Hub
+# PROJECT BRAIN — FreeNet Hub
 
 Status: CURRENT
-Brain version: R28-local-accepted-2026-09-28
-Authority: working tree R28 candidate + evidence/R28_FINAL_ACCEPTANCE_20260928.json
-Installer: FreeNetHub_4.2.0_R28_Final_Setup.exe
-Installer SHA-256: 2AA91D849A513A21D3BF9903F8E72FFB6A184D378FB357CE4FA7A9D6F7EB0073
+Brain version: r37-windows-runtime-final-2026-09-29
+Installed authority: 4.2.0-local-r37-final
+Source authority: 4.2.0-local-r37-final
+Promotion state: WINDOWS R37 RUNTIME + FINAL INSTALLER ACCEPTED LOCALLY; PUBLIC R28; LINUX INSTALLED 4.2.0-linux.8; RELEASE HYGIENE PASS; PUBLIC R37 PROMOTION ← CURRENT
 
-## Objective / DoD
-A self-contained Windows gateway with browser-only default, explicit WARP full-system mode, separate console gateway, provider-specific connection UI, refreshed/tested public node pool, real path metrics, safe update and evidence-backed install/uninstall.
+## Final Objective / DoD
+FreeNet Hub is the comprehensive free multi-transport connectivity product. It must expose the widest practical set of independent censorship-resilient paths under one understandable UI, with explicit Browser / Full System / Console capability boundaries, pre-connect measurement where technically meaningful, fail-closed behavior, rollback for network mutation, and no hidden DIRECT fallback.
+
+Locked boundary:
+- FreeNet Hub does NOT absorb VPN Gate/OpenVPN relay discovery, pools or caches.
+- VPN Gate/OpenVPN remains owned by OpenInternetGateway.
+- FreeNet Hub expands through independent transport families.
+
+## Current accepted installed baseline
+R37 is the current Windows installed/source authority.
+- Revision: `4.2.0-local-r37-final`; app manifest coreVersion: `4.0-r37-final`.
+- UI: five tabs (Dashboard / Methods / Nodes / Tools / Settings), with Console retained as an independent capability inside Tools.
+- Installed/source parity: PASS for 17 app files + 17 gateway files; zero mismatches.
+- Runtime bootstrap: PASS, self-contained; WARP/Tor/Lyrebird and sing-box gateway core present.
+- Broad source regression: 165 PASS; public-tree security scan PASS with zero forbidden artifacts and zero sensitive hits.
+- Node refresh: PASS; fetch/parse/merge is separated from explicit Test All. Latest installed live refresh parsed 3064, imported 3015, total pool 2000, failed sources 0.
+- Direct base-path measurement: PASS over physical Ethernet 3 with FreeNet Hub proxy bypassed; 78.3 ms / 37.71 Mbps / 5.23 Mbps in the recorded live sample.
+- Browser WARP benchmark: PASS; temporary provider cleanup preserved.
+- Full-System WARP: PASS through official gateway_request path. UpdateCheck while TUN active was bound to pre-TUN Ethernet 3 with proof `BOUND_PRE_TUN_SOURCE_AND_TRACE_NOT_POST_TUN`; system speed passed; Stop removed TUN/session and restored the exact base route.
+- Final metadata promotion on installed runtime: PASS; five-tab post-promotion smoke PASS and route unchanged.
+- Direct-DPI remains an optional fail-closed extension, not the main-product boundary. Live direct/Chrome evidence passes; installed lifecycle-specific acceptance remains UNPROVEN.
+- Trusted Windows Authenticode remains OPEN_NOTSIGNED.
+- Evidence: `evidence/R37_WINDOWS_FINAL_ACCEPTANCE_20260929.json`, `evidence/R37_PROJECT_KNOWLEDGE_20260929.json`, `evidence/CHAT4_R37_FS_OFFICIAL_GATEWAY_ACCEPTANCE_20260929.json`.
+
+## Current R35 source candidate
+R35 extends capability work beyond R32 without promoting/installing it yet.
+- WARP Full System remains accepted baseline.
+- NODE Full System is implemented as a strict candidate.
+- AUTO System policy: explicit target country -> NODE; otherwise WARP.
+- NODE System must prove selected-node HTTPS/TCP country, SOCKS5 UDP STUN, optional UDP country match, sing-box config check, post-TUN HTTPS/YouTube/STUN, post-TUN TCP+UDP country and exact rollback.
+- CFON/TOR/CUSTOM/GOOL remain Browser-only because UDP/system semantics are not proven.
+- Direct bootstrap/update path can retry DNS resolution through public resolver addresses while still using the system/default route and never the FreeNet Hub proxy.
+
+## Current R36 direct-network candidate — no VPN / no proxy
+- Current explicit priority is direct-path hardening without VPN/proxy; R35 NODE Full-System remains preserved but deferred.
+- Installed OIG was cleanly disconnected for direct audit: desired=off, OVPNConnectorService stopped, no /1 full-route overrides.
+- Physical path: Ethernet 3 / Intel I226-V / 192.168.20.5 -> 192.168.20.1, 1 Gbps, zero packet/discard errors in audit.
+- CGNAT is CONFIRMED: CPE UPnP WAN IPv4 100.123.107.63 is RFC6598 shared space; STUN public mapping is 164.215.159.13 and is stable/source-port-preserving across Cloudflare + Google.
+- PCP/NAT-PMP: unavailable. Static inbound cannot be made public from Windows alone under this ISP path.
+- IPv6 live trial: NO_NATIVE_PUBLIC_IPV6_ROLLED_BACK. Enabling ms_tcpip6 produced no global IPv6 address and no ::/0 route; IPv4 stayed healthy and the original disabled binding was restored.
+- DNS interception is CONFIRMED: system and direct UDP/53 queries to router/1.1.1.1/8.8.8.8/9.9.9.9 return private 10.10.34.35 for YouTube.
+- Validated encrypted DNS bootstrap at https://76.76.10.11/p0 returns public YouTube addresses; Yandex alternate DNS on UDP/1253 also returned valid public answers for YouTube/ChatGPT/GitHub.
+- YouTube still resets when connecting to a real public YouTube IP with correct SNI; forced Chrome QUIC fails, and a clean Chrome DoH+ECH/QUIC-disabled trial also failed to reach the page. Therefore the blocker is DNS interception + destination-specific TLS/DPI, not DNS alone.
+- No MTU/NIC/TCP/system-DNS tweak was applied because evidence does not justify it.
+- GoodbyeDPI 0.2.2 stable live trials for official modern modes -5 and -6 both FAILed for YouTube HTTPS while successfully replacing poisoned DNS with public answers; OpenAI/GitHub/direct route stayed healthy and cleanup was exact. GoodbyeDPI is therefore rejected for promotion on this ISP.
+- zapret official blockcheck on exact zapret-win-bundle commit 6eb463a6758fb48cd101bc55dfd057e6e9d98af1 PASSed on this ISP for www.youtube.com over IPv4 HTTPS. Both TLS 1.2 and TLS 1.3 found the same strategy: `--wf-l3=ipv4 --wf-tcp=443 --dpi-desync=multisplit --dpi-desync-split-pos=sniext+1`. Cleanup restored winws/WinDivert/routes/TCP timestamps exactly.
+- Native Windows DoH with 76.76.10.11 / https://76.76.10.11/p0 is separately CONFIRMED: system DNS returned public YouTube A records while poisoned UDP/53 had returned 10.10.34.35.
+- Combined validation harness was retired after three harness-only failures; root causes are recorded in evidence/R36_ZAPRET_VALIDATION_HARNESS_AUDIT_20260928.json. Validation is now split into independent Curl then Chrome gates.
+- Evidence: evidence/R36_DIRECT_NETWORK_ACCEPTANCE_20260928.json
+- R36 evidence SHA-256: 29d6844ca2d574abbe67e9618cd2990b269ef209dde29fedbd3e50a7c2566c9c
+
+## Evidence
+- R36 direct/core/UI/boundary regression: 126 PASS.
+- Gateway/scope regression: 18 PASS.
+- Additional clean-install/protocol regression: 4 PASS.
+- Python compile + git diff check: PASS.
+- R36 source WPF smoke: PASS; networkRequested=false; 145 controls; 1360x900.
+- Prior R35 static regression: 112 core PASS.
+- Gateway/scope regression: 18 PASS.
+- Theme contrast: 3 PASS.
+- Product boundary guard: PASS.
+- R35 source WPF smoke: PASS after manifest refresh.
+- Direct underlay at current audit: Ethernet 3 -> 192.168.20.1; OIG split routes absent; OVPNConnectorService stopped.
+- R35 Node pre-TUN acceptance: PASS.
+  - public nodes: 2000
+  - reachable: 1797
+  - failed sources: 0
+  - selected target: SG
+  - TCP country: SG
+  - UDP country: SG
+  - Ping: 966.5 ms
+  - Download: 2.86 Mbps
+  - Upload: 0.98 Mbps
+  - state restored: true
+- Evidence: evidence/R35_NODE_PRE_TUN_ACCEPTANCE_20260928.json
+- Source gate: evidence/R35_SOURCE_GATE_ACCEPTANCE_20260928.json
+
+## Failure prevention
+R36 zapret runtime validation: the original combined DoH+winws+Chrome harness had three independent harness defects (elevated TEMP redirect path, missing Scratch assignment, nullable Chrome stdout). All three executions rolled back network state exactly. The monolithic harness is retired; evidence is in `evidence/R36_ZAPRET_VALIDATION_HARNESS_AUDIT_20260928.json`. Prevention: independent Curl/Chrome gates, stage evidence written before cleanup, explicit self-contained tool hashes, no scratch/Chrome dependency in Curl Gate.
+
+A previous R33 live harness prepared/refreshed Node state before UAC. When elevation could not be controlled and the run was stopped, a Node listener and temporary state remained. Root cause was harness ordering, not product TUN behavior.
+Fix:
+- outer acceptance no longer mutates before UAC;
+- all backup/preparation/TUN/verification/rollback/state restoration moved inside elevated process;
+- parser validation PASS;
+- interrupted prior state was restored exactly and listener/owner/TUN returned to zero.
+
+
+## Holistic system audit — 2026-09-29
+- Direct-DPI is an extension/capability, not the product boundary. Product scope includes Windows browser providers, Node Hub/protocols, WARP/NODE system paths, Console Gateway, direct-network capabilities, Linux desktop/runtime, Android and iOS tracks, installer/update, release/CI/security and rollback/state management.
+- Public GitHub authority: main at 970c394 (R28). Windows installed authority: R32 audit closure. Linux installed authority: 4.2.0-linux.8 on source 42dbf97. These authorities are intentionally distinct and currently drifted.
+- Local Windows working candidate contains cumulative R29-R36 plus DirectDNS work and is not a release authority.
+- Broad static regression: 152 PASS. Post-hygiene focused regression: 140 PASS. Gateway PowerShell parse PASS. git diff --check PASS with EOL warnings only.
+- Release verifier: app/gateway/cross-platform/windows-package manifests PASS; PUBLIC_MANIFEST FAIL versus dirty candidate; RELEASE hashes FAIL for engine/UI/gateway/acceptanceEvidence. No promotion allowed.
+- Latest R36 final Windows acceptance is FAIL_ROLLED_BACK: candidate installed parity and smoke PASS, Direct-DPI start failed at DIRECT_DPI_DOH_NOT_CLEAN, network rollback PASS, installed R32 restoration PASS.
+- Managed DNS pivot using ctrld 1.5.7: foreground resolver PASS and exact cleanup PASS; Windows service lifecycle FAIL because service self-check cannot reopen persisted config. Root cause narrowed, not promoted.
+- Security/release hygiene initial scan FAIL: finalizer copied full installed private runtime/browser state into repo artifacts and raw browser/runtime evidence was unignored. Exact sensitive backup path was not tracked and no Git history for that path was found. Containment applied: private backup moved outside repo, generated artifacts/raw runtime paths ignored, secret samples redacted in scanner, scanner now fails closed on unreadable candidate files.
+- Release hygiene is now CLOSED_PASS: `security_scan_public.py` reports zero forbidden runtime artifacts and zero sensitive-pattern hits. Installer-build evidence uses a repository-relative path and the build script now prevents absolute user-path recurrence.
+- Evidence: evidence/HOLISTIC_SYSTEM_AUDIT_20260929.json (SHA-256 ae679a3215d71cdd03f045424339bc4773af8fbcbaed15ea406052d6147fdae2).
 
 ## Roadmap
-1. Browser identity/proxy baseline — Completed.
-2. Full-system WARP with rollback — Completed.
-3. Separate console gateway software path — Completed; physical-console field gate remains external.
-4. Strict country + Node Hub — Completed.
-5. R28 provider-specific UI / metrics / refresh / self-update — Completed.
-6. Exact final installer clean-install/upgrade/uninstall/live validation — Completed.
-7. Public-tree/security verification — Completed/PASS.
-8. Hosted CI + GitHub R28 release — ← CURRENT.
+1. Whole-product authority/capability audit — Completed.
+2. R37 target UI/controller/engine convergence — Completed.
+3. Node refresh latency separation + configurable preconnect semantics — Completed/PASS.
+4. Pre-TUN base-route capture and update/node root-path verification — Completed/PASS.
+5. Windows installed runtime, browser WARP, Direct base speed, Full-System WARP and rollback acceptance — Completed/PASS.
+6. Final source/installed metadata promotion + parity + five-tab smoke — Completed/PASS.
+7. R37 Final installer build + exact final installer execution — Completed/PASS.
+8. Canonical public manifest + local public release gate — Completed/PASS.
+9. ← CURRENT: Git commit/push, hosted CI and GitHub release asset promotion.
+10. Trusted Authenticode and physical Console field E2E — external gates.
+11. Android forwarding-core runtime acceptance and iOS signing/device runtime acceptance.
 
-## Accepted current state
-- Static regression: 89 core + 14 gateway/scope PASS.
-- Public refresh: 10 endpoints / 5 independent source families / 30-minute TTL; installed live sample 10 successful, 0 failed.
-- Direct and WARP installed path Ping/Download/Upload: PASS.
-- Node metric contract: verified path only; invalid throughput=N/A.
-- Qualification: clean install + smoke + uninstall + zero residue/listeners PASS.
-- Production upgrade: exact final installer, source parity and user-state preservation PASS.
-- Security/public-tree canonical verification: PASS.
-
-## Open external gates
-- Windows trusted Authenticode signing: OPEN_NOTSIGNED.
-- Physical console game/country E2E: UNPROVEN without attached console traffic.
+## Open Gates / Critical Path
+- R37 Windows runtime/product behavior — CLOSED_PASS.
+- Installed/source manifest parity — CLOSED_PASS.
+- Five-tab UI smoke and no-route-mutation launch — CLOSED_PASS.
+- Node refresh fast fetch/merge behavior — CLOSED_PASS.
+- Full-System WARP + update-through-pre-TUN-base-route + rollback — CLOSED_PASS.
+- Final installer exact execution — CLOSED_PASS. Final SHA-256 `9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D`; installer exit 0, runtime bootstrap PASS, parity PASS, five-tab smoke PASS, route unchanged.
+- Canonical PUBLIC_MANIFEST / RELEASE verifier — CLOSED_PASS.
+- Public GitHub commit/push + hosted CI + release asset promotion — ← CURRENT.
+- Trusted Windows Authenticode — OPEN_NOTSIGNED external gate.
+- Physical console game/country E2E — UNPROVEN external hardware gate.
+- Direct-DPI installed lifecycle — UNPROVEN optional extension; fail-closed and non-blocking for core product.
+- Android forwarding/VPN runtime — OPEN.
+- iOS signing/device runtime — OPEN.
 
 ## Exact Next Action
-Commit/push the canonical hash repair, validate hosted CI retry, then publish the R28 GitHub release asset.
+Create the exact R37 public commit from the verified 376-file candidate, push `main`, observe all hosted CI jobs, then publish the hash-pinned Windows installer asset SHA-256 `9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D`. Do not claim trusted signing until a real Authenticode certificate is available.
 
 ## HISTORY
-- 2026-09-28: Hosted CI run 36432377158 failed only at Windows public-manifest verification because Windows worktree CRLF bytes had been hashed instead of Git clean-filtered bytes; generator/verifier/release hashing were canonicalized and local security/public-tree gates passed.
-- R28: provider-capability UI, 10-source/5-family public refresh, TTL/stale pruning, real Ping/Download/Upload metrics, bounded diverse node benchmarking and GitHub self-update.
-- R28: transport compatibility expanded and fail-closed semantics strengthened.
-- R28: concurrent build supersede prevented with source-freeze guard.
-- R28: uninstall race root-caused to a finishing background engine job and fixed with exact-job cancel/drain plus narrow retry.
-- R28: exact final installer qualified and production-upgraded with state preservation and installed live validation.
+- 2026-09-29 R37 canonical public-tree gate CLOSED_PASS: PUBLIC_MANIFEST, app/gateway/cross-platform/windows package manifests, canonical RELEASE hashes and forbidden-runtime checks PASS; security scan zero hits; 165 regression tests PASS; git diff check PASS. Final installer SHA-256 `9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D` exact execution PASS. Evidence: `evidence/R37_PUBLIC_TREE_ACCEPTANCE_20260929.json`.
+- 2026-09-29 R37 exact final installer acceptance CLOSED_PASS: canonical-metadata installer SHA-256 `9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D` installed with exit 0; runtime bootstrap PASS; source/install parity PASS; all five UI smoke tabs PASS; base route remained Ethernet 3 -> 192.168.20.1. A first metadata verification harness attempt failed before install because helper name `H` collided with PowerShell Get-History alias; rollback completed and helper was renamed `FileHash`. Evidence: `evidence/R37_PUBLIC_METADATA_INSTALL_ACCEPTANCE_20260929.json`.
+- 2026-09-29 R37 final-installer execution fallback: connected execution guard blocked launching the exact Final EXE, so no false PASS was claimed. Prepared `artifacts/R37_FINAL_INSTALL_VERIFY_RUNNER.zip`, SHA-256 `18C1D5F4E7885B510FF888470EB9671BEA28655DDC25FE455653561F1DCD477A`; script SHA-256 `65476D4EA94331BE87F05016DFC65CCC48B83BDD70CD700E9FCE0E6678E33354`. Runner performs hash-pin, backup, install, runtime/parity/five-tab/route verification and rollback on failure.
+- 2026-09-29 R37 Windows runtime final: installed/source authority promoted to 4.2.0-local-r37-final. 165 source tests PASS; security scan zero hits; installed parity 17 app + 17 gateway PASS; five-tab smoke PASS with route unchanged; Node refresh live PASS; Direct base speed PASS; browser WARP benchmark PASS; official Full-System WARP + UpdateCheck bound to pre-TUN Ethernet 3 + system speed + rollback PASS. Final installer static build PASS at SHA-256 8362141DAEAAB7927B097076C98AA2A9A0FFFC4C1E4EF8B130E85451D7433780; exact clean-install reexecution of that metadata-only rebuilt EXE remains UNPROVEN because the execution environment blocked launching it. Evidence: evidence/R37_WINDOWS_FINAL_ACCEPTANCE_20260929.json and evidence/R37_PROJECT_KNOWLEDGE_20260929.json.
+- 2026-09-29 R36 release-hygiene gate CLOSED_PASS: security scan zero hits; installer build evidence sanitized to repo-relative path and builder hardened against absolute user-path recurrence. Current candidate `FreeNetHub_4.2.0_R36_DirectDPI_Final_Setup.exe` SHA-256 `8BDB02AEEC09E8403AFCE6238EDDB1EC7891F7B88357BF3FF113CF6F225FD87A`; finalizer SHA-256 `B68E635B990673935201478565852FAB58391634AD485E149BA58625890D0DC4`. One-elevation installed lifecycle acceptance is CURRENT.
+- 2026-09-29 holistic audit: Direct-DPI reframed as one extension inside the full FreeNet Hub product. Authority drift, release metadata/public-manifest failure, R36 final Windows rollback, managed-DNS service blocker, Linux/public/local divergence and security-hygiene contamination were established. Private installed backup moved outside repo; release-hygiene remains CURRENT.
+- 2026-09-29 R36 managed-DNS pivot: official ctrld v1.5.7 foreground resolver PASS on 127.0.0.1:1053 with Control D p0 (YouTube/GitHub/OpenAI public DNS). Service trial #1 failed from long Windows AF_UNIX socket path; short product path removed that failure. Service trial #2 then failed self-check because `ctrld.toml` was not found. Both trials cleanup exact PASS: DNS 192.168.20.1, no ctrld service/process/listener, ICS SharedAccess stayed Running with PID 5044, NRPT baseline preserved. Current blocker is service config persistence, not upstream DNS. Evidence: `evidence/R36_CTRLD_MANAGED_DNS_ROOT_CAUSE_20260929.json`.
+- 2026-09-29 R36 installed-candidate Start failure: candidate parity + UI smoke PASS, Direct-DPI Start FAIL_ROLLED_BACK. Root cause CONFIRMED: `@(@($Dns1,$Tpl1))` flattened to strings, so `$pair[0]/$pair[1]` passed characters (`7`,`6`) to Windows DoH cmdlets. Fixed by direct `$Dns1/$Tpl1` calls; regression forbids pair indexing. Network and installed R32 rollback PASS. New candidate SHA-256 `5823DEA3641D5628582057C8770D12AD3EBF9989E2434491868E21EA844D2251`. Evidence: `evidence/R36_DIRECT_DPI_SINGLE_DOH_ROOT_CAUSE_20260929.json`.
+- 2026-09-29 R36 cycle gate adjudication: prior cycle FAIL traced to PowerShell scalar unrolling before `.Count`; harness normalized relevant outputs to arrays. Targeted Direct-DPI/direct-network/product-boundary regression 11 PASS and `git diff --check` PASS. Elevated rerun remains UNPROVEN; evidence: `evidence/R36_CYCLE_HARNESS_FIX_20260929.json`.
+- 2026-09-29 R36 packaging root cause: final zapret runner omitted required cygwin1.dll; Windows loader error reproduced by user; rollback state was clean. Fixed by bundling official v72.13 cygwin1.dll (SHA-256 103104A52E5293CE418944725DF19E2BF81AD9269B9A120D71D39028E821499B) and adding it to pre-mutation hash gate.
+- 2026-09-28 R36: official zapret blockcheck PASS on actual ISP; same multisplit/sniext+1 strategy found for TLS1.2 and TLS1.3; exact cleanup PASS.
+- 2026-09-28 R36: native Windows DoH to Control D fixed poisoned system DNS in bounded elevated trials; temporary configuration was rolled back.
+- 2026-09-28 R36: three combined-validation harness defects audited; no strategy conclusion drawn from them; harness retired and Curl/Chrome gates separated.
+- 2026-09-28 R36: self-contained hash-locked Curl Gate artifact prepared; owner UAC is current blocker.
+- 2026-09-28 R36: native IPv6 trial CLOSED_NEGATIVE; no public IPv6/default route appeared and automatic rollback restored the prior binding.
+- 2026-09-28 R36: GoodbyeDPI stable -5 and -6 both fixed DNS poisoning but failed YouTube HTTPS; OpenAI/GitHub/direct route remained healthy and WinDivert/process cleanup PASS.
+- 2026-09-28 R36: after repeated GoodbyeDPI failure, path changed from parameter tuning to upstream-recommended zapret blockcheck on exact bundle commit; quick IPv4 HTTPS-only/no-tpws/no-QUIC scan prepared with TCP timestamp rollback.
+- 2026-09-28 R36: direct-path audit PASS without FreeNetHub proxy/tunnel; CGNAT proven from RFC6598 CPE WAN address plus stable STUN mapping.
+- 2026-09-28 R36: transparent DNS interception proven for YouTube even when UDP/53 is addressed to public resolvers; validated encrypted bootstrap returned public A records.
+- 2026-09-28 R36: real-IP + correct-SNI and forced-QUIC trials still failed for YouTube, isolating destination-specific DPI beyond DNS.
+- 2026-09-28 R36: IPv6 binding found locally disabled; exact rollback-safe admin trial prepared. No speculative MTU/NIC/TCP tuning applied.
+- 2026-09-28 R36: GoodbyeDPI 0.2.2 stable staged and audited for minimum-sufficient direct-DPI trial; runtime/promotion remains UNPROVEN pending elevation.
+- 2026-09-28 R35: current source frozen as non-installable capability candidate; manifest integrity and source smoke PASS.
+- 2026-09-28 R35: Node pre-TUN live acceptance PASS for SG over TCP+UDP with real Ping/Download/Upload and exact state restoration.
+- 2026-09-28 R35: live-harness ordering defect fixed so UAC rejection/interruption cannot leave preflight Node state.
+- 2026-09-28 R33: official sing-box-based NODE Full-System architecture adopted; WARP+NODE only, other methods remain Browser-only until UDP/system evidence exists.
+- 2026-09-28 R32: local audit closure PASS and installed authority.
+- 2026-09-28 R31: architecture boundary locked; VPN Gate/OpenVPN excluded from FreeNet Hub.

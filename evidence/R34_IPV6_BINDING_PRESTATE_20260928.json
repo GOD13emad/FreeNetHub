@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "context": "Direct path / CGNAT remediation",
+  "status": "PRESTATE",
+  "interface": "Ethernet 3",
+  "componentId": "ms_tcpip6",
+  "before": {
+    "enabled": false,
+    "ipv6Addresses": [],
+    "ipv6DefaultRoutes": 0
+  },
+  "rationale": "CGNAT is confirmed and native IPv6 is the only no-VPN/no-proxy path that could independently restore globally routable addressing. FreeNetHub/OIG source audit found no intentional IPv6 disable policy.",
+  "mutation": "Enable-NetAdapterBinding -Name 'Ethernet 3' -ComponentID ms_tcpip6",
+  "rollback": "Disable-NetAdapterBinding -Name 'Ethernet 3' -ComponentID ms_tcpip6",
+  "constraints": [
+    "no reboot",
+    "no DNS mutation",
+    "no MTU mutation",
+    "post-check required"
+  ]
+}

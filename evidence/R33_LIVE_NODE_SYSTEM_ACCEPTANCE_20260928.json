@@ -1,0 +1,40 @@
+{
+  "schema": 2,
+  "date": "2026-09-28",
+  "status": "FAIL",
+  "preflight": {
+    "status": "PASS",
+    "refresh": {
+      "total": 2000,
+      "reachable": 574,
+      "sources": [
+        "AURX_HTTP_VERIFIED",
+        "MORPHEUS_BEST",
+        "V2CROSS_PAGE",
+        "SHADOWSHARE_SUB_EN",
+        "SHADOWSHARE_SUB_DE",
+        "SHADOWSHARE_SUB_FR",
+        "SHADOWSHARE_README_ID",
+        "SHADOWSHARE_README_BN",
+        "SHADOWSHARE_README_ES",
+        "RADIKAL_TOP100",
+        "MATIN_SUB1"
+      ],
+      "failedSources": []
+    },
+    "selected": "ed3c1c5f633bd22adb0c",
+    "country": "SG",
+    "udpCountry": "SG",
+    "pingMs": 1500.1,
+    "downloadMbps": null,
+    "uploadMbps": null,
+    "selectionPolicy": "AUTO"
+  },
+  "start": null,
+  "post": {},
+  "stop": null,
+  "rollbackPass": false,
+  "stateRestored": true,
+  "error": "R33_STARTPC_FAIL_1",
+  "rollbackError": "R33_ROLLBACK_INCOMPLETE"
+}

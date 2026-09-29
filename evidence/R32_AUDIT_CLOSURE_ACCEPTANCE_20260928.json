@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS_LOCAL_INSTALLED_OWNER_REVIEW",
+  "candidate": "R32_AUDIT_CLOSURE",
+  "previousAccepted": "R30_UI_FIDELITY_OWNER_REVIEW",
+  "installer": {
+    "file": "FreeNetHub_4.2.0_R32_AuditClosure_Setup.exe",
+    "bytes": 15881364,
+    "sha256": "23DA773095F54BD0F2AEBF17815E0F9783CF00CDCADDCF17211E84F1154E1B34",
+    "authenticode": "NotSigned"
+  },
+  "verification": {
+    "coreTests": 94,
+    "gatewayScopeTests": 14,
+    "themeContrastTests": 3,
+    "sourceSmoke": "PASS",
+    "installedSmoke": "PASS",
+    "sourceFreeze": "PASS",
+    "installExit": 0,
+    "parity": {
+      "app\\engine.py": {
+        "source": "721DE33A0CC3ECBC0021D7F2099185D91E6A4FC2FCB08FF562784D3CE8F68A50",
+        "installed": "721DE33A0CC3ECBC0021D7F2099185D91E6A4FC2FCB08FF562784D3CE8F68A50",
+        "same": true
+      },
+      "app\\nodehub.py": {
+        "source": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
+        "installed": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
+        "same": true
+      },
+      "app\\FreeNetHub.ps1": {
+        "source": "194104FC9DE6CC9A2304101E624503F8905B3251D96A968CB41F35733FAC924F",
+        "installed": "194104FC9DE6CC9A2304101E624503F8905B3251D96A968CB41F35733FAC924F",
+        "same": true
+      },
+      "app\\View.xaml": {
+        "source": "F083FF0C2A7D0FABBDFE1CD680F4FDA88C286C8C248ED037FE5D1A99D72A5152",
+        "installed": "F083FF0C2A7D0FABBDFE1CD680F4FDA88C286C8C248ED037FE5D1A99D72A5152",
+        "same": true
+      },
+      "app\\manifest.json": {
+        "source": "CAF1DD03E7CC30827004E7FEB567216D25F60418344980A0BB631B97324AE21F",
+        "installed": "CAF1DD03E7CC30827004E7FEB567216D25F60418344980A0BB631B97324AE21F",
+        "same": true
+      },
+      "RELEASE.json": {
+        "source": "8383691087A3D94725E451AEA9CD3A532EA724E3FE9BC353913760429FE52EB9",
+        "installed": "8383691087A3D94725E451AEA9CD3A532EA724E3FE9BC353913760429FE52EB9",
+        "same": true
+      }
+    },
+    "statePreservation": {
+      "data\\node_public_refresh.json": {
+        "preExists": true,
+        "postExists": true,
+        "preSha": "E842A3C88ADE938D219234BBA93252019F0D7CA431DC3B2592D2CBA158AA1F88",
+        "postSha": "E842A3C88ADE938D219234BBA93252019F0D7CA431DC3B2592D2CBA158AA1F88",
+        "preserved": true
+      },
+      "data\\nodes.json": {
+        "preExists": true,
+        "postExists": true,
+        "preSha": "7A6140279C947F1A8BE6DB058E814ACF0F736EA4FBC0C3272C12115B42A0C42B",
+        "postSha": "7A6140279C947F1A8BE6DB058E814ACF0F736EA4FBC0C3272C12115B42A0C42B",
+        "preserved": true
+      },
+      "settings.json": {
+        "preExists": true,
+        "postExists": true,
+        "preSha": "CD084D18D92D4D232D2F64F8D13E87F44803FE4B7D32F0F8B0E64CF42DF6B29B",
+        "postSha": "CD084D18D92D4D232D2F64F8D13E87F44803FE4B7D32F0F8B0E64CF42DF6B29B",
+        "preserved": true
+      },
+      "gateway\\runtime\\local_gateway.json": {
+        "preExists": true,
+        "postExists": true,
+        "preSha": "342C7A2FD0B9A8D66F183541043B37F0D310F9BAD081D7768CE2C6D02BC171F3",
+        "postSha": "342C7A2FD0B9A8D66F183541043B37F0D310F9BAD081D7768CE2C6D02BC171F3",
+        "preserved": true
+      },
+      "gateway\\runtime\\local_provider.json": {
+        "preExists": false,
+        "postExists": false,
+        "preSha": null,
+        "postSha": null,
+        "preserved": true
+      },
+      "gateway\\runtime\\console.profile.json": {
+        "preExists": false,
+        "postExists": false,
+        "preSha": null,
+        "postSha": null,
+        "preserved": true
+      }
+    },
+    "projectListenersAfterInstall": 0
+  },
+  "console": {
+    "localGateway": true,
+    "localProvider": false,
+    "consoleProfile": false,
+    "policy": "FAIL_CLOSED_UNTIL_PROVIDER_OR_PROFILE",
+    "preconnect": "LOCAL_PROVIDER_ONLY_WHEN_CONFIGURED"
+  },
+  "semantics": {
+    "browserPreconnect": "SELECTED_PROVIDER",
+    "systemPreconnect": "FINAL_WARP_PATH",
+    "countrySelector": "BROWSER_COUNTRY_CAPABLE_ONLY",
+    "updateRouting": "SYSTEM_DEFAULT_ROUTE_BYPASS_FNH_PROXY"
+  },
+  "releaseRevision": "4.2.0-local-r32-audit-closure",
+  "harness": {
+    "firstInstallVerifier": "INSTALL_COMPLETED_THEN_HARNESS_SYNTAX_FAIL",
+    "rootCause": "POWERSHELL_TEST_PATH_OPERATOR_PRECEDENCE",
+    "fix": "PARENTHESIZED_TEST_PATH",
+    "productImpact": "NONE"
+  },
+  "openGates": [
+    "ALL_PROVIDER_FULL_SYSTEM",
+    "WIREGUARD_PROFILE_PRECONNECT_SPEED",
+    "TRUSTED_WINDOWS_AUTHENTICODE",
+    "PHYSICAL_CONSOLE_FIELD_E2E",
+    "PUBLIC_GITHUB_PROMOTION"
+  ]
+}

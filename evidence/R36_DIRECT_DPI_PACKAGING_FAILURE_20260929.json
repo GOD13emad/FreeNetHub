@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "R36 Direct-DPI final runner packaging failure",
+  "status": "ROOT_CAUSE_CONFIRMED_FIXED",
+  "failure": "winws.exe loader error: cygwin1.dll was missing from the self-contained runner package.",
+  "rootCause": "Packaging manifest copied winws.exe + WinDivert.dll + WinDivert64.sys but omitted zapret's required cygwin1.dll from the same official v72.13 windows-x86_64 bundle.",
+  "evidence": {
+    "userObserved": "Windows loader dialog explicitly named cygwin1.dll",
+    "sourcePath": "C:\\Users\\<USER>\\source\\repos\\FreeNetHub\\third_party\\staging\\zapret-v72.13\\unpacked\\zapret-v72.13\\binaries\\windows-x86_64\\cygwin1.dll",
+    "bytes": 2954293,
+    "sha256": "103104A52E5293CE418944725DF19E2BF81AD9269B9A120D71D39028E821499B",
+    "releaseZipSha256": "C493E33A0DC4EBA23A8686EFDABA55F59755AD6ADE3564AEBD9D13F4C65E2E0C"
+  },
+  "prevention": [
+    "cygwin1.dll is now bundled beside winws.exe.",
+    "Run-DirectDPI.ps1 hash-gates cygwin1.dll before any DNS/WinDivert mutation.",
+    "Self-contained package is rebuilt after dependency fix."
+  ],
+  "rollbackState": "PASS: DNS restored to 192.168.20.1; no winws process; no WinDivert driver; no /1 routes.",
+  "reuseTargets": [
+    "FreeNetHub packaging checklist",
+    "R36 evidence",
+    "future zapret integration"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "stdout": "{\r\n  \"status\": \"PASS\",\r\n  \"refresh\": {\r\n    \"total\": 2000,\r\n    \"reachable\": 1797,\r\n    \"sources\": [\r\n      \"AURX_HTTP_VERIFIED\",\r\n      \"MORPHEUS_BEST\",\r\n      \"V2CROSS_PAGE\",\r\n      \"SHADOWSHARE_SUB_EN\",\r\n      \"SHADOWSHARE_SUB_DE\",\r\n      \"SHADOWSHARE_SUB_FR\",\r\n      \"SHADOWSHARE_README_ID\",\r\n      \"SHADOWSHARE_README_BN\",\r\n      \"SHADOWSHARE_README_ES\",\r\n      \"RADIKAL_TOP100\",\r\n      \"MATIN_SUB1\"\r\n    ],\r\n    \"failedSources\": []\r\n  },\r\n  \"selected\": \"b1a0c8cff7eca59f9cee\",\r\n  \"country\": \"SG\",\r\n  \"udpCountry\": \"SG\",\r\n  \"pingMs\": 966.5,\r\n  \"downloadMbps\": 2.86,\r\n  \"uploadMbps\": 0.98,\r\n  \"selectionPolicy\": \"AUTO\"\r\n}",
+  "restored": true,
+  "error": "",
+  "result": {
+    "status": "PASS",
+    "refresh": {
+      "total": 2000,
+      "reachable": 1797,
+      "sources": [
+        "AURX_HTTP_VERIFIED",
+        "MORPHEUS_BEST",
+        "V2CROSS_PAGE",
+        "SHADOWSHARE_SUB_EN",
+        "SHADOWSHARE_SUB_DE",
+        "SHADOWSHARE_SUB_FR",
+        "SHADOWSHARE_README_ID",
+        "SHADOWSHARE_README_BN",
+        "SHADOWSHARE_README_ES",
+        "RADIKAL_TOP100",
+        "MATIN_SUB1"
+      ],
+      "failedSources": []
+    },
+    "selected": "b1a0c8cff7eca59f9cee",
+    "country": "SG",
+    "udpCountry": "SG",
+    "pingMs": 966.5,
+    "downloadMbps": 2.86,
+    "uploadMbps": 0.98,
+    "selectionPolicy": "AUTO"
+  }
+}

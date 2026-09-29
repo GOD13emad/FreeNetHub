@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "status": "FAIL_EFFECTIVENESS",
+  "mode": "DIRECT_NO_VPN_NO_PROXY",
+  "before": {
+    "at": "2026-09-28T23:29:56.8670688+03:30",
+    "defaultRoute": [
+      {
+        "InterfaceAlias": "Ethernet 3",
+        "NextHop": "192.168.20.1",
+        "RouteMetric": 0,
+        "InterfaceMetric": 25
+      }
+    ],
+    "dns": {
+      "ok": true,
+      "answers": [
+        "10.10.34.35"
+      ]
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Connection timed out after 6005 milliseconds\r\n000||0.000000|0.000000|6.005778",
+      "bytes": 0
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|162.159.140.245|0.027531|0.054034|0.299201",
+      "bytes": 151
+    },
+    "github": {
+      "url": "https://github.com/",
+      "exit": 0,
+      "meta": "200|140.82.121.3|0.095735|0.188778|1.009826",
+      "bytes": 576232
+    },
+    "chatgptTrace": {
+      "url": "https://chatgpt.com/cdn-cgi/trace",
+      "exit": 0,
+      "meta": "200|172.64.155.209|0.037057|0.063962|0.084322",
+      "bytes": 203
+    },
+    "goodbyedpiProcesses": [],
+    "winDivertServices": []
+  },
+  "during": {
+    "at": "2026-09-28T23:30:08.2464122+03:30",
+    "processId": 48064,
+    "processAlive": true,
+    "dns": {
+      "ok": true,
+      "answers": [
+        "142.251.153.4",
+        "142.251.155.4",
+        "142.251.152.4",
+        "142.251.156.4",
+        "142.251.150.4",
+        "142.251.154.4",
+        "142.251.151.4",
+        "142.251.157.4"
+      ]
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Connection timed out after 6006 milliseconds\r\n000||0.000000|0.000000|6.006724",
+      "bytes": 0
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|162.159.140.245|0.086322|0.119257|0.332340",
+      "bytes": 151
+    },
+    "github": {
+      "url": "https://github.com/",
+      "exit": 0,
+      "meta": "200|140.82.121.3|0.203524|0.293386|0.773026",
+      "bytes": 576231
+    },
+    "chatgptTrace": {
+      "url": "https://chatgpt.com/cdn-cgi/trace",
+      "exit": 0,
+      "meta": "200|8.47.69.0|0.205683|0.306256|0.399338",
+      "bytes": 204
+    },
+    "broadRoutes": [],
+    "proxy": "\r\nCurrent WinHTTP proxy settings:\r\n\r\n    Direct access (no proxy server).\r\n\r\n"
+  },
+  "after": {
+    "at": "2026-09-28T23:30:18.2453533+03:30",
+    "goodbyedpiProcesses": [],
+    "winDivertServices": [],
+    "broadRoutes": [],
+    "defaultRoute": [
+      {
+        "InterfaceAlias": "Ethernet 3",
+        "NextHop": "192.168.20.1",
+        "RouteMetric": 0,
+        "InterfaceMetric": 25
+      }
+    ],
+    "dns": {
+      "ok": true,
+      "answers": [
+        "10.10.34.35"
+      ]
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Connection timed out after 6003 milliseconds\r\n000||0.000000|0.000000|6.003419",
+      "bytes": 0
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|172.66.0.243|0.034912|0.067668|0.302395",
+      "bytes": 151
+    }
+  },
+  "rollback": true,
+  "error": ""
+}

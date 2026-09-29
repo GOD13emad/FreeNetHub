@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "candidate": "R30_UI_FIDELITY_OWNER_REVIEW",
+  "installerSha256": "78A2A646387A2D8CB347F09A8C7D6C7E6104E52E56A8DFF8D0EE169FA313B6A8",
+  "installExit": 0,
+  "parity": {
+    "app\\engine.py": true,
+    "app\\nodehub.py": true,
+    "app\\FreeNetHub.ps1": true,
+    "app\\View.xaml": true,
+    "app\\manifest.json": true,
+    "RELEASE.json": true
+  },
+  "state": {
+    "settings.json": {
+      "preserved": true,
+      "sha256": "CD084D18D92D4D232D2F64F8D13E87F44803FE4B7D32F0F8B0E64CF42DF6B29B"
+    },
+    "data\\nodes.json": {
+      "preserved": true,
+      "sha256": "D39B82B30CD42AB77C2690E64FC4730B282147B4B6A9374080698D0877B508C7"
+    },
+    "data\\node_public_refresh.json": {
+      "preserved": true,
+      "sha256": "FB7937DA2F16DBF51C3A961BFAD767426EE2834BE90D4B63AF34078F5AEEB36D"
+    }
+  },
+  "projectListenersAfterInstall": 0,
+  "trustedWindowsSigning": "NotSigned"
+}

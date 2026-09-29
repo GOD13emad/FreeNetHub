@@ -1,0 +1,216 @@
+{
+  "schema": 1,
+  "utc": "2026-09-29T07:37:08.2495720+00:00",
+  "status": "PASS",
+  "pre": {
+    "InterfaceIndex": 18,
+    "InterfaceAlias": "Ethernet 3",
+    "NextHop": "192.168.20.1",
+    "RouteMetric": 0
+  },
+  "start": {
+    "schema": 1,
+    "action": "StartPc",
+    "utc": "2026-09-29T11:06:36.7135151+03:30",
+    "exit": 0,
+    "result": {
+      "status": "PASS",
+      "running": false,
+      "mode": "PC_TUNNEL",
+      "tun": {
+        "name": "FreeNetHub",
+        "status": "Up",
+        "ifIndex": 2,
+        "backend": "WINDOWS_TUN"
+      },
+      "console": {
+        "name": "",
+        "description": "",
+        "status": "Missing",
+        "ifIndex": null,
+        "manual": {
+          "ip": "192.168.77.2",
+          "prefix": 24,
+          "gateway": "192.168.77.1",
+          "dns": "1.1.1.1"
+        },
+        "backend": "WSL2_AUTO_REDIRECT",
+        "usb": null,
+        "router": null,
+        "distro": null
+      },
+      "session": {
+        "schema": 4,
+        "mode": "PC_TUNNEL",
+        "provider": "WARP",
+        "baseRoute": {
+          "ifIndex": 18,
+          "interfaceAlias": "Ethernet 3",
+          "sourceAddress": "192.168.20.5",
+          "nextHop": "192.168.20.1",
+          "routeMetric": 0,
+          "interfaceMetric": 25
+        },
+        "baseTrace": {
+          "fl": "1041f33",
+          "h": "www.cloudflare.com",
+          "ip": "86.57.5.218",
+          "ts": "1790667407.000",
+          "visit_scheme": "https",
+          "uag": "curl/8.21.0",
+          "colo": "FRA",
+          "sliver": "050-tier1",
+          "http": "http/1.1",
+          "loc": "IR",
+          "tls": "TLSv1.3",
+          "sni": "plaintext",
+          "warp": "off",
+          "gateway": "off",
+          "rbi": "off",
+          "kex": "X25519"
+        },
+        "providerKind": "WARP_SOCKS",
+        "nodePolicy": null,
+        "providerPreexisting": false,
+        "profileSha256": null,
+        "started": "2026-09-29T11:06:52.9550416+03:30",
+        "verify": {
+          "targetCountry": "AUTO",
+          "providerUdpBefore": {
+            "status": "PASS",
+            "publicIp": "104.28.246.167",
+            "country": "UNVERIFIED_AUTO",
+            "countryVerified": false,
+            "seconds": 0.09793229997740127,
+            "relay": [
+              "127.0.0.1",
+              59062
+            ]
+          },
+          "trace": {
+            "fl": "930f19",
+            "h": "www.cloudflare.com",
+            "ip": "104.28.214.161",
+            "ts": "1790667412.000",
+            "visit_scheme": "https",
+            "uag": "curl/8.21.0",
+            "colo": "FRA",
+            "sliver": "none",
+            "http": "http/1.1",
+            "loc": "IR",
+            "tls": "TLSv1.3",
+            "sni": "plaintext",
+            "warp": "on",
+            "gateway": "off",
+            "rbi": "off",
+            "kex": "X25519"
+          },
+          "youtube": "204",
+          "udp": {
+            "status": "PASS",
+            "public_ip": "104.28.246.163",
+            "public_port": 44278,
+            "seconds": 0.10273099999176338
+          },
+          "udpCountry": "UNVERIFIED_AUTO"
+        },
+        "manual": null
+      }
+    }
+  },
+  "update": {
+    "exit": 0,
+    "record": {
+      "schema": 1,
+      "version": "4.0",
+      "job": "c4b22929c4b22929c4b22929c4b22929",
+      "action": "UpdateCheck",
+      "exit": 0,
+      "utc": "2026-09-29T11:06:54.786514+03:30",
+      "result": {
+        "tag": "v4.2.0-r18-virtual-final",
+        "name": "FreeNet Hub 4.2.0 — R18 Virtual Validation Final",
+        "published": "2026-09-26T11:03:10Z",
+        "htmlUrl": "https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.2.0-r18-virtual-final",
+        "currentRevision": "4.2.0-local-r37-product-final-candidate",
+        "currentRevisionNumber": 37,
+        "remoteRevisionNumber": 17,
+        "updateAvailable": false,
+        "asset": {
+          "name": "FreeNetHub_4.2.0_R17_Final_Setup.exe",
+          "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.2.0-r18-virtual-final/FreeNetHub_4.2.0_R17_Final_Setup.exe",
+          "bytes": 15852838,
+          "digest": "sha256:2a6548affe8f2cfc483e9c3ce6eed121577488b3fe3dec015361144a54a44eff"
+        },
+        "rootPath": {
+          "bound": true,
+          "interfaceAlias": "Ethernet 3",
+          "proof": "BOUND_PRE_TUN_SOURCE_AND_TRACE_NOT_POST_TUN"
+        }
+      }
+    }
+  },
+  "systemSpeed": {
+    "exit": 0,
+    "record": {
+      "schema": 1,
+      "version": "4.0",
+      "job": "c4c32929c4c32929c4c32929c4c32929",
+      "action": "SystemSpeed",
+      "exit": 0,
+      "utc": "2026-09-29T11:06:58.949681+03:30",
+      "result": {
+        "mode": "SYSTEM",
+        "provider": "WARP",
+        "path": "CURRENT_SYSTEM_DEFAULT_ROUTE",
+        "ok": true,
+        "pingMs": 404.3,
+        "pingType": "HTTPS_RTT",
+        "downloadMbps": 14.34,
+        "uploadMbps": 5.16,
+        "country": "IR",
+        "exitIp": "104.28.214.161",
+        "warp": "on",
+        "checked": "2026-09-29T11:06:58.949596+03:30",
+        "error": ""
+      }
+    }
+  },
+  "stop": {
+    "schema": 1,
+    "action": "Stop",
+    "utc": "2026-09-29T11:07:01.2377621+03:30",
+    "exit": 0,
+    "result": {
+      "status": "PASS",
+      "running": false,
+      "mode": "",
+      "tun": null,
+      "console": {
+        "name": "",
+        "description": "",
+        "status": "Missing",
+        "ifIndex": null,
+        "manual": {
+          "ip": "192.168.77.2",
+          "prefix": 24,
+          "gateway": "192.168.77.1",
+          "dns": "1.1.1.1"
+        },
+        "backend": "WSL2_AUTO_REDIRECT",
+        "usb": null,
+        "router": null,
+        "distro": null
+      },
+      "session": null
+    }
+  },
+  "post": {
+    "InterfaceIndex": 18,
+    "InterfaceAlias": "Ethernet 3",
+    "NextHop": "192.168.20.1",
+    "RouteMetric": 0
+  },
+  "routeRestored": true,
+  "errors": []
+}

@@ -1,16 +1,22 @@
 """FreeNet Hub 4: browser-scoped, bounded, explicit control. No system VPN mutation."""
 from __future__ import annotations
-import argparse, concurrent.futures, contextlib, ctypes as C, datetime as dt, hashlib, importlib.util, ipaddress, json, os, pathlib, re, shutil, socket, subprocess as sp, sys, time, uuid, zipfile
+import argparse, concurrent.futures, contextlib, ctypes as C, datetime as dt, hashlib, importlib.util, ipaddress, json, os, pathlib, re, shutil, socket, ssl, subprocess as sp, sys, time, urllib.error, urllib.request, uuid, zipfile
 from ctypes import wintypes as W
 ROOT=pathlib.Path(__file__).resolve().parent.parent
 APP=ROOT/'app'
 _nhspec=importlib.util.spec_from_file_location("freenethub_nodehub",APP/"nodehub.py")
 NH=importlib.util.module_from_spec(_nhspec);_nhspec.loader.exec_module(NH)
+_dnspec=importlib.util.spec_from_file_location("freenethub_directnet",APP/"directnet.py")
+DN=importlib.util.module_from_spec(_dnspec);_dnspec.loader.exec_module(DN)
 PORTS={'NODE':19460,'WARP':19410,'GOOL':19413,'CFON':19414,'TOR':19450,'WEBTUNNEL':19452,'OBFS4':19453}
-DEFAULT={'theme':'dark','country':'AUTO','home':'https://www.youtube.com/','monitor':False,'autoRepair':False,'showIp':False,'minimizeToTray':True,'order':['NODE','WARP','TOR','GOOL','CFON'],'localProxy':'socks5h://127.0.0.1:9909','includeDirect':False}
+DEFAULT={'theme':'dark','country':'AUTO','home':'https://www.youtube.com/','monitor':False,'autoRepair':False,'showIp':False,'minimizeToTray':True,'order':['NODE','WARP','TOR','GOOL','CFON'],'localProxy':'socks5h://127.0.0.1:9909','includeDirect':False,'testPathMode':'BASE','pingTimeoutSec':10,'downloadTimeoutSec':30,'uploadTimeoutSec':30}
 ALLOWED_COUNTRIES={'AT','DE','NL','US','CA','GB','FR','SG','JP','AUTO'}
 PUBLIC_REFRESH_TTL_SECONDS=1800
 PUBLIC_NODE_SOURCES=(
+ # Measurement-backed feeds are ordered first so the bounded 2k pool does not
+ # fill with lower-confidence TCP-only candidates before locally verified feeds.
+ ('AURX_HTTP_VERIFIED','aurx-http-verified','https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt'),
+ ('MORPHEUS_BEST','morpheusadam-measured','https://raw.githubusercontent.com/morpheusadam/v2ray-config/main/subs/bundles/best.txt'),
  ('V2CROSS_PAGE','v2cross','https://v2cross.com/en/free-v2ray-nodes/'),
  ('SHADOWSHARE_SUB_EN','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_en'),
  ('SHADOWSHARE_SUB_DE','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/sub_de'),
@@ -19,9 +25,19 @@ PUBLIC_NODE_SOURCES=(
  ('SHADOWSHARE_README_BN','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-bn.md'),
  ('SHADOWSHARE_README_ES','pawdroid-shadowshare','https://raw.githubusercontent.com/Pawdroid/Free-servers/main/static/README-es.md'),
  ('RADIKAL_TOP100','0xradikal','https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/top100.txt'),
- ('MORPHEUS_MINI','morpheusadam','https://raw.githubusercontent.com/morpheusadam/v2ray-config/main/subs/bundles/mini.txt'),
  ('MATIN_SUB1','matinghanbari','https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/v2ray/subs/sub1.txt'),
 )
+PUBLIC_COUNTRY_NODE_SOURCES={
+ 'AT':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-AT.txt',
+ 'DE':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-DE.txt',
+ 'NL':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-NL.txt',
+ 'US':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-US.txt',
+ 'CA':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-CA.txt',
+ 'GB':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-GB.txt',
+ 'FR':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-FR.txt',
+ 'SG':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-SG.txt',
+ 'JP':'https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/v2ray-base64-JP.txt',
+}
 FLAGS=0x08000000|0x00000200
 JOB=''; DEADLINE=float('inf'); STARTED=[]
 
@@ -65,7 +81,22 @@ def validate_settings(s):
  if u.scheme!='https' or not u.hostname or u.username or u.password:raise ValueError('HOME_MUST_BE_HTTPS')
  local_proxy(s.get('localProxy',''))
  if any(x not in PORTS for x in s.get('order',[])):raise ValueError('INVALID_AUTO_ORDER')
+ if str(s.get('testPathMode','BASE')).upper() not in ('BASE','SELECTED'):raise ValueError('INVALID_TEST_PATH_MODE')
+ for k,lo,hi in (('pingTimeoutSec',3,30),('downloadTimeoutSec',10,120),('uploadTimeoutSec',10,120)):
+  try:v=int(s.get(k,DEFAULT[k]))
+  except (TypeError,ValueError):raise ValueError('INVALID_'+k.upper())
+  if not lo<=v<=hi:raise ValueError('INVALID_'+k.upper())
+  s[k]=v
+ s['testPathMode']=str(s.get('testPathMode','BASE')).upper()
  return {k:s.get(k,v) for k,v in DEFAULT.items()}
+def test_timeouts():
+ s=settings()
+ def b(k,d,lo,hi):
+  try:v=int(s.get(k,d))
+  except (TypeError,ValueError):v=d
+  return max(lo,min(v,hi))
+ return {'ping':b('pingTimeoutSec',10,3,30),'download':b('downloadTimeoutSec',30,10,120),'upload':b('uploadTimeoutSec',30,10,120)}
+
 def local_proxy(uri):
  from urllib.parse import urlparse
  u=urlparse(uri)
@@ -104,6 +135,11 @@ def node_selected(store=None):
  s=node_store() if store is None else store;sid=s.get('selected')
  return next((x for x in s['nodes'] if x.get('id')==sid),None)
 
+def node_source_quality(n):
+ # Upstream verification is only a ranking hint; local HTTPS/path verification remains mandatory.
+ src=str(n.get('source') or '')
+ return 0 if src in ('AURX_HTTP_VERIFIED','MORPHEUS_BEST') or src.startswith('AURX_COUNTRY_') else 1
+
 def node_select(node_id):
  s=node_store()
  if not any(x.get('id')==node_id for x in s['nodes']):raise ValueError('NODE_NOT_FOUND')
@@ -126,6 +162,21 @@ def node_endpoint_probe(n,timeout=1.25):
   return {'reachable':True,'latency_ms':round((time.monotonic()-started)*1000,1),'checked':now(),'type':'TCP_ENDPOINT_ONLY'}
  except (OSError,ValueError):
   return {'reachable':False,'latency_ms':None,'checked':now(),'type':'TCP_ENDPOINT_ONLY'}
+
+def node_endpoint_tests_fresh(store=None,ttl_seconds=300):
+ s=node_store() if store is None else store
+ nodes=list(s.get('nodes') or [])
+ if not nodes:return False
+ now_utc=dt.datetime.now(dt.timezone.utc)
+ for n in nodes:
+  ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else None
+  if not ep or not ep.get('checked'):return False
+  try:
+   stamp=dt.datetime.fromisoformat(str(ep.get('checked')).replace('Z','+00:00'))
+   if stamp.tzinfo is None:stamp=stamp.replace(tzinfo=dt.timezone.utc)
+   if (now_utc-stamp.astimezone(dt.timezone.utc)).total_seconds()>ttl_seconds:return False
+  except ValueError:return False
+ return True
 
 def node_batch_fast():
  s=node_store()
@@ -167,14 +218,53 @@ def node_record_test(node_id,h):
    n['history']=hist[-20:]
  save_node_store(s)
 
+def node_refresh_country_verified(target,force=False):
+ target=str(target or '').upper()
+ url=PUBLIC_COUNTRY_NODE_SOURCES.get(target)
+ if not url:return {'refreshed':False,'country':target,'reason':'NO_COUNTRY_SHARD'}
+ receipt_path=ROOT/'data'/'node_country_refresh.json';receipt=read(receipt_path,{}) or {}
+ rec=receipt.get(target) if isinstance(receipt.get(target),dict) else {}
+ source='AURX_COUNTRY_'+target
+ if not force and any(str(n.get('source') or '')==source for n in node_store()['nodes']):
+  stamp=str(rec.get('lastSuccessUtc') or '')
+  try:
+   when=dt.datetime.fromisoformat(stamp.replace('Z','+00:00'))
+   if when.tzinfo is None:when=when.replace(tzinfo=dt.timezone.utc)
+   if (dt.datetime.now(dt.timezone.utc)-when.astimezone(dt.timezone.utc)).total_seconds()<PUBLIC_REFRESH_TTL_SECONDS:
+    return {'refreshed':False,'fresh':True,'country':target,'source':source}
+  except ValueError:pass
+ rootctx=root_network_context()
+ r=root_curl(url,seconds=20,size=NH.MAX_NODE_TEXT,ctx=rootctx)
+ if r.get('exit')!=0 or r.get('code')!='200':
+  return {'refreshed':False,'fresh':False,'country':target,'source':source,'error':str(r.get('error') or r.get('code') or 'UNREACHABLE')[:160]}
+ try:p=NH.parse_blob(r.get('body',''),source)
+ except ValueError as ex:return {'refreshed':False,'fresh':False,'country':target,'source':source,'error':str(ex)}
+ incoming=list(p.get('nodes') or [])
+ if not incoming:return {'refreshed':False,'fresh':False,'country':target,'source':source,'error':'COUNTRY_SHARD_EMPTY'}
+ old=node_store();old_by={str(n.get('id')):n for n in old['nodes'] if n.get('id')}
+ matching=[old_by[str(n.get('id'))] for n in incoming if str(n.get('id')) in old_by]
+ fresh=NH.merge(matching,incoming);fresh_ids={str(n.get('id')) for n in fresh}
+ preserved=[n for n in old['nodes'] if str(n.get('id')) not in fresh_ids]
+ final=(fresh+preserved)[:NH.MAX_NODES]
+ selected=str(old.get('selected') or '')
+ if not any(str(n.get('id'))==selected for n in final):selected=str(final[0].get('id')) if final else ''
+ save_node_store({'schema':1,'selected':selected,'nodes':final})
+ stamp=now();receipt[target]={'status':'PASS','lastSuccessUtc':stamp,'source':source,'found':len(incoming),'parseErrors':len(p.get('errors') or [])}
+ write(receipt_path,receipt)
+ return {'refreshed':True,'fresh':True,'country':target,'source':source,'found':len(incoming),'total':len(final),'parseErrors':len(p.get('errors') or [])}
+
 def ensure_node(target='AUTO',limit=12):
  s=node_store()
  if not s['nodes']:raise ValueError('NODE_POOL_EMPTY')
  target=str(target or 'AUTO').upper()
  if target!='AUTO':
+  # Pull the verified country shard as a ranking hint. Failure is non-fatal:
+  # cached/public nodes remain available and every candidate is still verified locally.
+  node_refresh_country_verified(target,False)
+  s=node_store()
   # Strict-country connect first performs the same concurrent TCP endpoint screen
   # as Test All, so dead public nodes do not consume the real HTTPS/country budget.
-  node_batch_fast()
+  if not node_endpoint_tests_fresh(s):node_batch_fast()
   s=node_store()
   candidates=[n for n in s['nodes'] if isinstance(n.get('endpoint_test'),dict) and (n['endpoint_test'].get('reachable') is True or str(n.get('protocol','')).lower()=='hysteria2')]
   if not candidates:raise RuntimeError('NODE_POOL_NO_REACHABLE_ENDPOINTS')
@@ -182,12 +272,13 @@ def ensure_node(target='AUTO',limit=12):
  def score(n):
   lt=n.get('last_test') if isinstance(n.get('last_test'),dict) else {}
   exact=target!='AUTO' and lt.get('healthy') and str(lt.get('country','')).upper()==target
+  shard=target!='AUTO' and str(n.get('source') or '')=='AURX_COUNTRY_'+target
   aliases={'AT':('austria','österreich','autriche'),'DE':('germany','deutschland','allemagne'),'NL':('netherlands','niederlande','pays-bas','holland'),'US':('united states','usa','états unis','estados unidos'),'CA':('canada','kanada'),'GB':('united kingdom','uk','royaume-uni','vereinigtes königreich'),'FR':('france','frankreich','francia'),'SG':('singapore','singapour','singapur'),'JP':('japan','japon','japan')}
   name=str(n.get('name','')).lower()
   hint=target!='AUTO' and (target.lower() in name or any(x in name for x in aliases.get(target,())))
   ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
   healthy=bool(lt.get('healthy'));lat=lt.get('seconds')
-  return (0 if exact else 1,0 if hint else 1,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if healthy else 1,0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),float(lat) if isinstance(lat,(int,float)) else 9999)
+  return (0 if exact else 1,0 if shard else 1,0 if hint else 1,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if healthy else 1,node_source_quality(n),0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),float(lat) if isinstance(lat,(int,float)) else 9999)
  nodes=sorted(s['nodes'],key=score)
  last=[]
  for n in nodes[:max(1,min(int(limit),24))]:
@@ -240,15 +331,122 @@ def native(argv,timeout=10):
   finally:
    if p.poll() is None:p.kill();p.communicate(timeout=3)
 
-def curl(url,proxy='',seconds=7,body=True,size=262144):
+def public_dns_ips(host):
+ host=str(host or '').strip().lower()
+ if not re.fullmatch(r'[a-z0-9.-]{1,253}',host) or '..' in host:return []
+ ips=[]
+ try:secure=DN.doh_a(host,2.5)
+ except Exception:secure={'ips':[]}
+ for ip in secure.get('ips') or []:
+  try:
+   addr=ipaddress.ip_address(str(ip))
+   if addr.version==4 and addr.is_global and str(addr) not in ips:ips.append(str(addr))
+  except ValueError:pass
+ if ips:return ips[:4]
+ pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
+ if not pwsh:return []
+ for server in ('1.1.1.1','8.8.8.8'):
+  script="$h='"+host+"';Resolve-DnsName -Name $h -Type A -Server '"+server+"' -DnsOnly -QuickTimeout -ErrorAction SilentlyContinue|Where-Object{$_.IPAddress}|Select-Object -ExpandProperty IPAddress|ConvertTo-Json -Compress"
+  try:r=native([pwsh,'-NoProfile','-Command',script],5)
+  except TimeoutError:continue
+  if r.get('exit')!=0 or not str(r.get('out') or '').strip():continue
+  try:v=json.loads(r['out'])
+  except (ValueError,TypeError):continue
+  vals=v if isinstance(v,list) else [v]
+  for ip in vals:
+   try:
+    addr=ipaddress.ip_address(str(ip));x=str(addr)
+    if addr.version==4 and addr.is_global and x not in ips:ips.append(x)
+   except ValueError:pass
+  if ips:break
+ return ips[:4]
+
+def _curl_parse_result(r,started,size,fetch_path):
+ bodytext,sep,meta=str(r.get('out') or '').rpartition('\n__FNH__');parts=meta.split()
+ return {'exit':int(r.get('exit',1)),'code':parts[0] if parts else '000','seconds':float(parts[1]) if len(parts)>1 else round(time.monotonic()-started,3),'bytes':int(float(parts[2])) if len(parts)>2 else 0,'bps':float(parts[3]) if len(parts)>3 else 0,'body':bodytext[:size],'error':str(r.get('err') or '')[:700],'fetchPath':fetch_path}
+
+def _openssl_direct_fetch(url,seconds=7,body=True,size=262144):
+ # Independent direct HTTPS fallback for networks that interfere specifically
+ # with the Windows Schannel/curl TLS fingerprint. No proxy is inherited.
+ started=time.monotonic()
+ if not re.match(r'^https://[A-Za-z0-9.-]+(?:/|$)',str(url)):
+  return {'exit':1,'code':'000','seconds':0.0,'bytes':0,'bps':0.0,'body':'','error':'OPENSSL_FALLBACK_HTTPS_ONLY','fetchPath':'OPENSSL_DIRECT_FALLBACK'}
+ try:
+  ctx=ssl.create_default_context()
+  opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),urllib.request.HTTPSHandler(context=ctx))
+  req=urllib.request.Request(str(url),headers={'User-Agent':'Mozilla/5.0 FreeNetHub-DirectFallback/1.0','Accept':'*/*'})
+  try:
+   resp=opener.open(req,timeout=max(1,float(seconds)))
+  except urllib.error.HTTPError as exc:
+   resp=exc
+  with resp:
+   code=str(getattr(resp,'status',getattr(resp,'code',0)) or '000')
+   data=resp.read(int(size)+1)
+  elapsed=max(.001,time.monotonic()-started)
+  if len(data)>int(size):
+   return {'exit':63,'code':code,'seconds':elapsed,'bytes':len(data),'bps':len(data)/elapsed,'body':'','error':'MAX_FILESIZE_EXCEEDED','fetchPath':'OPENSSL_DIRECT_FALLBACK'}
+  return {'exit':0,'code':code,'seconds':elapsed,'bytes':len(data),'bps':len(data)/elapsed,'body':data.decode('utf-8','replace') if body else '','error':'','fetchPath':'OPENSSL_DIRECT_FALLBACK'}
+ except Exception as exc:
+  elapsed=max(.001,time.monotonic()-started)
+  return {'exit':1,'code':'000','seconds':elapsed,'bytes':0,'bps':0.0,'body':'','error':(type(exc).__name__+': '+str(exc))[:700],'fetchPath':'OPENSSL_DIRECT_FALLBACK'}
+
+def curl(url,proxy='',seconds=7,body=True,size=262144,interface=''):
  args=['curl.exe','-q','-4','-sS','--connect-timeout','3','--max-time',str(seconds),'--max-filesize',str(size),'--write-out','\n__FNH__%{http_code} %{time_total} %{size_download} %{speed_download}']
  args+=['--proxy',proxy,'--noproxy',''] if proxy else ['--noproxy','*']
+ if interface:args+=['--interface',str(interface)]
  if not body:args+=['-o','NUL']
  args+=[url];started=time.monotonic()
+ try:r=native(args,seconds+2)
+ except TimeoutError:r={'exit':124,'out':'','err':'TIMEOUT'}
+ result=_curl_parse_result(r,started,size,'PROXY_DNS' if proxy else 'SYSTEM_DNS')
+ if proxy or (result['exit']==0 and result['code']!='000'):return result
+ m=re.match(r'^https://([A-Za-z0-9.-]+)(?:/|$)',str(url))
+ if not m:return result
+ host=m.group(1).lower()
+ for ip in public_dns_ips(host)[:2]:
+  retry=list(args[:-1])+['--resolve',f'{host}:443:{ip}',args[-1]]
+  try:rr=native(retry,seconds+2)
+  except TimeoutError:continue
+  alt=_curl_parse_result(rr,started,size,'PUBLIC_DNS_RESOLVE')
+  if alt['exit']==0 and alt['code']!='000':return alt
+ if interface:return result
+ fallback=_openssl_direct_fetch(url,seconds,body,size)
+ if fallback.get('exit')==0 and fallback.get('code')!='000':return fallback
+ return result
+
+
+def root_network_context():
+ sess=read(ROOT/'gateway'/'runtime'/'gateway-session.json',{}) or {}
+ if str(sess.get('mode') or '')!='PC_TUNNEL':
+  return {'bound':False,'interface':'','interfaceAlias':'','proof':'SYSTEM_DEFAULT_NO_FNH_PC_TUNNEL'}
+ br=sess.get('baseRoute') if isinstance(sess.get('baseRoute'),dict) else {}
+ src=str(br.get('sourceAddress') or '')
  try:
-  r=native(args,seconds+2);bodytext,sep,meta=r['out'].rpartition('\n__FNH__');parts=meta.split()
-  return {'exit':r['exit'],'code':parts[0] if parts else '000','seconds':float(parts[1]) if len(parts)>1 else round(time.monotonic()-started,3),'bytes':int(float(parts[2])) if len(parts)>2 else 0,'bps':float(parts[3]) if len(parts)>3 else 0,'body':bodytext[:size],'error':r['err'][:700]}
- except TimeoutError:return {'exit':124,'code':'000','seconds':round(time.monotonic()-started,3),'body':'','error':'TIMEOUT'}
+  ip=ipaddress.ip_address(src)
+  if ip.version!=4 or ip.is_loopback or ip.is_unspecified:raise ValueError()
+ except ValueError as ex:
+  raise RuntimeError('ROOT_BASE_ROUTE_SOURCE_INVALID') from ex
+ expected=sess.get('baseTrace') if isinstance(sess.get('baseTrace'),dict) else {}
+ post=((sess.get('verify') or {}).get('trace') if isinstance(sess.get('verify'),dict) else {}) or {}
+ pr=curl('https://www.cloudflare.com/cdn-cgi/trace','',seconds=8,size=65536,interface=src)
+ got=trace(pr.get('body','')) if pr.get('exit')==0 and pr.get('code')=='200' else {}
+ if not got:raise RuntimeError('ROOT_BASE_ROUTE_PROBE_FAILED')
+ expected_ip=str(expected.get('ip') or '');post_ip=str(post.get('ip') or '');got_ip=str(got.get('ip') or '')
+ if expected_ip and post_ip and expected_ip!=post_ip and got_ip==post_ip:
+  raise RuntimeError('ROOT_BASE_ROUTE_TUNNEL_LEAK')
+ expected_warp=str(expected.get('warp') or '').lower();post_warp=str(post.get('warp') or '').lower();got_warp=str(got.get('warp') or '').lower()
+ if expected_warp and post_warp and expected_warp!=post_warp and got_warp==post_warp:
+  raise RuntimeError('ROOT_BASE_ROUTE_TUNNEL_LEAK')
+ return {'bound':True,'interface':src,'interfaceAlias':str(br.get('interfaceAlias') or ''),'proof':'BOUND_PRE_TUN_SOURCE_AND_TRACE_NOT_POST_TUN','trace':got}
+
+def root_network_public(ctx):
+ return {'bound':bool(ctx.get('bound')),'interfaceAlias':str(ctx.get('interfaceAlias') or ''),'proof':str(ctx.get('proof') or '')}
+
+def root_curl(url,seconds=7,body=True,size=262144,ctx=None):
+ c=root_network_context() if ctx is None else ctx
+ interface=str(c.get('interface') or '')
+ if interface:return curl(url,proxy='',seconds=seconds,body=body,size=size,interface=interface)
+ return curl(url,proxy='',seconds=seconds,body=body,size=size)
 
 def node_refresh_public(force=False):
  old=node_store();state=public_refresh_state();age=public_refresh_age_seconds(state)
@@ -256,9 +454,10 @@ def node_refresh_public(force=False):
  if not force and public_refresh_is_fresh(state,old):
   return {'refreshed':False,'fresh':True,'ageSeconds':round(age,1) if age is not None else None,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'total':len(old['nodes']),'selected':old.get('selected'),'sourceFamilies':families,'sources':list(state.get('sources') or []),'failedSources':list(state.get('failedSources') or []),'nodes':node_public_rows(old)}
  progress('Refreshing public node sources','NODE')
+ rootctx=root_network_context()
  fetched={}
  with concurrent.futures.ThreadPoolExecutor(max_workers=min(8,len(PUBLIC_NODE_SOURCES))) as ex:
-  fs={ex.submit(curl,url,seconds=18,size=NH.MAX_NODE_TEXT):(name,family,url) for name,family,url in PUBLIC_NODE_SOURCES}
+  fs={ex.submit(root_curl,url,seconds=18,size=NH.MAX_NODE_TEXT,ctx=rootctx):(name,family,url) for name,family,url in PUBLIC_NODE_SOURCES}
   for f in concurrent.futures.as_completed(fs):
    check();name,family,url=fs[f]
    try:fetched[name]=f.result()
@@ -271,9 +470,9 @@ def node_refresh_public(force=False):
    except ValueError as exc:
     failed.append(name);stats.append({'name':name,'family':family,'status':'PARSE_FAILED','found':0,'error':str(exc)});continue
    incoming.extend(p['nodes']);found=len(p['nodes']);parsed_raw+=found;ok.append(name)
-   stats.append({'name':name,'family':family,'status':'PASS','found':found,'parseErrors':len(p.get('errors') or [])})
+   stats.append({'name':name,'family':family,'status':'PASS','found':found,'parseErrors':len(p.get('errors') or []),'fetchPath':str(r.get('fetchPath') or 'UNKNOWN')})
   else:
-   failed.append(name);stats.append({'name':name,'family':family,'status':'FETCH_FAILED','found':0,'error':str(r.get('error') or r.get('code') or 'UNREACHABLE')[:160]})
+   failed.append(name);stats.append({'name':name,'family':family,'status':'FETCH_FAILED','found':0,'error':str(r.get('error') or r.get('code') or 'UNREACHABLE')[:160],'fetchPath':str(r.get('fetchPath') or 'UNKNOWN')})
  if not ok:
   degraded={'schema':1,'status':'DEGRADED','checkedUtc':now(),'lastSuccessUtc':state.get('lastSuccessUtc'),'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'sourceFamilies':families,'sources':[],'failedSources':failed,'sourceStats':stats}
   write(ROOT/'data'/'node_public_refresh.json',degraded)
@@ -303,28 +502,41 @@ def node_refresh_public(force=False):
  selected=str(old.get('selected') or '')
  if not any(str(n.get('id'))==selected for n in final_nodes):selected=str(final_nodes[0].get('id')) if final_nodes else ''
  save_node_store({'schema':1,'selected':selected,'nodes':final_nodes})
- batch=node_batch_fast();pool=node_store();stamp=now()
- receipt={'schema':1,'status':'PASS','checkedUtc':stamp,'lastSuccessUtc':stamp,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'sourceFamilies':families,'sources':ok,'failedSources':failed,'sourceStats':stats,'parsedRaw':parsed_raw,'freshPublicUnique':len(incoming_ids),'staleDropped':dropped,'total':len(pool['nodes'])}
+ pool=node_store();stamp=now()
+ cached_reachable=sum(1 for n in pool['nodes'] if isinstance(n.get('endpoint_test'),dict) and n['endpoint_test'].get('reachable') is True)
+ receipt={'schema':1,'status':'PASS','checkedUtc':stamp,'lastSuccessUtc':stamp,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'sourceFamilies':families,'sources':ok,'failedSources':failed,'sourceStats':stats,'parsedRaw':parsed_raw,'freshPublicUnique':len(incoming_ids),'staleDropped':dropped,'total':len(pool['nodes']),'endpointTest':'DEFERRED_TO_NODE_TEST_ALL','cachedReachable':cached_reachable}
  write(ROOT/'data'/'node_public_refresh.json',receipt)
- return {'refreshed':True,'fresh':True,'ageSeconds':0.0,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'imported':len(incoming_ids),'parsedRaw':parsed_raw,'staleDropped':dropped,'total':len(pool['nodes']),'reachable':batch.get('reachable'),'selected':pool.get('selected'),'sourceFamilies':families,'sources':ok,'failedSources':failed,'sourceStats':stats,'nodes':node_public_rows(pool),'warning':'Public shared nodes are untrusted and temporary; avoid sensitive logins/payments.'}
+ return {'refreshed':True,'fresh':True,'ageSeconds':0.0,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'imported':len(incoming_ids),'parsedRaw':parsed_raw,'staleDropped':dropped,'total':len(pool['nodes']),'reachableCached':cached_reachable,'endpointTest':'DEFERRED_TO_NODE_TEST_ALL','selected':pool.get('selected'),'sourceFamilies':families,'sources':ok,'failedSources':failed,'sourceStats':stats,'nodes':node_public_rows(pool),'warning':'Public shared nodes are untrusted and temporary; run Test All before relying on a node.'}
 def direct_route():
  pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
  if not pwsh:raise ValueError('DEPENDENCY_NOT_CONFIGURED_PWSH')
- script="$r=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Sort-Object @{e={$_.RouteMetric + (Get-NetIPInterface -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv4).InterfaceMetric}} | Select-Object -First 1;if(!$r){exit 3};$a=Get-NetAdapter -InterfaceIndex $r.InterfaceIndex -IncludeHidden -ErrorAction SilentlyContinue;$ip=Get-NetIPAddress -InterfaceIndex $r.InterfaceIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.IPAddress -notlike '169.254.*'}|Select-Object -First 1;[pscustomobject]@{ifIndex=$r.InterfaceIndex;nextHop=$r.NextHop;routeMetric=$r.RouteMetric;adapterName=$a.Name;description=$a.InterfaceDescription;hardware=[bool]$a.HardwareInterface;status=[string]$a.Status;ip=$ip.IPAddress}|ConvertTo-Json -Compress"
+ script="$r=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Sort-Object @{e={$_.RouteMetric + (Get-NetIPInterface -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv4).InterfaceMetric}} | Select-Object -First 1;if(!$r){exit 3};$a=Get-NetAdapter -InterfaceIndex $r.InterfaceIndex -IncludeHidden -ErrorAction SilentlyContinue;$ip=Get-NetIPAddress -InterfaceIndex $r.InterfaceIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.IPAddress -notlike '169.254.*'}|Select-Object -First 1;$ov=@(Get-NetRoute -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.DestinationPrefix -ne '0.0.0.0/0' -and [int](($_.DestinationPrefix -split '/')[1]) -le 8 -and $_.InterfaceIndex -ne $r.InterfaceIndex}|Select-Object DestinationPrefix,InterfaceAlias,InterfaceIndex,NextHop,RouteMetric);[pscustomobject]@{ifIndex=$r.InterfaceIndex;nextHop=$r.NextHop;routeMetric=$r.RouteMetric;adapterName=$a.Name;description=$a.InterfaceDescription;hardware=[bool]$a.HardwareInterface;status=[string]$a.Status;ip=$ip.IPAddress;overrideRoutes=$ov}|ConvertTo-Json -Compress -Depth 4"
  r=native([pwsh,'-NoProfile','-Command',script],8)
  if r['exit']!=0:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE')
  try:x=json.loads(r['out'])
  except (ValueError,TypeError) as ex:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE') from ex
  label=(str(x.get('adapterName',''))+' '+str(x.get('description',''))).lower()
  suspicious=bool(re.search(r'\b(vpn|warp|wireguard|openvpn|tap|tun|wintun|tailscale|zerotier|mihomo|sing-box)\b',label))
- x['trustedPhysical']=bool(x.get('hardware') and str(x.get('status','')).lower()=='up' and not suspicious and x.get('ip'))
+ raw_overrides=x.pop('overrideRoutes',[]) or []
+ if isinstance(raw_overrides,dict):raw_overrides=[raw_overrides]
+ overrides=[]
+ for row in raw_overrides:
+  try:
+   net=ipaddress.ip_network(str(row.get('DestinationPrefix') or ''),strict=False)
+   if net.version==4 and net.prefixlen<=8 and net.is_global and not net.is_multicast:overrides.append(row)
+  except (ValueError,AttributeError):pass
+ x['systemOverrideRoutes']=overrides
+ x['trustedPhysical']=bool(x.get('hardware') and str(x.get('status','')).lower()=='up' and not suspicious and x.get('ip') and not overrides)
  return x
 
-def ping_direct():
+def ping_direct(seconds=None):
+ if seconds is None:seconds=test_timeouts()['ping']
+ seconds=max(3,min(int(seconds),30))
  pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
  if not pwsh:return {'ok':False,'avgMs':None,'note':'PowerShell unavailable'}
  script="$r=Test-Connection -TargetName 1.1.1.1 -Count 3 -IPv4 -ErrorAction SilentlyContinue;if(!$r){exit 2};$v=@($r|ForEach-Object{$_.Latency}|Where-Object{$_ -ne $null});if(!$v){exit 3};[math]::Round((($v|Measure-Object -Average).Average),1)"
- r=native([pwsh,'-NoProfile','-Command',script],7)
+ try:r=native([pwsh,'-NoProfile','-Command',script],seconds)
+ except TimeoutError:return {'ok':False,'avgMs':None,'target':'1.1.1.1','type':'ICMP','note':'ICMP_TIMEOUT'}
  try:v=float(r['out'].strip()) if r['exit']==0 else None
  except ValueError:v=None
  return {'ok':v is not None,'avgMs':v,'target':'1.1.1.1','type':'ICMP'}
@@ -337,22 +549,33 @@ def cloudflare_upload(sample_bytes=1000000,seconds=20,proxy=''):
   args=['curl.exe','-q','-4','-sS','--connect-timeout','3','--max-time',str(seconds)]
   args+=['--proxy',proxy,'--noproxy',''] if proxy else ['--noproxy','*']
   args+=['-o','NUL','--data-binary','@'+str(tmp),'--write-out','\n__FNH__%{http_code} %{time_total} %{size_upload} %{speed_upload}','https://speed.cloudflare.com/__up']
-  r=native(args,seconds+2);bodytext,sep,meta=r['out'].rpartition('\n__FNH__');parts=meta.split()
+  try:r=native(args,seconds+2)
+  except TimeoutError:r={'exit':124,'out':'','err':'TIMEOUT'}
+  bodytext,sep,meta=r['out'].rpartition('\n__FNH__');parts=meta.split()
   return {'exit':r['exit'],'code':parts[0] if parts else '000','seconds':float(parts[1]) if len(parts)>1 else None,'bytes':int(float(parts[2])) if len(parts)>2 else 0,'bps':float(parts[3]) if len(parts)>3 else 0,'error':r['err'][:700]}
  finally:
   tmp.unlink(missing_ok=True)
 
 def path_speed(mode,download_bytes=2000000,upload_bytes=500000):
- mode=str(mode or 'AUTO').upper()
+ mode=str(mode or 'AUTO').upper();t=test_timeouts()
  if mode=='DIRECT':return direct_speed()
  if mode not in PORTS and mode!='CUSTOM':raise ValueError('SPEED_MODE_UNSUPPORTED')
  if mode in PORTS and not owned(mode):raise RuntimeError('CONNECT_FIRST')
  proxy=mode_proxy(mode)
- trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy,seconds=10);tr=trace(trace_r.get('body',''))
- ping_r=curl('https://www.youtube.com/generate_204',proxy,seconds=10,body=False)
- if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':raise RuntimeError('PATH_SPEED_VERIFICATION_FAILED')
- down=curl('https://speed.cloudflare.com/__down?bytes='+str(int(download_bytes)),proxy,seconds=25,body=False,size=int(download_bytes)+65536)
- up=cloudflare_upload(int(upload_bytes),25,proxy)
+ trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy,seconds=t['ping']);tr=trace(trace_r.get('body',''))
+ ping_r=curl('https://www.youtube.com/generate_204',proxy,seconds=t['ping'],body=False)
+ if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':
+  ping_ms=round(float(ping_r.get('seconds',0))*1000,1) if ping_r.get('exit')==0 and ping_r.get('code')=='204' else None
+  return {
+   'mode':mode,'path':'PROXY_PATH' if proxy else 'SYSTEM_PATH','ok':False,
+   'pingMs':ping_ms,'pingType':'HTTPS_RTT','downloadMbps':None,'uploadMbps':None,
+   'downloadSampleBytes':0,'uploadSampleBytes':0,'country':tr.get('loc','') if tr else '',
+   'exitIp':tr.get('ip','') if tr else '','checked':now(),'proxyUsed':bool(proxy),
+   'error':'PATH_SPEED_VERIFICATION_FAILED',
+   'verification':{'traceCode':trace_r.get('code'),'traceExit':trace_r.get('exit'),'youtubeCode':ping_r.get('code'),'youtubeExit':ping_r.get('exit')}
+  }
+ down=curl('https://speed.cloudflare.com/__down?bytes='+str(int(download_bytes)),proxy,seconds=t['download'],body=False,size=int(download_bytes)+65536)
+ up=cloudflare_upload(int(upload_bytes),t['upload'],proxy)
  down_ok=down.get('exit')==0 and down.get('code')=='200' and down.get('bytes')==int(download_bytes)
  up_ok=up.get('exit')==0 and up.get('code')=='200' and up.get('bytes')==int(upload_bytes)
  return {
@@ -364,31 +587,148 @@ def path_speed(mode,download_bytes=2000000,upload_bytes=500000):
   'proxyUsed':bool(proxy),'error':'' if (down_ok and up_ok) else 'THROUGHPUT_SAMPLE_INCOMPLETE'
  }
 
-def system_speed():
- trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace','',seconds=10);tr=trace(trace_r.get('body',''))
- ping_r=curl('https://www.youtube.com/generate_204','',seconds=10,body=False)
- if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':raise RuntimeError('SYSTEM_SPEED_VERIFICATION_FAILED')
- if str(tr.get('warp','')).lower()!='on':raise RuntimeError('SYSTEM_TUNNEL_NOT_ACTIVE')
- down=curl('https://speed.cloudflare.com/__down?bytes=2000000','',seconds=25,body=False,size=2065536)
- up=cloudflare_upload(500000,25,'')
- return {'mode':'SYSTEM','path':'CURRENT_SYSTEM_DEFAULT_ROUTE','ok':bool(down.get('exit')==0 and down.get('code')=='200' and up.get('exit')==0 and up.get('code')=='200'),
-  'pingMs':round(float(ping_r.get('seconds',0))*1000,1),'pingType':'HTTPS_RTT','downloadMbps':round(float(down.get('bps',0))*8/1e6,2),
-  'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),'country':tr.get('loc',''),'exitIp':tr.get('ip',''),'warp':tr.get('warp',''),'checked':now()}
+def system_speed(provider='WARP'):
+ provider=str(provider or 'WARP').upper();t=test_timeouts()
+ if provider not in ('WARP','NODE'):raise ValueError('SYSTEM_PROVIDER_UNSUPPORTED')
+ sess=read(ROOT/'gateway'/'runtime'/'gateway-session.json',{}) or {}
+ if str(sess.get('mode') or '')!='PC_TUNNEL' or str(sess.get('provider') or '').upper()!=provider:raise RuntimeError('SYSTEM_TUNNEL_NOT_ACTIVE')
+ trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace','',seconds=t['ping']);tr=trace(trace_r.get('body',''))
+ ping_r=curl('https://www.youtube.com/generate_204','',seconds=t['ping'],body=False)
+ if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':
+  ping_ms=round(float(ping_r.get('seconds',0))*1000,1) if ping_r.get('exit')==0 and ping_r.get('code')=='204' else None
+  return {'mode':'SYSTEM','provider':provider,'path':'CURRENT_SYSTEM_DEFAULT_ROUTE','ok':False,
+   'pingMs':ping_ms,'pingType':'HTTPS_RTT','downloadMbps':None,'uploadMbps':None,
+   'country':tr.get('loc','') if tr else '','exitIp':tr.get('ip','') if tr else '',
+   'warp':tr.get('warp','') if tr else '','checked':now(),'error':'SYSTEM_SPEED_VERIFICATION_FAILED',
+   'verification':{'traceCode':trace_r.get('code'),'traceExit':trace_r.get('exit'),'youtubeCode':ping_r.get('code'),'youtubeExit':ping_r.get('exit')}}
+ if provider=='WARP' and str(tr.get('warp','')).lower()!='on':raise RuntimeError('SYSTEM_TUNNEL_NOT_ACTIVE')
+ target=country_target()
+ if provider=='NODE' and target!='AUTO' and str(tr.get('loc') or '').upper()!=target:raise RuntimeError('SYSTEM_NODE_COUNTRY_MISMATCH')
+ down=curl('https://speed.cloudflare.com/__down?bytes=2000000','',seconds=t['download'],body=False,size=2065536)
+ up=cloudflare_upload(500000,t['upload'],'')
+ down_ok=down.get('exit')==0 and down.get('code')=='200'
+ up_ok=up.get('exit')==0 and up.get('code')=='200'
+ return {'mode':'SYSTEM','provider':provider,'path':'CURRENT_SYSTEM_DEFAULT_ROUTE','ok':bool(down_ok and up_ok),
+  'pingMs':round(float(ping_r.get('seconds',0))*1000,1),'pingType':'HTTPS_RTT','downloadMbps':round(float(down.get('bps',0))*8/1e6,2) if down_ok else None,
+  'uploadMbps':round(float(up.get('bps',0))*8/1e6,2) if up_ok else None,'country':tr.get('loc',''),'exitIp':tr.get('ip',''),'warp':tr.get('warp',''),'checked':now(),
+  'error':'' if (down_ok and up_ok) else 'THROUGHPUT_SAMPLE_INCOMPLETE'}
+
+def geo_country_for_ip(ip):
+ ip=str(ip or '').strip()
+ try:ipaddress.ip_address(ip)
+ except ValueError:raise RuntimeError('GEO_IP_INVALID')
+ r=curl('https://ipwho.is/'+ip,'',seconds=10,size=65536)
+ if r.get('exit')!=0 or r.get('code')!='200':raise RuntimeError('GEO_LOOKUP_FAIL')
+ try:j=json.loads(r.get('body') or '{}')
+ except ValueError:raise RuntimeError('GEO_LOOKUP_INVALID')
+ cc=str(j.get('country_code') or '').upper()
+ if not j.get('success',True) or not re.fullmatch(r'[A-Z]{2}',cc):raise RuntimeError('GEO_LOOKUP_INVALID')
+ return cc
+
+def node_udp_preflight():
+ probe_script=ROOT/'gateway'/'socks_udp_probe.py'
+ if not probe_script.is_file():raise RuntimeError('NODE_UDP_PROBE_MISSING')
+ py=dep_path('python') or sys.executable
+ r=native([py,str(probe_script),str(PORTS['NODE']),'127.0.0.1'],18)
+ if r.get('exit')!=0:raise RuntimeError('NODE_UDP_PREFLIGHT_FAIL')
+ try:j=json.loads(r.get('out') or '{}')
+ except ValueError:raise RuntimeError('NODE_UDP_PREFLIGHT_INVALID')
+ if str(j.get('status') or '')!='PASS':raise RuntimeError('NODE_UDP_PREFLIGHT_FAIL')
+ return {'ok':True,'country':geo_country_for_ip(j.get('udp_public_ip')),'seconds':j.get('seconds')}
+
+def _node_system_preflight(auto_select=False):
+ s=node_store();target=country_target();pre=owned('NODE');pre_id=str((pre or {}).get('nodeId') or '')
+ if auto_select:
+  h=ensure_node(target)
+  n=node_selected()
+  if not n:raise RuntimeError('NODE_NOT_SELECTED')
+ else:
+  n=node_selected(s)
+  if not n:raise ValueError('NODE_NOT_SELECTED')
+  current=owned('NODE')
+  if current and current.get('nodeId')!=n['id']:raise ValueError('NODE_ACTIVE_STOP_FIRST')
+  h=ensure('NODE');node_record_test(n['id'],h)
+ tcp_country=str(h.get('country') or '').upper()
+ if not h.get('healthy'):raise RuntimeError(h.get('error') or 'PATH_NOT_VERIFIED_NODE')
+ if target!='AUTO' and tcp_country!=target:raise RuntimeError('NODE_TCP_COUNTRY_MISMATCH')
+ post=owned('NODE');post_id=str((post or {}).get('nodeId') or '')
+ temporary=(not pre) or (pre_id!=post_id)
+ try:
+  udp=node_udp_preflight()
+  if target!='AUTO' and str(udp.get('country') or '').upper()!=target:raise RuntimeError('NODE_UDP_COUNTRY_MISMATCH')
+  perf=path_speed('NODE',1000000,250000)
+  if perf.get('ok') is True:
+   node_record_performance(n['id'],perf);shown=dict(perf)
+  else:
+   shown=dict(perf);shown['ok']=False;shown['downloadMbps']=None;shown['uploadMbps']=None;shown['error']=str(perf.get('error') or 'THROUGHPUT_SAMPLE_INCOMPLETE')
+   node_record_performance(n['id'],shown)
+  return {'mode':'NODE','provider':'NODE','path':'AUTO_NODE_SYSTEM_PREFLIGHT' if auto_select else 'SELECTED_NODE_SYSTEM_PREFLIGHT','systemEligible':True,'ok':bool(shown.get('ok')),
+   'pingMs':shown.get('pingMs'),'downloadMbps':shown.get('downloadMbps'),'uploadMbps':shown.get('uploadMbps'),
+   'country':tcp_country,'udpCountry':str(udp.get('country') or ''),'checked':now(),'error':str(shown.get('error') or ''),
+   'selected':n['id'],'temporary':temporary,'selectionPolicy':'AUTO' if auto_select else 'SELECTED'}
+ finally:
+  if temporary:
+   with contextlib.suppress(Exception):stop('NODE')
+
+def node_system_preflight():
+ return _node_system_preflight(False)
+
+def node_system_preflight_auto():
+ return _node_system_preflight(True)
+def console_preflight_speed():
+ progress('Console provider pre-connect benchmark','CONSOLE');t=test_timeouts()
+ runtime=ROOT/'gateway'/'runtime';owner_path=runtime/'console-provider-owner.json'
+ local_provider=runtime/'local_provider.json';console_profile=runtime/'console.profile.json'
+ if not local_provider.is_file():
+  if console_profile.is_file():raise ValueError('CONSOLE_PROFILE_PREFLIGHT_UNAVAILABLE')
+  raise ValueError('CONSOLE_ROUTE_NOT_CONFIGURED')
+ provider_script=ROOT/'gateway'/'console_provider.ps1'
+ pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
+ if not pwsh or not pathlib.Path(pwsh).is_file():raise ValueError('DEPENDENCY_NOT_CONFIGURED_PWSH')
+ if not provider_script.is_file():raise RuntimeError('CONSOLE_PROVIDER_SCRIPT_MISSING')
+ preexisting=bool(read(owner_path,{}) or {})
+ start_result=runtime/f'console-preflight-start-{uuid.uuid4().hex}.json'
+ stop_result=runtime/f'console-preflight-stop-{uuid.uuid4().hex}.json'
+ started_by_us=False
+ try:
+  rr=native([pwsh,'-NoProfile','-ExecutionPolicy','Bypass','-File',str(provider_script),'-Action','Start','-ListenAddress','127.0.0.1','-ResultPath',str(start_result)],130)
+  rec=read(start_result,{}) or {}
+  if rr.get('exit')!=0 or str(rec.get('status') or '')!='PASS':raise RuntimeError(str(rec.get('error') or 'CONSOLE_PREFLIGHT_PROVIDER_START_FAILED'))
+  owner=read(owner_path,{}) or {}
+  if not owner:raise RuntimeError('CONSOLE_PROVIDER_OWNER_MISSING')
+  started_by_us=not preexisting
+  host=str(owner.get('listen') or '127.0.0.1');port=int(owner.get('port') or 0)
+  if not host or not (1024<=port<=65535):raise RuntimeError('CONSOLE_PROVIDER_ENDPOINT_INVALID')
+  proxy=f'socks5h://{host}:{port}'
+  trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy,seconds=t['ping']);tr=trace(trace_r.get('body',''))
+  ping_r=curl('https://www.youtube.com/generate_204',proxy,seconds=t['ping'],body=False)
+  if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':raise RuntimeError('CONSOLE_PREFLIGHT_VERIFICATION_FAILED')
+  if str(tr.get('loc') or '').upper()!='DE':raise RuntimeError('CONSOLE_PREFLIGHT_COUNTRY_MISMATCH')
+  down=curl('https://speed.cloudflare.com/__down?bytes=1500000',proxy,seconds=t['download'],body=False,size=1565536)
+  up=cloudflare_upload(350000,t['upload'],proxy)
+  down_ok=down.get('exit')==0 and down.get('code')=='200' and down.get('bytes')==1500000
+  up_ok=up.get('exit')==0 and up.get('code')=='200' and up.get('bytes')==350000
+  return {'mode':'CONSOLE_PREFLIGHT','path':'CONSOLE_PROVIDER_PRECONNECT','ok':bool(down_ok and up_ok),'pingMs':round(float(ping_r.get('seconds',0))*1000,1),'pingType':'HTTPS_RTT','downloadMbps':round(float(down.get('bps',0))*8/1e6,2),'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),'downloadSampleBytes':down.get('bytes',0),'uploadSampleBytes':up.get('bytes',0),'country':tr.get('loc',''),'exitIp':tr.get('ip',''),'checked':now(),'providerKind':'LOCAL_MIHOMO','temporary':started_by_us,'error':'' if (down_ok and up_ok) else 'THROUGHPUT_SAMPLE_INCOMPLETE'}
+ finally:
+  with contextlib.suppress(Exception):start_result.unlink(missing_ok=True)
+  if started_by_us:
+   with contextlib.suppress(Exception):native([pwsh,'-NoProfile','-ExecutionPolicy','Bypass','-File',str(provider_script),'-Action','Stop','-ResultPath',str(stop_result)],20)
+  with contextlib.suppress(Exception):stop_result.unlink(missing_ok=True)
 
 def console_speed():
- owner=read(ROOT/'gateway'/'runtime'/'wsl-console-owner.json',{}) or {}
+ t=test_timeouts();owner=read(ROOT/'gateway'/'runtime'/'wsl-console-owner.json',{}) or {}
  if not owner:raise RuntimeError('CONSOLE_CONNECT_FIRST')
  if str(owner.get('providerKind') or '')!='LOCAL_MIHOMO':raise RuntimeError('CONSOLE_SPEED_PROFILE_PATH_UNAVAILABLE')
  host=str(owner.get('hostIp') or '');port=int(owner.get('providerPort') or 0)
  if not host or not (1024<=port<=65535):raise RuntimeError('CONSOLE_PROVIDER_ENDPOINT_INVALID')
  proxy=f'socks5h://{host}:{port}'
- trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy,seconds=12);tr=trace(trace_r.get('body',''))
- ping_r=curl('https://www.youtube.com/generate_204',proxy,seconds=12,body=False)
+ trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy,seconds=t['ping']);tr=trace(trace_r.get('body',''))
+ ping_r=curl('https://www.youtube.com/generate_204',proxy,seconds=t['ping'],body=False)
  if trace_r.get('exit')!=0 or trace_r.get('code')!='200' or not tr or ping_r.get('exit')!=0 or ping_r.get('code')!='204':raise RuntimeError('CONSOLE_SPEED_VERIFICATION_FAILED')
  expected=str(owner.get('country') or '').upper()
  if expected and str(tr.get('loc') or '').upper()!=expected:raise RuntimeError('CONSOLE_COUNTRY_MISMATCH')
- down=curl('https://speed.cloudflare.com/__down?bytes=1500000',proxy,seconds=25,body=False,size=1565536)
- up=cloudflare_upload(350000,25,proxy)
+ down=curl('https://speed.cloudflare.com/__down?bytes=1500000',proxy,seconds=t['download'],body=False,size=1565536)
+ up=cloudflare_upload(350000,t['upload'],proxy)
  return {'mode':'CONSOLE','path':'CONSOLE_PROVIDER_OUTBOUND','ok':bool(down.get('exit')==0 and down.get('code')=='200' and up.get('exit')==0 and up.get('code')=='200'),
   'pingMs':round(float(ping_r.get('seconds',0))*1000,1),'pingType':'HTTPS_RTT','downloadMbps':round(float(down.get('bps',0))*8/1e6,2),
   'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),'country':tr.get('loc',''),'exitIp':tr.get('ip',''),'checked':now(),'providerKind':'LOCAL_MIHOMO'}
@@ -404,7 +744,8 @@ def node_record_performance(node_id,perf):
  save_node_store(s)
 
 def update_release():
- r=curl('https://api.github.com/repos/GOD13emad/FreeNetHub/releases/latest',seconds=12,size=1048576)
+ ctx=root_network_context()
+ r=root_curl('https://api.github.com/repos/GOD13emad/FreeNetHub/releases/latest',seconds=12,size=1048576,ctx=ctx)
  if r.get('exit')!=0 or r.get('code')!='200':raise RuntimeError('UPDATE_GITHUB_UNREACHABLE')
  try:j=json.loads(r.get('body',''))
  except ValueError as ex:raise RuntimeError('UPDATE_RESPONSE_INVALID') from ex
@@ -419,7 +760,7 @@ def update_release():
  update_available=bool(asset and (remote_n==0 or local_n==0 or remote_n>local_n))
  return {'tag':str(j.get('tag_name') or ''),'name':str(j.get('name') or ''),'published':j.get('published_at'),'htmlUrl':j.get('html_url'),
          'currentRevision':local_rev,'currentRevisionNumber':local_n,'remoteRevisionNumber':remote_n,'updateAvailable':update_available,
-         'asset':({'name':asset.get('name'),'url':asset.get('browser_download_url'),'bytes':asset.get('size'),'digest':asset.get('digest')} if asset else None)}
+         'asset':({'name':asset.get('name'),'url':asset.get('browser_download_url'),'bytes':asset.get('size'),'digest':asset.get('digest')} if asset else None),'rootPath':root_network_public(ctx)}
 
 def update_download():
  rel=update_release();a=rel.get('asset')
@@ -430,28 +771,86 @@ def update_download():
  expected=dg.split(':',1)[1].upper()
  tag=re.sub(r'[^A-Za-z0-9._-]','_',rel.get('tag') or 'latest')[:80]
  outdir=ROOT/'updates'/tag;outdir.mkdir(parents=True,exist_ok=True);dest=outdir/pathlib.Path(str(a['name'])).name
- args=['curl.exe','-q','-4','-L','--fail','--connect-timeout','5','--max-time','240','--noproxy','*','-o',str(dest),str(a['url'])]
+ ctx=root_network_context()
+ args=['curl.exe','-q','-4','-L','--fail','--connect-timeout','5','--max-time','240','--noproxy','*']
+ if ctx.get('interface'):args+=['--interface',str(ctx['interface'])]
+ args+=['-o',str(dest),str(a['url'])]
  rr=native(args,250)
  if rr.get('exit')!=0 or not dest.is_file():raise RuntimeError('UPDATE_DOWNLOAD_FAILED')
  actual=digest(dest)
  if actual!=expected:
   with contextlib.suppress(Exception):dest.unlink()
   raise RuntimeError('UPDATE_HASH_MISMATCH')
- return {'tag':rel.get('tag'),'name':rel.get('name'),'published':rel.get('published'),'installer':str(dest),'sha256':actual,'bytes':dest.stat().st_size,'verified':True}
+ return {'tag':rel.get('tag'),'name':rel.get('name'),'published':rel.get('published'),'installer':str(dest),'sha256':actual,'bytes':dest.stat().st_size,'verified':True,'rootPath':root_network_public(ctx)}
 
 def direct_speed():
- progress('Direct ISP speed test: no FreeNetHub browser proxy','DIRECT')
+ progress('Direct ISP speed test: no FreeNetHub browser proxy','DIRECT');t=test_timeouts()
  route=direct_route()
  if not route.get('trustedPhysical'):raise RuntimeError('DIRECT_SPEED_NON_PHYSICAL_DEFAULT_ROUTE')
- a=curl('https://www.cloudflare.com/cdn-cgi/trace','',seconds=8);tr=trace(a.get('body',''))
+ a=curl('https://www.cloudflare.com/cdn-cgi/trace','',seconds=t['ping']);tr=trace(a.get('body',''))
  if a.get('exit')!=0 or a.get('code')!='200' or not tr:raise RuntimeError('DIRECT_SPEED_TRACE_FAILED')
  if str(tr.get('warp','')).lower()=='on' or str(tr.get('gateway','')).lower()=='on':raise RuntimeError('DIRECT_SPEED_SYSTEM_TUNNEL_DETECTED')
- ping=ping_direct()
- down=curl('https://speed.cloudflare.com/__down?bytes=5000000','',seconds=20,body=False,size=5100000)
- up=cloudflare_upload(1000000,20)
+ ping=ping_direct(t['ping'])
+ down=curl('https://speed.cloudflare.com/__down?bytes=5000000','',seconds=t['download'],body=False,size=5100000)
+ up=cloudflare_upload(1000000,t['upload'])
  down_ok=down.get('exit')==0 and down.get('code')=='200' and down.get('bytes')==5000000
  up_ok=up.get('exit')==0 and up.get('code')=='200' and up.get('bytes')==1000000
- return {'mode':'DIRECT','path':'DIRECT_HOST_INTERNET','ok':bool(down_ok and up_ok),'proxyUsed':False,'freeNetHubBrowserProxyUsed':False,'defaultRoute':route,'exitIp':tr.get('ip',''),'country':tr.get('loc',''),'cloudflareWarp':tr.get('warp',''),'cloudflareGateway':tr.get('gateway',''),'httpsLatencyMs':round(float(a.get('seconds',0))*1000,1),'pingMs':ping.get('avgMs'),'downloadMbps':round(float(down.get('bps',0))*8/1e6,2),'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),'downloadSampleBytes':down.get('bytes',0),'uploadSampleBytes':up.get('bytes',0),'downloadSeconds':down.get('seconds'),'uploadSeconds':up.get('seconds'),'pathProof':'NO_PROXY_ENV+--noproxy_*+PHYSICAL_DEFAULT_ROUTE+CF_WARP_OFF','note':'Direct host Internet sample; FreeNetHub browser proxy is bypassed. Fails closed if the default route is not a physical adapter or Cloudflare reports WARP/Gateway on.'}
+ return {'mode':'DIRECT','path':'DIRECT_HOST_INTERNET','ok':bool(down_ok and up_ok),'proxyUsed':False,'freeNetHubBrowserProxyUsed':False,'defaultRoute':route,'exitIp':tr.get('ip',''),'country':tr.get('loc',''),'cloudflareWarp':tr.get('warp',''),'cloudflareGateway':tr.get('gateway',''),'httpsLatencyMs':round(float(a.get('seconds',0))*1000,1),'pingMs':ping.get('avgMs'),'downloadMbps':round(float(down.get('bps',0))*8/1e6,2),'uploadMbps':round(float(up.get('bps',0))*8/1e6,2),'downloadSampleBytes':down.get('bytes',0),'uploadSampleBytes':up.get('bytes',0),'downloadSeconds':down.get('seconds'),'uploadSeconds':up.get('seconds'),'pathProof':'NO_PROXY_ENV+--noproxy_*+PHYSICAL_DEFAULT_ROUTE+NO_BROAD_OVERRIDE_ROUTES+CF_WARP_OFF','note':'Direct host Internet sample; FreeNetHub browser proxy is bypassed. Fails closed if the default route is not a physical adapter or Cloudflare reports WARP/Gateway on.'}
+
+def direct_adapter_snapshot(route):
+ pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
+ if not pwsh:return {'available':False,'error':'PWSH_UNAVAILABLE'}
+ try:idx=int(route.get('ifIndex'))
+ except (TypeError,ValueError):return {'available':False,'error':'INTERFACE_INDEX_INVALID'}
+ script=f"$i={idx};$a=Get-NetAdapter -InterfaceIndex $i -IncludeHidden -ErrorAction SilentlyContinue;$s=if($a){{Get-NetAdapterStatistics -Name $a.Name -ErrorAction SilentlyContinue}}else{{$null}};$b=if($a){{Get-NetAdapterBinding -Name $a.Name -ComponentID 'ms_tcpip6' -ErrorAction SilentlyContinue}}else{{$null}};$v6=@(Get-NetRoute -AddressFamily IPv6 -DestinationPrefix '::/0' -ErrorAction SilentlyContinue);$dns=@((Get-DnsClientServerAddress -InterfaceIndex $i -AddressFamily IPv4 -ErrorAction SilentlyContinue).ServerAddresses);[pscustomobject]@{{available=[bool]$a;name=$a.Name;description=$a.InterfaceDescription;status=[string]$a.Status;linkSpeed=[string]$a.LinkSpeed;driverVersion=[string]$a.DriverVersion;driverDate=[string]$a.DriverDate;receivedPacketErrors=$(if($s){{$s.ReceivedPacketErrors}}else{{$null}});outboundPacketErrors=$(if($s){{$s.OutboundPacketErrors}}else{{$null}});receivedDiscardedPackets=$(if($s){{$s.ReceivedDiscardedPackets}}else{{$null}});outboundDiscardedPackets=$(if($s){{$s.OutboundDiscardedPackets}}else{{$null}});ipv6BindingEnabled=$(if($b){{[bool]$b.Enabled}}else{{$null}});ipv6DefaultRoutes=$v6.Count;dnsServers=$dns}}|ConvertTo-Json -Compress -Depth 4"
+ try:rr=native([pwsh,'-NoProfile','-Command',script],8)
+ except TimeoutError:return {'available':False,'error':'ADAPTER_SNAPSHOT_TIMEOUT'}
+ if rr.get('exit')!=0:return {'available':False,'error':'ADAPTER_SNAPSHOT_FAILED'}
+ try:return json.loads(rr.get('out') or '{}')
+ except (TypeError,ValueError):return {'available':False,'error':'ADAPTER_SNAPSHOT_INVALID'}
+
+def direct_network_audit():
+ progress('Direct network / CGNAT audit: no FreeNetHub proxy or tunnel','DIRECT')
+ route=direct_route()
+ if not route.get('trustedPhysical'):raise RuntimeError('DIRECT_AUDIT_NON_PHYSICAL_DEFAULT_ROUTE')
+ local_ip=str(route.get('ip') or '');gateway=str(route.get('nextHop') or '')
+ try:
+  ipaddress.ip_address(local_ip);ipaddress.ip_address(gateway)
+ except ValueError as ex:raise RuntimeError('DIRECT_AUDIT_ROUTE_INVALID') from ex
+ nat=DN.audit(local_ip,gateway)
+ dns_probe=DN.dns_interception_probe('www.youtube.com')
+ adapter=direct_adapter_snapshot(route)
+ checks={}
+ targets={
+  'openai':'https://api.openai.com/v1/models',
+  'github':'https://github.com/',
+  'google':'https://www.google.com/generate_204',
+  'youtube':'https://www.youtube.com/generate_204',
+ }
+ with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+  fs={name:ex.submit(curl,url,'',6,False,65536) for name,url in targets.items()}
+  for name,f in fs.items():
+   try:r=f.result()
+   except Exception as exc:r={'exit':1,'code':'000','seconds':None,'fetchPath':'','error':str(exc)}
+   http_code=str(r.get('code') or '000')
+   reached=bool(http_code!='000' and (r.get('exit')==0 or (r.get('exit')==63 and http_code[0] in '12345')))
+   checks[name]={'reachable':reached,'httpCode':http_code,'seconds':r.get('seconds'),'fetchPath':r.get('fetchPath'),'error':str(r.get('error') or '')[:300]}
+ trace_r=curl('https://www.cloudflare.com/cdn-cgi/trace','',6,True,65536);tr=trace(trace_r.get('body',''))
+ route_after=direct_route()
+ stable=bool(route_after.get('trustedPhysical') and route_after.get('ifIndex')==route.get('ifIndex') and route_after.get('nextHop')==route.get('nextHop') and route_after.get('ip')==route.get('ip'))
+ if not stable:raise RuntimeError('DIRECT_AUDIT_ROUTE_CHANGED')
+ recommendations=[]
+ if nat.get('cgnatConfirmed'):recommendations.append('CGNAT upstream cannot be removed by Windows; static inbound requires ISP public IPv4, native IPv6, or working upstream port control.')
+ if dns_probe.get('interceptionConfirmed'):recommendations.append('Non-global system DNS answer detected while validated encrypted DNS returned public addresses.')
+ if nat.get('udpTraversalCandidate'):recommendations.append('STUN mapping is stable and source-port preserving; UDP peer traversal is a strong candidate.')
+ pc=nat.get('portControl') or {}
+ if not (pc.get('pcp',{}).get('supported') or pc.get('natPmp',{}).get('supported')):recommendations.append('PCP/NAT-PMP is unavailable on the CPE path; do not rely on automatic upstream static port mapping.')
+ if adapter.get('ipv6BindingEnabled') is False:recommendations.append('IPv6 is disabled on the physical adapter; enable the IPv6 binding with administrator rights before judging ISP/router IPv6 availability.')
+ elif int(adapter.get('ipv6DefaultRoutes') or 0)==0:recommendations.append('IPv6 binding is enabled but no native IPv6 default route was learned; router/ISP IPv6 remains unavailable or unconfigured.')
+ if checks.get('youtube',{}).get('reachable') is False and checks.get('google',{}).get('reachable') and checks.get('openai',{}).get('reachable'):recommendations.append('Destination-specific filtering/DPI is suspected; local DNS/MTU/NIC mutation is not justified by this audit.')
+ out={'schema':1,'checked':now(),'status':'PASS_READ_ONLY','mode':'DIRECT','proxyUsed':False,'tunnelUsed':False,'routeStable':stable,'defaultRoute':route,'adapter':adapter,'nat':nat,'dns':dns_probe,'publicTrace':{'ip':tr.get('ip',''),'country':tr.get('loc',''),'warp':tr.get('warp',''),'gateway':tr.get('gateway',''),'reachable':bool(trace_r.get('exit')==0 and trace_r.get('code')=='200')},'applicationChecks':checks,'recommendations':recommendations,'mutationsApplied':[],'pathProof':'NO_FREENETHUB_PROXY+PHYSICAL_DEFAULT_ROUTE+NO_BROAD_OVERRIDE_ROUTES+ROUTE_STABLE'}
+ write(ROOT/'data'/'direct_network_audit.json',out)
+ return out
 
 def trace(text):
  out={}
@@ -974,6 +1373,8 @@ def dispatch(action,mode,payload):
   return {'results':rows,'rank':rank,'note':'Sample HTTPS latency, not guaranteed application speed.'}
  if action=='Speed':
   return direct_speed()
+ if action=='DirectNetworkAudit':
+  return direct_network_audit()
  if action=='PathSpeed':
   return path_speed(mode)
  if action=='ProviderBenchmark':
@@ -1002,14 +1403,50 @@ def dispatch(action,mode,payload):
   finally:
    if not was:
     with contextlib.suppress(Exception):stop(mode)
+ if action=='ProviderPing':
+  t=test_timeouts()
+  def _provider_ping_one(m):
+   m=str(m or 'AUTO').upper()
+   if m=='DIRECT':
+    q=ping_direct(t['ping'])
+    return {'provider':'DIRECT','performance':{'mode':'DIRECT','ok':bool(q.get('ok')),'pingMs':q.get('avgMs'),'downloadMbps':None,'uploadMbps':None,'country':'','checked':now()}}
+   was=bool(owned(m)) if m in PORTS else False
+   try:
+    if m=='CUSTOM':
+     proxy=mode_proxy('CUSTOM')
+    else:
+     ensure_node(country_target()) if m=='NODE' else ensure(m)
+     proxy=mode_proxy(m)
+    pr=curl('https://www.youtube.com/generate_204',proxy,seconds=t['ping'],body=False)
+    trr=curl('https://www.cloudflare.com/cdn-cgi/trace',proxy,seconds=t['ping'])
+    tr=trace(trr.get('body','')) if trr.get('exit')==0 and trr.get('code')=='200' else {}
+    ok=pr.get('exit')==0 and pr.get('code')=='204'
+    return {'provider':m,'performance':{'mode':m,'ok':ok,'pingMs':round(float(pr.get('seconds',0))*1000,1) if ok else None,'downloadMbps':None,'uploadMbps':None,'country':tr.get('loc',''),'checked':now()}}
+   finally:
+    if m in PORTS and not was:
+     with contextlib.suppress(Exception):stop(m)
+  if mode=='AUTO':
+   attempts=[]
+   for m in connect_candidates('AUTO'):
+    try:return _provider_ping_one(m)
+    except (ValueError,RuntimeError,TimeoutError) as ex:attempts.append({'mode':m,'reason':str(ex)})
+   raise RuntimeError('ALL_PATHS_FAILED')
+  if mode not in tuple(PORTS)+('CUSTOM','DIRECT'):raise ValueError('PING_MODE_UNSUPPORTED')
+  return _provider_ping_one(mode)
  if action=='SystemSpeed':
-  return system_speed()
+  return system_speed(mode)
+ if action=='NodeSystemPreflight':
+  return node_system_preflight()
+ if action=='NodeSystemPreflightAuto':
+  return node_system_preflight_auto()
  if action=='ConsoleSpeed':
   return console_speed()
+ if action=='ConsolePreflight':
+  return console_preflight_speed()
  if action=='Providers':
   return {'providers':[
    {'id':'AUTO','label':'Smart','country':True,'list':False,'browser':True,'system':True,'console':False,'speed':True},
-   {'id':'NODE','label':'Node Pool','country':True,'list':True,'browser':True,'system':False,'console':False,'speed':True},
+   {'id':'NODE','label':'Node Pool','country':True,'list':True,'browser':True,'system':True,'console':False,'speed':True},
    {'id':'CFON','label':'CFON','country':True,'list':False,'browser':True,'system':False,'console':False,'speed':True},
    {'id':'WARP','label':'WARP','country':False,'list':False,'browser':True,'system':True,'console':False,'speed':True},
    {'id':'GOOL','label':'GOOL','country':False,'list':False,'browser':True,'system':False,'console':False,'speed':True},
@@ -1093,6 +1530,23 @@ def dispatch(action,mode,payload):
    if temporary:f.unlink(missing_ok=True)
  if action=='NodeRefreshPublic':
   return node_refresh_public(True)
+ if action=='ConnectSelectedNode':
+  s=node_store();n=node_selected(s)
+  if not n:raise ValueError('NODE_NOT_SELECTED')
+  current=owned('NODE')
+  if current and current.get('nodeId')!=n['id']:raise ValueError('NODE_ACTIVE_STOP_FIRST')
+  started_here=not bool(current)
+  try:
+   h=ensure('NODE')
+   target=country_target();actual=str(h.get('country') or '').upper()
+   if not h.get('healthy'):raise RuntimeError(h.get('error') or 'PATH_NOT_VERIFIED_NODE')
+   if target!='AUTO' and actual!=target:raise RuntimeError('NODE_TCP_COUNTRY_MISMATCH')
+   node_record_test(n['id'],h);write(ROOT/'session.json',h)
+   return {'healthy':True,'selected':n['id'],'country':actual,'startedHere':started_here,'node':NH.public_node(node_selected() or n)}
+  except Exception:
+   if started_here:
+    with contextlib.suppress(Exception):stop('NODE')
+   raise
  if action=='NodeTest':
   s=node_store();n=node_selected(s)
   if not n:raise ValueError('NODE_NOT_SELECTED')
@@ -1121,7 +1575,8 @@ def dispatch(action,mode,payload):
  if action=='NodeBenchmarkBatch':
   s=node_store()
   if not s['nodes']:raise ValueError('NODE_POOL_EMPTY')
-  node_batch_fast();s=node_store()
+  if not node_endpoint_tests_fresh(s):node_batch_fast()
+  s=node_store()
   protocol_attempts={}
   for n in s['nodes']:
    if isinstance(n.get('performance_test'),dict):
@@ -1132,9 +1587,9 @@ def dispatch(action,mode,payload):
    old=n.get('performance_test') if isinstance(n.get('performance_test'),dict) else {}
    proto=str(n.get('protocol','')).lower()
    eligible=(ep.get('reachable') is True or proto=='hysteria2')
-   if eligible:ranked.append((0 if not old else 1,protocol_attempts.get(proto,0),0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,float(ep.get('latency_ms',999999) or 999999),n))
+   if eligible:ranked.append((0 if not old else 1,protocol_attempts.get(proto,0),node_source_quality(n),0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,float(ep.get('latency_ms',999999) or 999999),n))
   rows=[];limit=4
-  ordered=sorted(ranked,key=lambda x:x[:5]);picked=[];picked_ids=set();seen_protocols=set();seen_sources=set()
+  ordered=sorted(ranked,key=lambda x:x[:6]);picked=[];picked_ids=set();seen_protocols=set();seen_sources=set()
   for row in ordered:
    n=row[-1];proto=str(n.get('protocol') or '').lower()
    if proto not in seen_protocols:
@@ -1151,15 +1606,21 @@ def dispatch(action,mode,payload):
     if row[-1].get('id') in picked_ids:continue
     picked.append(row);picked_ids.add(row[-1].get('id'))
     if len(picked)>=limit:break
-  for _,__,___,____,_____,n in picked:
+  for _,__,___,____,_____,______,n in picked:
    check()
    current=owned('NODE')
    if current and current.get('nodeId')!=n['id']:stop('NODE')
    node_select(n['id'])
    try:
     h=ensure('NODE');node_record_test(n['id'],h)
-    perf=path_speed('NODE',1000000,250000);node_record_performance(n['id'],perf)
-    rows.append({'id':n['id'],'status':'PASS','ok':perf.get('ok'),'pingMs':perf.get('pingMs'),'downloadMbps':perf.get('downloadMbps'),'uploadMbps':perf.get('uploadMbps'),'country':perf.get('country')})
+    perf=path_speed('NODE',1000000,250000)
+    if perf.get('ok') is True:
+     node_record_performance(n['id'],perf)
+     rows.append({'id':n['id'],'status':'PASS','ok':True,'pingMs':perf.get('pingMs'),'downloadMbps':perf.get('downloadMbps'),'uploadMbps':perf.get('uploadMbps'),'country':perf.get('country'),'error':''})
+    else:
+     fail=dict(perf);fail['ok']=False;fail['downloadMbps']=None;fail['uploadMbps']=None;fail['error']=str(perf.get('error') or 'THROUGHPUT_SAMPLE_INCOMPLETE')
+     node_record_performance(n['id'],fail)
+     rows.append({'id':n['id'],'status':'FAIL','ok':False,'pingMs':perf.get('pingMs'),'downloadMbps':None,'uploadMbps':None,'country':perf.get('country'),'error':fail['error']})
    except (ValueError,RuntimeError,TimeoutError) as ex:
     ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
     fallback_ping=ep.get('latency_ms') if ep.get('reachable') is True else None

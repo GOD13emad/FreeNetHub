@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "context": "Direct-path/CGNAT audit requested with no VPN/proxy",
+  "status": "PRESTATE",
+  "facts": {
+    "physicalInterface": "Ethernet 3",
+    "physicalIPv4": "192.168.20.5",
+    "gateway": "192.168.20.1",
+    "physicalDns": [
+      "192.168.20.1"
+    ],
+    "ipv6DefaultRoute": false,
+    "winHttpProxy": "DIRECT",
+    "winInetProxyEnabled": false,
+    "activeOigFullRoutePrefixes": [
+      "0.0.0.0/1",
+      "128.0.0.0/1"
+    ],
+    "activeOigInterface": "Local Area Connection",
+    "activeOigService": "OVPNConnectorService Running",
+    "note": "Previous public-IP/traceroute observations were not accepted as direct-ISP evidence because OIG full-route was active."
+  },
+  "intendedMutation": "Use OIG-owned Disconnect-OpenInternet.ps1 to set desired=off and remove OIG full routes; then re-audit direct ISP path.",
+  "rollback": "Reconnect only through OIG product if later explicitly desired.",
+  "confidence": "CONFIRMED"
+}

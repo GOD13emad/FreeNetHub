@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "started": "2026-09-28T23:25:17.5530110+03:30",
+  "status": "PASS_STRATEGY_FOUND",
+  "tool": "zapret-win-bundle blockcheck",
+  "bundleCommit": "6eb463a6758fb48cd101bc55dfd057e6e9d98af1",
+  "mode": "BATCH_QUICK_IPV4_HTTPS_ONLY_NO_TPWS_NO_QUIC",
+  "target": "www.youtube.com",
+  "settings": {
+    "IPVS": 4,
+    "HTTPS_TLS12": 1,
+    "HTTPS_TLS13": 1,
+    "HTTP": 0,
+    "HTTP3": 0,
+    "TPWS": 0,
+    "scanLevel": "quick",
+    "secureDns": "https://76.76.10.11/p0",
+    "curlHttpsGet": 1
+  },
+  "prestate": {
+    "route": {
+      "InterfaceAlias": "Ethernet 3",
+      "InterfaceIndex": 18,
+      "NextHop": "192.168.20.1",
+      "RouteMetric": 0,
+      "InterfaceMetric": 25
+    },
+    "trace": {
+      "fl": "930f6",
+      "h": "www.cloudflare.com",
+      "ip": "164.215.159.13",
+      "ts": "1790625320.000",
+      "visit_scheme": "https",
+      "uag": "curl/8.21.0",
+      "colo": "FRA",
+      "sliver": "010-tier1",
+      "http": "http/1.1",
+      "loc": "IR",
+      "tls": "TLSv1.3",
+      "sni": "plaintext",
+      "warp": "off",
+      "gateway": "off",
+      "rbi": "off",
+      "kex": "X25519"
+    },
+    "tcpTimestamps": "allowed",
+    "winDivert": null,
+    "splitRoutes": 0
+  },
+  "strategies": [
+    "!!!!! curl_test_https_tls12: working strategy found for ipv4 www.youtube.com : winws --dpi-desync=multisplit --dpi-desync-split-pos=sniext+1 !!!!!",
+    "!!!!! curl_test_https_tls13: working strategy found for ipv4 www.youtube.com : winws --dpi-desync=multisplit --dpi-desync-split-pos=sniext+1 !!!!!"
+  ],
+  "blockcheckExit": 0,
+  "cleanup": {
+    "winws": [],
+    "winDivert": [],
+    "splitRoutes": 0,
+    "route": {
+      "InterfaceAlias": "Ethernet 3",
+      "InterfaceIndex": 18,
+      "NextHop": "192.168.20.1",
+      "RouteMetric": 0,
+      "InterfaceMetric": 25
+    },
+    "trace": {
+      "fl": "636f64",
+      "h": "www.cloudflare.com",
+      "ip": "164.215.159.13",
+      "ts": "1790625419.000",
+      "visit_scheme": "https",
+      "uag": "curl/8.21.0",
+      "colo": "FRA",
+      "sliver": "010-tier1",
+      "http": "http/1.1",
+      "loc": "IR",
+      "tls": "TLSv1.3",
+      "sni": "plaintext",
+      "warp": "off",
+      "gateway": "off",
+      "rbi": "off",
+      "kex": "X25519"
+    },
+    "tcpTimestamps": "allowed"
+  },
+  "finished": "2026-09-28T23:26:56.7939023+03:30"
+}

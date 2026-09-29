@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "R36 installed candidate Direct-DPI Start failure after candidate parity and UI smoke passed",
+  "status": "ROOT_CAUSE_CONFIRMED_FIXED",
+  "failure": {
+    "candidateSha256": "79522B74089946E3CB4AEA287626EDB73401FE87B0BCA6ED5265B264CCE2DBF1",
+    "installedParity": true,
+    "installedUiSmoke": true,
+    "directDpiStart": "FAIL_ROLLED_BACK",
+    "error": "One or more parameter values passed to the method were invalid."
+  },
+  "rootCause": "PowerShell expression @(@($Dns1,$Tpl1)) flattened the intended single resolver pair into two System.String elements. foreach therefore indexed characters: first iteration passed ServerAddress='7' and DohTemplate='6' to the Windows DoH cmdlet, causing invalid parameter values.",
+  "evidence": {
+    "introspection": {
+      "count": 2,
+      "firstType": "System.String",
+      "firstValue": "76.76.10.11",
+      "firstIndex0": "7",
+      "firstIndex1": "6",
+      "secondValue": "https://76.76.10.11/p0",
+      "secondIndex0": "h",
+      "secondIndex1": "t"
+    },
+    "acceptancePath": "evidence/R36_FINAL_WINDOWS_ACCEPTANCE_20260929.json",
+    "rollback": {
+      "network": true,
+      "installedBackup": true,
+      "dns": "192.168.20.1",
+      "winws": 0,
+      "windivert": 0,
+      "installedRevision": "4.2.0-local-r32-audit-closure"
+    }
+  },
+  "prevention": [
+    "Removed nested-array pair iteration entirely for the single resolver.",
+    "Call Get/Set/Add-DnsClientDohServerAddress directly with $Dns1 and $Tpl1.",
+    "Added regression assertions forbidding foreach($pair), $pair[0], and $pair[1] in Direct-DPI start.",
+    "Candidate installer rebuilt under source-freeze guard."
+  ],
+  "currentCandidate": {
+    "path": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R36_DirectDPI_Final_Setup.exe",
+    "bytes": 16949829,
+    "sha256": "5823DEA3641D5628582057C8770D12AD3EBF9989E2434491868E21EA844D2251",
+    "authenticode": "NotSigned"
+  },
+  "confidence": "HIGH",
+  "reuseTargets": [
+    "FreeNetHub Direct-DPI runtime",
+    "PowerShell packaging/runtime regression",
+    "R36 final acceptance"
+  ]
+}

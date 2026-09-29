@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS_SOURCE_PRETUN_OWNER_ELEVATION_OPEN",
+  "candidate": "R35_CAPABILITY_CANDIDATE",
+  "installedAuthority": "4.2.0-local-r32-audit-closure",
+  "facts": {
+    "staticRegression": "PASS_112_CORE_18_GATEWAY",
+    "themeContrast": "PASS_3",
+    "productBoundary": "PASS",
+    "sourceSmoke": "PASS_AFTER_R35_MANIFEST_REFRESH",
+    "directUnderlay": {
+      "defaultInterface": "Ethernet 3",
+      "gateway": "192.168.20.1",
+      "oigSplitRoutes": 0,
+      "oigService": "Stopped"
+    },
+    "nodePreTun": {
+      "status": "PASS",
+      "totalNodes": 2000,
+      "reachable": 1797,
+      "failedSources": [],
+      "targetCountry": "SG",
+      "tcpCountry": "SG",
+      "udpCountry": "SG",
+      "pingMs": 966.5,
+      "downloadMbps": 2.86,
+      "uploadMbps": 0.98,
+      "selectionPolicy": "AUTO",
+      "stateRestored": true
+    },
+    "fullSystemLive": {
+      "status": "OPEN_OWNER_ELEVATION",
+      "reason": "Commander session is non-elevated and GUI bridge is unavailable; Windows UAC approval is required for TUN apply.",
+      "priorAttempt": "HARNESS_BLOCKED_AT_UAC_NO_PRODUCT_TUN_APPLIED",
+      "cleanup": "PASS_NODE_LISTENER_OWNER_AND_MUTATED_STATE_RESTORED"
+    }
+  },
+  "failurePrevention": {
+    "previousHarnessIssue": "Prepared/refreshed Node state before UAC; interruption could leave NODE listener and temporary source state.",
+    "rootCause": "Elevation was requested after mutable preflight preparation.",
+    "prevention": "Moved backup, node preparation, TUN validation, rollback and exact state restoration inside elevated acceptance process. Outer script now performs no mutation before UAC.",
+    "parserValidation": "PASS",
+    "outerHarnessSha256": "C097A62C5AF767950F46017C41DB984C81906AD55107D059BBBD91F5B90CA6AE",
+    "elevatedHarnessSha256": "04389A0BB5E347CB9F834CF5F090BF5B6434C44EA5F39837EAF94894C0ACF2DC"
+  },
+  "promotionPolicy": {
+    "installAllowed": false,
+    "publicReleaseAllowed": false,
+    "requirement": "R35 full-system NODE TUN must pass post-TUN HTTPS, YouTube, UDP STUN, strict TCP/UDP country and rollback under elevation."
+  },
+  "openGates": [
+    "ONE_WINDOWS_UAC_APPROVAL_FOR_R35_NODE_FULL_SYSTEM_LIVE",
+    "TRUSTED_WINDOWS_AUTHENTICODE",
+    "PHYSICAL_CONSOLE_FIELD_E2E",
+    "PUBLIC_GITHUB_PROMOTION_AFTER_CUMULATIVE_ACCEPTANCE"
+  ],
+  "provenance": {
+    "projectRoot": "C:\\Users\\<USER>\\source\\repos\\FreeNetHub",
+    "manifestSha256": "2A909DC2D9BD39BA217E2A349ACEE4CB34ECCC2765BBC5C9CD2BA82920C96805",
+    "releaseSha256": "2DF8A65FC2E8688C163BA9C84A42AB8C2B78C34EACBB8C56055FDF16395E8604",
+    "preTunEvidence": "evidence/R35_NODE_PRE_TUN_ACCEPTANCE_20260928.json",
+    "preTunEvidenceSha256": "250B140AF016F394AF55AA3603233E01CE2E5061A56D8C11EF8F8F68E67C3B60"
+  }
+}

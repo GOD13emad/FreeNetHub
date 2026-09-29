@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "status": "PASS",
+  "context": "Chrome gate on currently active R36 Direct DPI runner",
+  "activePid": 61492,
+  "chrome": {
+    "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "exit": 0,
+    "htmlBytes": 1087473,
+    "markers": {
+      "youtube_web": true,
+      "ytd_masthead": true,
+      "youtube_home": true
+    },
+    "proxy": "none/default system",
+    "profile": "temporary"
+  },
+  "curlEvidence": "evidence/R36_DIRECT_DPI_FINAL_LIVE_20260928.json",
+  "conclusion": "Chrome default path reaches and renders YouTube DOM on active Direct DPI state without VPN/proxy."
+}

@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-local-r28-final",
+  "version": "4.2.0-local-r37-final",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -15,8 +15,8 @@
     },
     {
       "file": ".gitignore",
-      "bytes": 680,
-      "sha256": "52519E8EC61BA1F5B59DC1A13C2EA4488ECBC4398FB215DB0EC2A31B0BC17174"
+      "bytes": 953,
+      "sha256": "FDF6C2256E896FA294F3D2BCF0D06318C81FBD98C286100832F257C41DF1A456"
     },
     {
       "file": "app/assets/FreeNetHub.ico",
@@ -34,19 +34,79 @@
       "sha256": "50BCB770067FBD12724C0B30E0DF5765A7F017EBC916FF77F1D30CA8135BAB37"
     },
     {
+      "file": "app/directdns/ctrld.exe",
+      "bytes": 7602136,
+      "sha256": "FC966FD7DD5EE850A9709F632789CFB5BBC06C45D903D24B8ECFCE3306B658CD"
+    },
+    {
+      "file": "app/directdns/ctrld.toml",
+      "bytes": 477,
+      "sha256": "2E1AF2EF934367465B15284DE93016B839849D717F9A8DC4AC18858FC123EAE2"
+    },
+    {
+      "file": "app/directdns/LICENSE-ctrld.txt",
+      "bytes": 1101,
+      "sha256": "55D82D13FE55D4B2AEC42166FCCD3C16C267B7131ECF2FBD7C3C6C3463494501"
+    },
+    {
+      "file": "app/directdpi/hosts.txt",
+      "bytes": 92,
+      "sha256": "87C8824497FF242B0A6873C5127F7D9A884A665E0AD5183D4AA6F14E9A81470D"
+    },
+    {
+      "file": "app/directdpi/LICENSE-zapret.txt",
+      "bytes": 1069,
+      "sha256": "DCF5ABD3E5D876C1065982871C0CEC7368C0E61FC795C541798729516BB6B54F"
+    },
+    {
+      "file": "app/directdpi/Start-DirectDpi.ps1",
+      "bytes": 15304,
+      "sha256": "B3E56671EEF480A8A02ADB4410300125B5FBD93604F695726AB6748E955B1392"
+    },
+    {
+      "file": "app/directdpi/Stop-DirectDpi.ps1",
+      "bytes": 7033,
+      "sha256": "6D43E6A13ECAB1A47830B45562C8C8C5BD27DDF445B66F0634AD0F3DA6A3C199"
+    },
+    {
+      "file": "app/directdpi/tools/cygwin1.dll",
+      "bytes": 2954293,
+      "sha256": "103104A52E5293CE418944725DF19E2BF81AD9269B9A120D71D39028E821499B"
+    },
+    {
+      "file": "app/directdpi/tools/WinDivert.dll",
+      "bytes": 47616,
+      "sha256": "C1E060EE19444A259B2162F8AF0F3FE8C4428A1C6F694DCE20DE194AC8D7D9A2"
+    },
+    {
+      "file": "app/directdpi/tools/WinDivert64.sys",
+      "bytes": 94144,
+      "sha256": "8DA085332782708D8767BCACE5327A6EC7283C17CFB85E40B03CD2323A90DDC2"
+    },
+    {
+      "file": "app/directdpi/tools/winws.exe",
+      "bytes": 223232,
+      "sha256": "A14BFF1DF6234EA555D2E0C61B589F0707C0B12D6C9B7EECCDA76012154996E8"
+    },
+    {
+      "file": "app/directnet.py",
+      "bytes": 15208,
+      "sha256": "99FAC2E50F3B25101C3974E8361732301CE5E486731C9B98E225E390F9CFF956"
+    },
+    {
       "file": "app/engine.py",
-      "bytes": 72959,
-      "sha256": "9D9DC7724D05BF8C58986ABE760C9CF0A127F09816046D8984617CBE9A9C8658"
+      "bytes": 104285,
+      "sha256": "FA3C22B7AB96D346A3255C9A0A6FEF9020626F181B8D68BC8AF3710ECB60E2FE"
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 66203,
-      "sha256": "6D37EEDAFBE475C785176B50CEBEE11EBA455CF8E6760E0C95DE9D1A0E446C60"
+      "bytes": 93416,
+      "sha256": "55F4D8A4244391FB1B23FBE9B05A592328A4D4442F839E83407170CEF794C77C"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 1013,
-      "sha256": "F82910D2755B78F34FAD59463832F2A7CA8D2849EBBF1E2EBD81F8EF1BDE84EF"
+      "bytes": 2953,
+      "sha256": "221B60BA2AC4E21330A0811A818844D0596077860F835F930CA4129367230C2D"
     },
     {
       "file": "app/nodehub.py",
@@ -55,8 +115,8 @@
     },
     {
       "file": "app/View.xaml",
-      "bytes": 30632,
-      "sha256": "3B170D89488940EEF41503E00FD6DD7AC9C0EAFDCDB7CF53532BDDEBF8AE7E0C"
+      "bytes": 68712,
+      "sha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -289,9 +349,24 @@
       "sha256": "4A5CF7EBB16520CD3AED7A18CEAA2058D85CB9C06442141C3BF950704DC912E4"
     },
     {
+      "file": "evidence/CHAT4_CAPTURE_R37_FULLSYSTEM_ROOT_UPDATE_20260929_0734.json",
+      "bytes": 586,
+      "sha256": "A3A147B1200A572D8A16BAD124E6F05D043C634FCA720DA7605923EA6ABB8931"
+    },
+    {
+      "file": "evidence/CHAT4_R37_FS_OFFICIAL_GATEWAY_ACCEPTANCE_20260929.json",
+      "bytes": 5895,
+      "sha256": "F3675C7832312E4EDD125A445F83F87AE3496BBCBED3299FA0BD85E08552F4EF"
+    },
+    {
       "file": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json",
       "bytes": 1418,
       "sha256": "24103C4DC6457E0584DE59E27F59FE986C52C31270D3BDF75AD583740109AAB1"
+    },
+    {
+      "file": "evidence/HOLISTIC_SYSTEM_AUDIT_20260929.json",
+      "bytes": 6290,
+      "sha256": "0C1DC24ED202B9AEF02DA15489C1EF28F06890F72C75BFE4F96F474BB79E1D11"
     },
     {
       "file": "evidence/IOS_420_STATIC_ACCEPTANCE.json",
@@ -554,6 +629,296 @@
       "sha256": "718623550B034B943C4F658EEBC09751952C091A49EEBCADF35D0B440EE3F7C5"
     },
     {
+      "file": "evidence/R29_UX_ACCEPTANCE_20260928.json",
+      "bytes": 2376,
+      "sha256": "FC65F36E5AB01FD356F137FB33916579F7BD1738625AACA7D5BAD8F08850A2B0"
+    },
+    {
+      "file": "evidence/R29_UX_INSTALL_ACCEPTANCE_20260928.json",
+      "bytes": 931,
+      "sha256": "42DEBC5EAA7729AA3A8688105F51D33681FD977E7308C8CF89675238B08706E6"
+    },
+    {
+      "file": "evidence/R30_UI_FIDELITY_ACCEPTANCE_20260928.json",
+      "bytes": 2559,
+      "sha256": "A43B8411900588B57A3006D691DA06A3AB19DCB5FCEFAB4C275EF9F06F69E3AC"
+    },
+    {
+      "file": "evidence/R30_UI_FIDELITY_FINAL_INSTALL_ACCEPTANCE_20260928.json",
+      "bytes": 940,
+      "sha256": "B3CCAEFB0A6BE5FA6E0620A4180292EDCA93DB7F59D50C1EB95A795CB89F3C0E"
+    },
+    {
+      "file": "evidence/R30_UI_FIDELITY_INSTALL_ACCEPTANCE_20260928.json",
+      "bytes": 940,
+      "sha256": "E538B0A6960219107ED64A58A2BFA06796305D031FB1EB662A5246A8F9C1E303"
+    },
+    {
+      "file": "evidence/R31_ARCHITECTURE_DECISION_20260928.json",
+      "bytes": 2207,
+      "sha256": "ABCE8C44C73F6596F632D60083D4F73D7D0023947E1C9A4A303C86B248879AB2"
+    },
+    {
+      "file": "evidence/R31_AUDIT_INSTALL_ACCEPTANCE_20260928.json",
+      "bytes": 1292,
+      "sha256": "03E2FA03E8950540C97FF9AB42DB977CFE630AD6F27A5F7D37F17CF878C6570C"
+    },
+    {
+      "file": "evidence/R32_AUDIT_CLOSURE_ACCEPTANCE_20260928.json",
+      "bytes": 4585,
+      "sha256": "21C0FAFE2148DE0ECA9FB7741CF81288F96B0D634F91EB11D8A29357FEEDD8A9"
+    },
+    {
+      "file": "evidence/R33_LIVE_NODE_SYSTEM_ACCEPTANCE_20260928.json",
+      "bytes": 907,
+      "sha256": "582F5FE0307956D41D1E3677F0E0B042D1448826D014B4BDC312A510C70B8BF1"
+    },
+    {
+      "file": "evidence/R33_NODE_SYSTEM_ARCHITECTURE_DECISION_20260928.json",
+      "bytes": 3512,
+      "sha256": "188BA7BAF6D5841FAB0EE2FA3C31808F88C12854CA715A37D884FD75C79705F5"
+    },
+    {
+      "file": "evidence/R33_V2CROSS_REMAINING_PATH_ACCEPTANCE_20260928.json",
+      "bytes": 636,
+      "sha256": "47851A2CC77035BEE84C50F8CE2ED7CBD6CA4F45F21C7AB7D4A62D445B18292D"
+    },
+    {
+      "file": "evidence/R33_V2CROSS_TARGETED_PATH_ACCEPTANCE_20260928.json",
+      "bytes": 205,
+      "sha256": "D0B99022D7DA087396583630C799CC207DD07DEDF818D1BE6E2F68544DE51296"
+    },
+    {
+      "file": "evidence/R34_DIRECT_PATH_CGNAT_PRESTATE_20260928.json",
+      "bytes": 978,
+      "sha256": "96FCE369CD3E2882E3966FDC8E4DB950DD6103293E7B5B204527D0A90B55CCB9"
+    },
+    {
+      "file": "evidence/R34_IPV6_BINDING_PRESTATE_20260928.json",
+      "bytes": 766,
+      "sha256": "45ACEA5BD660859395BDF2D250888FCE8C4743EFD301D1FB9648FB8AE2D72846"
+    },
+    {
+      "file": "evidence/R34_IPV6_BINDING_TRIAL_PRESTATE_20260928.json",
+      "bytes": 1089,
+      "sha256": "5ACFB16C363B977756D40FF058F50255A9CC1965C4EE365909C8F03A8307D205"
+    },
+    {
+      "file": "evidence/R34_IPV6_NATIVE_TRIAL_RESULT_20260928.json",
+      "bytes": 751,
+      "sha256": "C3A7ADE1AE52EB9FBAF6CA47D7184A7DE3A1BEBE039859D1DA94B07FDAE5F589"
+    },
+    {
+      "file": "evidence/R35_NODE_PRE_TUN_ACCEPTANCE_20260928.json",
+      "bytes": 1516,
+      "sha256": "D6827C8FE9F1681AAD9CDF589468977F176B0FD9F7CAE74D34C4D675C4A44FC0"
+    },
+    {
+      "file": "evidence/R35_SOURCE_GATE_ACCEPTANCE_20260928.json",
+      "bytes": 2789,
+      "sha256": "98AE1F73C01E40EF35C7352CBDFBCF6D093CD4BD167B0EADEE35094946E7EDA4"
+    },
+    {
+      "file": "evidence/R36_CHROME_CURRENT_ACTIVE_ACCEPTANCE_20260929.json",
+      "bytes": 644,
+      "sha256": "EF83DF5A86399063A98A6629392FB8702B9D28046E86650B0EEBE7261C22891B"
+    },
+    {
+      "file": "evidence/R36_CTRLD_MANAGED_DNS_ROOT_CAUSE_20260929.json",
+      "bytes": 1381,
+      "sha256": "556848F80FC63FFFF7E39276649B0D91A1D01EAC44357539694D6F5B6C8ED771"
+    },
+    {
+      "file": "evidence/R36_CTRLD_MANAGED_DNS_TRIAL_20260929.json",
+      "bytes": 2903,
+      "sha256": "F72C22A831CBE766E363CFFFC1C922CD9C93A8044BED2ABF5802A4ACDCB0FB2B"
+    },
+    {
+      "file": "evidence/R36_CYCLE_HARNESS_FIX_20260929.json",
+      "bytes": 923,
+      "sha256": "CE3C40D03DD242D2B61A603C5055C847C0A682695EFECD164AEBC02B3122A299"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_CYCLE_ACCEPTANCE_20260929.json",
+      "bytes": 612,
+      "sha256": "256697F0B1D1906E229687C648BB1EE855E0C63167F628D4B8EE8D8179E09095"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_FINAL_LIVE_20260928.json",
+      "bytes": 3876,
+      "sha256": "49B66739B486BFAD62308471654AE2AEB5AC5D16939FAA4E5F6C293C82832560"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_LIVE_TRIAL2_20260928.json",
+      "bytes": 3414,
+      "sha256": "4B2A446E162D3E203994DE22890625D5796D403BC421CD21BAD87DB07AB94E59"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_LIVE_TRIAL_20260928.json",
+      "bytes": 3391,
+      "sha256": "BC7FF2C095E18DC051C69C36865F288FEB37A84A19F078CFED45A4A3945A3C1E"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_PACKAGING_FAILURE_20260929.json",
+      "bytes": 1335,
+      "sha256": "DB8605273AEB87A4A0E3AEA20601C9098C7001B3A23EE81727F9461A0C835733"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_RUNTIME.json",
+      "bytes": 3131,
+      "sha256": "26898A718073AE74DAA19980B515251C4B8158C32CEB4F3C28F31A63A9E085A4"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_SINGLE_DOH_ROOT_CAUSE_20260929.json",
+      "bytes": 2111,
+      "sha256": "ADBC5AA3A106EF2C33B31A79741B6FCE12A12D6732566912B5ABC50605C29B72"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_STOP.json",
+      "bytes": 199,
+      "sha256": "09EAF2D212AC10FB3DC78F808B172AC14E58933D77CAC309738E4A2A627E1EB4"
+    },
+    {
+      "file": "evidence/R36_DIRECT_NETWORK_ACCEPTANCE_20260928.json",
+      "bytes": 12251,
+      "sha256": "29D6844CA2D574ABBE67E9618CD2990B269EF209DDE29FEDBD3E50A7C2566C9C"
+    },
+    {
+      "file": "evidence/R36_DIRECTDNS_IPV6_LOOPBACK_PACKAGING_20260929.json",
+      "bytes": 2158,
+      "sha256": "EA1A6D2FA3CDA984A30DC4C77D70C09E143D5779FDE406ABF985A2765E10ECC1"
+    },
+    {
+      "file": "evidence/R36_FINAL_WINDOWS_ACCEPTANCE_20260929.json",
+      "bytes": 2294,
+      "sha256": "93A475FDA68E8FB7858D9A7E695CF1D765747D7A860C0C32E9DDB475A9E32FD7"
+    },
+    {
+      "file": "evidence/R36_FINAL_WINDOWS_ACCEPTANCE_ATTEMPT1_FAIL_20260929.json",
+      "bytes": 2597,
+      "sha256": "B9679346D8E8CB12BDAD385B8297E7BE97907228AC6391E5A5E41021B76C005C"
+    },
+    {
+      "file": "evidence/R36_GOODBYEDPI_DIRECT_TRIAL_20260928.json",
+      "bytes": 3269,
+      "sha256": "0A99B46FC5AF5BDF867E9D34110BC27B7B98043A51EA9151AD3984CA423BB165"
+    },
+    {
+      "file": "evidence/R36_GOODBYEDPI_STRATEGY_SWEEP_20260928.json",
+      "bytes": 4721,
+      "sha256": "877351C5EDF12EDEE6A2DB4CB052E5F03DA10890A778CC61879AAAB8F49766FB"
+    },
+    {
+      "file": "evidence/R36_INSTALLER_BUILD_20260929.json",
+      "bytes": 307,
+      "sha256": "A90FF6BFBDAAF2F498BBD4ED42506C070AA8C403CA009C8081B27528AFE67193"
+    },
+    {
+      "file": "evidence/R36_NATIVE_DOH_ZAPRET_TRIAL_20260928.json",
+      "bytes": 4070,
+      "sha256": "727D6B49BCD1F9A316BA2AEEF64CBC7B96337C3EA172F5DCCB21830C7FA6A1C0"
+    },
+    {
+      "file": "evidence/R36_RELEASE_HYGIENE_BUILD_PATH_FIX_20260929.json",
+      "bytes": 916,
+      "sha256": "1A3B4BC8550CD851104703B25E2656DBFA348896D6AEBBD93BA3F48F8F3D9AED"
+    },
+    {
+      "file": "evidence/R36_SCOPED_DOH_ZAPRET_TRIAL_20260928.json",
+      "bytes": 3555,
+      "sha256": "6BD3587EC94E7C98B9C6254935FB8110D4CAF18DBE505478351B31CCC89EF412"
+    },
+    {
+      "file": "evidence/R36_ZAPRET_BLOCKCHECK_QUICK_20260928.json",
+      "bytes": 2349,
+      "sha256": "559D8BA817B4DB4D06ED0845F22B7561AB288B8687BB8710757CCAE2BC08F108"
+    },
+    {
+      "file": "evidence/R36_ZAPRET_DIRECT_TRIAL_20260928.json",
+      "bytes": 2203,
+      "sha256": "FA0A118785D6B44284FB2522F7266AC9C3D373C31584911EF074D48C1E0DE7A6"
+    },
+    {
+      "file": "evidence/R36_ZAPRET_LIVE_VALIDATION_20260928.json",
+      "bytes": 3411,
+      "sha256": "8FA5CAFDD5A6F32CA9B9650F7239547C843CB33D30AAEE32D336EAAD35CA9278"
+    },
+    {
+      "file": "evidence/R36_ZAPRET_VALIDATION_HARNESS_AUDIT_20260928.json",
+      "bytes": 3381,
+      "sha256": "FFCB8D83CD94910D1E832484F2DB7372A403627D1D78A2C313B60CFD3E44BC81"
+    },
+    {
+      "file": "evidence/R37_FINAL_INSTALLER_BUILD_20260929.json",
+      "bytes": 1012,
+      "sha256": "843ECDB2A4BCB85A1B90EB5409DE6494B502A1BCD507A145D7FD0B81AB09FB97"
+    },
+    {
+      "file": "evidence/R37_FINAL_INSTALLER_CLEAN_INSTALL_ACCEPTANCE_20260929.json",
+      "bytes": 878,
+      "sha256": "18313E72293039C5A48BAD61E9FCD8775887EC15C03B76BD5C0D041A96FCFBE0"
+    },
+    {
+      "file": "evidence/R37_FULLSYSTEM_ROOT_UPDATE_ACCEPTANCE_20260929.json",
+      "bytes": 586,
+      "sha256": "A3A147B1200A572D8A16BAD124E6F05D043C634FCA720DA7605923EA6ABB8931"
+    },
+    {
+      "file": "evidence/R37_FULLSYSTEM_ROOT_UPDATE_ACCEPTANCE_ATTEMPT1_FAIL_20260929.json",
+      "bytes": 586,
+      "sha256": "A3A147B1200A572D8A16BAD124E6F05D043C634FCA720DA7605923EA6ABB8931"
+    },
+    {
+      "file": "evidence/R37_INSTALLED_UI_DASHBOARD_20260929.png",
+      "bytes": 217903,
+      "sha256": "ACADA29CA80E800B9A88B139706DCAD610A00D191DE668E3AAAB9B3AD1CD8F7F"
+    },
+    {
+      "file": "evidence/R37_INSTALLED_UI_METHODS_20260929.png",
+      "bytes": 195081,
+      "sha256": "585F3C44F1ACF3A936DA3E8E713AD38DCF7E54620194B8EE4C5877F41704D038"
+    },
+    {
+      "file": "evidence/R37_INSTALLED_UI_NODES_20260929.png",
+      "bytes": 138200,
+      "sha256": "C4F5149483BD802E3DCF2F954A0D535A56F635C723FF25E668A08A6678BBF136"
+    },
+    {
+      "file": "evidence/R37_INSTALLED_UI_SETTINGS_20260929.png",
+      "bytes": 154525,
+      "sha256": "920F5EF25570021AA50FFB957E7E8F686DCE9DE4E8A28B5DFE81BE89266F0B60"
+    },
+    {
+      "file": "evidence/R37_INSTALLED_UI_TOOLS_20260929.png",
+      "bytes": 203439,
+      "sha256": "5F9C5828A10AEE4D3CE0B27FCEB882BF6A05AC63B69F7BF0FD6B5C7A6D7FBD51"
+    },
+    {
+      "file": "evidence/R37_INSTALLER_BUILD_20260929.json",
+      "bytes": 309,
+      "sha256": "B7E9E4D7FBE74572197A9B7036025B8FCED7A4499BB105489D8D361BDA1CD998"
+    },
+    {
+      "file": "evidence/R37_PROJECT_KNOWLEDGE_20260929.json",
+      "bytes": 9434,
+      "sha256": "57DEB3FE510E6107E24C462E7BE41B47B46EE3E1C282DC3E196D7EE5CA3EE540"
+    },
+    {
+      "file": "evidence/R37_PUBLIC_METADATA_INSTALL_ACCEPTANCE_20260929.json",
+      "bytes": 831,
+      "sha256": "07C21A83BBF7B6A5D0C353AF237AEEF518D47DE707D0DC8D4BE9CAF13F1F7CE0"
+    },
+    {
+      "file": "evidence/R37_PUBLIC_TREE_ACCEPTANCE_20260929.json",
+      "bytes": 915,
+      "sha256": "BACDC7D7FA79F28F7530F6BB80859E495B774732CE2A10BD4259242E2643AA07"
+    },
+    {
+      "file": "evidence/R37_WINDOWS_FINAL_ACCEPTANCE_20260929.json",
+      "bytes": 3426,
+      "sha256": "4143049D6FC84FB09DFE116E645E2EE105DF325C53B9A99EFCF7A7EE2F54109F"
+    },
+    {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
       "bytes": 2126,
       "sha256": "FE39F0868C138A3A3CDB57548BCD7AEB562B0BCB72328590D91ACDC0EB6B2D41"
@@ -585,18 +950,18 @@
     },
     {
       "file": "gateway/gateway_control.ps1",
-      "bytes": 11870,
-      "sha256": "478A02A00CB348689EBCE64E5C189090CEAC2DE165CDC94F9B56366852D18697"
+      "bytes": 16430,
+      "sha256": "52E477CC3508834D5C232E195287FA1BB7B97739BD3F102D9CB0F214597B73AF"
     },
     {
       "file": "gateway/gateway_defaults.json",
-      "bytes": 1245,
-      "sha256": "65197D07D2E6C8B636AE5AC22C2698566C2B60A384ACD3995B3CB899C39CE093"
+      "bytes": 1416,
+      "sha256": "70698A3A11C6C9812109C391F37DA5048E81C6365F8ACCB64FBBE5D3977DB476"
     },
     {
       "file": "gateway/gateway_request.ps1",
-      "bytes": 3086,
-      "sha256": "A7DE8B31734BE0597881B2C061E5ED7D9C69A7F5A81A5C47EA58A4A96969E32A"
+      "bytes": 3337,
+      "sha256": "E23D4341AF5DCDC243143925B7511E59BBB3CF0CFAECCDDF87F93AE338549F88"
     },
     {
       "file": "gateway/generate_config.py",
@@ -611,7 +976,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 2912,
-      "sha256": "F3B297C4A10E61777D6EAA0F82A82E4545004C0E6B125D152EBE7E17D89E83F3"
+      "sha256": "33DEFA7B54BD60BB0BC61D7F0374BC2539DDB186EEA201B7910CA1186BC2267F"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -690,8 +1055,8 @@
     },
     {
       "file": "gateway/tests/parse_all.ps1",
-      "bytes": 464,
-      "sha256": "7618F92BC1FA561D884B664A15B3517B218B9DF330CED5C908038FB5636A1DAF"
+      "bytes": 442,
+      "sha256": "052ED506661D81FF783A8D1A6ED6D404D3666645A09AA2391DFA75EE7CA8C400"
     },
     {
       "file": "gateway/tests/parse_clean_acceptance.ps1",
@@ -705,13 +1070,13 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 3981,
-      "sha256": "93F12605B6D32DC33B27C1A5715E329002D3515154A51F465ADFFDB6B8750426"
+      "bytes": 6647,
+      "sha256": "6542E2FEA8D005682E7B4F8F373E13F602BA354C66C8E01EBD0C9581EC53EC83"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
-      "bytes": 1972,
-      "sha256": "B29A9062F1BDFACE647ABB5992B516F5F68D5D949B442999DAFAE2ED919B1D4D"
+      "bytes": 2732,
+      "sha256": "FDC63F73FFD3B5B6F0FCE124D2A134FD9305E474BC9A35937EC56A1DDCC6A83F"
     },
     {
       "file": "gateway/tests/virtual_console_e2e.py",
@@ -745,8 +1110,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 2862,
-      "sha256": "D84013C3E9422037CDD00B4FB06CFA1F6FA1C3980D7566CFD9DB3144B2F3A40D"
+      "bytes": 20597,
+      "sha256": "A3BED695C96AC2F56555FDF18FFCF292F4181900F78A6B33DC6FC537DE7A5FFB"
     },
     {
       "file": "README.md",
@@ -760,8 +1125,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 13076,
-      "sha256": "DAD61EB1CDE147139091022BBC33BA2C1C624ED5FB90ECA42B036891FA3805AD"
+      "bytes": 20823,
+      "sha256": "22140D06B8E10438ADF8CF6BA5AE974FF3CECBBE1CAA1485F31B96A7DC9E8EB1"
     },
     {
       "file": "SECURITY.md",
@@ -772,6 +1137,11 @@
       "file": "Setup-WindowsDependencies.ps1",
       "bytes": 7943,
       "sha256": "720B3CCA93C9FAF983463D0CE8CF3F305896300D5797F9335B9703CAC2D4C509"
+    },
+    {
+      "file": "tests/archive/build_r37_product_installer_SUPERSEDED_20260929.ps1",
+      "bytes": 2123,
+      "sha256": "457AD7A825963B19F3EE639976BE5D897F8D30D86C7715BF18124AC1C365B432"
     },
     {
       "file": "tests/build_r21_metadata.py",
@@ -837,6 +1207,86 @@
       "file": "tests/build_r28_final_metadata.py",
       "bytes": 2708,
       "sha256": "E46967F4040CD127A60FACC660BFC4AD061324E9EAA480A9CC86B72F86834C11"
+    },
+    {
+      "file": "tests/build_r29_ux_installer.ps1",
+      "bytes": 1658,
+      "sha256": "B6AAB60AC4057A48B443BB49C2658CB16CCC843AB2A5FDB7D6D76428CCCD91AC"
+    },
+    {
+      "file": "tests/build_r29_ux_metadata.py",
+      "bytes": 2178,
+      "sha256": "9152875239536ACE0D6171A533F3E53EB0FA42E9DAAFE233C8D429F38D8D43A9"
+    },
+    {
+      "file": "tests/build_r30_ui_fidelity_installer.ps1",
+      "bytes": 1660,
+      "sha256": "487E4BB47A68F7DF9DB06C7543FA3073799D4E73EF67B12FD5F2F1458D4EE7AB"
+    },
+    {
+      "file": "tests/build_r30_ui_fidelity_metadata.py",
+      "bytes": 2290,
+      "sha256": "C7CC26026A987E5D689B8CD35DF26B48B733F5E3835BBC17341C70D02B330AF0"
+    },
+    {
+      "file": "tests/build_r31_audit_installer.ps1",
+      "bytes": 1652,
+      "sha256": "6BEA7D426F8EE15AC32A69A874DC088057D906E52F675143F9A26F16F04A68F3"
+    },
+    {
+      "file": "tests/build_r31_audit_metadata.py",
+      "bytes": 2350,
+      "sha256": "2A8F2A50FCEB4ACFB8B6C7D8C2B5C6DC3F619BEAFD9D01C5CBF7455917E1B046"
+    },
+    {
+      "file": "tests/build_r32_audit_installer.ps1",
+      "bytes": 1656,
+      "sha256": "CA5067CFB2E412538EA9AB6DBBAC1CE07F75F3BD2360789312C11FEAD0C7F5E9"
+    },
+    {
+      "file": "tests/build_r32_audit_metadata.py",
+      "bytes": 2503,
+      "sha256": "939977AF46FA3F09DDA033B031CC258B3E8480CF40D4BDCC449942F7CD723FAF"
+    },
+    {
+      "file": "tests/build_r35_capability_metadata.py",
+      "bytes": 2452,
+      "sha256": "C6A4AB9BA5BE69B4520BC5407879C1BE6781F024A1691B7823B8FE8584E19607"
+    },
+    {
+      "file": "tests/build_r36_directdpi_installer.ps1",
+      "bytes": 2028,
+      "sha256": "F661C7777D68C8E28B9110B8098F6580DFF0D5ED7E8D2BC8AE71850130EA35AE"
+    },
+    {
+      "file": "tests/build_r36_directnet_metadata.py",
+      "bytes": 2975,
+      "sha256": "DF0B7177B63B970B6196488735F085F2DEA4459497143D45D12C89C87D96DB39"
+    },
+    {
+      "file": "tests/build_r37_product_metadata.py",
+      "bytes": 3394,
+      "sha256": "046691466D68F9396A490D0BC798C718496B3977A359305AF9215AE82077DCAB"
+    },
+    {
+      "file": "tests/chat4_r37_final_smoke.ps1",
+      "bytes": 912,
+      "sha256": "C680B67CC086C679DC790BE1659FF2024148C50BD90FD02B89AFB3FFCC55667D"
+    },
+    {
+      "file": "tests/chat4_r37_installed_parity.py",
+      "bytes": 1036,
+      "sha256": "6B4FA1639F07C07F55A1774727D385A1B2EE43E9F5358480A6EBAC040CBAE939"
+    },
+    {
+      "file": "tests/chat4_r37_official_gateway_acceptance.ps1",
+      "bytes": 3484,
+      "sha256": "B99AE2B606B55BD0B179FE188279A57F885C068B711D619D1E1953473BBEF378"
+    },
+    {
+      "file": "tests/chat4_r37_public_metadata_install_verify.ps1",
+      "bytes": 3761,
+      "sha256": "93858BDFAACE33A8424E12750CCC56798246872F81E125FAA719F17AC0350AE3"
     },
     {
       "file": "tests/finalize_r22_metadata.py",
@@ -969,9 +1419,204 @@
       "sha256": "484B15EC46E41E73B9FB7583493D7DFF85A7B997A008C4DABC7B5A23393B6212"
     },
     {
+      "file": "tests/r29_ux_install_verify.ps1",
+      "bytes": 3770,
+      "sha256": "71C0C425804700812130120DC972A2ACD819863D0E62FA846F53DAC3E33648A0"
+    },
+    {
+      "file": "tests/r30_ui_fidelity_install_verify.ps1",
+      "bytes": 3825,
+      "sha256": "3B838778C87A757D6A20A9906F81C564914811268C8CAC2A70AE1CF2A9AB8334"
+    },
+    {
+      "file": "tests/r31_audit_install_verify.ps1",
+      "bytes": 4318,
+      "sha256": "459187DF47FCE8359A9556346D3FD93F1DD7C63363DE660C59685B2461282697"
+    },
+    {
+      "file": "tests/r32_audit_install_verify.ps1",
+      "bytes": 5362,
+      "sha256": "77F8C37ACD65FE761413DA1454D8475B0ABA395861BE05E22334EEA079BF0C75"
+    },
+    {
+      "file": "tests/r33_aurx_udp_sandbox.py",
+      "bytes": 4250,
+      "sha256": "87CCB4A5E727C2F7651E90ABABD852FB8B53EAEB96FE35A2601EF28FF7D23246"
+    },
+    {
+      "file": "tests/r33_candidate_source_probe.py",
+      "bytes": 1051,
+      "sha256": "737B720BA823F7C5925C4D4A73D76A96842BB3B5C593FBFB79421C9AB20DF24E"
+    },
+    {
+      "file": "tests/r33_live_node_tun_acceptance.ps1",
+      "bytes": 576,
+      "sha256": "C097A62C5AF767950F46017C41DB984C81906AD55107D059BBBD91F5B90CA6AE"
+    },
+    {
+      "file": "tests/r33_live_node_tun_elevated.ps1",
+      "bytes": 4772,
+      "sha256": "04389A0BB5E347CB9F834CF5F090BF5B6434C44EA5F39837EAF94894C0ACF2DC"
+    },
+    {
+      "file": "tests/r33_node_error_audit.py",
+      "bytes": 2368,
+      "sha256": "A0657FF4F69D7F356A11CBF01EB3DF18C9545DFF400D37551BF2DA7D80E2CCD3"
+    },
+    {
+      "file": "tests/r33_node_error_tail.py",
+      "bytes": 699,
+      "sha256": "2EFEFDA13B26C3CC967B6D9255048D58C764CC368F49753192B5CEFC388D5114"
+    },
+    {
+      "file": "tests/r33_node_provider_udp_preflight.ps1",
+      "bytes": 3542,
+      "sha256": "D46A49B8CA83EB9FDFF030AAB853FA09FD25D19350143115266CACC9480BD02B"
+    },
+    {
+      "file": "tests/r33_node_system_preflight_action.py",
+      "bytes": 1872,
+      "sha256": "4B0CCAB9314515D8D4305EA193BC4B91D25C0A386A7144EDA88F34FB895DA652"
+    },
+    {
+      "file": "tests/r33_prepare_live_node_state.py",
+      "bytes": 1045,
+      "sha256": "1FA59B81EBD4B2D1F49ECE5AE485FF9F5FBB3F66A897311C52463FDA160CF82B"
+    },
+    {
+      "file": "tests/r33_sg_rank_audit.py",
+      "bytes": 1768,
+      "sha256": "F22733EDBC0257F50538AD6EF4E3F0EF11E213AF6F024680A8BD202E4EB7F091"
+    },
+    {
+      "file": "tests/r33_sg_shard_audit.py",
+      "bytes": 1655,
+      "sha256": "367EE56BDE9A563A93703E161876A7986E0061DFC88E59E0E129DC89DC2CCBA9"
+    },
+    {
+      "file": "tests/r33_source_fetch_audit.py",
+      "bytes": 1269,
+      "sha256": "46721475F40E5DCE2EE267F31473948A6344544EB09146757AFF2EE492FC2183"
+    },
+    {
+      "file": "tests/r33_v2cross_remaining_path.ps1",
+      "bytes": 3510,
+      "sha256": "D07DE1E64975CC20A3FF31A59283A78379A6EBD238A1F0D3001B1E1A46231745"
+    },
+    {
+      "file": "tests/r33_v2cross_targeted_path.ps1",
+      "bytes": 3291,
+      "sha256": "FDB8B541564E64B636A85F6A434ABA7CEE88086B5C80F7F574AAE7EB045A074F"
+    },
+    {
+      "file": "tests/r33_verified_source_probe.py",
+      "bytes": 703,
+      "sha256": "076ADBD63C28917A475114AF12DA57AF7E158466E482BE467C73BA645C5A26F0"
+    },
+    {
+      "file": "tests/r33_verified_source_sandbox.py",
+      "bytes": 1931,
+      "sha256": "391D4537EEA2CB3218E5B90F8DC3E2C553B757BBC43054FDF48CCCAE96DF31CC"
+    },
+    {
+      "file": "tests/r34_debug_direct_audit.py",
+      "bytes": 1188,
+      "sha256": "BA183B76B37734AD7AAE14C8F6C34198DE8A9D4A8985E9C9C7B649458FF3C607"
+    },
+    {
+      "file": "tests/r34_direct_engine_probe.py",
+      "bytes": 1108,
+      "sha256": "C66E6908ACCE9EFFB88E35E9D802569E9FD38C2B3301C5BB134D274D35AAB41A"
+    },
+    {
+      "file": "tests/r34_dns_altport_probe.py",
+      "bytes": 1098,
+      "sha256": "DAEA3193AA2D4EF91ABA98938CE3940ADE9AB45747D514DCF661419F46DB1350"
+    },
+    {
+      "file": "tests/r34_doh_probe.py",
+      "bytes": 2243,
+      "sha256": "A4BB99C54CF45763F43BDE4AD5263B941DA6CD704D253DCB1FB8854D41F04FD1"
+    },
+    {
+      "file": "tests/r34_enable_ipv6_binding.ps1",
+      "bytes": 1451,
+      "sha256": "289F4BC22131BB1F6B6A0B3BCA748CFAE524AF8297EA28D7F57978E450B0FCE0"
+    },
+    {
+      "file": "tests/r34_pcp_natpmp_probe.py",
+      "bytes": 2172,
+      "sha256": "C6E76B0B6574F6625D0AA412F48EDBEBB628606F33C135927CD072E9D67128C5"
+    },
+    {
+      "file": "tests/r34_sni_probe.py",
+      "bytes": 1300,
+      "sha256": "295883646441D4A15BF70620DD6E1E4E4D3B1E59F0BDD98E7067B407C69401B8"
+    },
+    {
+      "file": "tests/r34_stun_mapping_probe.py",
+      "bytes": 2487,
+      "sha256": "88C385E6D4BBBF42F64475355910C98C2354A34942402D32EF44B0D0F08C992E"
+    },
+    {
+      "file": "tests/r34_tls_backend_probe.py",
+      "bytes": 1064,
+      "sha256": "2DCF727D08220A0101ABA11DADC66BA3B59CBDD56BDFA25DD5975DD335BA74A7"
+    },
+    {
+      "file": "tests/r34_udp_holepunch.js",
+      "bytes": 2464,
+      "sha256": "91FFC862FD8E6DE2272529926E6E74CAA8C680A37240E420288F12E2DF09061C"
+    },
+    {
+      "file": "tests/r34_udp_peer_probe.py",
+      "bytes": 1878,
+      "sha256": "14923A45D94F60BA3B09D17964092151A9CD41EDB2F5B10AFC38C9A79299E7A4"
+    },
+    {
+      "file": "tests/r34_upnp_wan_probe.py",
+      "bytes": 3645,
+      "sha256": "16C60986C7729100381830B298CB8052BEA0A3B6A49EBD91DFD6D34DE8DF602D"
+    },
+    {
+      "file": "tests/r35_node_pre_tun_acceptance.ps1",
+      "bytes": 2169,
+      "sha256": "20AF8F445E2A2B55A455EE46BE9242CAF955AC2A8165C815A63151043EAC15DC"
+    },
+    {
+      "file": "tests/r36_ctrld_managed_dns_trial.ps1",
+      "bytes": 7605,
+      "sha256": "FF8F6AA3575E5925E142A0952AAA421A4B7894FDC5585AB6F72CF5A95955CC82"
+    },
+    {
+      "file": "tests/r36_direct_dpi_cycle_acceptance.ps1",
+      "bytes": 7349,
+      "sha256": "204E10FDA7EA9A444D474B29F63A510B33B2B074BC0D3F594783573948E20087"
+    },
+    {
+      "file": "tests/r36_engine_doh_live.py",
+      "bytes": 220,
+      "sha256": "4E7394B34670A09FC5E61FFC4F021D348EB5EB4A1D73741149D54B4CB7391EA8"
+    },
+    {
+      "file": "tests/r36_finalize_windows.ps1",
+      "bytes": 25563,
+      "sha256": "B68E635B990673935201478565852FAB58391634AD485E149BA58625890D0DC4"
+    },
+    {
+      "file": "tests/r36_single_doh_trial.ps1",
+      "bytes": 1660,
+      "sha256": "8B5F7CA023F8853A1FE06E2245B86E16AD50E0A0853CF410D1E97BB7C2BA362D"
+    },
+    {
+      "file": "tests/r37_fullsystem_root_update_acceptance.ps1",
+      "bytes": 8110,
+      "sha256": "1FF71049CAB932FDD48FDC1470D8FDC1E98FDBACF115E1D39E3D573C8BD8EFF1"
+    },
+    {
       "file": "tests/rebuild_public_manifest.py",
-      "bytes": 1285,
-      "sha256": "6E3AAD0A6C080582B17E9725611CA42C253E3ABE561518A3BBF7A3442FE473A0"
+      "bytes": 1351,
+      "sha256": "983BFD8067061108BE024E0F2058E2A30DFD1D3691DC5E367DB1C7C2652D5053"
     },
     {
       "file": "tests/sanitize_public_evidence.py",
@@ -985,8 +1630,8 @@
     },
     {
       "file": "tests/security_scan_public.py",
-      "bytes": 2459,
-      "sha256": "FC7A760ECDA768EECDE8B3F5C0BADB25DB9490DD3C3F4A5EC35ACD3896670870"
+      "bytes": 2589,
+      "sha256": "EE22F6075F9D7876EBD1543B258DB36798F8BB66533AB5B9FB8C4BF83E089723"
     },
     {
       "file": "tests/test_clean_install.py",
@@ -999,9 +1644,14 @@
       "sha256": "6D7BD7FC23A92E61C68EF51F2D93915BFD443943F180945867C248EF07B72ED3"
     },
     {
+      "file": "tests/test_directnet.py",
+      "bytes": 2502,
+      "sha256": "E8E009255EE28B45107EEEC3B2B550919D800739E717398E827FC28D7722BCC9"
+    },
+    {
       "file": "tests/test_engine.py",
-      "bytes": 39583,
-      "sha256": "8818368812BDCEC3034320EF86D7F76A9C42BECE09B5FCC54B615144004185B5"
+      "bytes": 64528,
+      "sha256": "A185C386366F76E6F2116762E7056304E54F10850F7DACBB3AFFFB18CCDCB406"
     },
     {
       "file": "tests/test_nodehub.py",
@@ -1014,9 +1664,14 @@
       "sha256": "6323DD2454DD5D9DA53B7A084FD937B8BE63D6E7652522B56EFDB7C6755BD465"
     },
     {
+      "file": "tests/test_product_boundary.py",
+      "bytes": 1522,
+      "sha256": "62C4B5ABA3AE3DEFE774657FDDDD4A72C98F33042CD5DC5F2A6C66AE92A6290E"
+    },
+    {
       "file": "tests/test_r22_country_shadowshare.py",
-      "bytes": 3082,
-      "sha256": "90C4E5C0D0B79D7D5A2A8853895039A754D7E2DC4DB297BF1E4BD35723727996"
+      "bytes": 3080,
+      "sha256": "B642C947F98230D54F1283ECDD26E41891A0D100E952DC775E4F85381FD06213"
     },
     {
       "file": "tests/test_r24_hysteria2.py",
@@ -1035,8 +1690,23 @@
     },
     {
       "file": "tests/test_r28_ui_contract.py",
-      "bytes": 1636,
-      "sha256": "332A3044D340E43B89BA2E76F4BEC36EB817210EB3C13BCB628EFD1E439E618E"
+      "bytes": 4605,
+      "sha256": "9691DDE7C8D86284D3A1B1A8AC7A9557731C6C265C83B6038A02061D3C245401"
+    },
+    {
+      "file": "tests/test_r31_theme_contrast.py",
+      "bytes": 1763,
+      "sha256": "A080A6FEF1189E3435118DDE8D60F496C95C6FB185DBE2BAA33EF3E9F37A8B45"
+    },
+    {
+      "file": "tests/test_r34_direct_network.py",
+      "bytes": 2573,
+      "sha256": "F73E28FF2965BAD705EDEA43198D2B7DC97BE3DE223EA34EC6FB9E48B42CFF29"
+    },
+    {
+      "file": "tests/test_r36_directdpi_product.py",
+      "bytes": 4494,
+      "sha256": "FA1111134531AD22321263874EBDB913811DA12230B98BA92F1E53C273E404FC"
     },
     {
       "file": "tests/verify_public_tree.py",
@@ -1075,13 +1745,13 @@
     },
     {
       "file": "Uninstall-FreeNetHub.ps1",
-      "bytes": 4877,
-      "sha256": "DA9DF80E9AE19627BC665659306C9AB94EDAD25E5BD61E3E8AB90634F3532532"
+      "bytes": 7107,
+      "sha256": "EB7773B2495FEA4C8E3A30A8E31A73E0CE036DA07B159B0B6DDA1EC36CC8AC52"
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 10541,
-      "sha256": "DF2548625BADA16AE05AA35D80CD60E263B3E8DC5AFBB3AAA5B37B48DA8E6FC9"
+      "bytes": 11037,
+      "sha256": "37361C839C35E392C1A0E0DEBE6D31AC474AB02D1A0ACE10F82BCB1BE75666D1"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",

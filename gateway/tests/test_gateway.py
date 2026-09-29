@@ -12,6 +12,44 @@ class GatewayTests(unittest.TestCase):
   self.assertIn("162.159.192.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertIn("162.159.193.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertIn("162.159.197.0/24",c["inbounds"][0]["route_exclude_address"])
+ def test_pc_tunnel_node_provider_uses_node_socks_without_cloudflare_exclusion(self):
+  c,p=M.build("PC_TUNNEL","NODE",None)
+  provider=next(x for x in c["outbounds"] if x.get("tag")=="provider")
+  self.assertEqual(provider["type"],"socks");self.assertEqual(provider["server"],"127.0.0.1");self.assertEqual(provider["server_port"],19460)
+  self.assertEqual(c["route"]["final"],"provider");self.assertTrue(c["route"]["auto_detect_interface"])
+  self.assertNotIn("route_exclude_address",c["inbounds"][0])
+  self.assertTrue(any("sing-box.exe" in x.get("process_name",[]) and x["outbound"]=="direct" for x in c["route"]["rules"]))
+ def test_pc_tunnel_controller_supports_node_strict_udp_and_dynamic_stop(self):
+  text=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("[ValidateSet('WARP','NODE')][string]$Provider='WARP'",text)
+  self.assertIn("[ValidateSet('SELECTED','AUTO')][string]$NodePolicy='SELECTED'",text)
+  self.assertIn("Run-Engine 'ConnectSelectedNode' 'NODE' 160",text)
+  self.assertIn("Run-Engine 'Connect' 'NODE' 240",text)
+  self.assertIn("if($NodePolicy -eq 'AUTO')",text)
+  self.assertIn("Verify-ProviderUdp $Provider",text)
+  self.assertIn("PC_NODE_TCP_COUNTRY_",text);self.assertIn("PC_NODE_UDP_COUNTRY_",text)
+  self.assertIn("Run-Engine 'StopOne' $sp",text)
+  self.assertIn("providerPreexisting",text);self.assertIn("providerUdpBefore",text)
+ def test_pc_tunnel_captures_pre_tun_base_route_for_update_bypass(self):
+  text=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("function Get-BaseRouteSnapshot",text)
+  self.assertIn("$baseRoute=Get-BaseRouteSnapshot",text)
+  self.assertIn("baseRoute=$baseRoute",text)
+  self.assertIn("baseTrace=$before",text)
+  self.assertIn("schema=4;mode='PC_TUNNEL'",text)
+ def test_auto_full_system_udp_does_not_depend_on_external_geo_lookup(self):
+  text=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("$country='UNVERIFIED_AUTO'",text)
+  self.assertIn("if($target -and $target -ne 'AUTO'){",text)
+  self.assertIn("countryVerified=($target -and $target -ne 'AUTO')",text)
+  self.assertIn("$udpCountry='UNVERIFIED_AUTO'",text)
+  self.assertIn("if($Provider -eq 'NODE' -and $target -ne 'AUTO'){",text)
+
+ def test_gateway_request_forwards_full_system_provider(self):
+  text=(G/"gateway_request.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("[ValidateSet('WARP','NODE')][string]$Provider='WARP'",text)
+  self.assertIn("[ValidateSet('SELECTED','AUTO')][string]$NodePolicy='SELECTED'",text)
+  self.assertIn("if($Action -eq 'StartPc'){$args+=@('-Provider',$Provider);if($Provider -eq 'NODE'){$args+=@('-NodePolicy',$NodePolicy)}}",text)
  def test_profile_path_has_no_warp_socks_underlay_exclusion(self):
   import tempfile,json
   prof={"kind":"wireguard","name":"TEST","country":"NL","capabilities":{"tcp":True,"udp":True,"country_verified":True},"endpoint":{"type":"wireguard","tag":"provider","system":False,"address":["10.0.0.2/32"],"private_key":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=","peers":[{"address":"203.0.113.1","port":51820,"public_key":"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=","allowed_ips":["0.0.0.0/0"]}]}}

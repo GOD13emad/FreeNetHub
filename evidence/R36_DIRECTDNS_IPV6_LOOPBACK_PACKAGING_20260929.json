@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "R36 Windows encrypted-DNS integration and installer packaging audit",
+  "status": "SOURCE_ARCHITECTURE_CONFIRMED_PACKAGING_ROOT_CAUSE_CONFIRMED",
+  "directDns": {
+    "engine": "ctrld",
+    "version": "1.5.7",
+    "binarySha256": "FC966FD7DD5EE850A9709F632789CFB5BBC06C45D903D24B8ECFCE3306B658CD",
+    "templateSha256": "2E1AF2EF934367465B15284DE93016B839849D717F9A8DC4AC18858FC123EAE2",
+    "listener": "[::1]:53",
+    "upstream": "https://76.76.10.11/p0",
+    "mode": "foreground validation without adapter DNS mutation",
+    "resolution": {
+      "youtube": {
+        "status": "PASS",
+        "publicIpv4": [
+          "142.251.150.4",
+          "142.251.156.4",
+          "142.251.155.4",
+          "142.251.157.4",
+          "142.251.153.4",
+          "142.251.152.4",
+          "142.251.151.4",
+          "142.251.154.4"
+        ],
+        "latencyMs": 187
+      },
+      "github": {
+        "status": "PASS",
+        "publicIpv4": [
+          "140.82.121.4"
+        ],
+        "latencyMs": 89
+      },
+      "openai": {
+        "status": "PASS",
+        "publicIpv4": [
+          "162.159.140.245",
+          "172.66.0.243"
+        ],
+        "latencyMs": 89
+      }
+    },
+    "icsCoexistence": {
+      "status": "PASS",
+      "sharedAccessState": "Running",
+      "ipv4DnsBind": "0.0.0.0:53",
+      "ctrldBind": "[::1]:53",
+      "samePortDifferentAddressFamily": true
+    }
+  },
+  "installerFailure": {
+    "status": "ROOT_CAUSE_CONFIRMED",
+    "symptom": "ISCC reported file cannot be accessed while compressing app/directdns",
+    "rootCause": "Wildcard packaging captured ctrld runtime/scratch files, including an AF_UNIX socket that is not a regular package source.",
+    "capturedScratch": [
+      ".dns_<interface>",
+      "ctrld-ipv6loopback-test.toml",
+      "ctrld_control.sock"
+    ],
+    "prevention": "Installer packages only ctrld.exe, ctrld.toml and LICENSE-ctrld.txt; runtime and scratch files are excluded."
+  },
+  "confidence": "HIGH",
+  "reuseTargets": [
+    "FreeNetHub Windows Direct-DPI",
+    "installer allowlist policy",
+    "release hygiene",
+    "PROJECT_BRAIN"
+  ]
+}

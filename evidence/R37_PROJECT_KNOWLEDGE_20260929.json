@@ -1,0 +1,231 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "project": "FreeNet Hub",
+  "milestone": "R37 Windows local final acceptance",
+  "records": [
+    {
+      "context": "UI/UX target convergence",
+      "claimDecision": "Five-tab Windows UI (Dashboard, Methods, Nodes, Tools, Settings) is the accepted R37 interaction architecture. Standalone Console navigation was removed; Console remains an independent capability inside Tools.",
+      "evidenceSource": [
+        "app/View.xaml",
+        "app/FreeNetHub.ps1",
+        "evidence/R37_INSTALLED_UI_DASHBOARD_20260929.png",
+        "evidence/R37_INSTALLED_UI_METHODS_20260929.png",
+        "evidence/R37_INSTALLED_UI_TOOLS_20260929.png"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "Accepted",
+      "reuseTargets": [
+        "user manual",
+        "release notes",
+        "architecture documentation"
+      ]
+    },
+    {
+      "context": "Method-card behavior",
+      "claimDecision": "Method-card Connect controls invoke real connection actions; preconnect benchmark controls invoke actual provider benchmarks. Ping-only and full benchmark are separate operations.",
+      "evidenceSource": [
+        "app/FreeNetHub.ps1",
+        "app/engine.py",
+        "165-test regression"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "Accepted",
+      "reuseTargets": [
+        "UI docs",
+        "QA regression"
+      ]
+    },
+    {
+      "context": "Node refresh latency root cause",
+      "claimDecision": "Node refresh must fetch/parse/merge only; bulk endpoint testing is an explicit Test All action. The prior implicit node_batch_fast call after every refresh caused unnecessary latency.",
+      "evidenceSource": [
+        "app/engine.py",
+        "installed NodeRefreshSmart live result: parsedRaw=3064 imported=3015 total=2000 failedSources=0 endpointTest=DEFERRED_TO_NODE_TEST_ALL"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "Accepted",
+      "reuseTargets": [
+        "performance rationale",
+        "release notes",
+        "future regression"
+      ]
+    },
+    {
+      "context": "Base-route update policy",
+      "claimDecision": "When FreeNet Hub Full-System is active, update and node retrieval bind to the pre-TUN source interface captured before TUN creation and verify that the bound trace is not the post-TUN trace. An external VPN that already owns the system route before FreeNet Hub remains part of that base route.",
+      "evidenceSource": [
+        "gateway/gateway_control.ps1",
+        "app/engine.py",
+        "evidence/CHAT4_R37_FS_OFFICIAL_GATEWAY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "Accepted",
+      "reuseTargets": [
+        "architecture docs",
+        "security model",
+        "troubleshooting"
+      ]
+    },
+    {
+      "context": "Full-System WARP installed acceptance",
+      "claimDecision": "Official gateway_request StartPc WARP, system speed, update-during-tunnel base-route binding, Stop, and route restoration all passed on the installed R37 payload.",
+      "evidenceSource": [
+        "evidence/CHAT4_R37_FS_OFFICIAL_GATEWAY_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "release evidence",
+        "QA"
+      ]
+    },
+    {
+      "context": "Direct base-path measurement",
+      "claimDecision": "Direct speed test bypasses FreeNet Hub browser proxy and fails closed if the default route is not a trusted physical route or Cloudflare reports WARP/Gateway. Installed live sample used Ethernet 3 and measured 78.3 ms / 37.71 Mbps / 5.23 Mbps.",
+      "evidenceSource": [
+        "app/engine.py",
+        "installed job d37fd37fd37fd37fd37fd37fd37fd37f"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "user guide",
+        "test semantics"
+      ]
+    },
+    {
+      "context": "Packaging parity",
+      "claimDecision": "Installed R37 app and gateway trees match current source manifests exactly (17 app files + 17 gateway files, zero mismatches). Self-contained runtime bootstrap passed.",
+      "evidenceSource": [
+        "tests/chat4_r37_installed_parity.py",
+        "%LOCALAPPDATA%/Programs/FreeNetHub/INSTALL_RUNTIME_STATUS.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "release evidence",
+        "support"
+      ]
+    },
+    {
+      "context": "Security hygiene",
+      "claimDecision": "Public-tree security scan passes with zero forbidden runtime artifacts and zero sensitive-pattern hits after removing hardcoded user paths from test harnesses.",
+      "evidenceSource": [
+        "tests/security_scan_public.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "release checklist",
+        "supply-chain notes"
+      ]
+    },
+    {
+      "context": "Direct-DPI boundary",
+      "claimDecision": "Direct-DPI remains an optional extension rather than a main-product promotion gate. Live direct and Chrome evidence pass, but an installed lifecycle-specific acceptance is still unproven; therefore it stays fail-closed optional.",
+      "evidenceSource": [
+        "evidence/R36_DIRECT_DPI_FINAL_LIVE_20260928.json",
+        "evidence/R36_CHROME_CURRENT_ACTIVE_ACCEPTANCE_20260929.json",
+        "evidence/R36_FINAL_WINDOWS_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "Optional/Unproven installed lifecycle",
+      "reuseTargets": [
+        "release notes",
+        "architecture boundary"
+      ]
+    },
+    {
+      "context": "Final installer",
+      "claimDecision": "R37 Final installer rebuilt with canonical public-release metadata and installed successfully. Exact final build passed installer exit, runtime bootstrap, source/install parity, five-tab smoke and route preservation.",
+      "evidenceSource": [
+        "delivery/github_v4.2.0/FreeNetHub_4.2.0_R37_Final_Setup.exe",
+        "evidence/R37_FINAL_INSTALLER_BUILD_20260929.json",
+        "evidence/R37_PUBLIC_METADATA_INSTALL_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "provenance": {
+        "bytes": 24248757,
+        "sha256": "9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D",
+        "authenticode": "NotSigned"
+      },
+      "reuseTargets": [
+        "release metadata",
+        "distribution"
+      ]
+    },
+    {
+      "context": "Final metadata promotion on installed runtime",
+      "claimDecision": "Installed app manifest and RELEASE metadata were promoted to R37 Final with automatic backups only after runtime acceptance; post-promotion 17+17 manifest parity and five-tab smoke passed with route unchanged.",
+      "evidenceSource": [
+        "app/manifest.json",
+        "RELEASE.json",
+        "tests/chat4_r37_installed_parity.py",
+        "tests/chat4_r37_final_smoke.ps1"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "release evidence",
+        "support",
+        "handoff"
+      ]
+    },
+    {
+      "context": "Final installer clean-install fallback gate",
+      "claimDecision": "Because the connected execution environment would not launch the final EXE, an exact owner-run verification runner was prepared. It hash-pins the R37 Final installer, backs up the current install, runs silent install, verifies runtime bootstrap, release revision, manifest parity, five-tab smoke and route preservation, and restores the backup on failure.",
+      "evidenceSource": [
+        "artifacts/R37_FINAL_INSTALL_VERIFY_RUNNER.zip",
+        "artifacts/R37_FINAL_INSTALL_VERIFY_RUNNER/Install-And-Verify.ps1"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "READY_OWNER_GATE",
+      "provenance": {
+        "zipSha256": "18C1D5F4E7885B510FF888470EB9671BEA28655DDC25FE455653561F1DCD477A",
+        "zipBytes": 1757,
+        "scriptSha256": "65476D4EA94331BE87F05016DFC65CCC48B83BDD70CD700E9FCE0E6678E33354"
+      },
+      "reuseTargets": [
+        "handoff",
+        "final installer qualification"
+      ]
+    },
+    {
+      "context": "Canonical public release metadata",
+      "claimDecision": "RELEASE source hashes use canonical Git-filtered bytes for public verification, while app/gateway runtime manifests continue to use raw deployed-byte hashes. Final metadata installer acceptance passed.",
+      "evidenceSource": [
+        "tests/build_r37_product_metadata.py",
+        "tests/verify_public_tree.py",
+        "evidence/R37_PUBLIC_METADATA_INSTALL_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "CI",
+        "public release",
+        "release engineering"
+      ]
+    },
+    {
+      "context": "R37 canonical public tree gate",
+      "claimDecision": "The exact public candidate passes canonical PUBLIC_MANIFEST verification, app/gateway/cross-platform/windows package manifests, canonical RELEASE hashes, forbidden-runtime guard, security scan, broad regression and git diff check.",
+      "evidenceSource": [
+        "PUBLIC_MANIFEST.json",
+        "tests/verify_public_tree.py",
+        "tests/security_scan_public.py",
+        "evidence/R37_PUBLIC_TREE_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS",
+      "reuseTargets": [
+        "GitHub release",
+        "CI",
+        "release notes",
+        "handoff"
+      ]
+    }
+  ]
+}

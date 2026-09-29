@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "R36 Direct-DPI cleanup/restart cycle harness",
+  "claim": "The prior cycle FAIL was caused by PowerShell scalar unrolling in the acceptance harness, not by a demonstrated Direct-DPI runtime failure.",
+  "status": "UNPROVEN_PENDING_ELEVATED_RERUN",
+  "change": "Normalize Drivers/ProjectWinws/DNS/DoH function outputs to arrays at assignment sites before .Count use.",
+  "preChangeScriptSha256": "0eeacc04291c9205051d8e4f161a6553b1c448c4529c4f58e9ea41c20457d577",
+  "postChangeScriptSha256": "437e3e0e1071475ce67ea1f1b1b12534d0bc4ba96d68a38a76bdf5dbbeed932d",
+  "regression": {
+    "targetedPytest": "11 PASS",
+    "gitDiffCheck": "PASS (EOL warnings only)"
+  },
+  "elevatedGate": "OPEN: attempted launch did not produce new cycle evidence; no PASS claimed.",
+  "reuseTargets": [
+    "R36 promotion gate",
+    "PowerShell harness prevention",
+    "Project Brain"
+  ]
+}

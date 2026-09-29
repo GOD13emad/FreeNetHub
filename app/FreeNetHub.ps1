@@ -1,4 +1,4 @@
-param([switch]$Smoke)
+param([switch]$Smoke,[ValidateRange(0,4)][int]$SmokeTab=0)
 
 # FreeNet Hub 4.2. One UI; browser routes plus explicit elevated PC/console gateway. No network change on launch.
 
@@ -9,7 +9,7 @@ $ErrorActionPreference='Stop'
 $script:Root=Split-Path $PSScriptRoot -Parent
 New-Item -ItemType Directory -Path (Join-Path $script:Root 'logs'),(Join-Path $script:Root 'jobs'),(Join-Path $script:Root 'evidence') -Force|Out-Null
 
-$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:NodeRows=@();$script:NodeSelected='';$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
+$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:ConnectionScope='BROWSER';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:NodeRows=@();$script:NodeSelected='';$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
 
 function Read-Json([string]$p){if(!(Test-Path -LiteralPath $p)){return $null};if((Get-Item $p).Length -gt 4194304){throw 'RESULT_TOO_LARGE'};Get-Content -LiteralPath $p -Raw -Encoding utf8|ConvertFrom-Json -AsHashtable}
 
@@ -20,6 +20,15 @@ function Sanitize($v){if($v -is [Collections.IDictionary]){$r=@{};foreach($k in 
 try{
 
  $script:Deps=Read-Json (Join-Path $PSScriptRoot 'dependencies.json')
+ $script:Pythonw=''
+ if($script:Deps -and $script:Deps.ContainsKey('pythonw') -and (Test-Path -LiteralPath ([string]$script:Deps.pythonw))){
+  $script:Pythonw=[string]$script:Deps.pythonw
+ }else{
+  $pcmd=Get-Command pythonw.exe -ErrorAction SilentlyContinue
+  if(!$pcmd){$pcmd=Get-Command python.exe -ErrorAction SilentlyContinue}
+  if(!$pcmd){$pcmd=Get-Command python -ErrorAction SilentlyContinue}
+  if($pcmd){$script:Pythonw=[string]$pcmd.Source}
+ }
 
  $manifest=Read-Json (Join-Path $PSScriptRoot 'manifest.json')
 
@@ -59,19 +68,43 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  [xml]$x=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'View.xaml'))
 
- foreach($e in $x.SelectNodes('//*[@Name]')){$n=$e.GetAttribute('Name');$script:C[$n]=$script:Window.FindName($n)}
+ foreach($e in $x.SelectNodes('//*[@Name]')){$n=$e.GetAttribute('Name');$script:C[$n]=$script:Window.FindName($n)};if($Smoke){$script:C.Tabs.SelectedIndex=$SmokeTab}
 
- $work=[Windows.SystemParameters]::WorkArea;$script:Window.MinWidth=[Math]::Min(850,$work.Width);$script:Window.MinHeight=[Math]::Min(600,$work.Height);$script:Window.Width=[Math]::Min(1180,$work.Width);$script:Window.Height=[Math]::Min(840,$work.Height)
+ $work=[Windows.SystemParameters]::WorkArea;$script:Window.MinWidth=[Math]::Min(1180,$work.Width);$script:Window.MinHeight=[Math]::Min(760,$work.Height);$script:Window.Width=[Math]::Min(1440,$work.Width);$script:Window.Height=[Math]::Min(1020,$work.Height)
 
- $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false}
+ $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false;testPathMode='BASE';pingTimeoutSec=10;downloadTimeoutSec=30;uploadTimeoutSec=30}
 
  $stored=Read-Json (Join-Path $script:Root 'settings.json');if($stored){foreach($k in @($script:Settings.Keys)){if($stored.ContainsKey($k)){$script:Settings[$k]=$stored[$k]}}}
 
- $script:C.Home.Text=$script:Settings.home;$script:C.CustomProxy.Text=$script:Settings.localProxy;$script:C.ShowIp.IsChecked=$script:Settings.showIp;$script:C.FullSystem.IsChecked=$false;$script:C.ScopeText.Text='خاموش · فقط مرورگر (پیش‌فرض)';$script:C.TrayOption.IsChecked=$(if($script:ShellHosted){$true}else{$script:Settings.minimizeToTray});if($script:ShellHosted){$script:C.TrayOption.IsEnabled=$false;$script:C.TrayOption.ToolTip='Tray is managed by FreeNetHub.exe'};$script:C.Monitor.IsChecked=$script:Settings.monitor;$script:C.AutoRepair.IsChecked=$script:Settings.autoRepair;if($script:C.ContainsKey('UpdateInstallMain')){$script:C.UpdateInstallMain.IsEnabled=$false}
+ function Set-ComboContent($ctrl,[string]$value){
+  if(!$ctrl){return}
+  foreach($i in $ctrl.Items){if([string]$i.Content -eq $value){$ctrl.SelectedItem=$i;return}}
+ }
+ function Paint-TestSettings{
+  if(!$script:C.ContainsKey('ToolsTestBasePath')){return}
+  $soft=$script:Window.Resources['Soft'];$selected=$script:Window.Resources['SelectedFill'];$line=$script:Window.Resources['Line'];$accent=$script:Window.Resources['Accent']
+  foreach($n in @('ToolsTestBasePath','ToolsTestSelectedPath')){$script:C[$n].Background=$soft;$script:C[$n].BorderBrush=$line}
+  $n=$(if([string]$script:Settings.testPathMode -eq 'SELECTED'){'ToolsTestSelectedPath'}else{'ToolsTestBasePath'})
+  $script:C[$n].Background=$selected;$script:C[$n].BorderBrush=$accent
+ }
+ Set-ComboContent $script:C.PingTimeoutBox ([string]$script:Settings.pingTimeoutSec)
+ Set-ComboContent $script:C.DownloadTimeoutBox ([string]$script:Settings.downloadTimeoutSec)
+ Set-ComboContent $script:C.UploadTimeoutBox ([string]$script:Settings.uploadTimeoutSec)
+ Paint-TestSettings
+
+ $script:C.Home.Text=$script:Settings.home;$script:C.CustomProxy.Text=$script:Settings.localProxy;$script:C.ShowIp.IsChecked=$script:Settings.showIp;if($script:C.ContainsKey('ShowIpDashboard')){$script:C.ShowIpDashboard.IsChecked=$script:Settings.showIp;}$script:C.FullSystem.IsChecked=$false;$script:C.ScopeText.Text='مرورگر · پیش‌فرض امن';$script:C.ConnectionScopeText.Text='حالت: مرورگر';$script:C.TrayOption.IsChecked=$(if($script:ShellHosted){$true}else{$script:Settings.minimizeToTray});if($script:ShellHosted){$script:C.TrayOption.IsEnabled=$false;$script:C.TrayOption.ToolTip='Tray is managed by FreeNetHub.exe'};$script:C.Monitor.IsChecked=$script:Settings.monitor;$script:C.AutoRepair.IsChecked=$script:Settings.autoRepair;if($script:C.ContainsKey('UpdateInstallMain')){$script:C.UpdateInstallMain.IsEnabled=$false}
 
  foreach($i in $script:C.Country.Items){if($i.Content -eq $script:Settings.country){$script:C.Country.SelectedItem=$i}}
 
- function Theme-Apply([string]$name){$script:Settings.theme=$name;$colors=if($name -eq 'light'){@{Bg='#F3F6FA';Panel='#FFFFFF';Ink='#173047';Muted='#536B82';Line='#CFDAE5';Accent='#137E72';Soft='#E8F0F7'}}else{@{Bg='#0B1423';Panel='#132135';Ink='#ECF2FA';Muted='#A4B8CF';Line='#2D435C';Accent='#39CDB4';Soft='#1C3046'}};foreach($k in $colors.Keys){$script:Window.Resources[$k]=[Windows.Media.BrushConverter]::new().ConvertFromString($colors[$k])}}
+ function Theme-Apply([string]$name){
+ $script:Settings.theme=$name
+ $colors=if($name -eq 'light'){
+  @{Bg='#F3F6FA';Panel='#FFFFFF';Ink='#173047';Muted='#4A6177';Line='#CFDAE5';Accent='#12776C';Soft='#E8F0F7';SelectedFill='#D7F1ED';PillFill='#DDE8F2';TableHeader='#D8E4EF';UpdatePanel='#E2F4F1'}
+ }else{
+  @{Bg='#061426';Panel='#081D33';Ink='#F5FAFF';Muted='#A6BBD0';Line='#164A68';Accent='#18E0C4';Soft='#0D2A43';SelectedFill='#0A4F5B';PillFill='#0B3654';TableHeader='#07182A';UpdatePanel='#08273E'}
+ }
+ foreach($k in $colors.Keys){$script:Window.Resources[$k]=[Windows.Media.BrushConverter]::new().ConvertFromString($colors[$k])}
+}
 
  Theme-Apply $script:Settings.theme
 
@@ -81,13 +114,44 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  Research-Show
 
+ function Console-Capability{
+  $runtime=Join-Path $script:Root 'gateway\runtime'
+  $gateway=Test-Path -LiteralPath (Join-Path $runtime 'local_gateway.json')
+  $provider=Test-Path -LiteralPath (Join-Path $runtime 'local_provider.json')
+  $profile=Test-Path -LiteralPath (Join-Path $runtime 'console.profile.json')
+  return [ordered]@{prerequisites=$gateway;localProvider=$provider;profile=$profile;canConnect=($provider -or $profile);canPreflight=$provider}
+ }
+
+ function Paint-ConsoleCapability{
+  if(!$script:C.ContainsKey('ConsoleCapability')){return}
+  $c=Console-Capability
+  if($c.localProvider){
+   $script:C.ConsoleCapability.Text='مسیر خروجی محلی کنسول آماده است؛ تست قبل از اتصال و اتصال کنسول قابل اجرا هستند.'
+  }elseif($c.profile){
+   $script:C.ConsoleCapability.Text='WireGuard profile کنسول آماده است؛ اتصال قابل اجراست. تست سرعت مستقل این profile هنوز نیاز به preflight اختصاصی دارد.'
+  }elseif($c.prerequisites){
+   $script:C.ConsoleCapability.Text='پیش‌نیازهای کنسول آماده‌اند، اما مسیر خروجی تنظیم نشده است. یک WireGuard profile معتبر وارد کنید.'
+  }else{
+   $script:C.ConsoleCapability.Text='ابتدا «راه‌اندازی پیش‌نیازهای کنسول» را اجرا کنید، سپس یک مسیر خروجی معتبر وارد کنید.'
+  }
+  return $c
+ }
+
  function Set-Busy{
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
+  $cap=Paint-ConsoleCapability
+  if($script:C.ContainsKey('GatewayConsoleStart')){$script:C.GatewayConsoleStart.IsEnabled=(-not $busy -and [bool]$cap.canConnect)}
+  if($script:C.ContainsKey('ConsoleSpeed')){$script:C.ConsoleSpeed.IsEnabled=(-not $busy -and [bool]$cap.canPreflight)}
+  if($script:ConnectionScope -eq 'CONSOLE'){
+   $script:C.MainConnect.IsEnabled=(-not $busy -and [bool]$cap.canConnect)
+   $script:C.MainTest.IsEnabled=(-not $busy -and [bool]$cap.canPreflight)
+  }
+  if(Get-Command Paint-ConnectionSelection -ErrorAction SilentlyContinue){Paint-ConnectionSelection}
 
  }
 
@@ -168,6 +232,11 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
    'UPDATE_INSTALLER_ASSET_MISSING'{return 'در Release رسمی GitHub installer سازگار پیدا نشد.'}
    'CONSOLE_CONNECT_FIRST'{return 'ابتدا Console Gateway را روشن کنید، سپس تست Ping/Download/Upload را اجرا کنید.'}
    'CONSOLE_SPEED_PROFILE_PATH_UNAVAILABLE'{return 'برای این WireGuard profile هنوز endpoint تست مستقل تعریف نشده؛ به‌جای عدد میزبان N/A نمایش داده می‌شود.'}
+   'CONSOLE_PREFLIGHT_PROVIDER_START_FAILED'{return 'provider کنسول برای تست قبل از اتصال آماده نشد؛ تنظیمات Console Provider را بررسی کنید.'}
+   'CONSOLE_PREFLIGHT_VERIFICATION_FAILED'{return 'مسیر موقت کنسول نتوانست HTTPS را قبل از اتصال تأیید کند.'}
+   'CONSOLE_PREFLIGHT_COUNTRY_MISMATCH'{return 'مسیر موقت کنسول برقرار شد اما کشور خروجی مورد انتظار تأیید نشد.'}
+   'CONSOLE_ROUTE_NOT_CONFIGURED'{return 'برای کنسول هنوز مسیر خروجی تعریف نشده است. در تب کنسول یک WireGuard profile معتبر وارد کنید.'}
+   'CONSOLE_PROFILE_PREFLIGHT_UNAVAILABLE'{return 'WireGuard profile موجود است، اما تست سرعت مستقل قبل از اتصال برای این profile هنوز آماده نشده است.'}
    'SYSTEM_TUNNEL_NOT_ACTIVE'{return 'برای تست Full System باید WARP واقعی روی مسیر سیستم تأیید شود.'}
    'PATH_SPEED_VERIFICATION_FAILED'{return 'مسیر برای تست Performance تأیید نشد؛ عدد سرعت نامعتبر نمایش داده نمی‌شود.'}
    default{return $(if($code){'خطا: '+$code}else{'عملیات کامل نشد. جزئیات فنی را بررسی کنید.'})}
@@ -244,15 +313,24 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   $script:C.MetricFreshness.Text='آخرین تست: '+$(if($p.checked){[string]$p.checked}else{[DateTimeOffset]::UtcNow.ToString('o')})
   $line='Ping '+$ping+' · Down '+$down+' · Up '+$up
   switch($mode){
-   'AUTO'{$script:C.SmartMetric.Text=$line}
-   'NODE'{$script:C.NodeMetric.Text=$line}
-   'WARP'{$script:C.WarpMetric.Text=$line}
+   'AUTO'{$script:C.SmartMetric.Text=$line;if($script:C.ContainsKey('CompareSmart')){$script:C.CompareSmart.Text=$line+' · '+$country}}
+   'NODE'{$script:C.NodeMetric.Text=$line;if($script:C.ContainsKey('CompareNode')){$script:C.CompareNode.Text=$line+' · '+$country}}
+   'WARP'{$script:C.WarpMetric.Text=$line;if($script:C.ContainsKey('CompareWarp')){$script:C.CompareWarp.Text=$line+' · '+$country}}
    'CFON'{$script:C.CfonMetric.Text=$line}
+   'GOOL'{if($script:C.ContainsKey('GoolMetric')){$script:C.GoolMetric.Text=$line}}
    'TOR'{$script:C.TorMetric.Text=$line}
    'CUSTOM'{$script:C.CustomMetric.Text=$line}
+   'DIRECT'{if($script:C.ContainsKey('DirectMetric')){$script:C.DirectMetric.Text=$line};if($script:C.ContainsKey('CompareDirect')){$script:C.CompareDirect.Text=$line+' · '+$country}}
    'CONSOLE'{$script:C.ConsoleMetric.Text=$line}
   }
+  $dashPrefix=$(switch($mode){'AUTO'{'DashSmart'};'NODE'{'DashNode'};'WARP'{'DashWarp'};'DIRECT'{'DashDirect'};default{''}})
+  if($dashPrefix){
+   foreach($pair in @(@('Ping',$ping),@('Down',$down),@('Up',$up),@('State',$(if($p.ok){'PASS'}else{'FAIL / N/A'})))){
+    $n=$dashPrefix+$pair[0];if($script:C.ContainsKey($n)){$script:C[$n].Text=[string]$pair[1]}
+   }
+  }
   $script:C.StatusTitle.Text=$(if($p.ok){'تست مسیر کامل شد'}else{'تست مسیر کامل نشد'})
+  if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text=$(if($p.ok){'PASS · مسیر واقعی تأیید شد'}else{'FAIL / N/A'})}
   $script:C.StatusDetail.Text=$mode+' · '+$line+' · Country '+$country
  }
 
@@ -260,19 +338,150 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   foreach($i in $script:C.Mode.Items){if([string]$i.Tag -eq $tag){$script:C.Mode.SelectedItem=$i;return}}
  }
 
+ function Resolve-SystemProvider([string]$tag=''){
+  if(!$tag){$tag=if($script:C.Mode.SelectedItem){[string]$script:C.Mode.SelectedItem.Tag}else{'AUTO'}}
+  if($tag -eq 'NODE'){return 'NODE'}
+  if($tag -eq 'WARP'){return 'WARP'}
+  if($tag -eq 'AUTO'){
+   $country=if($script:C.Country.SelectedItem){[string]$script:C.Country.SelectedItem.Content}else{'AUTO'}
+   if($country -and $country -ne 'AUTO'){return 'NODE'}
+   return 'WARP'
+  }
+  return ''
+ }
+
+ function Paint-ConnectionSelection{
+  $scope=if($script:ConnectionScope -eq 'SYSTEM'){'کل سیستم'}elseif($script:ConnectionScope -eq 'CONSOLE'){'کنسول'}else{'مرورگر'}
+  $tag=if($script:C.Mode.SelectedItem){[string]$script:C.Mode.SelectedItem.Tag}else{'AUTO'}
+  $method=if($script:C.Mode.SelectedItem){[string]$script:C.Mode.SelectedItem.Content}else{'—'}
+  $country=if($script:C.Country.SelectedItem){[string]$script:C.Country.SelectedItem.Content}else{'AUTO'}
+  $accent=$script:Window.Resources['Accent'];$soft=$script:Window.Resources['Soft'];$selected=$script:Window.Resources['SelectedFill'];$line=$script:Window.Resources['Line']
+
+  foreach($n in @('BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard')){
+   $script:C[$n].Background=$soft;$script:C[$n].BorderBrush=$line
+  }
+  $scopeButton=if($script:ConnectionScope -eq 'SYSTEM'){'FullSystemConnectCard'}elseif($script:ConnectionScope -eq 'CONSOLE'){'ConsoleConnectCard'}else{'BrowserConnectCard'}
+  $script:C[$scopeButton].Background=$selected
+  $script:C[$scopeButton].BorderBrush=$accent
+
+  foreach($n in @('MethodsScopeBrowser','MethodsScopeSystem','MethodsScopeConsole')){
+   if($script:C.ContainsKey($n)){$script:C[$n].Background=$soft;$script:C[$n].BorderBrush=$line}
+  }
+  $ms=if($script:ConnectionScope -eq 'SYSTEM'){'MethodsScopeSystem'}elseif($script:ConnectionScope -eq 'CONSOLE'){'MethodsScopeConsole'}else{'MethodsScopeBrowser'}
+  if($script:C.ContainsKey($ms)){$script:C[$ms].Background=$selected;$script:C[$ms].BorderBrush=$accent}
+  $methodButtons=[ordered]@{
+   AUTO='MainMethodSmart';NODE='MainMethodNode';WARP='MainMethodWarp';CFON='MainMethodCfon';
+   TOR='MainMethodTor';CUSTOM='MainMethodCustom';DIRECT='MainMethodDirect'
+  }
+  $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
+  $allowed=$(if($script:ConnectionScope -eq 'SYSTEM'){@('AUTO','NODE','WARP')}elseif($script:ConnectionScope -eq 'CONSOLE'){@()}else{@('AUTO','NODE','WARP','CFON','TOR','CUSTOM','DIRECT')})
+  foreach($k in $methodButtons.Keys){
+   $b=$script:C[$methodButtons[$k]];$b.Background=$soft;$b.BorderBrush=$line;$b.IsEnabled=(($allowed -contains $k) -and -not $busy)
+  }
+  if($methodButtons.Contains($tag)){
+   $sel=$script:C[$methodButtons[$tag]]
+   if($sel.IsEnabled){$sel.Background=$selected;$sel.BorderBrush=$accent}
+  }
+
+  $countryCapable=(($script:ConnectionScope -eq 'BROWSER' -and $tag -in @('AUTO','NODE','CFON','CUSTOM')) -or ($script:ConnectionScope -eq 'SYSTEM' -and $tag -in @('AUTO','NODE')))
+  $script:C.Country.IsEnabled=($countryCapable -and -not $busy)
+  $shownCountry=$(if($countryCapable){$country}else{'—'})
+  if($script:ConnectionScope -eq 'CONSOLE'){
+   $method='Console Gateway';$script:C.MainConnect.Content='اتصال کنسول';$script:C.MainTest.Content='تست کنسول قبل از اتصال';$script:C.Browser.IsEnabled=$false
+   $cap=Paint-ConsoleCapability
+   $script:C.MainConnect.IsEnabled=(-not $busy -and [bool]$cap.canConnect)
+   $script:C.MainTest.IsEnabled=(-not $busy -and [bool]$cap.canPreflight)
+   if(-not $cap.canConnect){$script:C.StatusTitle.Text='کنسول نیاز به مسیر خروجی دارد';$script:C.StatusDetail.Text='پیش‌نیازها و سپس WireGuard profile معتبر را از تب «کنسول» آماده کنید.'}
+  }elseif($script:ConnectionScope -eq 'SYSTEM'){
+   $resolved=Resolve-SystemProvider $tag
+   $method=$(if($tag -eq 'AUTO'){'Smart System → '+$resolved}else{$method})
+   $script:C.MainConnect.Content='اتصال کل سیستم با روش انتخاب‌شده';$script:C.MainTest.Content='تست مسیر نهایی کل سیستم';$script:C.Browser.IsEnabled=$false
+  }else{
+   $script:C.MainConnect.Content='اتصال با روش انتخاب‌شده';$script:C.MainTest.Content='تست Ping + Download + Upload';$script:C.Browser.IsEnabled=$true
+  }
+  $script:C.ConnectionScopeText.Text='حالت: '+$scope
+  $script:C.MainSelectionSummary.Text=$scope+' · '+$method+' · '+$shownCountry
+  $script:C.SidebarScope.Text=$scope;$script:C.SidebarMethod.Text=$method;$script:C.SidebarTargetCountry.Text=$shownCountry
+  $script:C.TestMethodValue.Text=$method
+ }
+
+ function Select-ConnectionScope([string]$scope){
+  switch($scope){
+   'SYSTEM'{
+    $script:ConnectionScope='SYSTEM';$script:C.FullSystem.IsChecked=$true;$script:C.Mode.IsEnabled=$true
+    $currentTag=if($script:C.Mode.SelectedItem){[string]$script:C.Mode.SelectedItem.Tag}else{'AUTO'};if($currentTag -notin @('AUTO','NODE','WARP')){Select-ModeTag 'AUTO'}
+    $script:C.ScopeText.Text='کل سیستم · روش‌های پشتیبانی‌شده اعمال می‌شوند'
+    $script:C.StatusTitle.Text='حالت کل سیستم انتخاب شد'
+    $script:C.StatusDetail.Text='قبل از اتصال همان مسیر نهایی تست می‌شود. WARP و Node Pool برای کل سیستم پشتیبانی می‌شوند؛ AUTO با کشور مشخص به Node و بدون کشور به WARP می‌رود.'
+   }
+   'CONSOLE'{
+    $script:ConnectionScope='CONSOLE';$script:C.FullSystem.IsChecked=$false;$script:C.Mode.IsEnabled=$false
+    $script:C.ScopeText.Text='کنسول · مسیر مستقل Console Gateway'
+    $script:C.StatusTitle.Text='حالت کنسول انتخاب شد'
+    $script:C.StatusDetail.Text='تست و اتصال کنسول مستقل از مرورگر و کل سیستم انجام می‌شود.'
+   }
+   default{
+    $script:ConnectionScope='BROWSER';$script:C.FullSystem.IsChecked=$false;$script:C.Mode.IsEnabled=$true
+    $script:C.ScopeText.Text='مرورگر · پیش‌فرض امن'
+    $script:C.StatusTitle.Text='حالت مرورگر انتخاب شد'
+    $script:C.StatusDetail.Text='روش اتصال را انتخاب کن، تست بگیر و سپس وصل شو.'
+   }
+  }
+  Paint-ConnectionSelection
+ }
+
+ Paint-ConnectionSelection
+
  function Start-ProviderConnect([string]$mode){
   Select-ModeTag $mode
   if(Scope-IsFullSystem){
-   if($mode -notin @('AUTO','WARP')){$script:C.StatusTitle.Text='این روش Browser Only است';$script:C.StatusDetail.Text='برای این provider سوییچ Full System را خاموش کنید.';return}
-   $script:DesiredMode='WARP';Start-GatewayRequest 'StartPc';return
+   $provider=Resolve-SystemProvider $mode
+   if(!$provider){$script:C.StatusTitle.Text='این روش Browser Only است';$script:C.StatusDetail.Text='برای Full System فقط WARP یا Node Pool قابل استفاده است.';return}
+   $policy=$(if($provider -eq 'NODE' -and $mode -eq 'AUTO'){'AUTO'}else{'SELECTED'})
+   if($provider -eq 'NODE' -and $policy -eq 'SELECTED' -and !(Persistent-SelectedNodeId)){$script:C.StatusTitle.Text='برای Full System یک Node انتخاب کنید';$script:C.StatusDetail.Text='از «سرورها / نودها» یک Node را انتخاب و قبل از اتصال تست کنید.';$script:C.Tabs.SelectedIndex=2;return}
+   $script:DesiredMode=$provider;Start-GatewayRequest 'StartPc' $provider $policy;return
   }
   if($mode -eq 'DIRECT' -and [Windows.MessageBox]::Show('Direct تونل نیست و IP اصلی را به مقصد نشان می‌دهد. ادامه؟','FreeNet Hub · Direct','YesNo','Warning') -ne 'Yes'){return}
   $script:DesiredMode=$mode;$script:Repairs=0;Start-Work 'Connect' $mode
  }
 
+ function Connect-MethodCard([string]$mode){
+  Select-ModeTag $mode;Paint-ConnectionSelection
+  if($script:ConnectionScope -eq 'CONSOLE'){Start-GatewayRequest 'StartConsole';return}
+  Start-ProviderConnect $mode
+ }
+
+ function Start-ProviderPing([string]$mode){
+  Select-ModeTag $mode
+  if($script:ConnectionScope -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE';return}
+  if($script:ConnectionScope -eq 'SYSTEM'){Start-ProviderBenchmark $mode;return}
+  Start-Work 'ProviderPing' $mode
+ }
+
+ function Start-ConfiguredTest([bool]$PingOnly=$false){
+  if($script:ConnectionScope -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE';return}
+  if([string]$script:Settings.testPathMode -eq 'BASE'){
+   if($PingOnly){Start-Work 'ProviderPing' 'DIRECT'}else{Start-Work 'Speed' 'DIRECT'}
+   return
+  }
+  if($PingOnly){Start-ProviderPing (Selected)}else{Start-ProviderBenchmark (Selected)}
+ }
+
  function Start-ProviderBenchmark([string]$mode){
   Select-ModeTag $mode
-  if($script:FullSystemActive){Start-Work 'SystemSpeed' 'WARP';return}
+  if($script:ConnectionScope -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE';return}
+  if($script:ConnectionScope -eq 'SYSTEM'){
+   $provider=Resolve-SystemProvider $mode
+   if(!$provider){$script:C.StatusTitle.Text='روش Full System پشتیبانی نمی‌شود';return}
+   if($script:FullSystemActive){$active=$(if($script:DesiredMode -in @('NODE','WARP')){$script:DesiredMode}else{$provider});Start-Work 'SystemSpeed' $active;return}
+   if($provider -eq 'NODE'){
+    if($mode -eq 'AUTO'){Start-Work 'NodeSystemPreflightAuto' 'NODE';return}
+    if(!(Persistent-SelectedNodeId)){$script:C.StatusTitle.Text='ابتدا یک Node انتخاب کنید';$script:C.StatusDetail.Text='تست Full System باید دقیقاً همان Node انتخاب‌شده را بسنجد.';$script:C.Tabs.SelectedIndex=2;return}
+    Start-Work 'NodeSystemPreflight' 'NODE';return
+   }
+   Start-Work 'ProviderBenchmark' $provider
+   return
+  }
   Start-Work 'ProviderBenchmark' $mode
  }
 
@@ -369,9 +578,9 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $script:Job=[guid]::NewGuid().ToString('N');$script:Action=$action;$script:Started=[DateTime]::UtcNow;$script:Cancelled=$false
 
-  $p=[Diagnostics.ProcessStartInfo]::new();$p.FileName=$script:Deps.pythonw;$p.UseShellExecute=$false;$p.CreateNoWindow=$true;$p.WorkingDirectory=$script:Root
+  if(!$script:Pythonw){throw 'PYTHON_RUNTIME_NOT_AVAILABLE'};$p=[Diagnostics.ProcessStartInfo]::new();$p.FileName=$script:Pythonw;$p.UseShellExecute=$false;$p.CreateNoWindow=$true;$p.WorkingDirectory=$script:Root
 
-  $budget=$(if($action -in @('Scan','NodeBenchmarkBatch','UpdateDownload')){'600'}elseif($action -in @('ProviderBenchmark','PathSpeed','SystemSpeed','ConsoleSpeed','NodeSpeed')){'360'}else{'240'})
+  $budget=$(if($action -in @('Scan','NodeBenchmarkBatch','UpdateDownload')){'600'}elseif($action -in @('ProviderBenchmark','PathSpeed','SystemSpeed','ConsoleSpeed','NodeSpeed','NodeSystemPreflight')){'360'}else{'240'})
   foreach($a in @((Join-Path $PSScriptRoot 'engine.py'),'--action',$action,'--mode',$mode,'--job',$script:Job,'--budget',$budget)){[void]$p.ArgumentList.Add($a)}
 
   if($payload){[void]$p.ArgumentList.Add('--payload');[void]$p.ArgumentList.Add($payload)}
@@ -383,6 +592,11 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
  }
 
  function Selected{return [string]$script:C.Mode.SelectedItem.Tag}
+function Persistent-SelectedNodeId{
+ $ui=Selected-NodeId;if($ui){return $ui}
+ try{$p=Join-Path $script:Root 'data\nodes.json';if(Test-Path $p){$j=Get-Content $p -Raw -Encoding UTF8|ConvertFrom-Json;if([string]$j.selected){return [string]$j.selected}}}catch{}
+ return ''
+}
 
  function Sync-CountrySelection{
   if(!$script:C.Country.SelectedItem){return}
@@ -401,7 +615,8 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
    $script:C.StatusDetail.Text='اتصال فعلی برای کشور '+$newCountry+' معتبر نیست؛ «شروع اتصال» را بزنید تا خروجی واقعی همان کشور پیدا و تأیید شود.'
   }
  }
- $script:C.Country.Add_SelectionChanged({Sync-CountrySelection})
+ $script:C.Country.Add_SelectionChanged({Sync-CountrySelection;Paint-ConnectionSelection})
+ $script:C.Mode.Add_SelectionChanged({if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text='هنوز تست نشده'};Paint-ConnectionSelection})
  $script:C.Tabs.Add_SelectionChanged({
   if($script:C.Tabs.SelectedIndex -eq 2 -and !$script:Task -and !$script:GatewayTask){
    Start-Work 'NodeList' 'NODE'
@@ -426,26 +641,30 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
    $j=$raw|ConvertFrom-Json -AsHashtable;$g=$j.result
 
-   $script:FullSystemActive=[bool]($g.running -and [string]$g.mode -eq 'PC_TUNNEL');$script:C.FullSystem.IsChecked=$script:FullSystemActive;$script:C.ScopeText.Text=$(if($script:FullSystemActive){'روشن · WARP کل سیستم فعال'}else{'خاموش · فقط مرورگر (پیش‌فرض)'});if($g.running -and [string]$g.mode -eq 'CONSOLE_ONLY'){$script:C.GatewayState.Text='اتصال کنسول فعال است';$script:C.GatewayDetail.Text='Mode: CONSOLE_ONLY · مسیر میزبان جداگانه راستی‌آزمایی شده است.'}elseif($script:FullSystemActive){$script:C.GatewayState.Text='اتصال کنسول خاموش است';$script:C.GatewayDetail.Text='تونل کل سیستم از صفحهٔ اتصال فعال است؛ این صفحه فقط کنسول را مدیریت می‌کند.'}else{$script:C.GatewayState.Text='اتصال کنسول خاموش است';$script:C.GatewayDetail.Text='هیچ اتصال کنسول متعلق به FreeNetHub فعال نیست.'}
+   $script:FullSystemActive=[bool]($g.running -and [string]$g.mode -eq 'PC_TUNNEL');if($script:FullSystemActive){$ap=[string]$g.session.provider;if($ap -notin @('NODE','WARP')){$ap='WARP'};$script:DesiredMode=$ap;$script:ConnectionScope='SYSTEM';$script:C.FullSystem.IsChecked=$true;$script:C.ScopeText.Text='کل سیستم · '+$ap+' فعال';Select-ModeTag $ap};if($g.running -and [string]$g.mode -eq 'CONSOLE_ONLY'){$script:C.GatewayState.Text='اتصال کنسول فعال است';$script:C.GatewayDetail.Text='Mode: CONSOLE_ONLY · مسیر میزبان جداگانه راستی‌آزمایی شده است.'}elseif($script:FullSystemActive){$script:C.GatewayState.Text='اتصال کنسول خاموش است';$script:C.GatewayDetail.Text='تونل کل سیستم از صفحهٔ اتصال فعال است؛ این صفحه فقط کنسول را مدیریت می‌کند.'}else{$script:C.GatewayState.Text='اتصال کنسول خاموش است';$script:C.GatewayDetail.Text='هیچ اتصال کنسول متعلق به FreeNetHub فعال نیست.'}
 
    $cs=[string]$g.console.status;$an=$(if([string]$g.console.description){[string]$g.console.description}else{'آداپتور اختصاصی کنسول'});$script:C.ConsoleLinkState.Text=$an+': '+$(if($cs -eq 'Up'){'لینک برقرار'}elseif($cs -eq 'Disconnected'){'کابل متصل نیست'}elseif($cs -eq 'Missing'){'پیکربندی/سخت‌افزار پیدا نشد'}else{$cs})
 
    $m=$g.console.manual;$script:C.ConsoleInstructions.Text='IP: '+$m.ip+'   |   Mask: 255.255.255.0   |   Gateway: '+$m.gateway+'   |   DNS: '+$m.dns
 
+   Paint-ConsoleCapability|Out-Null
+   Set-Busy
    return $g
 
   }catch{$script:C.GatewayState.Text='وضعیت اتصال کنسول قابل خواندن نیست';$script:C.GatewayDetail.Text=$_.Exception.Message;return $null}
 
  }
 
- function Start-GatewayRequest([string]$action){
+ function Start-GatewayRequest([string]$action,[string]$provider='WARP',[string]$nodePolicy='SELECTED'){
 
   if($script:Task -or $script:GatewayTask){return}
 
-  if($action -eq 'StartPc' -and [Windows.MessageBox]::Show('تمام ترافیک این کامپیوتر وارد TUN می‌شود. در صورت شکست آزمون، rollback خودکار اجرا می‌شود. ادامه؟','FreeNet Hub · Full PC','YesNo','Warning') -ne 'Yes'){return}
+  if($action -eq 'StartPc' -and [Windows.MessageBox]::Show(('تمام ترافیک این کامپیوتر از مسیر '+$provider+' وارد TUN می‌شود. TCP/UDP قبل و بعد از اعمال بررسی می‌شوند و شکست باعث rollback خودکار می‌شود. ادامه؟'),'FreeNet Hub · Full PC','YesNo','Warning') -ne 'Yes'){return}
   if($action -eq 'SetupConsole' -and [Windows.MessageBox]::Show('پیش‌نیازهای Gateway کنسول بررسی و در صورت نیاز نصب می‌شوند: usbipd و sing-box pinned و ابزارهای WSL. این عملیات هیچ تونلی را روشن نمی‌کند. ادامه؟','FreeNet Hub · Console Setup','YesNo','Question') -ne 'Yes'){return}
 
   if($action -eq 'StartConsole'){
+   $cap=Console-Capability
+   if(-not $cap.canConnect){$script:C.GatewayState.Text='مسیر خروجی کنسول تنظیم نشده';$script:C.GatewayDetail.Text='ابتدا پیش‌نیازها را آماده و یک WireGuard profile معتبر وارد کنید.';Set-Busy;return}
 
    $g=Gateway-Refresh;if($g -and [string]$g.console.status -ne 'Up'){$script:C.GatewayDetail.Text='Gateway کنسول آماده می‌شود؛ کابل را می‌توانید بعداً وصل کنید. تا برقراری لینک، مسیر در حالت انتظار می‌ماند.'}
 
@@ -460,6 +679,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   $psi=[Diagnostics.ProcessStartInfo]::new();$psi.FileName='pwsh.exe';$psi.UseShellExecute=$false;$psi.CreateNoWindow=$true;$psi.WorkingDirectory=$script:Root
 
   foreach($a in @('-NoProfile','-WindowStyle','Hidden','-ExecutionPolicy','Bypass','-File',(Join-Path $script:Root 'gateway\gateway_request.ps1'),'-Action',$action,'-Job',$script:GatewayJob)){[void]$psi.ArgumentList.Add($a)}
+  if($action -eq 'StartPc'){[void]$psi.ArgumentList.Add('-Provider');[void]$psi.ArgumentList.Add($provider);if($provider -eq 'NODE'){[void]$psi.ArgumentList.Add('-NodePolicy');[void]$psi.ArgumentList.Add($nodePolicy)}}
 
   try{$script:GatewayTask=[Diagnostics.Process]::Start($psi);$script:C.GatewayState.Text='در انتظار تأیید UAC / اجرای Gateway';$script:C.GatewayDetail.Text='Job: '+$script:GatewayJob+' · '+$action;$script:C.SidebarState.Text='عملیات شبکه در حال اجرا';Set-Busy}catch{$script:GatewayTask=$null;$script:C.GatewayState.Text='شروع Gateway ناموفق';$script:C.GatewayDetail.Text=$_.Exception.Message;Set-Busy}
 
@@ -468,6 +688,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
 
  $script:C.GatewayConsoleStart.Add_Click({Start-GatewayRequest 'StartConsole'})
+ $script:C.GatewaySetupConsole.Add_Click({Start-GatewayRequest 'SetupConsole'})
 
  $script:C.GatewayStop.Add_Click({Start-GatewayRequest 'StopConsole'})
 
@@ -483,11 +704,11 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $country=[string]$script:C.Country.SelectedItem.Content;$out=Join-Path $script:Root 'gateway\runtime\console.profile.json'
 
-  $psi=[Diagnostics.ProcessStartInfo]::new();$psi.FileName=$script:Deps.pythonw;$psi.UseShellExecute=$false;$psi.CreateNoWindow=$true
+  if(!$script:Pythonw){$script:C.GatewayState.Text='Python runtime آماده نیست';$script:C.GatewayDetail.Text='برای Import WireGuard باید Python runtime نصب یا dependency manifest معتبر باشد.';return};$psi=[Diagnostics.ProcessStartInfo]::new();$psi.FileName=$script:Pythonw;$psi.UseShellExecute=$false;$psi.CreateNoWindow=$true
 
   foreach($a in @((Join-Path $script:Root 'gateway\import_wireguard.py'),$d.FileName,'--name',('Console-'+$country),'--country',$country,'--output',$out)){[void]$psi.ArgumentList.Add($a)}
 
-  try{$p=[Diagnostics.Process]::Start($psi);if(!$p.WaitForExit(15000)){try{$p.Kill($true)}catch{};throw 'PROFILE_IMPORT_TIMEOUT'};if($p.ExitCode -ne 0){throw 'PROFILE_IMPORT_FAILED'};$script:C.GatewayState.Text='پروفایل کنسول وارد شد';$script:C.GatewayDetail.Text='کلید فقط در runtime محلی ذخیره شد. هنگام Start Console، TCP/UDP و کشور '+$country+' دوباره آزمون می‌شوند.'}catch{$script:C.GatewayState.Text='وارد کردن پروفایل ناموفق';$script:C.GatewayDetail.Text=$_.Exception.Message}
+  try{$p=[Diagnostics.Process]::Start($psi);if(!$p.WaitForExit(15000)){try{$p.Kill($true)}catch{};throw 'PROFILE_IMPORT_TIMEOUT'};if($p.ExitCode -ne 0){throw 'PROFILE_IMPORT_FAILED'};$script:C.GatewayState.Text='پروفایل کنسول وارد شد';$script:C.GatewayDetail.Text='کلید فقط در runtime محلی ذخیره شد. هنگام Start Console، TCP/UDP و کشور '+$country+' دوباره آزمون می‌شوند.';Paint-ConsoleCapability|Out-Null;Set-Busy}catch{$script:C.GatewayState.Text='وارد کردن پروفایل ناموفق';$script:C.GatewayDetail.Text=$_.Exception.Message;Paint-ConsoleCapability|Out-Null;Set-Busy}
 
  })
 
@@ -495,23 +716,14 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
 $script:C.FullSystem.Add_Click({
  $on=Scope-IsFullSystem
- if($on){
-  $script:C.ScopeText.Text='روشن · اتصال بعدی WARP کل سیستم'
-  $m=Selected
-  if($m -notin @('AUTO','WARP')){$script:C.StatusTitle.Text='تونل کل سیستم فقط با WARP';$script:C.StatusDetail.Text='WARP یا AUTO را انتخاب کن؛ سایر providerها فقط مرورگر هستند.'}
- }else{
-  if($script:FullSystemActive){
-   if([Windows.MessageBox]::Show('تونل کل سیستم اکنون فعال است. خاموش و rollback شود؟','FreeNet Hub · Full System','YesNo','Question') -eq 'Yes'){Start-GatewayRequest 'Stop'}else{$script:C.FullSystem.IsChecked=$true;$script:C.ScopeText.Text='روشن · WARP کل سیستم فعال';return}
-  }else{$script:C.ScopeText.Text='خاموش · فقط مرورگر (پیش‌فرض)'}
- }
+ if($on){$script:ConnectionScope='SYSTEM';$script:C.ScopeText.Text='کل سیستم · WARP / Node Pool';$m=Selected;if($m -notin @('AUTO','NODE','WARP')){Select-ModeTag 'AUTO'}}
+ else{if($script:FullSystemActive){if([Windows.MessageBox]::Show('تونل کل سیستم اکنون فعال است. خاموش و rollback شود؟','FreeNet Hub · Full System','YesNo','Question') -eq 'Yes'){Start-GatewayRequest 'Stop'}else{$script:C.FullSystem.IsChecked=$true;return}}else{$script:ConnectionScope='BROWSER';$script:C.ScopeText.Text='مرورگر · پیش‌فرض امن'}}
+ Paint-ConnectionSelection
 })
 
-$script:C.QuickConnect.Add_Click({
- if(Scope-IsFullSystem){$script:DesiredMode='WARP';Start-GatewayRequest 'StartPc'}
- else{$script:DesiredMode='AUTO';Start-Work 'Connect' 'AUTO'}
-})
+$script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope 'BROWSER';$script:DesiredMode='AUTO';Start-Work 'Connect' 'AUTO'})
 
- $script:C.Connect.Add_Click({$m=Selected;if(Scope-IsFullSystem){if($m -notin @('AUTO','WARP')){$script:C.StatusTitle.Text='تونل کل سیستم فقط با WARP';$script:C.StatusDetail.Text='سوییچ را خاموش کن یا WARP/AUTO را انتخاب کن.';return};$script:DesiredMode='WARP';$script:Repairs=0;Start-GatewayRequest 'StartPc';return};if($m -eq 'DIRECT' -and [Windows.MessageBox]::Show('این حالت IP اصلی را به سایت‌ها نشان می‌دهد و تونل نیست. ادامه؟','FreeNet Hub','YesNo','Warning') -ne 'Yes'){return};$script:DesiredMode=$m;$script:Repairs=0;Start-Work 'Connect' $m})
+ $script:C.Connect.Add_Click({$m=Selected;if(Scope-IsFullSystem){$p=Resolve-SystemProvider $m;if(!$p){$script:C.StatusTitle.Text='روش Full System پشتیبانی نمی‌شود';return};$script:DesiredMode=$p;$script:Repairs=0;$np=$(if($p -eq 'NODE' -and $m -eq 'AUTO'){'AUTO'}else{'SELECTED'});Start-GatewayRequest 'StartPc' $p $np;return};if($m -eq 'DIRECT' -and [Windows.MessageBox]::Show('این حالت IP اصلی را به سایت‌ها نشان می‌دهد و تونل نیست. ادامه؟','FreeNet Hub','YesNo','Warning') -ne 'Yes'){return};$script:DesiredMode=$m;$script:Repairs=0;Start-Work 'Connect' $m})
 
  $script:C.Verify.Add_Click({$m=Selected;if($m -eq 'AUTO'){$m=if($script:CurrentMode){$script:CurrentMode}else{$script:DesiredMode}};if(!$m -or $m -eq 'AUTO'){$script:C.StatusTitle.Text='مسیر فعالی برای بررسی نیست';$script:C.StatusDetail.Text='ابتدا «شروع اتصال» را بزنید یا یک مسیر مشخص انتخاب کنید.';return};Start-Work 'Verify' $m})
 
@@ -560,7 +772,6 @@ $script:C.QuickConnect.Add_Click({
  $script:C.NodeExportBase64.Add_Click({Export-NodeLinks $true})
  $script:C.NodeTest.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب و «انتخاب نود» را بزنید.';return};Start-Work 'NodeTest' 'NODE'})
  $script:C.NodeConnect.Add_Click({
-  if(Scope-IsFullSystem){$script:C.NodeDetail.Text='Node Hub مرورگر-only است؛ برای استفاده از Node سوییچ «تونل کل سیستم» را خاموش کنید.';return}
   $id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return}
   $script:NodeConnectAfterSelect=$true;Start-Work 'NodeSelect' 'NODE' $id
  })
@@ -571,21 +782,124 @@ $script:C.QuickConnect.Add_Click({
   $script:BenchmarkAllActive=$true;$script:NextNodeBenchmark=[DateTime]::UtcNow;Start-Work 'NodeBenchmarkBatch' 'NODE'
  })
 
- $script:C.BrowserConnectCard.Add_Click({Start-ProviderConnect 'AUTO'})
- $script:C.FullSystemConnectCard.Add_Click({$script:C.FullSystem.IsChecked=$true;$script:C.ScopeText.Text='روشن · WARP کل سیستم';$script:DesiredMode='WARP';Start-GatewayRequest 'StartPc'})
- $script:C.ConsoleConnectCard.Add_Click({Start-GatewayRequest 'StartConsole'})
+ $script:DirectDpiStatePath=Join-Path $env:ProgramData 'FreeNetHub\directdpi\state.json'
+
+ function Get-DirectDpiStatus{
+  $state=$null
+  try{$state=Read-Json $script:DirectDpiStatePath}catch{}
+  if(!$state){return @{active=$false;phase='OFF';pid=0;stale=$false;dns=$false}}
+  $pidValue=0
+  try{$pidValue=[int]$state.pid}catch{}
+  $winwsAlive=$false
+  if($pidValue -gt 0){$winwsAlive=[bool](Get-Process -Id $pidValue -ErrorAction SilentlyContinue)}
+  $dnsAlive=$false
+  try{$dnsAlive=((Get-Service ctrld -ErrorAction SilentlyContinue).Status -eq 'Running')}catch{}
+  $active=($winwsAlive -and $dnsAlive -and [string]$state.phase -eq 'ACTIVE')
+  return @{active=$active;phase=[string]$state.phase;pid=$pidValue;stale=(-not $active);dns=$dnsAlive}
+ }
+
+ function Paint-DirectDpiStatus{
+  if(!$script:C.ContainsKey('DirectDpiStatus')){return}
+  $s=Get-DirectDpiStatus
+  if($s.active){
+   $script:C.DirectDpiStatus.Text='Direct DPI: فعال — DNS امن + bypass محدود، بدون VPN/Proxy'
+   $script:C.DirectDpiStart.IsEnabled=$false
+   $script:C.DirectDpiStop.IsEnabled=$true
+  }elseif($s.stale){
+   $script:C.DirectDpiStatus.Text='Direct DPI: state قدیمی — Start آن را rollback و بازسازی می‌کند'
+   $script:C.DirectDpiStart.IsEnabled=$true
+   $script:C.DirectDpiStop.IsEnabled=$true
+  }else{
+   $script:C.DirectDpiStatus.Text='Direct DPI: خاموش'
+   $script:C.DirectDpiStart.IsEnabled=$true
+   $script:C.DirectDpiStop.IsEnabled=$false
+  }
+ }
+
+ function Invoke-DirectDpi([ValidateSet('Start','Stop')][string]$Action){
+  $name=$(if($Action -eq 'Start'){'Start-DirectDpi.ps1'}else{'Stop-DirectDpi.ps1'})
+  $file=Join-Path $PSScriptRoot ('directdpi\'+$name)
+  if(!(Test-Path -LiteralPath $file)){
+   $script:C.StatusTitle.Text='Direct DPI در این build موجود نیست'
+   $script:C.StatusDetail.Text=$file
+   return
+  }
+  try{
+   $pwsh=(Get-Command pwsh.exe -ErrorAction Stop).Source
+   $script:C.StatusTitle.Text=$(if($Action -eq 'Start'){'در حال فعال‌سازی Direct DPI…'}else{'در حال خاموش‌کردن Direct DPI…'})
+   $script:C.StatusDetail.Text='Windows UAC فقط برای DNS/WinDivert همین قابلیت لازم است؛ VPN/Proxy یا route تونلی ساخته نمی‌شود.'
+   $arg='-NoProfile -ExecutionPolicy Bypass -File "'+$file+'"'
+   $p=Start-Process -FilePath $pwsh -Verb RunAs -ArgumentList $arg -Wait -PassThru
+   Paint-DirectDpiStatus
+   $s=Get-DirectDpiStatus
+   if($Action -eq 'Start' -and $p.ExitCode -eq 0 -and $s.active){
+    $script:C.StatusTitle.Text='Direct DPI فعال شد'
+    $script:C.StatusDetail.Text='DNS امن و bypass محدود مقصدهای فیلترشده فعال است؛ مسیر پیش‌فرض سیستم تغییر نکرده.'
+    $script:C.SidebarState.Text='Direct DPI / no VPN'
+   }elseif($Action -eq 'Stop' -and $p.ExitCode -eq 0 -and -not $s.active){
+    $script:C.StatusTitle.Text='Direct DPI خاموش شد'
+    $script:C.StatusDetail.Text='DNS prestate و WinDivert متعلق به FreeNetHub rollback شدند.'
+    $script:C.SidebarState.Text='Direct'
+   }else{
+    $script:C.StatusTitle.Text='Direct DPI به PASS نرسید'
+    $script:C.StatusDetail.Text='Exit '+[string]$p.ExitCode+'؛ state/evidence برای علت دقیق حفظ شده است.'
+   }
+  }catch{
+   Paint-DirectDpiStatus
+   $script:C.StatusTitle.Text='Direct DPI اجرا نشد'
+   $script:C.StatusDetail.Text=$_.Exception.Message
+  }
+ }
+
+ $script:C.BrowserConnectCard.Add_Click({Select-ConnectionScope 'BROWSER'})
+ $script:C.FullSystemConnectCard.Add_Click({Select-ConnectionScope 'SYSTEM'})
+ $script:C.ConsoleConnectCard.Add_Click({Select-ConnectionScope 'CONSOLE'})
+ if($script:C.ContainsKey('MethodsScopeBrowser')){$script:C.MethodsScopeBrowser.Add_Click({Select-ConnectionScope 'BROWSER'})}
+ if($script:C.ContainsKey('MethodsScopeSystem')){$script:C.MethodsScopeSystem.Add_Click({Select-ConnectionScope 'SYSTEM'})}
+ if($script:C.ContainsKey('MethodsScopeConsole')){$script:C.MethodsScopeConsole.Add_Click({Select-ConnectionScope 'CONSOLE'})}
+ if($script:C.ContainsKey('MainPingTest')){$script:C.MainPingTest.Add_Click({Start-ConfiguredTest $true})}
+ if($script:C.ContainsKey('ToolsApplyWarpSystem')){$script:C.ToolsApplyWarpSystem.Add_Click({Select-ConnectionScope 'SYSTEM';Connect-MethodCard 'WARP'})}
+ if($script:C.ContainsKey('ToolsApplyNodeSystem')){$script:C.ToolsApplyNodeSystem.Add_Click({Select-ConnectionScope 'SYSTEM';Connect-MethodCard 'NODE'})}
+ if($script:C.ContainsKey('ToolsUpdateRootPath')){$script:C.ToolsUpdateRootPath.IsChecked=$true;$script:C.ToolsUpdateRootPath.IsEnabled=$false;$script:C.ToolsUpdateRootPath.ToolTip='آپدیت و دریافت نودها همیشه از مسیر پایهٔ سیستم انجام می‌شود.'}
+ if($script:C.ContainsKey('ShowIpDashboard')){$script:C.ShowIpDashboard.Add_Click({$script:C.ShowIp.IsChecked=$script:C.ShowIpDashboard.IsChecked;$script:Settings.showIp=[bool]$script:C.ShowIp.IsChecked;Paint-Health})}
+ if($script:C.ContainsKey('MethodsRetestAll')){$script:C.MethodsRetestAll.Add_Click({
+   if($script:Task -or $script:GatewayTask){return}
+   $script:MethodBenchQueue=$(if($script:ConnectionScope -eq 'SYSTEM'){@('WARP','NODE')}elseif($script:ConnectionScope -eq 'CONSOLE'){@('CONSOLE')}else{@('AUTO','NODE','WARP','CFON','TOR','CUSTOM','GOOL','DIRECT')})
+   $script:C.StatusTitle.Text='تست همه روش‌ها شروع شد'
+   $next=$script:MethodBenchQueue[0];$script:MethodBenchQueue=@($script:MethodBenchQueue|Select-Object -Skip 1)
+   if($next -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE'}else{Start-ProviderBenchmark $next}
+ })}
+ if($script:C.ContainsKey('ToolsTestBasePath')){$script:C.ToolsTestBasePath.Add_Click({$script:Settings.testPathMode='BASE';Paint-TestSettings;Write-Json (Join-Path $script:Root 'settings.json') $script:Settings})}
+ if($script:C.ContainsKey('ToolsTestSelectedPath')){$script:C.ToolsTestSelectedPath.Add_Click({$script:Settings.testPathMode='SELECTED';Paint-TestSettings;Write-Json (Join-Path $script:Root 'settings.json') $script:Settings})}
+ if($script:C.ContainsKey('PingTimeoutBox')){$script:C.PingTimeoutBox.Add_SelectionChanged({if($script:C.PingTimeoutBox.SelectedItem){$script:Settings.pingTimeoutSec=[int]$script:C.PingTimeoutBox.SelectedItem.Content;Write-Json (Join-Path $script:Root 'settings.json') $script:Settings}})}
+ if($script:C.ContainsKey('DownloadTimeoutBox')){$script:C.DownloadTimeoutBox.Add_SelectionChanged({if($script:C.DownloadTimeoutBox.SelectedItem){$script:Settings.downloadTimeoutSec=[int]$script:C.DownloadTimeoutBox.SelectedItem.Content;Write-Json (Join-Path $script:Root 'settings.json') $script:Settings}})}
+ if($script:C.ContainsKey('UploadTimeoutBox')){$script:C.UploadTimeoutBox.Add_SelectionChanged({if($script:C.UploadTimeoutBox.SelectedItem){$script:Settings.uploadTimeoutSec=[int]$script:C.UploadTimeoutBox.SelectedItem.Content;Write-Json (Join-Path $script:Root 'settings.json') $script:Settings}})}
  $script:C.ConsoleOpenCard.Add_Click({$script:C.Tabs.SelectedIndex=3})
  $script:C.ConsoleSpeed.Add_Click({Start-Work 'ConsoleSpeed' 'CONSOLE'})
- $script:C.CurrentPathSpeed.Add_Click({if($script:FullSystemActive){Start-Work 'SystemSpeed' 'WARP'}elseif($script:CurrentMode){Start-Work 'PathSpeed' $script:CurrentMode}else{Start-Work 'Speed' 'DIRECT'}})
+ $script:C.CurrentPathSpeed.Add_Click({if($script:FullSystemActive){$p=$(if($script:DesiredMode -in @('NODE','WARP')){$script:DesiredMode}else{'WARP'});Start-Work 'SystemSpeed' $p}elseif($script:CurrentMode){Start-Work 'PathSpeed' $script:CurrentMode}else{Start-Work 'Speed' 'DIRECT'}})
+ $script:C.MainMethodSmart.Add_Click({Select-ModeTag 'AUTO';Paint-ConnectionSelection})
+ $script:C.MainMethodNode.Add_Click({Select-ModeTag 'NODE';Paint-ConnectionSelection})
+ $script:C.MainMethodWarp.Add_Click({Select-ModeTag 'WARP';Paint-ConnectionSelection})
+ $script:C.MainMethodCfon.Add_Click({Select-ModeTag 'CFON';Paint-ConnectionSelection})
+ $script:C.MainMethodTor.Add_Click({Select-ModeTag 'TOR';Paint-ConnectionSelection})
+ $script:C.MainMethodCustom.Add_Click({Select-ModeTag 'CUSTOM';Paint-ConnectionSelection})
+ $script:C.MainMethodDirect.Add_Click({Select-ModeTag 'DIRECT';Paint-ConnectionSelection})
+ $script:C.AdvancedMethodsOpen.Add_Click({$script:C.Tabs.SelectedIndex=1})
+ $script:C.MainTest.Add_Click({Start-ConfiguredTest $false})
+ $script:C.MainConnect.Add_Click({
+  if($script:ConnectionScope -eq 'CONSOLE'){Start-GatewayRequest 'StartConsole';return}
+  Start-ProviderConnect (Selected)
+ })
 
- $script:C.ConnectSmart.Add_Click({Start-ProviderConnect 'AUTO'});$script:C.TestSmart.Add_Click({Start-ProviderBenchmark 'AUTO'})
- $script:C.ConnectNode.Add_Click({Start-ProviderConnect 'NODE'});$script:C.TestNodePath.Add_Click({Start-ProviderBenchmark 'NODE'})
- $script:C.ConnectWarp.Add_Click({Start-ProviderConnect 'WARP'});$script:C.TestWarpPath.Add_Click({Start-ProviderBenchmark 'WARP'})
- $script:C.ConnectCfon.Add_Click({Start-ProviderConnect 'CFON'});$script:C.TestCfonPath.Add_Click({Start-ProviderBenchmark 'CFON'})
- $script:C.ConnectTor.Add_Click({Start-ProviderConnect 'TOR'});$script:C.TestTorPath.Add_Click({Start-ProviderBenchmark 'TOR'})
- $script:C.ConnectCustom.Add_Click({Start-ProviderConnect 'CUSTOM'});$script:C.TestCustomPath.Add_Click({Start-ProviderBenchmark 'CUSTOM'})
- $script:C.ConnectGool.Add_Click({Start-ProviderConnect 'GOOL'});$script:C.TestGoolPath.Add_Click({Start-ProviderBenchmark 'GOOL'})
- $script:C.ConnectDirect.Add_Click({Start-ProviderConnect 'DIRECT'});$script:C.TestDirectPath.Add_Click({Start-ProviderBenchmark 'DIRECT'})
+ $script:C.ConnectSmart.Add_Click({Connect-MethodCard 'AUTO'});$script:C.TestSmart.Add_Click({Start-ProviderBenchmark 'AUTO'})
+ $script:C.ConnectNode.Add_Click({Connect-MethodCard 'NODE'});$script:C.TestNodePath.Add_Click({Start-ProviderBenchmark 'NODE'})
+ $script:C.ConnectWarp.Add_Click({Connect-MethodCard 'WARP'});$script:C.TestWarpPath.Add_Click({Start-ProviderBenchmark 'WARP'})
+ $script:C.ConnectCfon.Add_Click({Connect-MethodCard 'CFON'});$script:C.TestCfonPath.Add_Click({Start-ProviderBenchmark 'CFON'})
+ $script:C.ConnectTor.Add_Click({Connect-MethodCard 'TOR'});$script:C.TestTorPath.Add_Click({Start-ProviderBenchmark 'TOR'})
+ $script:C.ConnectCustom.Add_Click({Connect-MethodCard 'CUSTOM'});$script:C.TestCustomPath.Add_Click({Start-ProviderBenchmark 'CUSTOM'})
+ $script:C.ConnectGool.Add_Click({Connect-MethodCard 'GOOL'});$script:C.TestGoolPath.Add_Click({Start-ProviderBenchmark 'GOOL'})
+ $script:C.ConnectDirect.Add_Click({Connect-MethodCard 'DIRECT'});$script:C.TestDirectPath.Add_Click({Start-ProviderBenchmark 'DIRECT'})
+ $script:C.ToolsNodeRefresh.Add_Click({Start-Work 'NodeRefreshSmart' 'NODE'})
 
  $script:C.Browser.Add_Click({if($script:FullSystemActive){Start-Work 'Browser' 'DIRECT';return};if(!$script:CurrentMode){$script:C.StatusTitle.Text='مرورگر باز نشد';$script:C.StatusDetail.Text=Friendly-Error 'CONNECT_FIRST';return};Start-Work 'Browser' $script:CurrentMode})
 
@@ -598,6 +912,10 @@ $script:C.QuickConnect.Add_Click({
  $script:C.Inventory.Add_Click({Start-Work 'Inventory'})
 
  $script:C.Doctor.Add_Click({Start-Work 'Doctor'})
+ $script:C.DirectNetworkAudit.Add_Click({Start-Work 'DirectNetworkAudit' 'DIRECT'})
+ $script:C.DirectDpiStart.Add_Click({Invoke-DirectDpi 'Start'})
+ $script:C.DirectDpiStop.Add_Click({Invoke-DirectDpi 'Stop'})
+ Paint-DirectDpiStatus
 
  $script:C.Speed.Add_Click({Start-Work 'Speed' 'DIRECT'})
 
@@ -612,7 +930,7 @@ $script:C.QuickConnect.Add_Click({
 
  $script:C.Search.Add_TextChanged({Research-Show})
 
- $script:C.Theme.Add_Click({Theme-Apply $(if($script:Settings.theme -eq 'dark'){'light'}else{'dark'})})
+ $script:C.Theme.Add_Click({Theme-Apply $(if($script:Settings.theme -eq 'dark'){'light'}else{'dark'});Paint-ConnectionSelection})
 
  $script:C.Help.Add_Click({Open-Doc 'HELP_FA.txt'})
 
@@ -711,21 +1029,43 @@ $script:C.QuickConnect.Add_Click({
       if($r.action -eq 'Stop'){$script:CurrentMode='';$script:DesiredMode='';$script:Health=$null;$script:C.SidebarState.Text='بدون اتصال'}
       if($r.action -eq 'StopOne' -and $script:CurrentMode -eq 'NODE'){$script:CurrentMode='';$script:DesiredMode='';$script:Health=$null;$script:C.SidebarState.Text='Node قطع شد'}
       if([string]$r.action -like 'Node*'){Paint-Nodes $r.result}
-      if($r.action -eq 'NodeSelect' -and $script:NodeConnectAfterSelect){$script:NodeConnectAfterSelect=$false;$script:DesiredMode='NODE';Start-Work 'Connect' 'NODE'}
+      if($r.action -eq 'NodeSelect' -and $script:NodeConnectAfterSelect){
+       $script:NodeConnectAfterSelect=$false;Select-ModeTag 'NODE';Select-ConnectionScope 'BROWSER';$script:C.Tabs.SelectedIndex=0
+       $script:C.StatusTitle.Text='Node انتخاب شد';$script:C.StatusDetail.Text='اکنون در صفحهٔ اتصال، ابتدا تست بگیر و سپس «اتصال با روش انتخاب‌شده» را بزن.'
+      }
 
       if($r.action -eq 'ProviderBenchmark'){
        $pm=$(if($r.mode -eq 'AUTO'){'AUTO'}elseif($r.result.provider){[string]$r.result.provider}else{'AUTO'})
        Paint-Performance $r.result.performance $pm
        if($r.mode -eq 'AUTO' -and $r.result.provider){$script:C.StatusDetail.Text='Smart انتخاب کرد: '+[string]$r.result.provider+' · '+$script:C.StatusDetail.Text}
       }
+      if($r.action -eq 'ProviderPing'){
+       $pm=$(if($r.mode -eq 'AUTO'){'AUTO'}elseif($r.result.provider){[string]$r.result.provider}else{[string]$r.mode})
+       $perf=$r.result.performance;$ping=Format-Metric $perf.pingMs 'ms';$country=$(if($perf.country){[string]$perf.country}else{'—'})
+       $script:C.MetricPing.Text=$ping;$script:C.MetricCountry.Text=$country;$script:C.MetricFreshness.Text='آخرین Ping: '+[DateTimeOffset]::UtcNow.ToString('o')
+       $script:C.StatusTitle.Text=$(if($perf.ok){'Ping مسیر تأیید شد'}else{'Ping مسیر ناموفق بود'})
+       $script:C.StatusDetail.Text=$pm+' · Ping '+$ping+' · Country '+$country
+       $dashPrefix=$(switch($pm){'AUTO'{'DashSmart'};'NODE'{'DashNode'};'WARP'{'DashWarp'};'DIRECT'{'DashDirect'};default{''}})
+       if($dashPrefix){$n=$dashPrefix+'Ping';if($script:C.ContainsKey($n)){$script:C[$n].Text=$ping}}
+      }
       if($r.action -eq 'PathSpeed'){
        Paint-Performance $r.result $(if($r.result.mode){[string]$r.result.mode}else{$script:CurrentMode})
       }
       if($r.action -eq 'SystemSpeed'){
-       Paint-Performance $r.result 'WARP';$script:C.StatusDetail.Text='Full System · '+$script:C.StatusDetail.Text
+       $sp=$(if($r.result.provider){[string]$r.result.provider}else{$r.mode});Paint-Performance $r.result $sp;$script:C.StatusDetail.Text='Full System · '+$sp+' · '+$script:C.StatusDetail.Text
+      }
+      if($r.action -eq 'NodeSystemPreflight'){
+       Paint-Performance $r.result 'NODE'
+       if($r.result.systemEligible){
+        $script:C.StatusTitle.Text='Node برای Full System قابل استفاده است'
+        $script:C.StatusDetail.Text='HTTPS و UDP با همان Node تأیید شدند · TCP '+[string]$r.result.country+' · UDP '+[string]$r.result.udpCountry+$(if($r.result.ok){' · تست سرعت کامل شد'}else{' · نمونهٔ سرعت ناقص؛ Down/Up = N/A'})
+       }
       }
       if($r.action -eq 'ConsoleSpeed'){
        Paint-Performance $r.result 'CONSOLE';$script:C.StatusDetail.Text='Console Provider · '+$script:C.StatusDetail.Text
+      }
+      if($r.action -eq 'ConsolePreflight'){
+       Paint-Performance $r.result 'CONSOLE';$script:C.StatusDetail.Text='تست قبل از اتصال کنسول · '+$script:C.StatusDetail.Text
       }
       if($r.action -eq 'NodeSpeed'){
        Paint-Nodes $r.result
@@ -759,6 +1099,15 @@ $script:C.QuickConnect.Add_Click({
        Install-VerifiedUpdate ([string]$r.result.installer)
       }
 
+      if($r.action -eq 'DirectNetworkAudit'){
+       $nat=[string]$r.result.nat.natClassification
+       $udp=$(if($r.result.nat.udpTraversalCandidate){'UDP traversal candidate: PASS'}else{'UDP traversal candidate: UNPROVEN'})
+       $v6=$(if($null -ne $r.result.adapter.ipv6BindingEnabled -and -not [bool]$r.result.adapter.ipv6BindingEnabled){'IPv6: locally disabled'}elseif([int]$r.result.adapter.ipv6DefaultRoutes -gt 0){'IPv6: available'}else{'IPv6: no upstream route'})
+       $script:C.StatusTitle.Text=$(if($r.result.nat.cgnatConfirmed){'CGNAT تأیید شد؛ مسیر مستقیم تحلیل شد'}else{'ممیزی مسیر مستقیم انجام شد'})
+       $script:C.StatusDetail.Text=$nat+' · '+$udp+' · '+$v6+' · هیچ VPN/Proxy یا تغییر شبکه‌ای اعمال نشد.'
+       $script:C.SidebarState.Text='Direct / CGNAT audit'
+      }
+
       if($r.action -eq 'Speed'){
        Paint-Performance $r.result 'DIRECT'
        $script:C.StatusTitle.Text=$(if($r.result.ok){'تست سرعت مستقیم کامل شد'}else{'تست سرعت مستقیم ناقص بود'})
@@ -785,6 +1134,10 @@ $script:C.QuickConnect.Add_Click({
 
      }
 
+     if($r.action -eq 'ProviderBenchmark' -and $script:MethodBenchQueue -and @($script:MethodBenchQueue).Count -gt 0){
+      $next=$script:MethodBenchQueue[0];$script:MethodBenchQueue=@($script:MethodBenchQueue|Select-Object -Skip 1)
+      if($next -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE'}else{Start-ProviderBenchmark $next}
+     }
      Set-Busy;$script:NextCheck=[DateTime]::UtcNow.AddSeconds(45);$script:C.Elapsed.Text='عملیات پایان یافت؛ اتصال کل سیستم تغییر نکرد.'
 
     }

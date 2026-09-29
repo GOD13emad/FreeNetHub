@@ -1,11 +1,16 @@
 {
   "version": "4.2.0",
-  "scope": "BROWSER_PROXY_DEFAULT+OPTIONAL_PC_TUNNEL+CONSOLE_GATEWAY+PROVIDER_CAPABILITY_UI+NODE_PERFORMANCE+SMART_PUBLIC_REFRESH+GITHUB_UPDATE",
+  "scope": "R37_PRODUCT_FINAL+BROWSER_PROXY+SMART_COUNTRY+NODE_HUB+WARP+CFON+TOR+CUSTOM+DIRECT+PC_TUNNEL_WARP_NODE+CONSOLE_GATEWAY+BASE_ROUTE_UPDATE_NODE_REFRESH+DIRECT_NETWORK+DIRECT_DPI+DIRECT_DNS+TARGET_UI",
   "code": [
     {
       "file": "engine.py",
-      "bytes": 72959,
-      "sha256": "9D9DC7724D05BF8C58986ABE760C9CF0A127F09816046D8984617CBE9A9C8658"
+      "bytes": 105852,
+      "sha256": "4A43A3CFFB8F2B1E9D0716AFC1EBC59C12817398480AF3E86BED83F4E581353C"
+    },
+    {
+      "file": "directnet.py",
+      "bytes": 15208,
+      "sha256": "99FAC2E50F3B25101C3974E8361732301CE5E486731C9B98E225E390F9CFF956"
     },
     {
       "file": "nodehub.py",
@@ -14,19 +19,74 @@
     },
     {
       "file": "FreeNetHub.ps1",
-      "bytes": 66203,
-      "sha256": "6D37EEDAFBE475C785176B50CEBEE11EBA455CF8E6760E0C95DE9D1A0E446C60"
+      "bytes": 94520,
+      "sha256": "62419E37D93FC9C3BE77C904D4D6415BE106172F031554F9E8D0F1071004C1C9"
     },
     {
       "file": "View.xaml",
-      "bytes": 30632,
-      "sha256": "3B170D89488940EEF41503E00FD6DD7AC9C0EAFDCDB7CF53532BDDEBF8AE7E0C"
+      "bytes": 69275,
+      "sha256": "834167DE0994D3C852848A7A310C077B9E791A2C09CBEB9E22B712A9EFDE5A66"
     },
     {
       "file": "assets/FreeNetHub.ico",
       "bytes": 45853,
       "sha256": "30BDD9DD5BE732C49D5F56BC56DA799158D628A40502479973D6AD3E982175CC"
+    },
+    {
+      "file": "directdpi/Start-DirectDpi.ps1",
+      "bytes": 15304,
+      "sha256": "B3E56671EEF480A8A02ADB4410300125B5FBD93604F695726AB6748E955B1392"
+    },
+    {
+      "file": "directdpi/Stop-DirectDpi.ps1",
+      "bytes": 7200,
+      "sha256": "454E56C9553D6BC36C0E3A49520B6117615E86377F12DB62A3EAE1D72DC68F35"
+    },
+    {
+      "file": "directdpi/hosts.txt",
+      "bytes": 98,
+      "sha256": "9C8DBCC6FCFA607BEE4AE16F2DFDEB8D025D66FFD94208A53ED480C2B6892D4B"
+    },
+    {
+      "file": "directdpi/LICENSE-zapret.txt",
+      "bytes": 1069,
+      "sha256": "DCF5ABD3E5D876C1065982871C0CEC7368C0E61FC795C541798729516BB6B54F"
+    },
+    {
+      "file": "directdpi/tools/winws.exe",
+      "bytes": 223232,
+      "sha256": "A14BFF1DF6234EA555D2E0C61B589F0707C0B12D6C9B7EECCDA76012154996E8"
+    },
+    {
+      "file": "directdpi/tools/WinDivert.dll",
+      "bytes": 47616,
+      "sha256": "C1E060EE19444A259B2162F8AF0F3FE8C4428A1C6F694DCE20DE194AC8D7D9A2"
+    },
+    {
+      "file": "directdpi/tools/WinDivert64.sys",
+      "bytes": 94144,
+      "sha256": "8DA085332782708D8767BCACE5327A6EC7283C17CFB85E40B03CD2323A90DDC2"
+    },
+    {
+      "file": "directdpi/tools/cygwin1.dll",
+      "bytes": 2954293,
+      "sha256": "103104A52E5293CE418944725DF19E2BF81AD9269B9A120D71D39028E821499B"
+    },
+    {
+      "file": "directdns/ctrld.exe",
+      "bytes": 7602136,
+      "sha256": "FC966FD7DD5EE850A9709F632789CFB5BBC06C45D903D24B8ECFCE3306B658CD"
+    },
+    {
+      "file": "directdns/ctrld.toml",
+      "bytes": 477,
+      "sha256": "2E1AF2EF934367465B15284DE93016B839849D717F9A8DC4AC18858FC123EAE2"
+    },
+    {
+      "file": "directdns/LICENSE-ctrld.txt",
+      "bytes": 1101,
+      "sha256": "55D82D13FE55D4B2AEC42166FCCD3C16C267B7131ECF2FBD7C3C6C3463494501"
     }
   ],
-  "coreVersion": "4.0-r28-final-transport-compat-provider-metrics-refresh-update"
+  "coreVersion": "4.0-r37-final"
 }

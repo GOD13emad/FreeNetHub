@@ -52,6 +52,13 @@
       "country_capability": "VERIFIED_DE",
       "udp": true,
       "private_runtime": true
+    },
+    "NODE": {
+      "type": "socks",
+      "host": "127.0.0.1",
+      "port": 19460,
+      "country_capability": "RUNTIME_STRICT",
+      "udp": "RUNTIME_PREFLIGHT"
     }
   }
 }

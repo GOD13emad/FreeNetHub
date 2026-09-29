@@ -1,22 +1,27 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-local-r28-final",
-  "status": "LOCAL_ACCEPTED_WINDOWS_4.2_R28_FINAL",
+  "releaseRevision": "4.2.0-local-r37-final",
+  "status": "WINDOWS_4.2_R37_FINAL_PAYLOAD",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
+    "PC_TUNNEL_NODE_STRICT",
     "CONSOLE_GATEWAY_SOFTWARE",
-    "NODE_HUB_BROWSER_PROXY"
+    "NODE_HUB",
+    "ROOT_ROUTE_UPDATE_BYPASS",
+    "CONFIGURABLE_PRECONNECT_TESTS",
+    "DIRECT_NETWORK",
+    "DIRECT_DPI_CANDIDATE"
   ],
-  "engineSha256": "9D9DC7724D05BF8C58986ABE760C9CF0A127F09816046D8984617CBE9A9C8658",
-  "uiSha256": "6D37EEDAFBE475C785176B50CEBEE11EBA455CF8E6760E0C95DE9D1A0E446C60",
-  "viewSha256": "3B170D89488940EEF41503E00FD6DD7AC9C0EAFDCDB7CF53532BDDEBF8AE7E0C",
+  "engineSha256": "FA3C22B7AB96D346A3255C9A0A6FEF9020626F181B8D68BC8AF3710ECB60E2FE",
+  "uiSha256": "55F4D8A4244391FB1B23FBE9B05A592328A4D4442F839E83407170CEF794C77C",
+  "viewSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
   "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
-  "gatewayManifestSha256": "F3B297C4A10E61777D6EAA0F82A82E4545004C0E6B125D152EBE7E17D89E83F3",
+  "gatewayManifestSha256": "33DEFA7B54BD60BB0BC61D7F0374BC2539DDB186EEA201B7910CA1186BC2267F",
   "crossPlatformManifestSha256": "9E1D262F9836407CBA3C624922B9AC4A58B37376CF3799A009F9757662EAFC2D",
-  "installerSha256": "2AA91D849A513A21D3BF9903F8E72FFB6A184D378FB357CE4FA7A9D6F7EB0073",
-  "acceptanceEvidence": "evidence/R28_FINAL_ACCEPTANCE_20260928.json",
+  "installerSha256": null,
+  "acceptanceEvidence": "evidence/R37_WINDOWS_FINAL_ACCEPTANCE_20260929.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "ACCEPTED_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R8",
@@ -168,10 +173,10 @@
       "productionCredentialGatesRemainExternal": true
     }
   },
-  "appManifestSha256": "F82910D2755B78F34FAD59463832F2A7CA8D2849EBBF1E2EBD81F8EF1BDE84EF",
+  "appManifestSha256": "221B60BA2AC4E21330A0811A818844D0596077860F835F930CA4129367230C2D",
   "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
   "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
-  "installerStatus": "R28_FINAL_EXACT_ARTIFACT_ACCEPTED_LOCAL_SECURITY_PASS_CI_RETRY_REQUIRED",
+  "installerStatus": "FINAL_PAYLOAD_REQUIRES_EXTERNAL_INSTALL_ACCEPTANCE",
   "r21": {
     "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH",
     "countryAutoOrder": [
@@ -356,5 +361,226 @@
       "policy": "GIT_CLEAN_FILTERED_BYTES",
       "localVerify": "PASS"
     }
+  },
+  "r29Ux": {
+    "status": "OWNER_REVIEW_PENDING",
+    "navigation": [
+      "اتصال",
+      "سرورها / نودها",
+      "روش‌ها و تنظیمات پیشرفته",
+      "کنسول",
+      "ابزارها و آپدیت"
+    ],
+    "connectionFlow": [
+      "نوع اتصال",
+      "روش اتصال",
+      "تست قبل از اتصال",
+      "اتصال"
+    ],
+    "singleConnectSurface": true,
+    "advancedProviderButtons": "SELECT_METHOD_RETURN_TO_CONNECTION",
+    "nodeSelection": "SELECT_NODE_RETURN_TO_CONNECTION",
+    "settingsMergedIntoAdvanced": true,
+    "dashboardRemoved": true,
+    "standaloneSettingsTabRemoved": true,
+    "runtimeEngineChanged": false,
+    "publicRelease": false
+  },
+  "r30UiFidelity": {
+    "status": "OWNER_REVIEW_PENDING",
+    "reason": "R29 layout rejected by owner as visually inconsistent with approved mockup",
+    "navigation": [
+      "اتصال",
+      "سرورها / نودها",
+      "روش‌ها و تنظیمات پیشرفته",
+      "کنسول",
+      "ابزارها و آپدیت"
+    ],
+    "connectionScreen": {
+      "step1": "SEGMENTED_SCOPE_CARDS",
+      "step2": "SEVEN_METHOD_CARDS_WITH_CAPABILITY_BADGES",
+      "step3": "PRECONNECT_BENCHMARK_TABLE",
+      "step4": "SINGLE_PRIMARY_CONNECT_ACTION"
+    },
+    "sidebar": [
+      "selectedScope",
+      "selectedMethod",
+      "targetCountry",
+      "lastMetrics",
+      "baseSystemUpdatePolicy"
+    ],
+    "customDarkNavigation": true,
+    "selectedCardHighlighting": true,
+    "runtimeEngineChanged": false,
+    "publicRelease": false
+  },
+  "r31AuditFix": {
+    "status": "OWNER_REVIEW_PENDING",
+    "themeContrast": {
+      "light": true,
+      "dark": true,
+      "hardcodedMethodCardDarkFillRemoved": true,
+      "disabledOpacitySingleLayer": true
+    },
+    "preconnectSemantics": {
+      "browser": "SELECTED_PROVIDER",
+      "system": "FINAL_WARP_PATH",
+      "console": "LOCAL_PROVIDER_ONLY_WHEN_CONFIGURED"
+    },
+    "consoleCapability": {
+      "prerequisitesDetected": true,
+      "connectFailClosedWithoutProviderOrProfile": true,
+      "preflightFailClosedWithoutLocalProvider": true,
+      "setupButtonVisible": true
+    },
+    "countrySelector": "ENABLED_ONLY_FOR_BROWSER_COUNTRY_CAPABLE_PROVIDERS",
+    "updateRouting": "SYSTEM_DEFAULT_ROUTE_WITH_FREENETHUB_PROXY_BYPASS",
+    "knownOpen": {
+      "allProviderFullSystem": true,
+      "wireguardProfilePreconnectSpeed": true,
+      "trustedSigning": true,
+      "physicalConsoleE2E": true
+    },
+    "publicRelease": false
+  },
+  "r32AuditClosure": {
+    "status": "OWNER_REVIEW_PENDING",
+    "themeContrast": {
+      "wcagAaNormalText": true,
+      "lightMutedWorstCaseRatio": 4.98,
+      "lightAccentUpdatePanelRatio": 4.75,
+      "darkTheme": true
+    },
+    "preconnectSemantics": {
+      "browser": "SELECTED_PROVIDER",
+      "system": "FINAL_WARP_PATH",
+      "console": "LOCAL_PROVIDER_ONLY_WHEN_CONFIGURED"
+    },
+    "consoleCapability": {
+      "connectFailClosedWithoutProviderOrProfile": true,
+      "preflightFailClosedWithoutLocalProvider": true,
+      "missingRouteShownInUi": true,
+      "setupButtonVisible": true
+    },
+    "developerRuntime": {
+      "installedPinnedPythonPreferred": true,
+      "sourcePathPythonFallback": true
+    },
+    "updateRouting": "SYSTEM_DEFAULT_ROUTE_WITH_FREENETHUB_PROXY_BYPASS",
+    "knownOpen": {
+      "allProviderFullSystem": true,
+      "wireguardProfilePreconnectSpeed": true,
+      "trustedSigning": true,
+      "physicalConsoleE2E": true
+    },
+    "publicRelease": false
+  },
+  "r35CapabilityCandidate": {
+    "status": "SOURCE_GATE_PENDING_LIVE_SYSTEM",
+    "baseInstalledAuthority": "4.2.0-local-r32-audit-closure",
+    "browserPreconnect": "SELECTED_PROVIDER",
+    "systemProviders": {
+      "WARP": "ACCEPTED_BASELINE",
+      "NODE": "CANDIDATE_TCP_UDP_STRICT"
+    },
+    "nodeSystemPolicy": "STRICT_HTTPS_TCP_COUNTRY_PLUS_SOCKS5_UDP_STUN_PLUS_POST_TUN_TCP_UDP_COUNTRY",
+    "directBootstrapRecovery": "SYSTEM_ROUTE_WITH_PUBLIC_DNS_RESOLVE_FALLBACK_NO_FNH_PROXY",
+    "publicNodeSources": "EXPANDED_AND_COUNTRY_SHARDED",
+    "console": "FAIL_CLOSED_WITHOUT_PROVIDER_OR_PROFILE",
+    "vpnGateOpenVpnExcluded": true,
+    "publicRelease": false,
+    "installAllowed": false
+  },
+  "directNetSha256": "99FAC2E50F3B25101C3974E8361732301CE5E486731C9B98E225E390F9CFF956",
+  "r36DirectNetwork": {
+    "status": "SOURCE_GATE",
+    "noVpnProxyDirectAudit": true,
+    "cgnatDetection": "UPNP_WAN_PLUS_RFC6598_CLASSIFICATION",
+    "udpTraversal": "STUN_STABLE_MAPPING_PLUS_CROSS_HOST_HOLE_PUNCH_EVIDENCE",
+    "encryptedDnsFallback": "CTRLD_1_5_7_CONTROL_D_P0_IPV6_LOOPBACK_NRPT",
+    "systemDnsMutation": "NRPT_ONLY_DURING_DIRECT_DPI;ADAPTER_DNS_PRESTATE_PRESERVED",
+    "mtuMutation": false,
+    "nicMutation": false,
+    "vpnGateOpenVpnExcluded": true,
+    "publicRelease": false,
+    "directDpiWindows": "CTRLD_DOH_IPV6_LOOPBACK_NRPT_PLUS_ZAPRET_HOSTLIST_SCOPED",
+    "directDpiVpnProxy": false,
+    "directDpiRuntimeEvidence": "evidence/R36_FINAL_WINDOWS_ACCEPTANCE_20260929.json",
+    "directDpiRollbackState": "PROGRAMDATA_PREPARED_THEN_ACTIVE"
+  },
+  "r37ProductCandidate": {
+    "status": "SOURCE_GATE_PASS_INSTALL_ACCEPTANCE_REQUIRED",
+    "uiTarget": "FIVE_TAB_TARGET_DASHBOARD_METHODS_NODES_TOOLS_SETTINGS",
+    "uiSmokeTabs": [
+      "DASHBOARD",
+      "METHODS",
+      "NODES",
+      "TOOLS",
+      "SETTINGS"
+    ],
+    "methodCardsRealConnect": true,
+    "methodCardsRealBenchmark": true,
+    "preconnectTestPathModes": [
+      "BASE",
+      "SELECTED"
+    ],
+    "configurableTimeouts": {
+      "ping": [
+        3,
+        30
+      ],
+      "download": [
+        10,
+        120
+      ],
+      "upload": [
+        10,
+        120
+      ],
+      "default": [
+        10,
+        30,
+        30
+      ]
+    },
+    "rootUpdatePolicy": "PRE_FNH_TUN_BASE_ROUTE_CAPTURE_PLUS_CURL_SOURCE_IP_BIND_FAIL_CLOSED",
+    "rootUpdateExternalVpn": "PRESERVED_IF_IT_IS_PRE_FNH_SYSTEM_ROUTE",
+    "rootUpdateEvidence": "SOURCE_UNIT_PASS_LIVE_INSTALLED_OPEN",
+    "fullSystem": {
+      "WARP": "SUPPORTED",
+      "NODE": "STRICT_TCP_UDP_PREFLIGHT",
+      "CFON": "UNPROVEN_UDP_FALSE"
+    },
+    "console": "TOOLS_SECTION_SEPARATE_GATEWAY_FAIL_CLOSED",
+    "directDpi": "CANDIDATE_PREVIOUS_FINAL_ACCEPTANCE_FAILED_DOH_NOT_CLEAN",
+    "publicRelease": false
+  },
+  "r37ProductFinalCandidate": {
+    "status": "SOURCE_GATE",
+    "publicRelease": false,
+    "uiTarget": "OWNER_REFERENCE_3_SCREEN_DASHBOARD_METHODS_TOOLS",
+    "uiSmoke": "DASHBOARD_METHODS_TOOLS_PASS",
+    "securityScan": "PASS",
+    "updateNodePath": "SYSTEM_DEFAULT_WHEN_NO_FNH_PC_TUN;BOUND_PRE_TUN_BASE_ROUTE_WITH_TRACE_GUARD_WHEN_PC_TUN_ACTIVE",
+    "nodeRefresh": "FETCH_MERGE_ONLY;TEST_ALL_EXPLICIT",
+    "fullSystem": "WARP_ACCEPTED;NODE_REQUIRES_TCP_UDP_PREFLIGHT",
+    "console": "INDEPENDENT_GATEWAY_FAIL_CLOSED",
+    "directDpi": "R36_CAPABILITY_INCLUDED_NOT_PRODUCT_BOUNDARY",
+    "installedAcceptance": "OPEN"
+  },
+  "r37WindowsFinal": {
+    "status": "FINAL_PAYLOAD",
+    "publicRelease": false,
+    "uiTarget": "OWNER_REFERENCE_3_SCREEN_DASHBOARD_METHODS_TOOLS",
+    "uiSmoke": "DASHBOARD_METHODS_TOOLS_PASS",
+    "securityScan": "PASS",
+    "updateNodePath": "SYSTEM_DEFAULT_WHEN_NO_FNH_PC_TUN;BOUND_PRE_TUN_BASE_ROUTE_WITH_TRACE_GUARD_WHEN_PC_TUN_ACTIVE",
+    "nodeRefresh": "FETCH_MERGE_ONLY;TEST_ALL_EXPLICIT",
+    "fullSystem": "WARP_ACCEPTED;NODE_REQUIRES_TCP_UDP_PREFLIGHT",
+    "console": "INDEPENDENT_GATEWAY_FAIL_CLOSED",
+    "directDpi": "R36_CAPABILITY_INCLUDED_NOT_PRODUCT_BOUNDARY",
+    "installedAcceptance": "SEE_ACCEPTANCE_EVIDENCE",
+    "trustedSigning": "OPEN_NOTSIGNED",
+    "physicalConsoleE2E": "UNPROVEN_EXTERNAL_HARDWARE_GATE"
   }
 }

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "R36 installer-build evidence release hygiene",
+  "status": "ROOT_CAUSE_CONFIRMED_FIXED",
+  "claim": "Security scan failure was caused solely by an absolute Windows user path written into installer build evidence.",
+  "evidence": "evidence/R36_INSTALLER_BUILD_20260929.json",
+  "prevention": [
+    "Build evidence now records a repository-relative installer path.",
+    "tests/build_r36_directdpi_installer.ps1 was changed so future build evidence does not emit an absolute user path."
+  ],
+  "candidate": {
+    "relativePath": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R36_DirectDPI_Final_Setup.exe",
+    "bytes": 24261589,
+    "sha256": "8BDB02AEEC09E8403AFCE6238EDDB1EC7891F7B88357BF3FF113CF6F225FD87A",
+    "authenticode": "NotSigned"
+  },
+  "confidence": "HIGH",
+  "reuseTargets": [
+    "release hygiene",
+    "installer evidence",
+    "security scan"
+  ]
+}

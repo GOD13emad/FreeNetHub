@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "status": "FAIL",
+  "candidate": {
+    "path": "C:\\Users\\<USER>\\source\\repos\\FreeNetHub\\delivery\\github_v4.2.0\\FreeNetHub_4.2.0_R36_DirectDPI_Final_Setup.exe",
+    "expectedSha256": "79522B74089946E3CB4AEA287626EDB73401FE87B0BCA6ED5265B264CCE2DBF1",
+    "actualSha256": "79522B74089946E3CB4AEA287626EDB73401FE87B0BCA6ED5265B264CCE2DBF1",
+    "installedParity": true,
+    "smoke": true,
+    "stability": null,
+    "chrome": null,
+    "rollback": null
+  },
+  "baseline": {
+    "dns": [
+      "192.168.20.1"
+    ],
+    "doh": [
+      {
+        "ServerAddress": "76.76.2.11",
+        "DohTemplate": "https://76.76.2.11/p0",
+        "AllowFallbackToUdp": false,
+        "AutoUpgrade": true
+      }
+    ],
+    "stateExists": false,
+    "state": null,
+    "winws": [],
+    "drivers": [],
+    "broadRoutes": [],
+    "proxy": "\r\nCurrent WinHTTP proxy settings:\r\n\r\n    Direct access (no proxy server).\r\n\r\n"
+  },
+  "backup": {
+    "path": "C:\\Users\\<USER>\\source\\repos\\FreeNetHub\\artifacts\\R36_PREINSTALL_INSTALLED_BACKUP_20260929",
+    "created": true,
+    "releaseRevision": "4.2.0-local-r32-audit-closure",
+    "keyHashes": [
+      {
+        "file": "FreeNetHub.exe",
+        "sha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
+        "bytes": 39936
+      },
+      {
+        "file": "app\\engine.py",
+        "sha256": "721DE33A0CC3ECBC0021D7F2099185D91E6A4FC2FCB08FF562784D3CE8F68A50",
+        "bytes": 76411
+      },
+      {
+        "file": "app\\FreeNetHub.ps1",
+        "sha256": "194104FC9DE6CC9A2304101E624503F8905B3251D96A968CB41F35733FAC924F",
+        "bytes": 78157
+      },
+      {
+        "file": "app\\manifest.json",
+        "sha256": "CAF1DD03E7CC30827004E7FEB567216D25F60418344980A0BB631B97324AE21F",
+        "bytes": 932
+      },
+      {
+        "file": "RELEASE.json",
+        "sha256": "8383691087A3D94725E451AEA9CD3A532EA724E3FE9BC353913760429FE52EB9",
+        "bytes": 16558
+      }
+    ]
+  },
+  "finalInstaller": null,
+  "finalInstalled": {
+    "parity": false,
+    "smoke": false,
+    "stability": null,
+    "chrome": null,
+    "activeState": null
+  },
+  "error": "SCRIPT_FAIL_Start-DirectDpi.ps1_EXIT_8_{ |   \"schema\": 1, |   \"status\": \"FAIL_ROLLED_BACK\", |   \"error\": \"One or more parameter values passed to the method were invalid.\", |   \"evidence\": \"C:\\\\Users\\\\Aa.Emad\\\\AppData\\\\Local\\\\Programs\\\\FreeNetHub\\\\evidence\\\\R36_DIRECT_DPI_RUNTIME.json\" | }",
+  "rollbackOnFailure": {
+    "network": true,
+    "installedBackup": true,
+    "release": false
+  }
+}

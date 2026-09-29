@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "R36 managed encrypted DNS pivot using official Control D ctrld v1.5.7",
+  "status": "FAIL_ROOT_CAUSE_NARROWED",
+  "facts": {
+    "foregroundResolver": "PASS on 127.0.0.1:1053 using https://76.76.10.11/p0",
+    "youtubeDns": "PASS_PUBLIC_IPS",
+    "githubDns": "PASS_PUBLIC_IP",
+    "openaiDns": "PASS_PUBLIC_IPS",
+    "ics": "PRESERVED_RUNNING_PID_5044",
+    "serviceTrialLongPath": "FAIL_SELF_CHECK_SOCKET_PATH",
+    "serviceTrialShortPath": "FAIL_SELF_CHECK_CONFIG_MISSING",
+    "cleanupAfterBoth": "PASS_EXACT_DNS_192.168.20.1_NO_CTRLD_SERVICE_PROCESS_OR_1053_LISTENER"
+  },
+  "currentBlocker": "ctrld service self-check reopens ctrld.toml but no config file is present in the service-visible location when start was invoked only with CLI flags.",
+  "evidence": [
+    "evidence/R36_CTRLD_MANAGED_DNS_TRIAL_20260929.json",
+    "official Control-D-Inc/ctrld v1.5.7 source",
+    "app/directdns/ctrld.exe SHA256 FC966FD7DD5EE850A9709F632789CFB5BBC06C45D903D24B8ECFCE3306B658CD"
+  ],
+  "nextAction": "Inspect official service-start argument/config persistence contract; use explicit config or base64 config only if supported by source, then repeat identical fail-closed trial.",
+  "confidence": "HIGH",
+  "reuseTargets": [
+    "FreeNetHub Direct-DPI Windows",
+    "installer dependency policy",
+    "managed DNS lifecycle"
+  ]
+}

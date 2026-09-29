@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "context": "Owner architecture clarification after portfolio transport audit",
+  "status": "CURRENT_LOCKED_DECISION",
+  "decision": {
+    "freeNetHubRole": "Comprehensive multi-transport connectivity product across Browser, Full System and Console scopes where technically supportable and evidence-validated.",
+    "openInternetGatewayRole": "Dedicated VPN Gate/OpenVPN product line.",
+    "forbiddenInFreeNetHub": [
+      "VPN Gate",
+      "OpenVPN UDP via VPN Gate",
+      "VPN Gate relay pool/cache/discovery"
+    ],
+    "allowedFreeNetHubFamilies": [
+      "WARP",
+      "Tor Direct",
+      "Snowflake",
+      "WebTunnel",
+      "obfs4",
+      "Node Hub",
+      "CFON/GOOL where licensed/configured",
+      "Custom proxy",
+      "WireGuard-based console/private-exit integration if independently configured and validated",
+      "future free transports that do not duplicate OIG VPN Gate/OpenVPN ownership"
+    ],
+    "architecturePrinciple": "Transport diversity over duplicate-provider inflation; fail closed; no hidden fallback to DIRECT; explicit scope capability; pre-connect measurement where meaningful; rollback for network mutation."
+  },
+  "evidence": [
+    "git grep over active FreeNetHub tracked tree returned no VPN Gate/OpenVPN/ovpn/udp-cache product references.",
+    "FreeNetHub active source already includes Tor pluggable transport support (Snowflake/WebTunnel/obfs4), WARP and scope-aware UI.",
+    "OIG v2.5.2 is the established headless OpenVPN/VPN Gate product."
+  ],
+  "confidence": "CONFIRMED",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "roadmap",
+    "release notes",
+    "architecture docs",
+    "future provider matrix"
+  ],
+  "provenance": {
+    "projectRoot": "C:\\Users\\<USER>\\source\\repos\\FreeNetHub",
+    "brainBeforeSha256": "ff4d3e6e87880c961992f83c0a41fa49b9dd3d5c58dd2b80f86e5ce52124969b"
+  },
+  "verification": {
+    "boundaryGuard": "tests/test_product_boundary.py",
+    "result": "PASS",
+    "regressionBatch": "94 passed in 2.50s",
+    "note": "A defensive external-VPN adapter classifier may mention OpenVPN; guard forbids only OIG backend markers/implementation, not safe detection of a foreign adapter."
+  }
+}

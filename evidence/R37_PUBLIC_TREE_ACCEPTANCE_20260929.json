@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "product": "Free Net Hub",
+  "version": "4.2.0",
+  "revision": "R37",
+  "status": "PASS",
+  "publicManifest": {
+    "status": "PASS",
+    "files": 376,
+    "sha256": "3D71146253D2C5DC2E3066F44DAFEE02BD2E8E404589B8F57C0B96F728817AD8"
+  },
+  "manifests": {
+    "app": "PASS",
+    "gateway": "PASS",
+    "crossPlatform": "PASS",
+    "windowsPackage": "PASS"
+  },
+  "releaseHashes": "PASS",
+  "forbiddenRuntimeArtifacts": "PASS",
+  "securityScan": {
+    "status": "PASS",
+    "forbiddenRuntimeArtifacts": 0,
+    "sensitivePatternHits": 0
+  },
+  "regression": {
+    "status": "PASS",
+    "tests": 165
+  },
+  "diffCheck": "PASS",
+  "finalInstaller": {
+    "sha256": "9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D",
+    "bytes": 24248757,
+    "authenticode": "NotSigned",
+    "execution": "PASS"
+  },
+  "nextGate": "PUBLIC_GIT_COMMIT_PUSH_HOSTED_CI_RELEASE"
+}

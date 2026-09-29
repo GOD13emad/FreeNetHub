@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS_LOCAL_OWNER_REVIEW",
+  "milestone": "R29 UX single-connection-flow",
+  "objective": "Remove dashboard/method duplication and make Connection the only operational connect surface.",
+  "decisions": {
+    "navigation": [
+      "اتصال",
+      "سرورها / نودها",
+      "روش‌ها و تنظیمات پیشرفته",
+      "کنسول",
+      "ابزارها و آپدیت"
+    ],
+    "connectionFlow": [
+      "نوع اتصال",
+      "روش اتصال",
+      "تست قبل از اتصال",
+      "اتصال"
+    ],
+    "dashboardRemoved": true,
+    "standaloneSettingsTabRemoved": true,
+    "settingsMergedIntoAdvanced": true,
+    "advancedProviderButtons": "SELECT_METHOD_THEN_RETURN_TO_CONNECTION",
+    "nodeConnectAction": "SELECT_NODE_THEN_RETURN_TO_CONNECTION",
+    "defaultScope": "BROWSER",
+    "consoleIndependent": true
+  },
+  "evidence": {
+    "staticRegression": "PASS_89_CORE_14_GATEWAY",
+    "uxContract": "PASS_5_TABS_127_CONTROLLER_REFS_133_NAMES",
+    "sourceWpfSmoke": "PASS_NETWORK_REQUESTED_FALSE",
+    "installedWpfSmoke": "PASS",
+    "installParity": "PASS_ENGINE_NODEHUB_UI_VIEW_MANIFEST_RELEASE",
+    "statePreservation": "PASS_SETTINGS_NODES_PUBLIC_REFRESH",
+    "projectListenersAfterInstall": 0
+  },
+  "artifact": {
+    "name": "FreeNetHub_4.2.0_R29_UX_Setup.exe",
+    "bytes": 15876605,
+    "sha256": "0CFBE81F5B59CC51E16914257FF4125B965512CC50FF46B80B89F2F3762E278B",
+    "authenticode": "NotSigned"
+  },
+  "sourceHashes": {
+    "engine": "9D9DC7724D05BF8C58986ABE760C9CF0A127F09816046D8984617CBE9A9C8658",
+    "controller": "9F5568D52BDC42128AFD8821E4D9340D83217BC1CD8C6A5E38CD26E26E54ACF8",
+    "view": "43E49C8DBE75F74D749980826451CD4D1F407FB591F4D9258D734901B216CC2B",
+    "manifest": "F3BE9BF240DEC697B2261303E7BD98AC1AA118547F95C9EE7BCEF87512F82A8C"
+  },
+  "limitations": [
+    "Full-system connection remains implemented only through WARP/AUTO fallback in the current backend; advanced UI states this explicitly.",
+    "Trusted Windows Authenticode signing remains external/open.",
+    "Physical console traffic field validation remains external/open.",
+    "R29 UX is installed for owner review and is not yet a public GitHub release."
+  ],
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "release notes",
+    "UI/UX rationale",
+    "owner review baseline"
+  ]
+}

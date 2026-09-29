@@ -1,0 +1,129 @@
+{
+  "schema": 2,
+  "date": "2026-09-29",
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "revision": "R37",
+  "status": "WINDOWS_4.2_R37_FINAL_PAYLOAD",
+  "authority": {
+    "sourceRevision": "4.2.0-local-r37-final",
+    "installedRevision": "4.2.0-local-r37-final",
+    "sourceManifestSha256": "221B60BA2AC4E21330A0811A818844D0596077860F835F930CA4129367230C2D",
+    "installedParity": "PASS",
+    "publicRelease": false
+  },
+  "finalInstaller": {
+    "relativePath": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R37_Final_Setup.exe",
+    "bytes": 24248757,
+    "sha256": "9E5369CF0AFD9046CC57F237429F04CACC432B45A244094FE82688A0DA00B58D",
+    "authenticode": "NotSigned",
+    "build": "PASS",
+    "cleanInstallExecution": "PASS",
+    "evidence": "evidence/R37_FINAL_INSTALLER_BUILD_20260929.json",
+    "cleanInstallEvidence": "evidence/R37_PUBLIC_METADATA_INSTALL_ACCEPTANCE_20260929.json"
+  },
+  "sourceRegression": {
+    "status": "PASS",
+    "tests": 165,
+    "diffCheck": "PASS"
+  },
+  "security": {
+    "status": "PASS",
+    "forbiddenRuntimeArtifacts": 0,
+    "sensitivePatternHits": 0
+  },
+  "installedParity": {
+    "status": "PASS",
+    "appFiles": 17,
+    "gatewayFiles": 17,
+    "mismatches": 0
+  },
+  "installedRuntime": {
+    "status": "PASS",
+    "runtime": "SELF_CONTAINED",
+    "gatewayCore": "PASS",
+    "externalLegacyRuntimeRequired": false
+  },
+  "ui": {
+    "status": "PASS",
+    "tabs": [
+      "DASHBOARD",
+      "METHODS",
+      "NODES",
+      "TOOLS",
+      "SETTINGS"
+    ],
+    "routeUnchanged": true
+  },
+  "nodeRefresh": {
+    "status": "PASS",
+    "parsedRaw": 3064,
+    "imported": 3015,
+    "total": 2000,
+    "failedSources": 0,
+    "endpointTest": "DEFERRED_TO_NODE_TEST_ALL"
+  },
+  "directBaseSpeed": {
+    "status": "PASS",
+    "path": "DIRECT_HOST_INTERNET",
+    "pingMs": 78.3,
+    "downloadMbps": 37.71,
+    "uploadMbps": 5.23,
+    "cloudflareWarp": "off"
+  },
+  "browserWarpBenchmark": {
+    "status": "PASS",
+    "scope": "BROWSER_HTTPS",
+    "warp": "on",
+    "temporary": true,
+    "pingMs": 373.6,
+    "downloadMbps": 15.68,
+    "uploadMbps": 1.7
+  },
+  "fullSystemWarp": {
+    "status": "PASS",
+    "officialGatewayRequest": true,
+    "updateDuringTunnel": {
+      "status": "PASS",
+      "bound": true,
+      "interfaceAlias": "Ethernet 3",
+      "proof": "BOUND_PRE_TUN_SOURCE_AND_TRACE_NOT_POST_TUN"
+    },
+    "systemSpeed": {
+      "status": "PASS",
+      "warp": "on",
+      "pingMs": 404.3,
+      "downloadMbps": 14.34,
+      "uploadMbps": 5.16
+    },
+    "rollback": {
+      "status": "PASS",
+      "routeRestored": true,
+      "tunRemoved": true,
+      "sessionCleared": true
+    },
+    "evidence": "evidence/CHAT4_R37_FS_OFFICIAL_GATEWAY_ACCEPTANCE_20260929.json"
+  },
+  "metadataPromotion": {
+    "status": "PASS",
+    "method": "narrow manifest+RELEASE update with automatic backups",
+    "postPromotionParity": "PASS",
+    "postPromotionFiveTabSmoke": "PASS",
+    "routeUnchanged": true
+  },
+  "optionalDirectDpi": {
+    "boundary": "OPTIONAL_EXTENSION_NOT_MAIN_PRODUCT_GATE",
+    "liveDirectEvidence": "PASS",
+    "chromeEvidence": "PASS",
+    "installedLifecycle": "UNPROVEN",
+    "policy": "FAIL_CLOSED_OPTIONAL"
+  },
+  "openGates": [
+    "TRUSTED_WINDOWS_AUTHENTICODE_NOTSIGNED",
+    "PHYSICAL_CONSOLE_FIELD_E2E",
+    "PUBLIC_GITHUB_HOSTED_CI_PROMOTION",
+    "ANDROID_FORWARDING_CORE_RUNTIME",
+    "IOS_SIGNING_DEVICE_RUNTIME"
+  ],
+  "acceptanceResult": "PASS"
+}

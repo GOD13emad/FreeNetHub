@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "status": "FAIL",
+  "pre": {
+    "dns": [
+      "192.168.20.1"
+    ],
+    "dnsMode": "STATIC",
+    "nrpt": [
+      {
+        "Name": "DNS_RESILIENCY_slscr.update.microsoft.com",
+        "Namespace": [
+          "slscr.update.microsoft.com"
+        ],
+        "NameServers": {
+          "AddressFamily": 2,
+          "ScopeId": null,
+          "IsIPv6Multicast": false,
+          "IsIPv6LinkLocal": false,
+          "IsIPv6SiteLocal": false,
+          "IsIPv6Teredo": false,
+          "IsIPv6UniqueLocal": false,
+          "IsIPv4MappedToIPv6": false,
+          "Address": 35954594,
+          "IPAddressToString": "162.159.36.2"
+        },
+        "Comment": null,
+        "DisplayName": null
+      }
+    ],
+    "icsStatus": "Running",
+    "icsPid": 5044,
+    "udp53": [
+      {
+        "LocalAddress": "0.0.0.0",
+        "LocalPort": 53,
+        "OwningProcess": 5044
+      }
+    ]
+  },
+  "start": {
+    "exit": 53,
+    "output": [
+      "\u001b[90mSep 29 07:54:01.133\u001b[0m \u001b[33mNTC\u001b[0m Starting service",
+      "\u001b[90mSep 29 07:54:02.800\u001b[0m \u001b[31mERR\u001b[0m \u001b[1mfailed to re-read configuration file: ctrld.toml\u001b[0m \u001b[36merror=\u001b[0m\u001b[31m\u001b[1m\"open ctrld.toml: The system cannot find the file specified.\"\u001b[0m\u001b[0m",
+      "\u001b[90mSep 29 07:54:02.800\u001b[0m ??? ================================",
+      "\u001b[90mSep 29 07:54:02.800\u001b[0m ??? An error occurred while performing test query: open ctrld.toml: The system cannot find the file specified.",
+      "\u001b[90mSep 29 07:54:02.800\u001b[0m ??? ================================",
+      "\u001b[90mSep 29 07:54:03.636\u001b[0m \u001b[33mNTC\u001b[0m Service uninstalled",
+      "\u001b[90mSep 29 07:54:03.637\u001b[0m \u001b[31mERR\u001b[0m \u001b[1mprovisioning failed: stage=service code=SERVICE_SELFCHECK_FAILED (exit 53)\u001b[0m"
+    ]
+  },
+  "during": null,
+  "cleanup": {
+    "uninstallExit": 0,
+    "uninstallOutput": [
+      "\u001b[90mSep 29 07:54:04.000\u001b[0m \u001b[31mERR\u001b[0m \u001b[1mthe service is not installed\u001b[0m"
+    ],
+    "dns": [
+      "192.168.20.1"
+    ],
+    "services": [],
+    "processes": [],
+    "udp1053": [],
+    "nrpt": [
+      {
+        "Name": "DNS_RESILIENCY_slscr.update.microsoft.com",
+        "Namespace": [
+          "slscr.update.microsoft.com"
+        ],
+        "NameServers": {
+          "AddressFamily": 2,
+          "ScopeId": null,
+          "IsIPv6Multicast": false,
+          "IsIPv6LinkLocal": false,
+          "IsIPv6SiteLocal": false,
+          "IsIPv6Teredo": false,
+          "IsIPv6UniqueLocal": false,
+          "IsIPv4MappedToIPv6": false,
+          "Address": 35954594,
+          "IPAddressToString": "162.159.36.2"
+        },
+        "Comment": null,
+        "DisplayName": null
+      }
+    ],
+    "icsStatus": "Running",
+    "icsPid": 5044
+  },
+  "error": "CTRLD_START_EXIT_53"
+}

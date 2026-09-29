@@ -1,0 +1,192 @@
+{
+  "schema": 1,
+  "status": "NO_PASS",
+  "mode": "DIRECT_NO_VPN_NO_PROXY",
+  "priorStrategy": "-5_FAIL_DNS_FIXED_DPI_NOT_FIXED",
+  "strategies": [
+    {
+      "strategy": "-6",
+      "dns": {
+        "answers": [
+          "142.251.152.4",
+          "142.251.150.4",
+          "142.251.151.4",
+          "142.251.153.4",
+          "142.251.155.4",
+          "142.251.156.4",
+          "142.251.157.4",
+          "142.251.154.4"
+        ],
+        "public": true
+      },
+      "youtube": {
+        "exit": 28,
+        "meta": "curl: (28) Connection timed out after 5008 milliseconds\r\n000||0.000000|0.000000|5.008949",
+        "bytes": 0
+      },
+      "openai": {
+        "exit": 0,
+        "meta": "401|162.159.140.245|0.137492|0.166608|0.370166",
+        "bytes": 151
+      },
+      "github": {
+        "exit": 0,
+        "meta": "200|140.82.121.3|0.193430|0.283065|2.429115",
+        "bytes": 576230
+      },
+      "broadRoutes": 0,
+      "pass": false
+    },
+    {
+      "strategy": "-1",
+      "dns": {
+        "answers": [
+          "142.251.156.4",
+          "142.251.155.4",
+          "142.251.150.4",
+          "142.251.152.4",
+          "142.251.153.4",
+          "142.251.157.4",
+          "142.251.151.4",
+          "142.251.154.4"
+        ],
+        "public": true
+      },
+      "youtube": {
+        "exit": 28,
+        "meta": "curl: (28) Connection timed out after 5003 milliseconds\r\n000||0.000000|0.000000|5.003741",
+        "bytes": 0
+      },
+      "openai": {
+        "exit": 0,
+        "meta": "401|162.159.140.245|0.222909|0.267965|0.564567",
+        "bytes": 151
+      },
+      "github": {
+        "exit": 0,
+        "meta": "200|140.82.121.3|0.193235|0.400958|0.870494",
+        "bytes": 576231
+      },
+      "broadRoutes": 0,
+      "pass": false
+    },
+    {
+      "strategy": "-2",
+      "dns": {
+        "answers": [
+          "142.251.153.4",
+          "142.251.155.4",
+          "142.251.154.4",
+          "142.251.157.4",
+          "142.251.152.4",
+          "142.251.151.4",
+          "142.251.150.4",
+          "142.251.156.4"
+        ],
+        "public": true
+      },
+      "youtube": {
+        "exit": 28,
+        "meta": "curl: (28) Connection timed out after 5011 milliseconds\r\n000||0.000000|0.000000|5.012149",
+        "bytes": 0
+      },
+      "openai": {
+        "exit": 0,
+        "meta": "401|172.66.0.243|0.146734|0.205069|0.428479",
+        "bytes": 151
+      },
+      "github": {
+        "exit": 0,
+        "meta": "200|140.82.121.4|0.199970|0.418148|0.896187",
+        "bytes": 576234
+      },
+      "broadRoutes": 0,
+      "pass": false
+    },
+    {
+      "strategy": "-3",
+      "dns": {
+        "answers": [
+          "142.251.151.4",
+          "142.251.152.4",
+          "142.251.153.4",
+          "142.251.155.4",
+          "142.251.154.4",
+          "142.251.157.4",
+          "142.251.150.4",
+          "142.251.156.4"
+        ],
+        "public": true
+      },
+      "youtube": {
+        "exit": 28,
+        "meta": "curl: (28) Connection timed out after 5010 milliseconds\r\n000||0.000000|0.000000|5.011180",
+        "bytes": 0
+      },
+      "openai": {
+        "exit": 0,
+        "meta": "401|172.66.0.243|0.142348|0.186598|0.393893",
+        "bytes": 151
+      },
+      "github": {
+        "exit": 0,
+        "meta": "200|140.82.121.4|0.200447|0.410073|0.881230",
+        "bytes": 576231
+      },
+      "broadRoutes": 0,
+      "pass": false
+    },
+    {
+      "strategy": "-4",
+      "dns": {
+        "answers": [
+          "142.251.150.4",
+          "142.251.155.4",
+          "142.251.152.4",
+          "142.251.156.4",
+          "142.251.154.4",
+          "142.251.151.4",
+          "142.251.157.4",
+          "142.251.153.4"
+        ],
+        "public": true
+      },
+      "youtube": {
+        "exit": 35,
+        "meta": "curl: (35) schannel: next InitializeSecurityContext failed: SEC_E_INVALID_TOKEN (0x80090308) - The token supplied to the function is invalid\r\n000||0.139126|0.000000|0.150278",
+        "bytes": 0
+      },
+      "openai": {
+        "exit": 0,
+        "meta": "401|172.66.0.243|0.097658|0.124655|0.365860",
+        "bytes": 151
+      },
+      "github": {
+        "exit": 0,
+        "meta": "200|140.82.121.3|0.201130|0.293003|0.951508",
+        "bytes": 576232
+      },
+      "broadRoutes": 0,
+      "pass": false
+    }
+  ],
+  "selected": null,
+  "rollback": true,
+  "error": "",
+  "after": {
+    "goodbyedpi": 0,
+    "winDivertServices": 0,
+    "broadRoutes": 0,
+    "dns": {
+      "answers": [
+        "10.10.34.35"
+      ],
+      "public": false
+    },
+    "youtube": {
+      "exit": 28,
+      "meta": "curl: (28) Connection timed out after 5010 milliseconds\r\n000||0.000000|0.000000|5.011141",
+      "bytes": 0
+    }
+  }
+}

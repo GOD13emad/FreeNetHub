@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "actions": [
+    "Stopped Direct-DPI winws and owned WinDivert driver",
+    "Restored pre-Direct-DPI DNS and DoH state"
+  ],
+  "dns": [
+    "192.168.20.1"
+  ]
+}

@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$files='.\gateway\preflight.ps1','.\gateway\apply_elevated.ps1','.\gateway\stop_elevated.ps1','.\gateway\Start-Gateway.ps1','.\gateway\Stop-Gateway.ps1'
+$files=@(Get-ChildItem -LiteralPath '.\gateway' -File -Filter '*.ps1' | Sort-Object Name | Select-Object -ExpandProperty FullName)
 $rows=@()
 foreach($p in $files){
  $t=$null;$e=$null

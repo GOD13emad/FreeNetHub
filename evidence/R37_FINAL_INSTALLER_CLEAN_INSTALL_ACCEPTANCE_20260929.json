@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "status": "PASS",
+  "installerSha256": "8362141DAEAAB7927B097076C98AA2A9A0FFFC4C1E4EF8B130E85451D7433780",
+  "installerExit": 0,
+  "runtimeStatus": "PASS",
+  "parity": true,
+  "smoke": [
+    {
+      "tab": 0,
+      "exit": 0
+    },
+    {
+      "tab": 1,
+      "exit": 0
+    },
+    {
+      "tab": 2,
+      "exit": 0
+    },
+    {
+      "tab": 3,
+      "exit": 0
+    },
+    {
+      "tab": 4,
+      "exit": 0
+    }
+  ],
+  "preRoute": {
+    "InterfaceIndex": 18,
+    "InterfaceAlias": "Ethernet 3",
+    "NextHop": "192.168.20.1",
+    "RouteMetric": 0
+  },
+  "postRoute": {
+    "InterfaceIndex": 18,
+    "InterfaceAlias": "Ethernet 3",
+    "NextHop": "192.168.20.1",
+    "RouteMetric": 0
+  },
+  "backup": "%LOCALAPPDATA%\\FreeNetHub_R37_Verify_Backup_20260929_113607",
+  "errors": [],
+  "backupScope": "TEMPORARY_EXTERNAL_ROLLBACK_BACKUP"
+}

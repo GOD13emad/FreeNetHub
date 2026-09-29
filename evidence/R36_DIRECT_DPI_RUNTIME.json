@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "status": "PASS_ACTIVE_DIRECT_DPI",
+  "mode": "DIRECT_NO_VPN_NO_PROXY",
+  "scope": [
+    "youtube.com",
+    "youtube-nocookie.com",
+    "youtu.be",
+    "googlevideo.com",
+    "ytimg.com",
+    "youtubei.googleapis.com"
+  ],
+  "pre": {
+    "dns": [
+      "192.168.20.1"
+    ],
+    "dnsMode": "STATIC",
+    "doh": [
+      {
+        "ServerAddress": "76.76.2.11",
+        "DohTemplate": "https://76.76.2.11/p0",
+        "AllowFallbackToUdp": false,
+        "AutoUpgrade": true
+      }
+    ],
+    "dnsProbe": {
+      "ok": true,
+      "answers": [
+        "10.10.34.35"
+      ],
+      "private": [
+        "10.10.34.35"
+      ]
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Connection timed out after 8008 milliseconds\r\n000||0.000000|0.000000|8.009120",
+      "bytes": 0
+    }
+  },
+  "configured": {
+    "dnsServers": [
+      "76.76.10.11",
+      "76.76.2.11"
+    ],
+    "doh": [
+      {
+        "ServerAddress": "76.76.10.11",
+        "DohTemplate": "https://76.76.10.11/p0",
+        "AutoUpgrade": true,
+        "AllowFallbackToUdp": false
+      },
+      {
+        "ServerAddress": "76.76.2.11",
+        "DohTemplate": "https://76.76.2.11/p0",
+        "AutoUpgrade": true,
+        "AllowFallbackToUdp": false
+      }
+    ],
+    "dns": {
+      "ok": true,
+      "answers": [
+        "142.251.155.4",
+        "142.251.157.4",
+        "142.251.154.4",
+        "142.251.151.4",
+        "142.251.156.4",
+        "142.251.150.4",
+        "142.251.153.4",
+        "142.251.152.4"
+      ],
+      "private": []
+    },
+    "controlD": {
+      "url": "https://76.76.10.11/p0",
+      "exit": 0,
+      "meta": "400|76.76.10.11|0.078734|0.163615|0.241934",
+      "bytes": 42
+    }
+  },
+  "live": {
+    "pid": 21000,
+    "dns": {
+      "ok": true,
+      "answers": [
+        "142.251.152.4",
+        "142.251.154.4",
+        "142.251.150.4",
+        "142.251.155.4",
+        "142.251.153.4",
+        "142.251.151.4",
+        "142.251.156.4",
+        "142.251.157.4"
+      ],
+      "private": []
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 0,
+      "meta": "204|142.251.150.4|0.227731|0.336008|0.422694",
+      "bytes": 0
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|162.159.140.245|0.165084|0.198962|0.430524",
+      "bytes": 151
+    },
+    "github": {
+      "url": "https://github.com/",
+      "exit": 0,
+      "meta": "200|140.82.121.3|0.197733|0.287559|0.830410",
+      "bytes": 576474
+    },
+    "controlD": {
+      "url": "https://76.76.10.11/p0",
+      "exit": 0,
+      "meta": "400|76.76.10.11|0.079807|0.168842|0.247489",
+      "bytes": 42
+    },
+    "broadRoutes": 0,
+    "proxy": "\r\nCurrent WinHTTP proxy settings:\r\n\r\n    Direct access (no proxy server).\r\n\r\n",
+    "drivers": [
+      {
+        "Name": "WinDivert",
+        "State": "Running",
+        "StartMode": "Disabled",
+        "PathName": "\\??\\C:\\Users\\<USER>\\source\\repos\\FreeNetHub\\app\\directdpi\\tools\\WinDivert64.sys"
+      }
+    ]
+  },
+  "error": ""
+}

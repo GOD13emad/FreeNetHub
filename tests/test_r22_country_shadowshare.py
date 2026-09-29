@@ -10,7 +10,7 @@ ui=(R/"app"/"View.xaml").read_text(encoding="utf-8")
 ps=(R/"app"/"FreeNetHub.ps1").read_text(encoding="utf-8")
 
 assert "function Sync-CountrySelection" in ps
-assert "Country.Add_SelectionChanged({Sync-CountrySelection})" in ps
+assert "Country.Add_SelectionChanged({Sync-CountrySelection" in ps
 assert "Write-Json (Join-Path $script:Root 'settings.json') $script:Settings" in ps
 assert "$countryMismatch=[bool]" in ps
 for proto in ("ss","vmess","vless","trojan"):

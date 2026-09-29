@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "started": "2026-09-28T23:35:20.7920746+03:30",
+  "status": "FAIL_EXCEPTION_ROLLBACK",
+  "mode": "DIRECT_NO_VPN_NO_PROXY_ZAPRET_PLUS_NATIVE_DOH",
+  "bundleCommit": "6eb463a6758fb48cd101bc55dfd057e6e9d98af1",
+  "strategy": "--wf-l3=ipv4 --wf-tcp=443 --dpi-desync=multisplit --dpi-desync-split-pos=sniext+1",
+  "sourceEvidence": "evidence/R36_ZAPRET_BLOCKCHECK_QUICK_20260928.json",
+  "provenance": {
+    "winwsSha256": "2DA71E80878DC270AC83F5893ECBB841F9752A57F1DA8FF9325636B4346BC632",
+    "cygwinSha256": "103104A52E5293CE418944725DF19E2BF81AD9269B9A120D71D39028E821499B",
+    "winDivertDllSha256": "16ABD6A029E65557C6A309BEA7B13BF81FFF4E193567582E1CDDBF6719F323E0",
+    "driverSha256": "8DA085332782708D8767BCACE5327A6EC7283C17CFB85E40B03CD2323A90DDC2",
+    "driverSignature": "Valid"
+  },
+  "baseline": {
+    "route": {
+      "InterfaceAlias": "Ethernet 3",
+      "InterfaceIndex": 18,
+      "NextHop": "192.168.20.1",
+      "RouteMetric": 0,
+      "InterfaceMetric": 25
+    },
+    "trace": {
+      "fl": "930f47",
+      "h": "www.cloudflare.com",
+      "ip": "164.215.159.13",
+      "ts": "1790625919.000",
+      "visit_scheme": "https",
+      "uag": "curl/8.21.0",
+      "colo": "FRA",
+      "sliver": "010-tier1",
+      "http": "http/1.1",
+      "loc": "IR",
+      "tls": "TLSv1.3",
+      "sni": "plaintext",
+      "warp": "off",
+      "gateway": "off",
+      "rbi": "off",
+      "kex": "X25519"
+    },
+    "tcpTimestamps": "allowed",
+    "dnsServers": [
+      "192.168.20.1"
+    ],
+    "dohPreexisting": false,
+    "youtubeDns": [
+      "10.10.34.35"
+    ],
+    "explicitDohIpDns53": [
+      "10.10.34.35"
+    ],
+    "youtubeCode": "000",
+    "openaiCode": "401",
+    "githubCode": "200"
+  },
+  "nativeDoh": {
+    "config": [
+      {
+        "ServerAddress": "76.76.10.11",
+        "DohTemplate": "https://76.76.10.11/p0",
+        "AllowFallbackToUdp": false,
+        "AutoUpgrade": true
+      }
+    ],
+    "systemAnswers": [
+      "142.251.154.4",
+      "142.251.156.4",
+      "142.251.150.4",
+      "142.251.153.4",
+      "142.251.157.4",
+      "142.251.152.4",
+      "142.251.155.4",
+      "142.251.151.4"
+    ],
+    "systemGlobal": [
+      "142.251.154.4",
+      "142.251.156.4",
+      "142.251.150.4",
+      "142.251.153.4",
+      "142.251.157.4",
+      "142.251.152.4",
+      "142.251.155.4",
+      "142.251.151.4"
+    ],
+    "explicitUdp53Answers": [
+      "10.10.34.35"
+    ]
+  },
+  "trial": null,
+  "cleanup": {
+    "winws": [],
+    "winDivert": [],
+    "splitRoutes": 0,
+    "route": {
+      "InterfaceAlias": "Ethernet 3",
+      "InterfaceIndex": 18,
+      "NextHop": "192.168.20.1",
+      "RouteMetric": 0,
+      "InterfaceMetric": 25
+    },
+    "trace": {
+      "fl": "933f86",
+      "h": "www.cloudflare.com",
+      "ip": "164.215.159.13",
+      "ts": "1790625936.000",
+      "visit_scheme": "https",
+      "uag": "curl/8.21.0",
+      "colo": "FRA",
+      "sliver": "050-tier1",
+      "http": "http/1.1",
+      "loc": "IR",
+      "tls": "TLSv1.3",
+      "sni": "plaintext",
+      "warp": "off",
+      "gateway": "off",
+      "rbi": "off",
+      "kex": "X25519"
+    },
+    "tcpTimestamps": "allowed",
+    "dnsServers": [
+      "192.168.20.1"
+    ],
+    "dohRemaining": []
+  },
+  "error": "Exception calling \"GetByteCount\" with \"1\" argument(s): \"Value cannot be null. (Parameter 'chars')\"",
+  "finished": "2026-09-28T23:35:33.5811250+03:30"
+}

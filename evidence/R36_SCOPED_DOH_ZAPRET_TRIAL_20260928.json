@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "status": "FAIL",
+  "mode": "DIRECT_NO_VPN_NO_PROXY",
+  "scope": [
+    "youtube.com",
+    "youtu.be",
+    "googlevideo.com",
+    "ytimg.com"
+  ],
+  "pre": {
+    "dns": [
+      "192.168.20.1"
+    ],
+    "doh": [
+      {
+        "ServerAddress": "76.76.2.11",
+        "DohTemplate": "https://76.76.2.11/p0",
+        "AllowFallbackToUdp": false,
+        "AutoUpgrade": true
+      }
+    ],
+    "netsh": "\r\nConfiguration for interface \"Ethernet 3\"\r\n    Statically Configured DNS Servers:    192.168.20.1\r\n    Register with which suffix:           Primary only\r\n\r\n",
+    "drivers": null,
+    "dnsProbe": {
+      "ok": true,
+      "answers": [
+        "10.10.34.35"
+      ],
+      "private": [
+        "10.10.34.35"
+      ]
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Connection timed out after 8009 milliseconds\r\n000||0.000000|0.000000|8.009108",
+      "bytes": 0
+    }
+  },
+  "configured": {
+    "dnsServers": [
+      "76.76.10.11",
+      "76.76.2.11"
+    ],
+    "doh": [
+      {
+        "ServerAddress": "76.76.10.11",
+        "DohTemplate": "https://76.76.10.11/p0",
+        "AutoUpgrade": true,
+        "AllowFallbackToUdp": false
+      },
+      {
+        "ServerAddress": "76.76.2.11",
+        "DohTemplate": "https://76.76.2.11/p0",
+        "AutoUpgrade": true,
+        "AllowFallbackToUdp": false
+      }
+    ],
+    "dns": {
+      "ok": true,
+      "answers": [
+        "142.251.156.4",
+        "142.251.157.4",
+        "142.251.151.4",
+        "142.251.150.4",
+        "142.251.154.4",
+        "142.251.153.4",
+        "142.251.155.4",
+        "142.251.152.4"
+      ],
+      "private": []
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|162.159.140.245|0.132766|0.161532|0.405106",
+      "bytes": 151
+    },
+    "github": {
+      "url": "https://github.com/",
+      "exit": 0,
+      "meta": "200|140.82.121.4|0.225528|0.316881|0.791950",
+      "bytes": 576231
+    }
+  },
+  "during": {
+    "pid": 41656,
+    "dns": {
+      "ok": true,
+      "answers": [
+        "142.251.156.4",
+        "142.251.157.4",
+        "142.251.151.4",
+        "142.251.150.4",
+        "142.251.154.4",
+        "142.251.153.4",
+        "142.251.155.4",
+        "142.251.152.4"
+      ],
+      "private": []
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Resolving timed out after 8010 milliseconds\r\n000||0.000000|0.000000|8.010263",
+      "bytes": 0
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|162.159.140.245|0.025117|0.049400|0.280502",
+      "bytes": 151
+    },
+    "github": {
+      "url": "https://github.com/",
+      "exit": 0,
+      "meta": "200|140.82.121.4|0.094208|0.179095|0.649788",
+      "bytes": 576232
+    },
+    "controlD": {
+      "url": "https://76.76.10.11/p0",
+      "exit": 0,
+      "meta": "400|76.76.10.11|0.079373|0.164197|0.243955",
+      "bytes": 42
+    },
+    "broadRoutes": 0,
+    "proxy": "\r\nCurrent WinHTTP proxy settings:\r\n\r\n    Direct access (no proxy server).\r\n\r\n"
+  },
+  "after": {
+    "dnsServers": [
+      "192.168.20.1"
+    ],
+    "doh": [],
+    "dns": {
+      "ok": true,
+      "answers": [
+        "10.10.34.35"
+      ],
+      "private": [
+        "10.10.34.35"
+      ]
+    },
+    "drivers": null,
+    "winws": [],
+    "broadRoutes": 0
+  },
+  "retainedDns": false,
+  "rollback": true,
+  "error": "END_TO_END_NOT_PASS"
+}

@@ -42,3 +42,14 @@ crossplatform/android/.kotlin/
 windows/installer/*Qualification.iss
 project-brain.*.json
 windows/installer/*.Qualification.iss
+artifacts/
+evidence/.r36-zapret-scratch/
+evidence/r*_chrome_*/
+System.Collections.Specialized.OrderedDictionary
+app/directdns/*.sock
+app/directdns/.dns_*
+app/directdns/provision_result.json
+
+evidence/r34_quic_probe/
+evidence/r*_chrome_*.out.txt
+evidence/r*_chrome_*.err.txt

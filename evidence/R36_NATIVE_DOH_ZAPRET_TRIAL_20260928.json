@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "status": "FAIL",
+  "mode": "DIRECT_NO_VPN_NO_PROXY",
+  "pre": {
+    "dns": [
+      "192.168.20.1"
+    ],
+    "doh": [],
+    "netsh": "\r\nConfiguration for interface \"Ethernet 3\"\r\n    Statically Configured DNS Servers:    192.168.20.1\r\n    Register with which suffix:           Primary only\r\n\r\n",
+    "drivers": [
+      {
+        "Name": "WinDivert1.4",
+        "State": "Running",
+        "StartMode": "Disabled",
+        "PathName": "\\??\\C:\\Users\\<USER>\\source\\repos\\FreeNetHub\\artifacts\\FNH_R36_DIRECT_DPI_TRIAL_RUNNER\\tools\\WinDivert64.sys"
+      },
+      {
+        "Name": "WinDivert",
+        "State": "Running",
+        "StartMode": "Disabled",
+        "PathName": "\\??\\C:\\Users\\<USER>\\source\\repos\\FreeNetHub\\third_party\\staging\\zapret-win-bundle-6eb463a6\\blockcheck\\zapret\\nfq\\WinDivert64.sys"
+      }
+    ],
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Connection timed out after 7009 milliseconds\r\n000||0.000000|0.000000|7.009829",
+      "bytes": 0
+    },
+    "dnsProbe": {
+      "ok": true,
+      "answers": [
+        "10.10.34.35"
+      ],
+      "private": [
+        "10.10.34.35"
+      ]
+    }
+  },
+  "configured": {
+    "dnsServers": [
+      "76.76.10.11",
+      "76.76.2.11"
+    ],
+    "doh": [
+      {
+        "ServerAddress": "76.76.10.11",
+        "DohTemplate": "https://76.76.10.11/p0",
+        "AllowFallbackToUdp": false,
+        "AutoUpgrade": true
+      },
+      {
+        "ServerAddress": "76.76.2.11",
+        "DohTemplate": "https://76.76.2.11/p0",
+        "AllowFallbackToUdp": false,
+        "AutoUpgrade": true
+      }
+    ],
+    "youtubeDns": {
+      "ok": true,
+      "answers": [
+        "142.251.157.4",
+        "142.251.152.4",
+        "142.251.151.4",
+        "142.251.154.4",
+        "142.251.150.4",
+        "142.251.153.4",
+        "142.251.156.4",
+        "142.251.155.4"
+      ],
+      "private": []
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|162.159.140.245|0.139307|0.166610|0.392218",
+      "bytes": 151
+    },
+    "github": {
+      "url": "https://github.com/",
+      "exit": 0,
+      "meta": "200|140.82.121.3|0.199531|0.288349|0.773034",
+      "bytes": 576232
+    }
+  },
+  "during": {
+    "winwsPid": 39008,
+    "dns": {
+      "ok": true,
+      "answers": [
+        "142.251.152.4",
+        "142.251.156.4",
+        "142.251.150.4",
+        "142.251.154.4",
+        "142.251.151.4",
+        "142.251.155.4",
+        "142.251.153.4",
+        "142.251.157.4"
+      ],
+      "private": []
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Resolving timed out after 8003 milliseconds\r\n000||0.000000|0.000000|8.003636",
+      "bytes": 0
+    },
+    "openai": {
+      "url": "https://api.openai.com/v1/models",
+      "exit": 0,
+      "meta": "401|162.159.140.245|0.037256|0.063372|0.275803",
+      "bytes": 151
+    },
+    "github": {
+      "url": "https://github.com/",
+      "exit": 0,
+      "meta": "200|140.82.121.3|0.098358|0.183595|0.653489",
+      "bytes": 576232
+    },
+    "chatgpt": {
+      "url": "https://chatgpt.com/cdn-cgi/trace",
+      "exit": 0,
+      "meta": "200|172.64.155.209|0.161670|0.189074|0.209654",
+      "bytes": 202
+    },
+    "broadRoutes": 0,
+    "proxy": "\r\nCurrent WinHTTP proxy settings:\r\n\r\n    Direct access (no proxy server).\r\n\r\n"
+  },
+  "after": {
+    "dnsServers": [
+      "192.168.20.1"
+    ],
+    "doh": [],
+    "dns": {
+      "ok": true,
+      "answers": [
+        "10.10.34.35"
+      ],
+      "private": [
+        "10.10.34.35"
+      ]
+    },
+    "youtubeWithoutWinws": {
+      "url": "https://www.youtube.com/generate_204",
+      "exit": 28,
+      "meta": "curl: (28) Connection timed out after 5006 milliseconds\r\n000||0.000000|0.000000|5.006716",
+      "bytes": 0
+    },
+    "drivers": null,
+    "winws": [],
+    "broadRoutes": 0
+  },
+  "retained": false,
+  "rollback": true,
+  "error": "END_TO_END_NOT_PASS"
+}

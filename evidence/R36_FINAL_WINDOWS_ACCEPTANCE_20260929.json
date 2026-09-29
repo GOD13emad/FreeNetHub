@@ -1,0 +1,86 @@
+{
+  "schema": 2,
+  "date": "2026-09-29",
+  "objective": "ONE_ELEVATION_WINDOWS_R36_FINALIZATION",
+  "status": "FAIL",
+  "candidate": {
+    "relativePath": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R36_DirectDPI_Final_Setup.exe",
+    "expectedSha256": "8BDB02AEEC09E8403AFCE6238EDDB1EC7891F7B88357BF3FF113CF6F225FD87A",
+    "actualSha256": "8BDB02AEEC09E8403AFCE6238EDDB1EC7891F7B88357BF3FF113CF6F225FD87A",
+    "parity": false,
+    "releaseParity": false,
+    "uiSmoke": false,
+    "runtime": null,
+    "stability": null,
+    "chrome": null,
+    "rollback": null
+  },
+  "baseline": {
+    "interface": "Ethernet 3",
+    "localIp": "192.168.20.5",
+    "dnsV4": [
+      "192.168.20.1"
+    ],
+    "dnsV6": [],
+    "nrptCatchAll": 0,
+    "ics": {
+      "exists": true,
+      "state": "Running",
+      "pid": 5044
+    },
+    "broadRouteCount": 0,
+    "winHttpDirect": true
+  },
+  "backup": {
+    "location": "PRIVATE_LOCALAPPDATA",
+    "created": true,
+    "installedRevisionBefore": "4.2.0-local-r32-audit-closure",
+    "keyHashes": [
+      {
+        "file": "FreeNetHub.exe",
+        "sha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
+        "bytes": 39936
+      },
+      {
+        "file": "app\\engine.py",
+        "sha256": "721DE33A0CC3ECBC0021D7F2099185D91E6A4FC2FCB08FF562784D3CE8F68A50",
+        "bytes": 76411
+      },
+      {
+        "file": "app\\FreeNetHub.ps1",
+        "sha256": "194104FC9DE6CC9A2304101E624503F8905B3251D96A968CB41F35733FAC924F",
+        "bytes": 78157
+      },
+      {
+        "file": "app\\manifest.json",
+        "sha256": "CAF1DD03E7CC30827004E7FEB567216D25F60418344980A0BB631B97324AE21F",
+        "bytes": 932
+      },
+      {
+        "file": "RELEASE.json",
+        "sha256": "8383691087A3D94725E451AEA9CD3A532EA724E3FE9BC353913760429FE52EB9",
+        "bytes": 16558
+      }
+    ]
+  },
+  "promotion": {
+    "release": false,
+    "securityScan": false
+  },
+  "finalInstaller": null,
+  "finalInstalled": {
+    "parity": false,
+    "releaseParity": false,
+    "uiSmoke": false,
+    "runtime": null,
+    "stability": null,
+    "chrome": null,
+    "active": false
+  },
+  "rollbackOnFailure": {
+    "network": true,
+    "installedBackup": true,
+    "release": false
+  },
+  "error": "INSTALLED_PARITY_FAIL_HASH_FreeNetHub.ps1,HASH_View.xaml"
+}

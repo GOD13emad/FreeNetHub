@@ -1,6 +1,8 @@
 [CmdletBinding()]
 param(
  [Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','Status')][string]$Action,
+ [ValidateSet('WARP','NODE')][string]$Provider='WARP',
+ [ValidateSet('SELECTED','AUTO')][string]$NodePolicy='SELECTED',
  [string]$ResultPath=''
 )
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
@@ -31,10 +33,62 @@ function Assert-GatewayIntegrity{
 }
 function Write-J([string]$p,$o){$tmp=$p+'.'+[guid]::NewGuid().ToString('N')+'.tmp';$o|ConvertTo-Json -Depth 24|Set-Content -LiteralPath $tmp -Encoding UTF8;Move-Item -LiteralPath $tmp -Destination $p -Force}
 function Assert([bool]$ok,[string]$m){if(!$ok){throw $m}}
+function Get-BaseRouteSnapshot{
+ $routes=@(Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue)
+ $rows=@()
+ foreach($r in $routes){
+  try{
+   $ifi=Get-NetIPInterface -AddressFamily IPv4 -InterfaceIndex ([int]$r.InterfaceIndex) -ErrorAction Stop
+   $src=Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex ([int]$r.InterfaceIndex) -ErrorAction SilentlyContinue |
+    Where-Object {$_.IPAddress -and $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*'} |
+    Sort-Object SkipAsSource,PrefixLength | Select-Object -First 1
+   if($src){
+    $rows += [pscustomobject]@{
+     totalMetric=([int]$r.RouteMetric+[int]$ifi.InterfaceMetric)
+     ifIndex=[int]$r.InterfaceIndex;interfaceAlias=[string]$r.InterfaceAlias
+     sourceAddress=[string]$src.IPAddress;nextHop=[string]$r.NextHop
+     routeMetric=[int]$r.RouteMetric;interfaceMetric=[int]$ifi.InterfaceMetric
+    }
+   }
+  }catch{}
+ }
+ $best=$rows|Sort-Object totalMetric,routeMetric,interfaceMetric|Select-Object -First 1
+ if(!$best){throw 'BASE_ROUTE_UNAVAILABLE'}
+ [ordered]@{ifIndex=$best.ifIndex;interfaceAlias=$best.interfaceAlias;sourceAddress=$best.sourceAddress;nextHop=$best.nextHop;routeMetric=$best.routeMetric;interfaceMetric=$best.interfaceMetric}
+}
 function Trace{
  $t=& curl.exe -4 --noproxy '*' --max-time 20 -fsS https://www.cloudflare.com/cdn-cgi/trace 2>&1|Out-String
  if($LASTEXITCODE -ne 0){throw 'TRACE_FAIL'}
  $d=[ordered]@{};foreach($l in ($t -split '\r?\n')){if($l -match '^([^=]+)=(.*)$'){$d[$matches[1]]=$matches[2]}};return $d
+}
+function Target-Country{
+ $p=Join-Path $Root 'settings.json'
+ if(!(Test-Path $p)){return 'AUTO'}
+ try{$v=[string](Get-Content $p -Raw -Encoding UTF8|ConvertFrom-Json).country;if($v){return $v.ToUpperInvariant()}}catch{}
+ return 'AUTO'
+}
+function Geo-Country([string]$ip){
+ if(!$ip){throw 'GEO_IP_MISSING'}
+ $raw=& curl.exe -4 --noproxy '*' --max-time 15 -fsS ('https://ipwho.is/'+$ip) 2>&1|Out-String
+ if($LASTEXITCODE -ne 0){throw 'GEO_LOOKUP_FAIL'}
+ $j=$raw|ConvertFrom-Json
+ if(!$j.success -or -not [string]$j.country_code){throw 'GEO_LOOKUP_INVALID'}
+ ([string]$j.country_code).ToUpperInvariant()
+}
+function Verify-ProviderUdp([string]$p,[string]$target){
+ $cfg=$Defaults.providers.$p
+ Assert ($null -ne $cfg) ($p+'_PROVIDER_CONFIG_MISSING')
+ $port=[int]$cfg.port
+ $raw=& $Python (Join-Path $PSScriptRoot 'socks_udp_probe.py') $port '127.0.0.1' 2>&1|Out-String
+ Assert ($LASTEXITCODE -eq 0) ($p+'_UDP_PREFLIGHT_FAIL')
+ $j=$raw|ConvertFrom-Json
+ Assert ([string]$j.status -eq 'PASS') ($p+'_UDP_PREFLIGHT_FAIL')
+ $country='UNVERIFIED_AUTO'
+ if($target -and $target -ne 'AUTO'){
+  $country=Geo-Country ([string]$j.udp_public_ip)
+  Assert ($country -eq $target) ($p+'_UDP_COUNTRY_'+$country)
+ }
+ [ordered]@{status='PASS';publicIp=[string]$j.udp_public_ip;country=$country;countryVerified=($target -and $target -ne 'AUTO');seconds=$j.seconds;relay=$j.relay}
 }
 function Run-Engine([string]$a,[string]$m,[int]$budget=120){
  $j=[guid]::NewGuid().ToString('N');& $Python $Engine --action $a --mode $m --job $j --budget $budget|Out-Null;$ec=$LASTEXITCODE
@@ -85,10 +139,10 @@ function Get-Status{
  }
 }
 function Require-Admin{if(-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'ADMIN_REQUIRED'}}
-function Cleanup-Failed([string]$mode,[bool]$providerStarted){
+function Cleanup-Failed([string]$mode,[bool]$providerStarted,[string]$provider='WARP'){
  if($mode -eq 'PC_TUNNEL'){
   try{if((Test-Path $Owner) -or (Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name})){& $StopScript|Out-Null}}catch{}
-  if($providerStarted){try{Run-Engine 'StopOne' 'WARP' 60|Out-Null}catch{}}
+  if($providerStarted){try{Run-Engine 'StopOne' $provider 60|Out-Null}catch{}}
  }else{
   try{[void](Run-WslConsole 'Stop')}catch{}
  }
@@ -106,7 +160,7 @@ try{
    $stop=Run-WslConsole 'Stop';Assert ($stop.exit -eq 0) 'WSL_CONSOLE_STOP_FAIL'
   }
   if((Test-Path $Owner) -or (Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name})){& $StopScript|Out-Null}
-  if($s -and [string]$s.mode -eq 'PC_TUNNEL' -and -not [bool]$s.providerPreexisting){Run-Engine 'StopOne' 'WARP' 60|Out-Null}
+  if($s -and [string]$s.mode -eq 'PC_TUNNEL' -and -not [bool]$s.providerPreexisting){$sp=[string]$s.provider;if($sp -in @('WARP','NODE')){Run-Engine 'StopOne' $sp 60|Out-Null}}
   Remove-Item $Session -Force -ErrorAction SilentlyContinue;$out.exit=0;$out.result=Get-Status
  }
  elseif($Action -eq 'StopConsole'){
@@ -137,20 +191,55 @@ try{
      manual=[ordered]@{ip=[string]$cc.suggested_console_ip;prefix=24;gateway=[string]$cc.gateway;dns=[string]$cc.dns}
     };Write-J $Session $sess;$out.exit=0;$out.result=Get-Status
    }else{
-    $v=Run-Engine 'Verify' 'WARP' 60;$preexisting=($v.exit -eq 0 -and $v.record.result.healthy)
-    if(!$preexisting){$c=Run-Engine 'ConnectProvider' 'WARP' 220;Assert ($c.exit -eq 0 -and $c.record.result.healthy) 'WARP_CONNECT_FAIL';$started=$true}
-    $before=Trace;$cfg=Join-Path $Runtime 'pc_product.json'
-    & $Python $Generator --mode PC_TUNNEL --provider WARP --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
+    Assert ($Provider -in @('WARP','NODE')) 'PC_PROVIDER_UNSUPPORTED'
+    $target=Target-Country
+    if($Provider -eq 'NODE'){
+     $v=Run-Engine 'Verify' 'NODE' 70
+     $preexisting=($v.exit -eq 0 -and [bool]$v.record.result.healthy -and ($target -eq 'AUTO' -or [string]$v.record.result.country -eq $target))
+     if(!$preexisting){
+      if($NodePolicy -eq 'AUTO'){
+       $c=Run-Engine 'Connect' 'NODE' 240
+       Assert ($c.exit -eq 0 -and [bool]$c.record.result.healthy) 'NODE_AUTO_CONNECT_FAIL'
+       $started=$true
+      }else{
+       $c=Run-Engine 'ConnectSelectedNode' 'NODE' 160
+       Assert ($c.exit -eq 0 -and [bool]$c.record.result.healthy) 'NODE_SELECTED_CONNECT_FAIL'
+       $started=[bool]$c.record.result.startedHere
+      }
+      Assert ($target -eq 'AUTO' -or [string]$c.record.result.country -eq $target) 'NODE_TCP_COUNTRY_FAIL'
+     }
+    }else{
+     $v=Run-Engine 'Verify' 'WARP' 60;$preexisting=($v.exit -eq 0 -and [bool]$v.record.result.healthy)
+     if(!$preexisting){$c=Run-Engine 'ConnectProvider' 'WARP' 220;Assert ($c.exit -eq 0 -and [bool]$c.record.result.healthy) 'WARP_CONNECT_FAIL';$started=$true}
+    }
+
+    $udpBefore=Verify-ProviderUdp $Provider $(if($Provider -eq 'NODE'){$target}else{'AUTO'})
+    $baseRoute=Get-BaseRouteSnapshot
+    $before=Trace
+    $cfg=Join-Path $Runtime ('pc_product_'+$Provider.ToLowerInvariant()+'.json')
+    & $Python $Generator --mode PC_TUNNEL --provider $Provider --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
     $SB=[string](Get-FnhSingBox).path;& $SB check -c $cfg;Assert ($LASTEXITCODE -eq 0) 'CONFIG_CHECK_FAIL'
     & $Apply -Mode PC_TUNNEL -ConfigPath $cfg -ConfigSha256 ((Get-FileHash $cfg -Algorithm SHA256).Hash)|Out-Null
     $ar=Get-Content (Join-Path $Runtime 'apply_result.json') -Raw -Encoding UTF8|ConvertFrom-Json;Assert ($ar.status -eq 'PASS') 'APPLY_FAIL';Start-Sleep -Seconds 2
-    $tr=Trace;Assert ([string]$tr.warp -eq 'on') 'PC_WARP_NOT_ON'
-    $yt=& curl.exe -4 --noproxy '*' --max-time 20 -sS -o NUL -w '%{http_code}' https://www.youtube.com/generate_204|Out-String;Assert ($LASTEXITCODE -eq 0 -and $yt.Trim() -eq '204') 'PC_YOUTUBE_FAIL'
-    $udp=& $Python $DirectStun|Out-String;Assert ($LASTEXITCODE -eq 0) 'PC_UDP_FAIL'
-    $sess=[ordered]@{schema=2;mode='PC_TUNNEL';provider='WARP';providerKind='WARP_SOCKS';providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{trace=$tr;youtube='204';udp=$udp|ConvertFrom-Json};manual=$null};Write-J $Session $sess
+
+    $tr=Trace
+    if($Provider -eq 'WARP'){Assert ([string]$tr.warp -eq 'on') 'PC_WARP_NOT_ON'}
+    if($Provider -eq 'NODE' -and $target -ne 'AUTO'){Assert ([string]$tr.loc -eq $target) ('PC_NODE_TCP_COUNTRY_'+[string]$tr.loc)}
+    $yt=& curl.exe -4 --noproxy '*' --max-time 20 -sS -o NUL -w '%{http_code}' https://www.youtube.com/generate_204|Out-String
+    Assert ($LASTEXITCODE -eq 0 -and $yt.Trim() -eq '204') 'PC_YOUTUBE_FAIL'
+    $udp=& $Python $DirectStun|Out-String;Assert ($LASTEXITCODE -eq 0) 'PC_UDP_FAIL';$udpPost=$udp|ConvertFrom-Json
+    $udpCountry='UNVERIFIED_AUTO'
+    if($Provider -eq 'NODE' -and $target -ne 'AUTO'){
+     $udpCountry=Geo-Country ([string]$udpPost.public_ip)
+     Assert ($udpCountry -eq $target) ('PC_NODE_UDP_COUNTRY_'+$udpCountry)
+    }
+
+    $kind=$(if($Provider -eq 'NODE'){'NODE_SOCKS'}else{'WARP_SOCKS'})
+    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
+    Write-J $Session $sess
     $out.exit=0;$out.result=Get-Status
    }
-  }catch{Cleanup-Failed $mode $started;throw}
+  }catch{Cleanup-Failed $mode $started $Provider;throw}
  }
 }catch{$out.exit=20;$out.result=[ordered]@{error=$_.Exception.Message;status=try{Get-Status}catch{$null}}}
 if($ResultPath){Write-J $ResultPath $out}

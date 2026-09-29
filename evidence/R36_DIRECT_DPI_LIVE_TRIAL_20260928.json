@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "started": "2026-09-28T23:15:05.8140588+03:30",
+  "status": "FAIL_DIRECT_DPI_LIVE_ROLLBACK",
+  "mode": "DIRECT_DPI_NO_VPN_NO_PROXY",
+  "tool": "GoodbyeDPI 0.2.2 stable",
+  "arguments": [
+    "-5",
+    "--dns-addr",
+    "77.88.8.8",
+    "--dns-port",
+    "1253"
+  ],
+  "provenance": {
+    "release": "https://github.com/ValdikSS/GoodbyeDPI/releases/tag/0.2.2",
+    "exeSha256": "331AC6C1D22BA5A0A217F3F27D0D823051869CAFC8B8EF7F2002FA2ACCEBC74E",
+    "dllSha256": "A97859785A2DF1D4462E7D48D33CCBD89FEDD40DAC4970F4AFD89E63F59EE1EC",
+    "driverSha256": "53AB28EC00BE6E6F8AEFA9EE76FC2735E94D7F3F9DBC06EB2B7AC8CD3084A6AF",
+    "driverSignature": "Valid"
+  },
+  "baseline": {
+    "route": {
+      "InterfaceAlias": "Ethernet 3",
+      "InterfaceIndex": 18,
+      "NextHop": "192.168.20.1",
+      "RouteMetric": 0,
+      "InterfaceMetric": 25
+    },
+    "trace": {
+      "fl": "930f40",
+      "h": "www.cloudflare.com",
+      "ip": "164.215.159.13",
+      "ts": "1790624704.000",
+      "visit_scheme": "https",
+      "uag": "curl/8.21.0",
+      "colo": "FRA",
+      "sliver": "010-tier1",
+      "http": "http/1.1",
+      "loc": "IR",
+      "tls": "TLSv1.3",
+      "sni": "plaintext",
+      "warp": "off",
+      "gateway": "off",
+      "rbi": "off",
+      "kex": "X25519"
+    },
+    "youtubeCode": "000",
+    "openaiCode": "401",
+    "githubCode": "200",
+    "youtubeDns": [
+      "10.10.34.35"
+    ]
+  },
+  "trial": {
+    "youtubeDns": [
+      "142.251.154.4",
+      "142.251.152.4",
+      "142.251.153.4",
+      "142.251.156.4",
+      "142.251.155.4",
+      "142.251.150.4",
+      "142.251.157.4",
+      "142.251.151.4"
+    ],
+    "youtubeGlobalDns": [
+      "142.251.154.4",
+      "142.251.152.4",
+      "142.251.153.4",
+      "142.251.156.4",
+      "142.251.155.4",
+      "142.251.150.4",
+      "142.251.157.4",
+      "142.251.151.4"
+    ],
+    "youtubeCode": "000",
+    "openaiCode": "401",
+    "githubCode": "200",
+    "trace": {
+      "fl": "470f303",
+      "h": "www.cloudflare.com",
+      "ip": "164.215.159.13",
+      "ts": "1790624717.000",
+      "visit_scheme": "https",
+      "uag": "curl/8.21.0",
+      "colo": "FRA",
+      "sliver": "none",
+      "http": "http/1.1",
+      "loc": "IR",
+      "tls": "TLSv1.3",
+      "sni": "plaintext",
+      "warp": "off",
+      "gateway": "off",
+      "rbi": "off",
+      "kex": "X25519"
+    },
+    "route": {
+      "InterfaceAlias": "Ethernet 3",
+      "InterfaceIndex": 18,
+      "NextHop": "192.168.20.1",
+      "RouteMetric": 0,
+      "InterfaceMetric": 25
+    },
+    "routeSame": true,
+    "directPathPreserved": true,
+    "processId": 36876
+  },
+  "cleanup": {
+    "goodbyeDpiProcesses": [],
+    "winDivertServices": [],
+    "splitRouteCount": 0,
+    "route": {
+      "InterfaceAlias": "Ethernet 3",
+      "InterfaceIndex": 18,
+      "NextHop": "192.168.20.1",
+      "RouteMetric": 0,
+      "InterfaceMetric": 25
+    },
+    "trace": {
+      "fl": "470f424",
+      "h": "www.cloudflare.com",
+      "ip": "164.215.159.13",
+      "ts": "1790624721.000",
+      "visit_scheme": "https",
+      "uag": "curl/8.21.0",
+      "colo": "FRA",
+      "sliver": "none",
+      "http": "http/1.1",
+      "loc": "IR",
+      "tls": "TLSv1.3",
+      "sni": "plaintext",
+      "warp": "off",
+      "gateway": "off",
+      "rbi": "off",
+      "kex": "X25519"
+    }
+  },
+  "finished": "2026-09-28T23:15:18.6479527+03:30"
+}

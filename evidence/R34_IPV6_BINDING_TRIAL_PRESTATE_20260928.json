@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "context": "No-VPN/no-proxy CGNAT escape-hatch trial",
+  "status": "PRESTATE",
+  "interface": {
+    "name": "Ethernet 3",
+    "ifIndex": 18,
+    "ipv4": "192.168.20.5",
+    "gateway": "192.168.20.1",
+    "ipv6BindingEnabled": false
+  },
+  "system": {
+    "disabledComponentsRegistry": "NOT_SET",
+    "ipv6DefaultRoute": false,
+    "globalIpv6": false
+  },
+  "tunnelIsolation": {
+    "oigDesired": "off",
+    "oigFullRoutes": 0,
+    "oigService": "Stopped",
+    "oigAutoRecoveryTemporarilyDisabled": true
+  },
+  "rationale": "Windows IPv6 binding is locally disabled. Enabling only ms_tcpip6 on the active physical adapter is a reversible test for native ISP IPv6, which could provide direct globally routable connectivity without VPN/proxy and without altering IPv4.",
+  "rollback": "Disable-NetAdapterBinding -Name 'Ethernet 3' -ComponentID ms_tcpip6 if IPv4 regresses or IPv6 state is unhealthy.",
+  "authority": "Microsoft NetAdapter Enable-NetAdapterBinding semantics reviewed; component-specific binding only.",
+  "confidence": "CONFIRMED"
+}

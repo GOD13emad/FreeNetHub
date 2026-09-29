@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS",
+  "candidate": "R31_AUDIT_FIX_OWNER_REVIEW",
+  "installerSha256": "30029D75A1D4EDA43C9ABAE046BE9F08F7BF240C213FF5398461A4F09E5B0D24",
+  "installExit": 0,
+  "parity": {
+    "app\\engine.py": true,
+    "app\\nodehub.py": true,
+    "app\\FreeNetHub.ps1": true,
+    "app\\View.xaml": true,
+    "app\\manifest.json": true,
+    "RELEASE.json": true
+  },
+  "state": {
+    "settings.json": {
+      "preserved": true,
+      "sha256": "CD084D18D92D4D232D2F64F8D13E87F44803FE4B7D32F0F8B0E64CF42DF6B29B"
+    },
+    "data\\nodes.json": {
+      "preserved": true,
+      "sha256": "46475E2B44636DE4FBC294CDF684A0B9598265E22AF99BD91377C4A176491247"
+    },
+    "data\\node_public_refresh.json": {
+      "preserved": true,
+      "sha256": "CD9180C8ADBD58B50B953E82CAF1466EDB5AA63558BF87ECE344E7C37AB8EF9A"
+    },
+    "gateway\\runtime\\local_provider.json": {
+      "preserved": true
+    },
+    "gateway\\runtime\\console.profile.json": {
+      "preserved": true
+    }
+  },
+  "consoleGatewayConfig": {
+    "preSha": "342C7A2FD0B9A8D66F183541043B37F0D310F9BAD081D7768CE2C6D02BC171F3",
+    "postSha": "342C7A2FD0B9A8D66F183541043B37F0D310F9BAD081D7768CE2C6D02BC171F3"
+  },
+  "projectListenersAfterInstall": 0,
+  "trustedWindowsSigning": "NotSigned"
+}

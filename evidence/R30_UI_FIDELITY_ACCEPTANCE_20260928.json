@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "PASS_LOCAL_OWNER_REVIEW",
+  "milestone": "R30 UI Fidelity",
+  "previousState": {
+    "r29": "REJECTED_BY_OWNER_FOR_VISUAL_FIDELITY",
+    "reason": "Operational flow was implemented but the installed screen did not visually match the approved mockup."
+  },
+  "decisions": {
+    "navigation": [
+      "اتصال",
+      "سرورها / نودها",
+      "روش‌ها و تنظیمات پیشرفته",
+      "کنسول",
+      "ابزارها و آپدیت"
+    ],
+    "connectionScreen": {
+      "step1": "SEGMENTED_SCOPE_CARDS",
+      "step2": "SEVEN_METHOD_CARDS_WITH_CAPABILITY_BADGES",
+      "step3": "PRECONNECT_TEST_RESULT_TABLE",
+      "step4": "ONE_PRIMARY_CONNECT_ACTION"
+    },
+    "selectedScopeHighlight": true,
+    "selectedMethodHighlight": true,
+    "unsupportedSystemMethodsDisabled": true,
+    "sidebarSummary": [
+      "scope",
+      "method",
+      "targetCountry",
+      "lastMetrics",
+      "updateRoutePolicy"
+    ],
+    "updatePolicyText": "Uses the current base/default system route and bypasses FreeNet Hub internal proxy; an OS-level VPN remains part of the system route if active."
+  },
+  "evidence": {
+    "staticRegression": "PASS_89_CORE_14_GATEWAY",
+    "uiContract": "PASS_139_CONTROLLER_REFS_147_NAMES_5_TABS",
+    "sourceSmoke": "PASS",
+    "installedSmoke": "PASS",
+    "installedParity": "PASS_ENGINE_NODEHUB_CONTROLLER_VIEW_MANIFEST_RELEASE",
+    "statePreservation": "PASS_SETTINGS_NODES_PUBLIC_REFRESH",
+    "gatewayAtRestBeforeUpgrade": true,
+    "projectListenersAfterInstall": 0,
+    "installedGuiEvidence": "installed evidence/gui.json width=1360 height=900 controls=143 networkRequested=false"
+  },
+  "artifact": {
+    "name": "FreeNetHub_4.2.0_R30_UIFidelity_Setup.exe",
+    "bytes": 15895328,
+    "sha256": "466AFC6AAD92B6E7F29DD6BCEF9AA6F00935D15D196C8F3B7E69B23A583FC3D5",
+    "authenticode": "NotSigned"
+  },
+  "sourceHashes": {
+    "engine": "9D9DC7724D05BF8C58986ABE760C9CF0A127F09816046D8984617CBE9A9C8658",
+    "controller": "9AF906DA55F010370B3CF32E58CAF41B31C115005183CBAAB1F19DF369FEA32D",
+    "view": "4521F759B8E7819940401CE69B6274E7021DCA3A4C4388CF37F1A33E1D9CAA88",
+    "manifest": "1F4FC990B93F79D6DCC331E5E60D2692AC36F804ED89F0428BD708BF5D99259B"
+  },
+  "openGates": [
+    "OWNER_UI_REVIEW",
+    "TRUSTED_WINDOWS_AUTHENTICODE",
+    "PHYSICAL_CONSOLE_FIELD_E2E",
+    "PUBLIC_GITHUB_PROMOTION_AFTER_OWNER_ACCEPTANCE"
+  ],
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "release notes",
+    "UI/UX rationale",
+    "owner review baseline"
+  ]
+}

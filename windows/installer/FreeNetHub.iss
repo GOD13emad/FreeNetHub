@@ -14,7 +14,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\..\delivery\github_v4.2.0
-OutputBaseFilename=FreeNetHub_4.2.0_R28_Final_Setup
+OutputBaseFilename=FreeNetHub_4.2.0_R37_Final_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -26,7 +26,7 @@ ChangesAssociations=no
 ChangesEnvironment=no
 VersionInfoVersion=4.2.0.0
 VersionInfoProductName=FreeNet Hub
-VersionInfoDescription=FreeNet Hub 4.2 installer
+VersionInfoDescription=FreeNet Hub 4.2 R37 Final installer
 MinVersion=10.0.19041
 AppMutex=Local\FreeNetHub.Desktop.SingleInstance.v41
 
@@ -50,12 +50,17 @@ Source: "..\standalone\FreeNetHub.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\standalone\FreeNetHub.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\app\engine.py"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\nodehub.py"; DestDir: "{app}\app"; Flags: ignoreversion
+Source: "..\..\app\directnet.py"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\FreeNetHub.ps1"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\View.xaml"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\manifest.json"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\dependencies.example.json"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\assets\FreeNetHub.ico"; DestDir: "{app}\app\assets"; Flags: ignoreversion
 Source: "..\..\app\assets\FreeNetHub_256.png"; DestDir: "{app}\app\assets"; Flags: ignoreversion
+Source: "..\..\app\directdpi\*"; DestDir: "{app}\app\directdpi"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\app\directdns\ctrld.exe"; DestDir: "{app}\app\directdns"; Flags: ignoreversion
+Source: "..\..\app\directdns\ctrld.toml"; DestDir: "{app}\app\directdns"; Flags: ignoreversion
+Source: "..\..\app\directdns\LICENSE-ctrld.txt"; DestDir: "{app}\app\directdns"; Flags: ignoreversion
 Source: "..\..\RELEASE.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\runtime\WarpPlusFast\*"; DestDir: "{app}\runtime\WarpPlusFast"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\runtime\TorSnowflake\bundle\*"; DestDir: "{app}\runtime\TorSnowflake\bundle"; Flags: ignoreversion recursesubdirs createallsubdirs

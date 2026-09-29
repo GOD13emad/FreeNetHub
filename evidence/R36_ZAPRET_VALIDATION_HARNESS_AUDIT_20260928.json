@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "ROOT_CAUSES_IDENTIFIED_REDESIGN_REQUIRED",
+  "context": "Three failed executions of the combined zapret+DoH+Chrome validation harness; all rolled back exactly before promotion.",
+  "failures": [
+    {
+      "occurrence": 1,
+      "status": "HARNESS_FAIL",
+      "error": "An object at the specified path C:\\Users\\AA0778~1.EMA does not exist.",
+      "rootCause": "Elevated Start-Process output redirection used the short %TEMP% path and failed before winws validation.",
+      "prevention": "Use explicit scratch path under ProjectRoot; never depend on elevated %TEMP% short-path aliases."
+    },
+    {
+      "occurrence": 2,
+      "status": "HARNESS_FAIL",
+      "error": "Cannot bind argument to parameter 'Path' because it is null.",
+      "rootCause": "Scratch references were replaced but the $Scratch assignment was not actually inserted.",
+      "prevention": "Static source check must prove assignment-before-use, not only parser success."
+    },
+    {
+      "occurrence": 3,
+      "status": "HARNESS_FAIL_AFTER_WINWS_START",
+      "error": "GetByteCount: Value cannot be null (chars).",
+      "rootCause": "Chrome headless produced an empty stdout file; Get-Content -Raw returned null and the monolithic harness threw before preserving curl/Chrome trial fields.",
+      "prevention": "Split validation into independent curl and Chrome gates; persist each stage before cleanup; normalize nullable file reads to empty string."
+    }
+  ],
+  "rollbackEvidence": {
+    "dnsServers": [
+      "192.168.20.1"
+    ],
+    "customDohRegistrationRemaining": false,
+    "winwsProcesses": 0,
+    "winDivertServices": 0,
+    "splitRoutes": 0,
+    "tcpTimestamps": "allowed",
+    "directRoute": "Ethernet 3 -> 192.168.20.1"
+  },
+  "binaryAudit": {
+    "bundleCommit": "6eb463a6758fb48cd101bc55dfd057e6e9d98af1",
+    "blockcheckWinwsSha256": "2DA71E80878DC270AC83F5893ECBB841F9752A57F1DA8FF9325636B4346BC632",
+    "standaloneWinwsSha256": "2DA71E80878DC270AC83F5893ECBB841F9752A57F1DA8FF9325636B4346BC632",
+    "winwsIdentical": true,
+    "blockcheckWinDivertDllSha256": "06C3F201B815A5798816E8C15B925B28F3C38E5ABA31EFEDEC10AF9E598CE723",
+    "standaloneWinDivertDllSha256": "16ABD6A029E65557C6A309BEA7B13BF81FFF4E193567582E1CDDBF6719F323E0",
+    "driverSha256": "8DA085332782708D8767BCACE5327A6EC7283C17CFB85E40B03CD2323A90DDC2",
+    "driverSignature": "Valid",
+    "correction": "Earlier suspicion that blockcheck and standalone used different winws binaries was disproven by hash comparison."
+  },
+  "preservedPositiveEvidence": {
+    "nativeWindowsDoh": "CONFIRMED_WORKING_AT_LEAST_TWICE",
+    "dohServer": "76.76.10.11",
+    "dohTemplate": "https://76.76.10.11/p0",
+    "systemDnsDuringDoh": "public YouTube A records",
+    "explicitUdp53DuringFirstConfirmedTrial": "poisoned 10.10.34.35",
+    "blockcheckStrategy": "--wf-l3=ipv4 --wf-tcp=443 --dpi-desync=multisplit --dpi-desync-split-pos=sniext+1",
+    "blockcheckTls12": "PASS_STRATEGY_FOUND",
+    "blockcheckTls13": "PASS_STRATEGY_FOUND"
+  },
+  "redesign": {
+    "gate1": "Minimal elevated native-DoH + exact winws strategy + Windows curl only; persist stage evidence.",
+    "gate2": "Only after gate1 PASS, separate Chrome headless validation using the same proven setup.",
+    "promotion": "No integration/service/install until both gates PASS and cleanup is exact."
+  }
+}

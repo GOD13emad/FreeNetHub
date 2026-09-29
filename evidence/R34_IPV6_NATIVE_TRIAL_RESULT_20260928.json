@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "at": "2026-09-28T23:11:09.0012621+03:30",
+  "status": "NO_NATIVE_PUBLIC_IPV6_ROLLED_BACK",
+  "adapter": "Ethernet 3",
+  "before": {
+    "binding": false,
+    "ipv4": "192.168.20.5",
+    "gateway": "192.168.20.1"
+  },
+  "after": {
+    "ipv4": "192.168.20.5",
+    "gateway": "192.168.20.1",
+    "globalIpv6": [],
+    "ipv6Default": [],
+    "ipv4Trace": "fl=933f48\nh=www.cloudflare.com\nip=164.215.159.13\nts=1790624471.000\nvisit_scheme=https\nuag=curl/8.21.0\ncolo=FRA\nsliver=050-tier1\nhttp=http/1.1\nloc=IR\ntls=TLSv1.3\nsni=plaintext\nwarp=off\ngateway=off\nrbi=off\nkex=X25519",
+    "ipv6Trace": ""
+  },
+  "rollback": true,
+  "note": "No usable native public IPv6 was proven, so the original disabled binding was restored."
+}

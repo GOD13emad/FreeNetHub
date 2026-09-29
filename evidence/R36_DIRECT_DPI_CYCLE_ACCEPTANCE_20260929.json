@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "status": "FAIL",
+  "baseline": {
+    "activeStateSha256": "F700623E42234CE0B20786817C6161327FF9DA78B30191A6E8B1B3BA32B764F6",
+    "pid": 62796,
+    "preDns": [
+      "192.168.20.1"
+    ],
+    "preDoh": [
+      {
+        "ServerAddress": "76.76.2.11",
+        "DohTemplate": "https://76.76.2.11/p0",
+        "AllowFallbackToUdp": false,
+        "AutoUpgrade": true
+      }
+    ]
+  },
+  "cleanup": null,
+  "restart": null,
+  "chrome": null,
+  "error": "The property 'Count' cannot be found on this object. Verify that the property exists.",
+  "recoveryRestartExit": 0
+}

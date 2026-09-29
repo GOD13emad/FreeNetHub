@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "FreeNet Hub holistic product/system audit after correcting Direct-DPI-only framing",
+  "status": "INCOMPLETE_BLOCKED",
+  "facts": {
+    "publicGitHubAuthority": {
+      "repo": "GOD13emad/FreeNetHub",
+      "branch": "main",
+      "commit": "970c3944fb69dfd8a009da8b5cfba95920358e73",
+      "scope": "R28 public authority"
+    },
+    "windowsInstalledAuthority": {
+      "version": "4.2.0",
+      "releaseRevision": "4.2.0-local-r32-audit-closure",
+      "status": "CONFIRMED_R32_INSTALLED"
+    },
+    "linuxInstalledAuthority": {
+      "version": "4.2.0-linux.8",
+      "sourceHead": "42dbf97040df5755a3115c739f971e0026059d27",
+      "priorAudit": "PASS_R20_LINUX_FINAL_AUDIT",
+      "drift": "BEHIND_PUBLIC_R28_AND_WINDOWS_LOCAL_CANDIDATE"
+    },
+    "localCandidate": {
+      "base": "970c394",
+      "dirtyTree": true,
+      "trackedModified": 19,
+      "untrackedCandidateSurface": "LARGE_R29_R36_PLUS_DIRECTDNS",
+      "directDpiIsExtension": true
+    },
+    "productSurface": {
+      "windowsBrowser": [
+        "WARP",
+        "TOR",
+        "CFON",
+        "GOOL",
+        "NODE",
+        "CUSTOM"
+      ],
+      "nodeProtocols": [
+        "Shadowsocks",
+        "VMess",
+        "VLESS",
+        "Trojan",
+        "Hysteria2"
+      ],
+      "windowsFullSystem": {
+        "WARP": "ACCEPTED_BASELINE",
+        "NODE": "CANDIDATE_UNPROMOTED",
+        "others": "BROWSER_ONLY_UNLESS_PROVEN"
+      },
+      "console": "SOFTWARE_PATH_ACCEPTED_PHYSICAL_E2E_OPEN",
+      "directNetwork": "R34_R36_CANDIDATE",
+      "directDpi": "R36_EXTENSION_NOT_PRODUCT",
+      "linux": "INDEPENDENT_ACCEPTED_4.2.0-linux.8_OLD_LINE",
+      "android": "BUILD_FAIL_CLOSED_SHELL_CORE_NOT_LINKED",
+      "ios": "STATIC_SIMULATOR_FAIL_CLOSED_SHELL_CORE_NOT_LINKED"
+    },
+    "regression": {
+      "broadStatic": "152 PASS",
+      "postHygieneTargeted": "140 PASS",
+      "gatewayPowerShellParse": "PASS",
+      "gitDiffCheck": "PASS_EOL_WARNINGS_ONLY"
+    },
+    "releaseVerifier": {
+      "appManifest": "PASS",
+      "gatewayManifest": "PASS",
+      "crossPlatformManifest": "PASS",
+      "windowsPackageManifest": "PASS",
+      "publicManifest": "FAIL_STALE_VS_LOCAL_CANDIDATE",
+      "releaseHashes": "FAIL_ENGINE_UI_GATEWAY_ACCEPTANCE_EVIDENCE"
+    },
+    "windowsR36FinalAcceptance": {
+      "status": "FAIL_ROLLED_BACK",
+      "installedParityBeforeRuntime": true,
+      "smokeBeforeRuntime": true,
+      "blocker": "DIRECT_DPI_DOH_NOT_CLEAN",
+      "rollbackNetwork": true,
+      "rollbackInstalledBaseline": true,
+      "currentInstalledAuthority": "R32"
+    },
+    "managedDns": {
+      "ctrldVersion": "1.5.7",
+      "foregroundResolver": "PASS_127.0.0.1_1053_PUBLIC_DNS",
+      "serviceLifecycle": "FAIL_CONFIG_PERSISTENCE_SELF_CHECK",
+      "cleanup": "PASS_EXACT",
+      "status": "ROOT_CAUSE_NARROWED_NOT_PROMOTED"
+    },
+    "securityHygiene": {
+      "initialSecurityScan": "FAIL",
+      "rootCause": "finalization copied complete installed private runtime/browser state into unignored repo artifacts plus raw browser evidence/runtime files",
+      "exactSensitiveArtifactTracked": false,
+      "exactSensitiveArtifactGitHistoryFound": false,
+      "containmentApplied": [
+        "finalizer backup moved outside repository to LOCALAPPDATA FreeNetHubAudit",
+        "artifacts and raw runtime/browser scratch ignored",
+        "directdns socket/provision runtime files ignored",
+        "security scanner redacts match values and fails closed on unreadable candidate files"
+      ],
+      "privateBackupMovedOutOfRepo": true,
+      "currentSecurityScan": "FAIL_REMAINING_USER_PATHS_IN_INTENDED_EVIDENCE_RAW_QUIC_PROFILE_AND_THREE_TESTS",
+      "secretValuesLoggedAfterFix": false
+    }
+  },
+  "contradictions": [
+    "RELEASE.json installerStatus says NOT_BUILT_R36_SOURCE_GATE while multiple installer/finalization attempts exist.",
+    "Brain/source candidate previously emphasized R36 runtime gates, but final Windows acceptance is FAIL and installed authority is R32.",
+    "README/GitHub description/platform metadata are on different product/version narratives.",
+    "Linux accepted line is not synchronized with current public R28 or local Windows R29-R36 candidate."
+  ],
+  "openGates": [
+    "Release/security hygiene scan must PASS without weakening checks.",
+    "Sanitize intended public evidence and remove raw browser profile state from candidate surface.",
+    "Replace hard-coded personal paths in candidate tests with project-relative/discovered paths.",
+    "Resolve ctrld managed service config persistence or choose a simpler evidence-backed DNS lifecycle.",
+    "Rerun exact Windows final installed acceptance; no promotion before PASS.",
+    "Resolve R29/R30 owner UI acceptance gate.",
+    "Regenerate PUBLIC_MANIFEST and RELEASE hashes only from exact promoted candidate.",
+    "Synchronize/rebase Linux and validate parity for shared features without breaking Linux-specific accepted behavior.",
+    "Android/iOS remain separate unfinished product tracks.",
+    "Trusted Windows Authenticode remains open.",
+    "Physical console E2E remains open."
+  ],
+  "roadmap": [
+    "1 Completed: public R28 authority and prior accepted Windows/Linux baselines identified.",
+    "2 Completed: holistic architecture/capability inventory and broad static regression.",
+    "3 CURRENT: release-hygiene and source/runtime/evidence separation.",
+    "4 Resolve installed Direct-DPI/managed-DNS lifecycle on Windows.",
+    "5 Windows cumulative final acceptance and owner UI gate.",
+    "6 Canonical metadata/public manifest/installer/signing/CI promotion.",
+    "7 Linux synchronization and cumulative regression.",
+    "8 Android runtime core completion and device validation.",
+    "9 iOS forwarding core/signing/device validation.",
+    "10 Physical console field validation and final multi-platform release closure."
+  ],
+  "exactNextAction": "Continue release-hygiene closure: classify remaining security-scan hits into intended public evidence vs raw local evidence; move/ignore raw profile state, sanitize portable evidence paths, and make the three candidate tests path-independent. Rerun security_scan_public.py. Do not touch release promotion or network runtime until this gate PASSes.",
+  "confidence": "HIGH"
+}

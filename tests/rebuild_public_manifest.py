@@ -21,6 +21,7 @@ for x in raw.decode("utf-8").split("\0"):
     if p.is_file():
         data=canonical_bytes(rel)
         files.append({"file":rel,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest().upper()})
-pm={"schema":3,"version":"4.2.0-local-r28-final","source":"git-clean-filtered-candidate","files":sorted(files,key=lambda r:r["file"].lower())}
+rel=json.loads((R/"RELEASE.json").read_text(encoding="utf-8-sig"))
+pm={"schema":3,"version":rel["releaseRevision"],"source":"git-clean-filtered-candidate","files":sorted(files,key=lambda r:r["file"].lower())}
 (R/"PUBLIC_MANIFEST.json").write_text(json.dumps(pm,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
 print(json.dumps({"status":"PASS","files":len(files),"sha256":hashlib.sha256((R/"PUBLIC_MANIFEST.json").read_bytes()).hexdigest().upper()},indent=2))

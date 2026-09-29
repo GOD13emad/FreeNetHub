@@ -30,12 +30,15 @@ for item in candidate_raw.decode("utf-8").split("\0"):
         text=f.read_text(encoding="utf-8-sig")
     except UnicodeDecodeError:
         continue
+    except OSError:
+        hits.append({"file":rel,"pattern":"unreadable_candidate_file","match":"<redacted>"})
+        continue
     for name,rx in path_patterns:
         for m in rx.finditer(text):
             sample=m.group(0)
             if name=="json_private_key_value" and rel=="gateway/tests/test_gateway.py" and "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" in sample:
                 continue
-            hits.append({"file":rel,"pattern":name,"match":sample[:120]})
+            hits.append({"file":rel,"pattern":name,"match":"<redacted>"})
 for bridge_rel in ("crossplatform/linux/bridges_obfs4.txt","crossplatform/linux/bridges_snowflake.txt"):
     bp=R/bridge_rel
     if bp.is_file():
