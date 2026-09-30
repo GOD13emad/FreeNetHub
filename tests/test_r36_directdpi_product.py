@@ -1,3 +1,4 @@
+import json
 #!/usr/bin/env python3
 import hashlib
 from pathlib import Path
@@ -140,3 +141,11 @@ def test_installer_upgrade_guard_closes_only_idle_owned_ui_child():
     assert "[IO.Path]::GetFullPath($_.ExecutablePath).Equals($launcher" in helper
     builder=(R/"tests"/"build_r38_direct_method_installer.ps1").read_text(encoding="utf-8-sig")
     assert "windows\\installer\\Prepare-Upgrade.ps1" in builder
+
+
+def test_installer_digest_is_external_not_self_referential():
+    release=json.loads((R/"RELEASE.json").read_text(encoding="utf-8-sig"))
+    builder=(R/"tests"/"build_r38_direct_method_installer.ps1").read_text(encoding="utf-8-sig")
+    assert release.get("installerSha256") is None
+    assert release.get("installerStatus") == "DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE"
+    assert "R38_RELEASE_INSTALLER_HASH_SELF_REFERENCE" in builder

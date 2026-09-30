@@ -1,9 +1,9 @@
 {
   "status": "PASS",
   "path": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R38_DirectMethod_Setup.exe",
-  "bytes": 24252352,
-  "sha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+  "bytes": 24243520,
+  "sha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
   "authenticode": "NotSigned",
   "frozenFiles": 21,
-  "built": "2026-09-30T10:00:41.4657954+03:30"
+  "built": "2026-09-30T10:21:26.6601574+03:30"
 }

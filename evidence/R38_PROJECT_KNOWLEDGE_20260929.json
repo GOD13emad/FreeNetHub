@@ -266,6 +266,41 @@
         "privateUpgradeHarnessSha256": "E660F35457B2BB87E8DBF61909D8AEC57FF1216477CF071E9EC5EA940E149B93",
         "privateUiSmokeHarnessSha256": "C616C7A517A2A18FA4D93E82C984F39A3F00A8C2B491ACD0EED7E73714CDD682"
       }
+    },
+    {
+      "context": "Windows R38 installer self-reference closure and exact-final acceptance",
+      "claimDecision": "The installer RELEASE parity failure was caused by embedding installerSha256 in RELEASE.json even though RELEASE.json itself is an installer input, creating an unavoidable self-reference cycle. The stable release contract now keeps installerSha256 null and stores the actual setup digest only in external acceptance/build evidence. The builder fails closed if RELEASE.json contains a non-null installerSha256. With that contract, the exact-final Windows setup was rebuilt from 21 frozen inputs, installed, and passed byte-for-byte RELEASE/app/gateway parity plus five-tab UI smoke and route/listener preservation.",
+      "evidenceSource": [
+        "tests/build_r38_direct_method_installer.ps1",
+        "evidence/R38_INSTALLER_BUILD_20260929.json",
+        "tests/verify_r38_installed_payload.py => PASS",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_UPGRADE_GUARD_REGRESSION_20260930.ps1",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_INSTALLED_UI_SMOKE_20260930.ps1"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_EXACT_FINAL_HOSTED_CI_REQUIRED",
+      "rootCause": "RELEASE.json attempted to store the SHA-256 of the installer that embeds RELEASE.json, so post-build metadata updates necessarily broke exact installed/source parity.",
+      "prevention": "Keep installerSha256 null in embedded RELEASE.json, record the artifact digest in external build/acceptance evidence, and make the installer builder fail closed if the embedded release metadata contains a non-null installerSha256.",
+      "reuseTargets": [
+        "Windows R38 release",
+        "release engineering",
+        "installed parity",
+        "CI",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "supersedesInstallerSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+        "finalInstallerBytes": 24243520,
+        "finalInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
+        "frozenFiles": 21,
+        "fullRegression": "146/146 PASS",
+        "directMethodContract": "6/6 PASS",
+        "installedParity": true,
+        "uiSmokeTabs": 5,
+        "routeUnchanged": true,
+        "networkMutation": false
+      }
     }
   ]
 }
