@@ -967,7 +967,7 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
 
  }
 
- $script:Window.Add_Closing({param($s,$e)if($script:GatewayTask){$e.Cancel=$true;$script:C.GatewayDetail.Text='عملیات Gateway هنوز در حال اجراست؛ پس از پایان دوباره ببندید.';return};if($script:Task){$e.Cancel=$true;Cancel-Work;return};if(!$Smoke -and $script:ShellHosted -and !$script:AllowClose){$e.Cancel=$true;$script:Window.WindowState='Minimized';return};if(!$Smoke -and !$script:AllowClose -and ($script:CurrentMode -or $script:FullSystemActive)){$a=[Windows.MessageBox]::Show('بستن پنل، تونل را قطع نمی‌کند و پایش متوقف می‌شود. پنل بسته شود؟ برای حفظ پایش، Cancel و سپس Minimize را بزنید.','FreeNet Hub','OKCancel','Information');if($a -ne 'OK'){$e.Cancel=$true}}})
+ $script:Window.Add_Closing({param($s,$e)if(!$Smoke -and $script:ShellHosted -and !$script:AllowClose){$e.Cancel=$true;$script:Window.WindowState='Minimized';return};if($script:GatewayTask){$e.Cancel=$true;$script:C.GatewayDetail.Text='عملیات Gateway هنوز در حال اجراست؛ پس از پایان دوباره ببندید.';return};if($script:Task){$e.Cancel=$true;Cancel-Work;return};if(!$Smoke -and !$script:AllowClose -and ($script:CurrentMode -or $script:FullSystemActive)){$a=[Windows.MessageBox]::Show('بستن پنل، تونل را قطع نمی‌کند و پایش متوقف می‌شود. پنل بسته شود؟ برای حفظ پایش، Cancel و سپس Minimize را بزنید.','FreeNet Hub','OKCancel','Information');if($a -ne 'OK'){$e.Cancel=$true}}})
 
  $script:Timer=[Windows.Threading.DispatcherTimer]::new();$script:Timer.Interval=[TimeSpan]::FromMilliseconds(400);$script:NextCheck=[DateTime]::UtcNow.AddSeconds(45);$script:NextNodeRefresh=[DateTime]::UtcNow;$script:NextNodeBenchmark=[DateTime]::UtcNow.AddMinutes(1);$script:BenchmarkAllActive=$false
 

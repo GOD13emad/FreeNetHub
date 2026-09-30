@@ -749,7 +749,7 @@ def update_release():
  if r.get('exit')!=0 or r.get('code')!='200':raise RuntimeError('UPDATE_GITHUB_UNREACHABLE')
  try:j=json.loads(r.get('body',''))
  except ValueError as ex:raise RuntimeError('UPDATE_RESPONSE_INVALID') from ex
- assets=[a for a in (j.get('assets') or []) if isinstance(a,dict) and str(a.get('name','')).lower().endswith('.exe') and str(a.get('name','')).startswith('FreeNetHub_')]
+ assets=[a for a in (j.get('assets') or []) if isinstance(a,dict) and str(a.get('name','')).lower().endswith('_setup.exe') and str(a.get('name','')).startswith('FreeNetHub_')]
  ranked=[]
  for a in assets:
   m=re.search(r'(?i)(?:^|[-_])r(\d+)(?:[-_]|$)',str(a.get('name','')))

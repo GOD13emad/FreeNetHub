@@ -141,20 +141,53 @@ class FreeNetHub(Adw.Application):
         self.repairs=0
         self._syncing_ip=False
         self._shutdown_started=False
+        self._quit_in_progress=False
         self.connect("shutdown",self._on_shutdown)
         signal.signal(signal.SIGTERM,self._request_signal_quit)
         signal.signal(signal.SIGINT,self._request_signal_quit)
 
     def _request_signal_quit(self,*_args):
-        GLib.idle_add(self.quit)
+        GLib.idle_add(self.request_full_exit,"signal")
+
+    def _cleanup_owned_runtime(self):
+        try: browser=core.stop_all()
+        except Exception as e: browser={"ok":False,"error":type(e).__name__+": "+str(e)}
+        try: console=core.console_stop()
+        except Exception as e: console={"ok":False,"error":type(e).__name__+": "+str(e)}
+        return {"ok":bool(browser.get("ok") and console.get("ok")),"browser":browser,"console":console}
+
+    def request_full_exit(self,*_args):
+        if self._shutdown_started or self._quit_in_progress:return False
+        if self.busy:
+            if self.win:self.win.present()
+            if hasattr(self,"status_detail"):self.status_detail.set_text("عملیات در حال اجراست؛ پس از پایان دوباره خروج کامل را بزنید.")
+            return False
+        self._quit_in_progress=True
+        if hasattr(self,"status_detail"):self.status_detail.set_text("در حال cleanup و خروج کامل…")
+        def worker():
+            result=self._cleanup_owned_runtime()
+            GLib.idle_add(self._finish_full_exit,result)
+        threading.Thread(target=worker,daemon=True).start()
+        return False
+
+    def _finish_full_exit(self,result):
+        self._quit_in_progress=False
+        if result.get("ok"):
+            self._shutdown_started=True
+            self.quit()
+            return False
+        print("FREENETHUB_EXIT_CLEANUP_FAIL",json.dumps(result,ensure_ascii=False),file=sys.stderr)
+        if self.win:self.win.present()
+        if hasattr(self,"status_title"):self.status_title.set_text("خروج کامل متوقف شد")
+        if hasattr(self,"status_detail"):self.status_detail.set_text("cleanup شبکه PASS نشد؛ برنامه برای جلوگیری از orphan باز ماند.")
+        return False
 
     def _on_shutdown(self,*_args):
         if not self._shutdown_started:
             self._shutdown_started=True
-            browser=core.stop_all()
-            console=core.console_stop()
-            if not browser.get("ok") or not console.get("ok"):
-                print("FREENETHUB_SHUTDOWN_CLEANUP_FAIL",json.dumps({"browser":browser,"console":console},ensure_ascii=False),file=sys.stderr)
+            result=self._cleanup_owned_runtime()
+            if not result.get("ok"):
+                print("FREENETHUB_SHUTDOWN_CLEANUP_FAIL",json.dumps(result,ensure_ascii=False),file=sys.stderr)
 
     def do_activate(self):
         if self.win:
@@ -171,6 +204,7 @@ class FreeNetHub(Adw.Application):
         hb=Adw.HeaderBar()
         hb.set_show_start_title_buttons(False);hb.set_show_end_title_buttons(False)
         hb.set_title_widget(label(f"FreeNet Hub · {core.VERSION}","metric",xalign=.5))
+        exit_btn=Gtk.Button(label="خروج کامل");exit_btn.add_css_class("danger");exit_btn.set_tooltip_text("cleanup تأییدشده و خروج کامل");exit_btn.connect("clicked",self.request_full_exit);hb.pack_start(exit_btn)
         for icon,tip,cb in [
             ("window-close-symbolic","بستن",lambda *_:self.win.close()),
             ("window-maximize-symbolic","بزرگ / بازگرداندن",self.toggle_maximize),
