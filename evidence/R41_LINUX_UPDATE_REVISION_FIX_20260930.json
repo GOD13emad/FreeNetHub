@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "version": "4.2.0",
+  "status": "R41_LINUX_UPDATE_REVISION_FIX_CANDIDATE",
+  "objective": "Correct Linux self-update local revision authority and close CI/package version drift without mutating accepted Windows R40 runtime.",
+  "baseMain": "0149583d797260b47adae0175b3a2a92b814488a",
+  "rootCause": {
+    "id": "LINUX_LOCAL_REVISION_HARDCODE_DRIFT",
+    "status": "CONFIRMED",
+    "finding": "Public R40/Linux R13 post-publish update check reported current 4.2.0-linux.13-r40 but localRevision=12, causing false updateAvailable=true for the same R13 asset.",
+    "cause": "update_check() retained hard-coded local_rev=12 while VERSION/package advanced to R13.",
+    "prevention": [
+      "Local Linux revision is derived from VERSION by a dedicated parser.",
+      "Unparseable local VERSION fails closed with LOCAL_LINUX_REVISION_UNPARSEABLE.",
+      "Regression covers same revision, newer revision, malformed local revision, Linux asset filtering.",
+      "Hosted linux-static now builds current Linux R14 package instead of historical R12."
+    ]
+  },
+  "candidate": {
+    "linuxVersion": "4.2.0-linux.14-r41",
+    "linuxRelease": "LINUX_4.2.0_R14_R41_UPDATE_REVISION_FIX",
+    "linuxAsset": "FreeNetHub_4.2.0_Linux_R14.zip",
+    "linuxSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+    "linuxBytes": 213124,
+    "windowsContinuityAsset": "FreeNetHub_4.2.0_R40_LifecycleSafe_Setup.exe",
+    "windowsContinuitySha256": "C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32"
+  },
+  "validation": {
+    "linuxUpdateRevisionRegression": "PASS",
+    "pythonCompile": "PASS",
+    "linuxSelftest": "PASS",
+    "linuxParityStatic": "PASS",
+    "linuxR14DeterministicBuild": "PASS",
+    "crossPlatformManifest": "PASS",
+    "pytest": "181/181 PASS",
+    "publicTreeVerifier": "PASS",
+    "securityScan": "PASS zero forbidden/runtime/sensitive hits",
+    "publicManifest": "426 files PASS before evidence sync",
+    "gitDiffCheck": "PASS"
+  },
+  "pending": [
+    "full local public/security regression",
+    "source commit + hosted CI",
+    "exact Linux R14 live install/update/route/external-tun acceptance",
+    "merge + post-merge CI + v4.2.0-r41-final",
+    "post-publish Windows 40=40 and Linux 14=14"
+  ],
+  "confidence": "HIGH",
+  "phase": "SOURCE_CANDIDATE_LOCAL_CLOSED_PASS_HOSTED_AND_LIVE_PENDING"
+}
