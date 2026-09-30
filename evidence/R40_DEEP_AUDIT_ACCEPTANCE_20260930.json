@@ -34,23 +34,47 @@
       "status": "CONFIRMED_GAP",
       "finding": "Linux close/shutdown lifecycle lacked explicit hide-on-close plus owned-runtime cleanup on real shutdown/signals.",
       "fix": "Close hides; shutdown/SIGTERM/SIGINT invokes browser and console cleanup."
+    },
+    {
+      "id": "UPDATE_ASSET_TYPE_CONFUSION",
+      "status": "CONFIRMED_FIXED",
+      "finding": "Updater asset discovery accepted any FreeNetHub_*.exe, so an unrelated higher-revision diagnostic/tool executable could outrank the installer.",
+      "fix": "Only FreeNetHub_*_Setup.exe assets are eligible; dedicated regression proves a hypothetical R99 diagnostic is ignored in favor of R40 Setup."
+    },
+    {
+      "id": "WIN_CLOSE_STARTUP_TASK_PRECEDENCE",
+      "status": "CONFIRMED_FIXED_LIVE_PASS",
+      "finding": "During startup Inventory/NodeRefresh work, Closing evaluated Task before ShellHosted tray behavior; first X only cancelled work and left the window visible.",
+      "fix": "ShellHosted Closing is evaluated first and sets WindowState=Minimized; Shell timer hides it to tray. Exact-installed live diagnostic: iconic at 100ms, hidden by 250ms, shell/child alive through 4s, second launch restores same instance."
+    },
+    {
+      "id": "LINUX_EXIT_FAIL_CLOSED",
+      "status": "SOURCE_FIXED_LIVE_PENDING",
+      "finding": "Cleanup only in GTK shutdown callback could not veto a user/signal exit if cleanup failed.",
+      "fix": "Explicit Full Exit/SIGTERM/SIGINT now runs browser+console cleanup in a worker and calls quit only after aggregate PASS; failure presents UI and keeps app alive. Shutdown callback remains fallback."
     }
   ],
   "validation": {
-    "pytest": "179 PASS before version metadata mutation; one metadata contract failure found and fixed without weakening test",
+    "pytest": "181/181 PASS on final local source candidate",
     "pythonCompile": "PASS",
     "powershellParse": "PASS",
     "csharpCompile": "PASS",
     "securityScan": "PASS",
     "gatewayFocused": "18 PASS",
     "linuxParityStatic": "PASS",
-    "mobileFailClosed": "PASS"
+    "mobileFailClosed": "PASS",
+    "windowsExactInstall": "PASS",
+    "windowsInstalledParity": "app 17/17 + gateway 17/17 PASS",
+    "windowsFiveTabSmoke": "5/5 PASS",
+    "windowsCloseToTray": "PASS hidden by 250ms; shell+child remain alive; second launch restores same instance",
+    "windowsFullExitCleanup": "PASS; zero project listeners/TUN/Gateway owner/Direct-DPI residue",
+    "windowsUpdateDowngradeGuard": "PASS local R40 vs public R39 => updateAvailable=false",
+    "windowsRoutePreservation": "PASS Ethernet 3 -> 192.168.20.1 unchanged"
   },
   "pending": [
-    "public-tree verifier after canonical metadata fix",
-    "exact Windows R40 installer build/install/runtime smoke",
-    "exact Linux R13 package/install/runtime smoke",
-    "hosted CI before merge/release"
+    "exact Linux R13 package/install/runtime/lifecycle acceptance on target aliemad-Labtop (host currently offline)",
+    "hosted CI on latest product/control candidate commit before merge",
+    "merge + post-merge CI + v4.2.0-r40-final publication + post-publish 40=40 / 13=13 update checks"
   ],
   "confidence": "HIGH",
   "reuseTargets": [
@@ -59,7 +83,7 @@
     "R40 final acceptance"
   ],
   "version": "4.2.0",
-  "phase": "SOURCE_AUDIT_PASS_INSTALL_ACCEPTANCE_PENDING",
+  "phase": "PRODUCT_HARDENING_LOCAL_PASS_HOSTED_CI_AND_LINUX_LIVE_PENDING",
   "failuresAndPrevention": [
     {
       "id": "LINUX_R13_EMBEDDED_INSTALL_METADATA_MISMATCH",
@@ -77,11 +101,29 @@
       "prevention": "Standalone MANIFEST now records raw runtime sha256 plus canonical Git sourceSha256; public-tree CI verifies sourceSha256 while installed integrity retains raw sha256.",
       "failedCiRun": 36726955508,
       "failedJob": 109926182942
+    },
+    {
+      "id": "WINDOWS_CLOSE_TO_TRAY_STARTUP_TASK_ORDER",
+      "status": "ROOT_CAUSE_FIXED_AND_LIVE_REGRESSION_PASS",
+      "rootCause": "Closing handler checked active Task/Gateway before ShellHosted behavior, so startup Inventory caused X to cancel work instead of minimizing. A first attempted direct Hide inside Closing destroyed the WPF child and was rejected.",
+      "prevention": "ShellHosted branch now precedes Task/Gateway and uses WindowState=Minimized; shell timer performs HideToTray. Live WM_CLOSE interval diagnostic is required for regression."
     }
   ],
   "linuxR13Candidate": {
-    "bytes": 210783,
-    "sha256": "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8",
-    "installAcceptance": "PENDING"
-  }
+    "bytes": 212774,
+    "sha256": "3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF",
+    "installAcceptance": "PENDING_EXTERNAL_HOST_OFFLINE",
+    "supersedes": [
+      "3BD6FEC23854DA49754756057A9B72320E8A0B628195336C606714FC2301EA7B",
+      "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8"
+    ]
+  },
+  "productCandidateCommit": "9eb44a264466fa430ec62c87ebb2ee4b369cf74b",
+  "windowsR40Candidate": {
+    "bytes": 24248017,
+    "sha256": "C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32",
+    "installAcceptance": "PASS",
+    "evidence": "evidence/R40_WINDOWS_EXACT_ACCEPTANCE_20260930.json"
+  },
+  "acceptanceState": "WINDOWS_CLOSED_PASS_LINUX_LIVE_PENDING"
 }

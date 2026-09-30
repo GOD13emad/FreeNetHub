@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "project": "FreeNet Hub",
+  "context": "R40 lifecycle-safety deep audit from accepted R39/R12 baseline",
+  "baseAuthority": {
+    "main": "1900a1b7af1d303d3cf1e56bd76ac7878c1f30c9",
+    "publicRelease": "v4.2.0-r39-final"
+  },
+  "currentCandidate": {
+    "branch": "r40-lifecycle-safe",
+    "head": "9eb44a264466fa430ec62c87ebb2ee4b369cf74b",
+    "windowsRevision": "4.2.0-local-r40-lifecycle-safe",
+    "linuxRevision": "4.2.0-linux.13-r40"
+  },
+  "records": [
+    {
+      "claim": "R39 tray Full Exit could close the shell without verified owned-runtime rollback.",
+      "evidence": "R39 source called ExitAll(0) directly; R40 ExitCleanly gates exit on cleanup exit 0. Live WM_CLOSE plus cleanup acceptance PASS and default route unchanged.",
+      "status": "CONFIRMED_FIXED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "release notes",
+        "failure prevention",
+        "tests"
+      ]
+    },
+    {
+      "claim": "Update installation needed an independent active-runtime safety gate.",
+      "evidence": "R40 FreeNetHub.ps1 and Prepare-Upgrade.ps1 reject active or unverifiable Gateway/Direct-DPI/runtime state.",
+      "status": "CONFIRMED_FIXED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "updater",
+        "upgrade safety"
+      ]
+    },
+    {
+      "claim": "Gateway apply/stop rollback contained best-effort branches without postcondition verification.",
+      "evidence": "R40 verifies firewall/process/IP/forwarding/owner cleanup; gateway regression PASS.",
+      "status": "CONFIRMED_FIXED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "rollback design",
+        "console gateway"
+      ]
+    },
+    {
+      "claim": "Updater could treat unparseable revisions as update candidates and asset ordering was ambiguous.",
+      "evidence": "R40 requires comparable positive revisions and ranks revisioned installer assets; dedicated tests PASS.",
+      "status": "CONFIRMED_FIXED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "updater",
+        "release control"
+      ]
+    },
+    {
+      "claim": "Linux close lifecycle lacked explicit hide-on-close and real-shutdown owned-runtime cleanup.",
+      "evidence": "R40 GTK hide_on_close plus shutdown/SIGTERM/SIGINT cleanup; static/parity PASS; live R13 install pending because host is offline.",
+      "status": "CONFIRMED_FIXED_LIVE_PENDING",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "Linux lifecycle",
+        "UX"
+      ]
+    },
+    {
+      "claim": "Initial R13 ZIP embedded R12 install metadata.",
+      "evidence": "Pre-install inspection of install.sh found R12 metadata. Package was rejected before install. Builder now asserts exact runtime/install metadata contract.",
+      "status": "ROOT_CAUSE_FIXED_NOT_INSTALLED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "packaging",
+        "failure prevention"
+      ]
+    },
+    {
+      "claim": "Hosted CI standalone manifest failed due CRLF/LF hash drift.",
+      "evidence": "CI #138 windows-unit failed only RUNTIME_ACCEPTANCE.json while public manifest passed. Standalone manifest now retains raw sha256 plus canonical sourceSha256; local full suite/public-tree PASS and CI #140 windows-unit PASS.",
+      "status": "ROOT_CAUSE_FIXED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "CI",
+        "manifest architecture"
+      ]
+    },
+    {
+      "claim": "Windows R40 candidate is locally accepted.",
+      "evidence": "Exact candidate installer installed exit 0; app 17/17 and gateway 17/17 parity; five-tab smoke PASS; local 40 vs public 39 updateAvailable=false; route unchanged; WM_CLOSE process survived and cleanup PASS.",
+      "status": "PASS_CANDIDATE",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "final acceptance",
+        "release notes"
+      ]
+    },
+    {
+      "claim": "Linux R13 live acceptance is missing because the target host is unreachable.",
+      "evidence": "Linux Commander tunnel not seen for >300 seconds; direct SSH probe to historical LAN address timed out. Corrected R13 has not been installed.",
+      "status": "MISSING_EXTERNAL_HOST_OFFLINE",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "critical path",
+        "handoff"
+      ]
+    },
+    {
+      "claim": "Windows X-to-tray behavior failed during startup work because Task handling preceded ShellHosted close semantics.",
+      "evidence": "Live WM_CLOSE diagnostic before fix: visible/non-iconic through 4s. Final exact-installed diagnostic: iconic at 100ms, hidden by 250ms, shell+child alive through 4s, second launch restored same instance.",
+      "status": "ROOT_CAUSE_FIXED_LIVE_PASS",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "lifecycle",
+        "UX",
+        "failure prevention"
+      ]
+    },
+    {
+      "claim": "Calling WPF Hide directly from Closing was an invalid attempted fix.",
+      "evidence": "Exact-installed F43 candidate: original HWND destroyed by 100ms, child exited by 500ms, shell exited by 1s. Candidate was superseded and never accepted final.",
+      "status": "REJECTED_OPTION_WITH_EVIDENCE",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "failure prevention",
+        "WPF lifecycle"
+      ]
+    },
+    {
+      "claim": "Updater must distinguish installer assets from arbitrary executables.",
+      "evidence": "Asset filter now requires *_Setup.exe; unit test with higher-revision R99 Diagnostic confirms R40 Setup is selected.",
+      "status": "CONFIRMED_FIXED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "updater",
+        "release control"
+      ]
+    },
+    {
+      "claim": "Linux user/signal Full Exit should be fail-closed before application quit.",
+      "evidence": "GTK now runs owned browser+console cleanup before quit and keeps UI alive on cleanup failure; 181-test suite/static parity PASS. Target live acceptance remains pending because host is offline.",
+      "status": "SOURCE_FIXED_LIVE_PENDING",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "Linux lifecycle",
+        "failure prevention"
+      ]
+    },
+    {
+      "claim": "Final Windows R40 exact local acceptance is evidence-backed.",
+      "evidence": "Installer C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32 exact-install exit0; app/gateway parity 17/17 each; five-tab smoke PASS; WM_CLOSE tray/restore PASS; cleanup PASS/no residue; update local40>public39 no downgrade; route unchanged.",
+      "status": "PASS_CANDIDATE",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "release acceptance",
+        "handoff"
+      ]
+    }
+  ],
+  "supersededArtifacts": [
+    {
+      "artifact": "FreeNetHub_4.2.0_Linux_R13.zip",
+      "sha256": "3BD6FEC23854DA49754756057A9B72320E8A0B628195336C606714FC2301EA7B",
+      "reason": "embedded R12 install metadata; never installed"
+    },
+    {
+      "artifact": "FreeNetHub_4.2.0_Linux_R13.zip",
+      "sha256": "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8",
+      "reason": "superseded by Linux fail-closed Full Exit hardening; never promoted"
+    },
+    {
+      "artifact": "FreeNetHub_4.2.0_R40_LifecycleSafe_Setup.exe",
+      "sha256": "83BE8E2D92F1C9AADE6B76BEF20192E756EB22FAE9A280C902166BF4A80280FD",
+      "reason": "superseded by updater asset-type + lifecycle close hardening"
+    },
+    {
+      "artifact": "FreeNetHub_4.2.0_R40_LifecycleSafe_Setup.exe",
+      "sha256": "F43B415ED153DCA04F761F592AB783B2D804000BEA8B8BEE2A60B3E03033AE51",
+      "reason": "direct Hide in WPF Closing caused child/shell exit in live regression; rejected"
+    }
+  ],
+  "currentArtifacts": {
+    "linuxR13": {
+      "sha256": "3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF",
+      "bytes": 212774,
+      "status": "FINAL_LOCAL_BUILD_PASS_LIVE_INSTALL_PENDING"
+    },
+    "windowsR40Candidate": {
+      "sha256": "C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32",
+      "bytes": 24248017,
+      "status": "EXACT_INSTALLED_LIVE_ACCEPTED"
+    }
+  },
+  "openCriticalPath": [
+    "Restore aliemad-Labtop Remote Commander reachability",
+    "Exact-install Linux R13 SHA-256 3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF and verify integrity/route/pre-existing external tun preservation/update/GTK close+full-exit lifecycle",
+    "Push latest R40 candidate and require fresh hosted CI PASS",
+    "Merge only after Linux live gate; require post-merge CI; publish R40/R13 assets; post-publish update checks"
+  ],
+  "externalNonBlocking": {
+    "trustedWindowsAuthenticode": "MISSING_EXTERNAL"
+  }
+}
