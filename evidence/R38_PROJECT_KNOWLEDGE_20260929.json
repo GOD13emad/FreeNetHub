@@ -233,7 +233,7 @@
     },
     {
       "context": "Windows R38 final installer upgrade-guard and installed acceptance",
-      "claimDecision": "The final Windows R38 installer closes only strictly-owned idle FreeNetHub UI processes before upgrade, refuses promotion when known FreeNetHub runtime listeners are active, includes the helper in the 21-file frozen build input set, and passed a real idle-UI upgrade. Final installer SHA-256 is B8B284AB...57598. Installed payload then matched source exactly (17 app files, 17 gateway files, RELEASE parity) and all five installed UI smoke tabs passed with the default route unchanged and no runtime listeners left behind.",
+      "claimDecision": "The final Windows R38 installer closes only strictly-owned idle FreeNetHub UI processes before upgrade, refuses promotion when known FreeNetHub runtime listeners are active, includes the helper in the 21-file frozen build input set, and passed a real idle-UI upgrade. Final installer SHA-256 is 455D8305...89A97. Installed payload then matched source exactly (17 app files, 17 gateway files, RELEASE parity) and all five installed UI smoke tabs passed with the default route unchanged and no runtime listeners left behind.",
       "evidenceSource": [
         "evidence/R38_INSTALLER_BUILD_20260929.json",
         "tests/test_r36_directdpi_product.py => 6 passed",
@@ -256,8 +256,8 @@
         "failure prevention"
       ],
       "provenance": {
-        "installerBytes": 24252352,
-        "installerSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+        "installerBytes": 24243520,
+        "installerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
         "frozenFiles": 21,
         "installedParity": true,
         "uiSmokeTabs": 5,
@@ -300,6 +300,38 @@
         "uiSmokeTabs": 5,
         "routeUnchanged": true,
         "networkMutation": false
+      }
+    },
+    {
+      "context": "R38 Windows installer digest self-reference closure",
+      "claimDecision": "RELEASE.json was embedded in the Windows installer while also carrying installerSha256. That creates a self-referential artifact identity: writing the installer digest changes RELEASE.json, which changes the installer bytes and therefore changes the digest again. The source contract now keeps RELEASE.json installerSha256 null and marks the digest as external acceptance evidence. The builder fails closed if a non-empty installerSha256 is reintroduced. A staged read-only copy of the resulting installer was accepted end-to-end with SHA-256 455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97.",
+      "evidenceSource": [
+        "RELEASE.json",
+        "tests/build_r38_direct_method_installer.ps1",
+        "tests/test_r36_directdpi_product.py",
+        "evidence/R38_INSTALLER_BUILD_20260929.json",
+        "PRIVATE_LOCAL:.fnh-control/release-staging/r38-final/R38_STAGED_UPGRADE_ACCEPTANCE.ps1",
+        "tests/verify_r38_installed_payload.py",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_INSTALLED_UI_SMOKE_20260930.ps1"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_ROOT_CAUSE_CLOSED",
+      "rootCause": "The installer digest was stored inside RELEASE.json, and RELEASE.json itself is part of the installer payload, making the installer hash self-referential and unstable across metadata updates/rebuilds.",
+      "prevention": "Keep installer digest outside the installer payload in acceptance/release evidence; builder must reject a non-empty RELEASE.json installerSha256. Stage the accepted binary to a private read-only path before final acceptance/publication so later delivery-path rebuilds cannot change release authority.",
+      "reuseTargets": [
+        "Windows R38 release",
+        "release engineering",
+        "CI",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "acceptedInstallerBytes": 24243520,
+        "acceptedInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
+        "stagingPolicy": "PRIVATE_READ_ONLY_COPY",
+        "installedParity": true,
+        "uiSmokeTabs": 5,
+        "routeUnchanged": true
       }
     }
   ]

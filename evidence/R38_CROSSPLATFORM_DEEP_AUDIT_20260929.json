@@ -4,7 +4,7 @@
   "product": "FreeNet Hub",
   "version": "4.2.0",
   "revision": "R38",
-  "status": "R38_R12_LOCAL_FINAL_HOSTED_CI_REQUIRED",
+  "status": "R38_R12_RELEASE_CANDIDATE_EXTERNAL_INSTALLER_DIGEST",
   "objective": "Deep front-to-back audit of Windows R38 and Linux R11/R12 while preserving active external/user network state.",
   "windows": {
     "sourceRegression": "PASS_146_OF_146",
@@ -13,13 +13,13 @@
     "securityScan": "PASS",
     "powershellParse": "PASS",
     "installer": {
-      "status": "PASS_EXACT_FINAL_LOCAL",
+      "status": "PASS_FINAL_STAGED_EXTERNAL_DIGEST",
       "bytes": 24243520,
       "sha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
       "authenticode": "NotSigned",
       "frozenFiles": 21,
       "upgradeHelperFrozen": true,
-      "releaseSelfReferenceRemoved": true
+      "digestAuthority": "EXTERNAL_ACCEPTANCE_EVIDENCE_NOT_RELEASE_PAYLOAD"
     },
     "installed": {
       "runtimeStatus": "PASS",
@@ -30,7 +30,8 @@
       "uiSmoke": "PASS_5_OF_5",
       "routeUnchanged": true,
       "runtimeListenersAfter": 0,
-      "exactInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97"
+      "exactInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
+      "acceptedInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97"
     },
     "networkMutationDuringFinalAudit": false,
     "promotion": "LOCAL_FINAL_HOSTED_CI_REQUIRED",
@@ -43,6 +44,12 @@
       "listenersAfter": 0,
       "ownedUiChildrenAfter": 0,
       "setupSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97"
+    },
+    "installerDigestSelfReference": {
+      "status": "FIXED",
+      "policy": "RELEASE_JSON_INSTALLER_SHA256_MUST_BE_NULL",
+      "digestLocation": "EXTERNAL_ACCEPTANCE_EVIDENCE",
+      "builderGuard": "R38_RELEASE_INSTALLER_HASH_SELF_REFERENCE"
     }
   },
   "linux": {
