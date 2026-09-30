@@ -333,6 +333,31 @@
         "uiSmokeTabs": 5,
         "routeUnchanged": true
       }
+    },
+    {
+      "context": "Hosted CI run 116 acceptance-evidence status mismatch",
+      "claimDecision": "Hosted CI failed only the verify_public_tree acceptanceEvidenceContent check because the authoritative RELEASE.json status and the referenced R38 cross-platform acceptance evidence status diverged after the exact-final metadata edits. The acceptance evidence status was realigned to RELEASE.status; no runtime, installer payload, Linux package, route, or network behavior changed.",
+      "evidenceSource": [
+        "GitHub Actions run 116 windows-unit / Verify public manifests",
+        "tests/verify_public_tree.py acceptanceEvidenceContent contract",
+        "RELEASE.json",
+        "evidence/R38_CROSSPLATFORM_DEEP_AUDIT_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "FIXED_PENDING_HOSTED_CI_REVALIDATION",
+      "rootCause": "A metadata writer left the acceptance evidence on a candidate-status label while RELEASE.json had already advanced to the local-final/hosted-CI-required status. Local verification had been run before that final status divergence.",
+      "prevention": "Treat RELEASE.status and acceptanceEvidence.status as an atomic metadata pair; after either changes, rebuild PUBLIC_MANIFEST.json and run verify_public_tree.py on the committed tree. The existing verifier is the minimum sufficient guard.",
+      "reuseTargets": [
+        "CI",
+        "release qualification",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "runId": 36681505259,
+        "jobId": 109777747056,
+        "networkMutation": false
+      }
     }
   ]
 }

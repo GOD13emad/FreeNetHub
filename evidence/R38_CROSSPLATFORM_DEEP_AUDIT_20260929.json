@@ -4,7 +4,7 @@
   "product": "FreeNet Hub",
   "version": "4.2.0",
   "revision": "R38",
-  "status": "R38_R12_RELEASE_CANDIDATE_EXTERNAL_INSTALLER_DIGEST",
+  "status": "R38_R12_LOCAL_FINAL_HOSTED_CI_REQUIRED",
   "objective": "Deep front-to-back audit of Windows R38 and Linux R11/R12 while preserving active external/user network state.",
   "windows": {
     "sourceRegression": "PASS_146_OF_146",
