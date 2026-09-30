@@ -69,12 +69,18 @@
     "windowsCloseToTray": "PASS hidden by 250ms; shell+child remain alive; second launch restores same instance",
     "windowsFullExitCleanup": "PASS; zero project listeners/TUN/Gateway owner/Direct-DPI residue",
     "windowsUpdateDowngradeGuard": "PASS local R40 vs public R39 => updateAvailable=false",
-    "windowsRoutePreservation": "PASS Ethernet 3 -> 192.168.20.1 unchanged"
+    "windowsRoutePreservation": "PASS Ethernet 3 -> 192.168.20.1 unchanged",
+    "linuxR13ExactInstall": "PASS",
+    "linuxR13Integrity": "9/9 PASS",
+    "linuxR13RoutePreservation": "PASS",
+    "linuxR13ExternalTunPreservation": "PASS",
+    "linuxR13SignalFullExit": "PASS",
+    "hostedCi142": "PASS run 36734201519 / #142"
   },
   "pending": [
-    "exact Linux R13 package/install/runtime/lifecycle acceptance on target aliemad-Labtop (host currently offline)",
-    "hosted CI on latest product/control candidate commit before merge",
-    "merge + post-merge CI + v4.2.0-r40-final publication + post-publish 40=40 / 13=13 update checks"
+    "fresh hosted CI on acceptance-evidence commit",
+    "merge + post-merge CI + v4.2.0-r40-final publication",
+    "post-publish Windows 40=40 and Linux 13=13 update checks"
   ],
   "confidence": "HIGH",
   "reuseTargets": [
@@ -83,7 +89,7 @@
     "R40 final acceptance"
   ],
   "version": "4.2.0",
-  "phase": "PRODUCT_HARDENING_LOCAL_PASS_HOSTED_CI_AND_LINUX_LIVE_PENDING",
+  "phase": "PRODUCT_HARDENING_LIVE_AND_CI_PASS_FINAL_PROMOTION_PENDING",
   "failuresAndPrevention": [
     {
       "id": "LINUX_R13_EMBEDDED_INSTALL_METADATA_MISMATCH",
@@ -112,11 +118,12 @@
   "linuxR13Candidate": {
     "bytes": 212774,
     "sha256": "3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF",
-    "installAcceptance": "PENDING_EXTERNAL_HOST_OFFLINE",
-    "supersedes": [
-      "3BD6FEC23854DA49754756057A9B72320E8A0B628195336C606714FC2301EA7B",
-      "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8"
-    ]
+    "installAcceptance": "PASS",
+    "evidence": "evidence/R40_LINUX_R13_EXACT_ACCEPTANCE_20260930.json",
+    "routePreserved": true,
+    "externalTunPreserved": true,
+    "signalFullExit": "PASS",
+    "closeToHide": "STATIC_CONTRACT_ONLY_GUI_CONTROL_NOT_EXPOSED"
   },
   "productCandidateCommit": "9eb44a264466fa430ec62c87ebb2ee4b369cf74b",
   "windowsR40Candidate": {
@@ -125,5 +132,5 @@
     "installAcceptance": "PASS",
     "evidence": "evidence/R40_WINDOWS_EXACT_ACCEPTANCE_20260930.json"
   },
-  "acceptanceState": "WINDOWS_CLOSED_PASS_LINUX_LIVE_PENDING"
+  "acceptanceState": "WINDOWS_AND_LINUX_CLOSED_PASS_PROMOTION_PENDING"
 }

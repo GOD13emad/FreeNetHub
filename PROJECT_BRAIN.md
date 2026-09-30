@@ -2,7 +2,7 @@
 
 Status: R40_CANDIDATE_VALIDATION
 Brain version: r40-lifecycle-safe-deep-audit-2026-09-30
-Installed authority: Windows 4.2.0-local-r40-lifecycle-safe (local exact-install PASS); Linux 4.2.0-linux.12-r38 (accepted baseline; R13 live install pending)
+Installed authority: Windows 4.2.0-local-r40-lifecycle-safe (exact-install PASS); Linux 4.2.0-linux.13-r40 (exact-install PASS)
 Source authority: R40 product candidate commit 9eb44a264466fa430ec62c87ebb2ee4b369cf74b on branch r40-lifecycle-safe; base main 1900a1b7af1d303d3cf1e56bd76ac7878c1f30c9
 Promotion state: R40 lifecycle-safety candidate; Windows exact installer C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32 CLOSED_PASS; Linux R13 3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF build PASS but live install BLOCKED_EXTERNAL_HOST_OFFLINE; prior head CI #140 CLOSED_PASS, fresh CI required for latest candidate; R39/R12 remains public fallback authority ← CURRENT
 Desktop closure scope:
@@ -125,7 +125,7 @@ Fix:
 12. Linux R9 exact package + manifest/security/local public gate — Completed/PASS.
 13. Linux public promotion through R12 and R39 release continuity — Completed/PASS; R9 is superseded history.
 14. Desktop final closure — Completed/PASS. External identity signing and separate mobile/physical-console/optional privileged-extension tracks remain explicitly outside desktop DoD.
-15. R40 deep lifecycle-safety audit and R13 consistency hardening — ← CURRENT; Windows exact live PASS including X→tray/restore/full-exit cleanup; Linux live gate blocked by host offline; latest-head CI pending.
+15. R40 deep lifecycle-safety audit and R13 consistency hardening — ← CURRENT; Windows exact live PASS; Linux R13 exact live PASS; hosted CI/final promotion current.
 
 ## Open Gates / Critical Path
 - R37 Windows runtime/product behavior — CLOSED_PASS.
@@ -149,7 +149,7 @@ Fix:
 - iOS production packet-forwarding core/device signing — DEFERRED_SEPARATE_TRACK; hosted simulator lifecycle PASS; not part of desktop final DoD.
 
 ## Exact Next Action
-Restore aliemad-Labtop reachability; exact-install only Linux R13 SHA-256 3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF and verify integrity, route preservation, pre-existing external tun preservation, update semantics, close-to-hide and fail-closed Full Exit. In parallel require fresh hosted CI PASS for the latest R40 candidate. Merge/release only after both gates pass; then post-publish require Windows 40=40 and Linux 13=13.
+Require fresh hosted CI PASS on this final acceptance-evidence commit, then merge PR #17, require post-merge main CI PASS, publish v4.2.0-r40-final with exact Windows R40 and Linux R13 assets, and require post-publish Windows 40=40 / Linux 13=13 update checks.
 
 ## HISTORY
 - 2026-09-29 Linux R11 UX final candidate: exact package SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` installed with zero route mutation; UI minimum 842x602; explicit scope/method selection; base/selected/all-method tests; two-stage node testing; seven sort modes; instant IP visibility; direct update flow. Live UI WARP Ping, sequential all-method testing, 2000-node endpoint test, real node benchmark, IP reveal and update check all exercised. Evidence: `evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json`.
@@ -216,3 +216,5 @@ Restore aliemad-Labtop reachability; exact-install only Linux R13 SHA-256 3FFE2D
 - 2026-09-30 DESKTOP FINAL CLOSURE: Windows installed app/gateway integrity 17/17 + 17/17 PASS; self-contained runtime PASS; live UpdateCheck local=39/remote=39/updateAvailable=false and exact default-route preservation PASS. Linux INSTALL.sha256 9/9 PASS; live update local=12/remote=12/updateAvailable=false with route table unchanged and pre-existing tun0 untouched. R39 PR CI #131 and post-merge main CI #132 both PASS including Android/iOS virtual runtime and aggregate virtual-acceptance. Trusted Windows Authenticode remains MISSING_EXTERNAL after direct audit found zero local code-signing certificates, zero GitHub signing secrets, and Azure tenant-only login without a usable subscription. Desktop functional product is FINAL_ACCEPTED; signing is not falsely promoted. Evidence: evidence/R39_DESKTOP_FINAL_CLOSURE_20260930.json.
 
 - 2026-09-30 R40 strict deep-audit delta: product candidate 9eb44a264466fa430ec62c87ebb2ee4b369cf74b; Windows exact installer C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32 PASS (17/17 app + 17/17 gateway parity, 5/5 UI smoke, X→tray hidden by 250ms, restore/single-instance PASS, fail-closed cleanup PASS, zero residue, route unchanged, local R40 correctly refuses public R39 downgrade). Full local pytest 181/181 PASS. Linux R13 exact local build 3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF remains MISSING live host acceptance because aliemad-Labtop is offline. Evidence: evidence/R40_WINDOWS_EXACT_ACCEPTANCE_20260930.json and evidence/R40_DEEP_AUDIT_ACCEPTANCE_20260930.json.
+
+- 2026-09-30 R40 Linux R13 exact live acceptance: final candidate package SHA-256 3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF rebuilt from ab6a246 and exact-installed on aliemad-Labtop. Integrity 9/9 PASS; all IPv4 routes preserved byte-for-byte; pre-existing external tun0/default route preserved; SIGTERM/Full Exit cleanup PASS with process exit and route/tun unchanged. Pre-publish UpdateCheck hit GitHub unauthenticated 403 rate limit and is classified EXTERNAL_RATE_LIMIT, with post-publish recheck required. Evidence: evidence/R40_LINUX_R13_EXACT_ACCEPTANCE_20260930.json.
