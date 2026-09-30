@@ -4,7 +4,6 @@
   "version": "4.2.0",
   "status": "R41_PUBLIC_FINAL",
   "scope": "WINDOWS_R40_UNCHANGED_PLUS_LINUX_R14_R41",
-  "mainCommit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
   "pullRequest": 18,
   "release": {
     "tag": "v4.2.0-r41-final",
@@ -91,5 +90,17 @@
     "optionalLinuxNodeFullSystemPrivilegedHelper": "DEFERRED_SEPARATE_TRACK"
   },
   "decision": "R41 desktop functional release is FINAL_ACCEPTED. No further runtime mutation is justified by current evidence.",
-  "confidence": "HIGH"
+  "confidence": "HIGH",
+  "runtimeReleaseCommit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
+  "authorityModel": "The immutable runtime/release target is runtimeReleaseCommit. Project-control commits may advance origin/main without changing accepted runtime bytes.",
+  "controlClosure": {
+    "pullRequest": 19,
+    "mergeCommit": "f56d8d30213fbde4f5702d6a49d85c5591e7dabc",
+    "prCi": {
+      "runNumber": 154,
+      "runId": 36749961835,
+      "conclusion": "success"
+    },
+    "runtimeChanged": false
+  }
 }
