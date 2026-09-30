@@ -89,12 +89,32 @@
         "updater regression",
         "release acceptance"
       ]
+    },
+    {
+      "claimDecision": "Separate immutable runtime/release authority from mutable project-control main authority.",
+      "evidenceSource": "v4.2.0-r41-final targets 967fe592...; PR #19 control/evidence-only merge advanced main to f56d8d30... without runtime changes.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "PROJECT_BRAIN",
+        "release handoff",
+        "authority audits"
+      ]
+    },
+    {
+      "claimDecision": "Public repository description synchronized to R41 authority.",
+      "evidenceSource": "Verified GitHub metadata now states R41 with Windows R40 + Linux R14 rather than stale R39 wording.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "public project metadata",
+        "release handoff"
+      ]
     }
   ],
   "provenance": {
     "branch": "r41-linux-update-revision-fix",
     "baseMain": "0149583d797260b47adae0175b3a2a92b814488a",
-    "publicMain": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
-    "release": "v4.2.0-r41-final"
+    "release": "v4.2.0-r41-final",
+    "runtimeReleaseCommit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
+    "controlClosureMergeCommit": "f56d8d30213fbde4f5702d6a49d85c5591e7dabc"
   }
 }

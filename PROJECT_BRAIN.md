@@ -3,7 +3,7 @@
 Status: FINAL_DESKTOP_ACCEPTED_R41
 Brain version: r41-public-final-closure-2026-09-30
 Installed authority: Windows 4.2.0-local-r40-lifecycle-safe (FINAL_ACCEPTED, unchanged in R41); Linux 4.2.0-linux.14-r41 (FINAL_ACCEPTED)
-Source authority: origin/main 967fe5920a00f102e408002f8ffb030e4d15b6fd; public release v4.2.0-r41-final targets this runtime commit
+Source authority: runtime/release target 967fe5920a00f102e408002f8ffb030e4d15b6fd; project-control authority is current origin/main, where control-only closure commits may advance without changing accepted runtime bytes
 Promotion state: R41 PUBLIC FINAL; Windows R40 continuity CLOSED_PASS; Linux R14 updater-fix CLOSED_PASS; post-publish 40=40 / 14=14 CLOSED_PASS; trusted Authenticode MISSING_EXTERNAL ← CURRENT
 Desktop closure scope:
 - Included: Windows R40 desktop runtime/release continuity; Linux R14 desktop runtime/release; updater/integrity/CI/release continuity.
@@ -224,4 +224,6 @@ Preserve Windows R40 + Linux R14 as the accepted desktop baseline. No runtime mu
 
 - 2026-09-30 R41 Linux R14 live acceptance: exact package B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984 from source f1da84a installed on aliemad-Labtop; integrity 9/9 PASS; external tun0 and all routes preserved; pre-publish updater PASS local=14/remote=13/updateAvailable=false; SIGTERM/Full Exit PASS with process exit and route/tun unchanged; hosted CI #148/run 36739836044 complete SUCCESS including virtual-acceptance.
 
-- 2026-09-30 R41 PUBLIC FINAL: main 967fe5920a00f102e408002f8ffb030e4d15b6fd; release v4.2.0-r41-final. Windows R40 unchanged asset C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32 and Linux R14 B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984 published with exact GitHub digests. Post-publish UpdateCheck PASS: Windows 40=40/no-update/route unchanged; Linux 14=14/no-update, 9/9 integrity, external tun0/routes unchanged. Post-merge CI #151 had one transient Android emulator 'adb: device offline' after build/install/VPN-consent stages; targeted same-commit retry PASS and aggregate virtual-acceptance PASS. Evidence: evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json.
+- 2026-09-30 R41 PUBLIC FINAL: runtime/release main at publication 967fe5920a00f102e408002f8ffb030e4d15b6fd; release v4.2.0-r41-final. Windows R40 unchanged asset C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32 and Linux R14 B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984 published with exact GitHub digests. Post-publish UpdateCheck PASS: Windows 40=40/no-update/route unchanged; Linux 14=14/no-update, 9/9 integrity, external tun0/routes unchanged. Post-merge CI #151 had one transient Android emulator 'adb: device offline' after build/install/VPN-consent stages; targeted same-commit retry PASS and aggregate virtual-acceptance PASS. Evidence: evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json.
+
+- 2026-09-30 R41 authority-label closure: PR #19 merged control/evidence-only commit f56d8d30213fbde4f5702d6a49d85c5591e7dabc after PR CI #154 PASS. Runtime/release authority remains 967fe5920a00f102e408002f8ffb030e4d15b6fd; future control-only main commits must not be confused with runtime release bytes. GitHub repository description was synchronized from stale R39 wording to R41 / Windows R40 + Linux R14.
