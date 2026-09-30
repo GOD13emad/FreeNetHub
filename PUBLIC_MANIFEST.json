@@ -960,8 +960,8 @@
     },
     {
       "file": "evidence/R38_CROSSPLATFORM_DEEP_AUDIT_20260929.json",
-      "bytes": 3908,
-      "sha256": "AAB0AAE1B9AF66388B72A8513493DF806518086AEBFC9B9C75E47DDFAC9BF46C"
+      "bytes": 4063,
+      "sha256": "264777A062B5607F99D6860E56CCFCE2DE3714F36B5F8E741E372FC21E7EFCF3"
     },
     {
       "file": "evidence/R38_DIRECT_METHOD_CYCLE1_RUNTIME_20260929.json",
@@ -1001,12 +1001,12 @@
     {
       "file": "evidence/R38_INSTALLER_BUILD_20260929.json",
       "bytes": 304,
-      "sha256": "9EB5144C417C4E6FEBC6446ACF4C192371F62F4F673F055F95954E270391347B"
+      "sha256": "C376659B1B3C8DF704A1F00C94E16F151CA01E80C649A8B16106335E07457DBD"
     },
     {
       "file": "evidence/R38_PROJECT_KNOWLEDGE_20260929.json",
-      "bytes": 14517,
-      "sha256": "297FFF7CB956B052D553365E179A6452FC56A02AA2640D87E5D292F44D1E0ED8"
+      "bytes": 17113,
+      "sha256": "248849E149639431D381557EDB3A847163BB99BF431BDF47D8DA5EE4231E93EC"
     },
     {
       "file": "evidence/R38_WINDOWS_DIRECT_METHOD_INSTALL_ACCEPTANCE_20260929.json",
@@ -1220,8 +1220,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 24075,
-      "sha256": "25D624C93FD0C8A496BB69C60D90DC649D5E828B79B3841F0216106E2528A9BE"
+      "bytes": 24229,
+      "sha256": "FE1A3A1D303A9930F9264409655BD65341534D3AD6C811F1CC448F9BE6A4A4DF"
     },
     {
       "file": "SECURITY.md",
@@ -1380,8 +1380,8 @@
     },
     {
       "file": "tests/build_r38_direct_method_installer.ps1",
-      "bytes": 2022,
-      "sha256": "620F94CC00BF96B4C68C53AD3EF958F6F725B1AC71DAB59EE2D7816810FA1AA0"
+      "bytes": 2062,
+      "sha256": "9026C8466FE296FB3473F34364F346CD6654C2784B63A3541F6DF348FB956EBF"
     },
     {
       "file": "tests/build_r38_direct_method_metadata.py",
@@ -1830,8 +1830,8 @@
     },
     {
       "file": "tests/test_r36_directdpi_product.py",
-      "bytes": 5430,
-      "sha256": "E68DE472600509079857F1EDEB24CFE7502E3EA2E3ED02CE816AEE6AF2BA2A42"
+      "bytes": 6654,
+      "sha256": "F6CFEB0B1D690E123B946468888E38CEB9A786DEE1ED535F1F17EC7A5BBA5E6F"
     },
     {
       "file": "tests/verify_public_tree.py",
@@ -1880,8 +1880,13 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 11052,
-      "sha256": "62A813E449C27DE82137FFCC946C86D325BE389029AAB5A2A7576ABCD05D4FF2"
+      "bytes": 11894,
+      "sha256": "5E15D3CD087730A88FA9AA87A7811776B40908582B4D1BF4079B74565FE5810B"
+    },
+    {
+      "file": "windows/installer/Prepare-Upgrade.ps1",
+      "bytes": 1353,
+      "sha256": "6DA25D603A3E217A9197F13F0F950EC4E9B5B09BCD12866EF7C7041E3AA5D2C9"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",

@@ -120,3 +120,23 @@ def test_product_wiring_present():
     assert "Stop-DirectDpi.ps1" in un
     assert "Direct-DNS ctrld service" in un
     assert "FreeNetHub\\directdns" in un
+
+
+def test_installer_upgrade_guard_closes_only_idle_owned_ui_child():
+    iss=(R/"windows"/"installer"/"FreeNetHub.iss").read_text(encoding="utf-8-sig")
+    helper=(R/"windows"/"installer"/"Prepare-Upgrade.ps1").read_text(encoding="utf-8-sig")
+    assert 'Source: "Prepare-Upgrade.ps1"; Flags: dontcopy' in iss
+    assert "ExtractTemporaryFile('Prepare-Upgrade.ps1')" in iss
+    assert "Disconnect it before upgrading" in iss
+    assert "AppMutex=Local\\FreeNetHub.Desktop.SingleInstance.v41" not in iss
+    assert "$ports=19410,19413,19414,19450,19452,19453,19460,9909" in helper
+    assert "if(@($active).Count){ exit 42 }" in helper
+    assert "Get-CimInstance Win32_Process" in helper
+    assert "$_.Name -ieq 'pwsh.exe'" in helper
+    assert "FreeNetHub.ps1" in helper
+    assert "Stop-Process -Id $p.ProcessId -Force" in helper
+    assert "$launcher=[IO.Path]::GetFullPath((Join-Path $AppRoot 'FreeNetHub.exe'))" in helper
+    assert "$_.Name -ieq 'FreeNetHub.exe'" in helper
+    assert "[IO.Path]::GetFullPath($_.ExecutablePath).Equals($launcher" in helper
+    builder=(R/"tests"/"build_r38_direct_method_installer.ps1").read_text(encoding="utf-8-sig")
+    assert "windows\\installer\\Prepare-Upgrade.ps1" in builder

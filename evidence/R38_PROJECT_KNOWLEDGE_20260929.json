@@ -230,6 +230,42 @@
         "routeAndInterfacesPreserved": true,
         "networkMutationOnInstall": false
       }
+    },
+    {
+      "context": "Windows R38 final installer upgrade-guard and installed acceptance",
+      "claimDecision": "The final Windows R38 installer closes only strictly-owned idle FreeNetHub UI processes before upgrade, refuses promotion when known FreeNetHub runtime listeners are active, includes the helper in the 21-file frozen build input set, and passed a real idle-UI upgrade. Final installer SHA-256 is B8B284AB...57598. Installed payload then matched source exactly (17 app files, 17 gateway files, RELEASE parity) and all five installed UI smoke tabs passed with the default route unchanged and no runtime listeners left behind.",
+      "evidenceSource": [
+        "evidence/R38_INSTALLER_BUILD_20260929.json",
+        "tests/test_r36_directdpi_product.py => 6 passed",
+        "full tests => 146 passed",
+        "tests/verify_r38_installed_payload.py => PASS",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_UPGRADE_GUARD_REGRESSION_20260930.ps1",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_INSTALLED_UI_SMOKE_20260930.ps1",
+        "windows/installer/Prepare-Upgrade.ps1"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_FINAL_HOSTED_CI_REQUIRED",
+      "rootCause": "Inno RestartManager could not upgrade while the parent FreeNetHub.exe UI still held installed files. The first helper only closed the owned pwsh child, so silent setup aborted. The helper now closes both the owned child and the exact-path parent UI, but only after proving no known runtime listener is active.",
+      "prevention": "Keep upgrade logic fail-closed on active runtime ports; prove process ownership by exact script/executable path before termination; freeze the helper as an installer build input; require real idle-UI upgrade regression, installed parity, five-tab UI smoke, and route/listener preservation.",
+      "reuseTargets": [
+        "Windows R38 release",
+        "installer regression",
+        "CI",
+        "PROJECT_BRAIN",
+        "handoff",
+        "failure prevention"
+      ],
+      "provenance": {
+        "installerBytes": 24252352,
+        "installerSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+        "frozenFiles": 21,
+        "installedParity": true,
+        "uiSmokeTabs": 5,
+        "routeUnchanged": true,
+        "networkMutation": false,
+        "privateUpgradeHarnessSha256": "E660F35457B2BB87E8DBF61909D8AEC57FF1216477CF071E9EC5EA940E149B93",
+        "privateUiSmokeHarnessSha256": "C616C7A517A2A18FA4D93E82C984F39A3F00A8C2B491ACD0EED7E73714CDD682"
+      }
     }
   ]
 }

@@ -4,7 +4,7 @@
   "product": "FreeNet Hub",
   "version": "4.2.0",
   "revision": "R38",
-  "status": "R38_CROSSPLATFORM_SOURCE_ACCEPTED_INSTALL_PROMOTION_PENDING",
+  "status": "R38_R12_LOCAL_FINAL_HOSTED_CI_REQUIRED",
   "objective": "Deep front-to-back audit of Windows R38 and Linux R11/R12 while preserving active external/user network state.",
   "windows": {
     "sourceRegression": "PASS_145_OF_145",
@@ -13,20 +13,35 @@
     "securityScan": "PASS",
     "powershellParse": "PASS",
     "installer": {
-      "status": "SUPERSEDED_REBUILD_REQUIRED_AFTER_R12_SOURCE_FINALIZATION",
-      "previousBytes": 24257930,
-      "previousSha256": "E56AE358FDD1E75BAE1AFAFCFE04E8DC9D3D6EC7D2DC3E690DC4FAADD04D7094",
-      "authenticode": "NotSigned"
+      "status": "PASS_FINAL_LOCAL",
+      "bytes": 24252352,
+      "sha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+      "authenticode": "NotSigned",
+      "frozenFiles": 21,
+      "upgradeHelperFrozen": true
     },
     "installed": {
-      "runtimeStatus": "PASS_PRIOR_READONLY_CHECK",
-      "parity": "FAIL_STALE_CURRENT_INSTALL",
-      "sessionRecord": "STALE_OR_UNPROVEN_CONNECTED_RECORD",
-      "listenerCheck": "NO_KNOWN_FREENETHUB_RUNTIME_LISTENERS",
-      "finalPromotion": "PENDING_REBUILT_INSTALLER_AND_INSTALLED_PARITY"
+      "runtimeStatus": "PASS",
+      "parity": "PASS",
+      "appFiles": 17,
+      "gatewayFiles": 17,
+      "releaseParity": true,
+      "uiSmoke": "PASS_5_OF_5",
+      "routeUnchanged": true,
+      "runtimeListenersAfter": 0
     },
     "networkMutationDuringFinalAudit": false,
-    "promotion": "PENDING_FINAL_REBUILD_AND_INSTALLED_ACCEPTANCE"
+    "promotion": "LOCAL_FINAL_HOSTED_CI_REQUIRED",
+    "upgradeGuard": {
+      "status": "PASS",
+      "idleOwnedUiClosed": true,
+      "activeRuntimePolicy": "FAIL_CLOSED_EXIT_42",
+      "installerExit": 0,
+      "routeUnchanged": true,
+      "listenersAfter": 0,
+      "ownedUiChildrenAfter": 0,
+      "setupSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598"
+    }
   },
   "linux": {
     "priorPublished": "4.2.0-linux.11-r37",
@@ -83,10 +98,9 @@
     }
   },
   "openGates": [
-    "WINDOWS_R38_FINAL_INSTALLER_REBUILD_AFTER_R12_SOURCE",
-    "WINDOWS_R38_INSTALLED_PARITY_AND_FIVE_TAB_SMOKE",
     "HOSTED_CI_R38_R12",
-    "TRUSTED_WINDOWS_AUTHENTICODE"
+    "TRUSTED_WINDOWS_AUTHENTICODE",
+    "HOSTED_CI_FINAL_R38_R12"
   ],
   "evidence": [
     "evidence/R38_PROJECT_KNOWLEDGE_20260929.json",
