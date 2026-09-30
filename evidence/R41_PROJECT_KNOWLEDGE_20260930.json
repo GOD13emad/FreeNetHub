@@ -41,6 +41,25 @@
         "release handoff",
         "R41 final acceptance"
       ]
+    },
+    {
+      "claimDecision": "Linux R14 exact live acceptance closed the R40 false-update regression.",
+      "evidenceSource": "Exact package B3FD52...FF984 installed; 9/9 integrity; local14 vs public remote13 => updateAvailable=false; route and external tun0 unchanged.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "PROJECT_BRAIN",
+        "release notes",
+        "regression evidence"
+      ]
+    },
+    {
+      "claimDecision": "R41 source commit passed hosted CI #148 including aggregate virtual acceptance.",
+      "evidenceSource": "GitHub Actions run 36739836044, conclusion success.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "release handoff",
+        "final acceptance"
+      ]
     }
   ],
   "provenance": {

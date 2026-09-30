@@ -2,9 +2,9 @@
 
 Status: R41_LINUX_UPDATE_FIX_CANDIDATE
 Brain version: r41-linux-update-revision-fix-2026-09-30
-Installed authority: Windows 4.2.0-local-r40-lifecycle-safe (accepted); Linux 4.2.0-linux.13-r40 currently installed; R14 candidate pending live install
-Source authority: branch r41-linux-update-revision-fix based on public main 0149583d797260b47adae0175b3a2a92b814488a
-Promotion state: R40 public release remains fallback; R41/Linux R14 fixes CONFIRMED post-publish Linux updater revision drift; focused gates PASS; full/local/hosted/live promotion gates pending ← CURRENT
+Installed authority: Windows 4.2.0-local-r40-lifecycle-safe (accepted); Linux 4.2.0-linux.14-r41 exact-installed/live PASS
+Source authority: R41 source commit f1da84af2a3d496953fe20320236669c46d89642 on branch r41-linux-update-revision-fix; base public main 0149583d797260b47adae0175b3a2a92b814488a
+Promotion state: R41 source/live gates CLOSED_PASS; hosted CI #148 CLOSED_PASS; acceptance-evidence commit/CI then merge/release are current; R40 remains public fallback ← CURRENT
 Desktop closure scope:
 - Included: Windows R39 desktop release and installed runtime; Linux R12 desktop release and installed runtime; updater/integrity/CI/release continuity.
 - Excluded separate tracks: physical Console field E2E; Android production forwarding/signing; iOS production forwarding/device signing; optional Linux Node Full-System privileged helper.
@@ -150,7 +150,7 @@ Fix:
 - iOS production packet-forwarding core/device signing — DEFERRED_SEPARATE_TRACK; hosted simulator lifecycle PASS; not part of desktop final DoD.
 
 ## Exact Next Action
-Run full local public/security regression; commit/push R41 candidate; require hosted CI; exact-install Linux R14 and prove pre-publish local14>remote13 no-update with route/tun preservation; then merge, publish v4.2.0-r41-final and require Windows 40=40 / Linux 14=14.
+Commit/push R41 live-acceptance evidence, require fresh hosted CI PASS, merge PR #18, require post-merge main CI PASS, publish v4.2.0-r41-final with unchanged accepted Windows R40 asset plus Linux R14, then require post-publish Windows 40=40 / Linux 14=14.
 
 ## HISTORY
 - 2026-09-29 Linux R11 UX final candidate: exact package SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` installed with zero route mutation; UI minimum 842x602; explicit scope/method selection; base/selected/all-method tests; two-stage node testing; seven sort modes; instant IP visibility; direct update flow. Live UI WARP Ping, sequential all-method testing, 2000-node endpoint test, real node benchmark, IP reveal and update check all exercised. Evidence: `evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json`.
@@ -221,3 +221,5 @@ Run full local public/security regression; commit/push R41 candidate; require ho
 - 2026-09-30 R40 Linux R13 exact live acceptance: final candidate package SHA-256 3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF rebuilt from ab6a246 and exact-installed on aliemad-Labtop. Integrity 9/9 PASS; all IPv4 routes preserved byte-for-byte; pre-existing external tun0/default route preserved; SIGTERM/Full Exit cleanup PASS with process exit and route/tun unchanged. Pre-publish UpdateCheck hit GitHub unauthenticated 403 rate limit and is classified EXTERNAL_RATE_LIMIT, with post-publish recheck required. Evidence: evidence/R40_LINUX_R13_EXACT_ACCEPTANCE_20260930.json.
 
 - 2026-09-30 R41 root cause: post-publish Linux R13 self-update returned localRevision=12 despite VERSION=4.2.0-linux.13-r40, so same public R13 was falsely reported as available. Root cause is hard-coded local_rev=12. R41/Linux R14 derives local revision from VERSION, fails closed on malformed version, adds regression coverage, and updates hosted Linux CI to build the current R14 package. Windows R40 runtime is unchanged. Evidence: evidence/R41_LINUX_UPDATE_REVISION_FIX_20260930.json.
+
+- 2026-09-30 R41 Linux R14 live acceptance: exact package B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984 from source f1da84a installed on aliemad-Labtop; integrity 9/9 PASS; external tun0 and all routes preserved; pre-publish updater PASS local=14/remote=13/updateAvailable=false; SIGTERM/Full Exit PASS with process exit and route/tun unchanged; hosted CI #148/run 36739836044 complete SUCCESS including virtual-acceptance.

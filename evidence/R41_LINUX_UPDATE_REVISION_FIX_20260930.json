@@ -37,15 +37,39 @@
     "publicTreeVerifier": "PASS",
     "securityScan": "PASS zero forbidden/runtime/sensitive hits",
     "publicManifest": "426 files PASS before evidence sync",
-    "gitDiffCheck": "PASS"
+    "gitDiffCheck": "PASS",
+    "hostedCi148": "PASS run 36739836044 / #148 including virtual-acceptance",
+    "linuxR14ExactInstall": "PASS",
+    "linuxR14Integrity": "9/9 PASS",
+    "linuxR14RoutePreservation": "PASS",
+    "linuxR14ExternalTunPreservation": "PASS",
+    "linuxR14PrepublishUpdate": "PASS localRevision=14 remoteRevision=13 updateAvailable=false",
+    "linuxR14SignalFullExit": "PASS process exited; route/tun unchanged"
   },
   "pending": [
-    "full local public/security regression",
-    "source commit + hosted CI",
-    "exact Linux R14 live install/update/route/external-tun acceptance",
-    "merge + post-merge CI + v4.2.0-r41-final",
-    "post-publish Windows 40=40 and Linux 14=14"
+    "fresh hosted CI on this acceptance-evidence commit",
+    "merge + post-merge main CI",
+    "publish v4.2.0-r41-final with unchanged accepted Windows R40 asset + Linux R14",
+    "post-publish Windows 40=40 and Linux 14=14 update checks"
   ],
   "confidence": "HIGH",
-  "phase": "SOURCE_CANDIDATE_LOCAL_CLOSED_PASS_HOSTED_AND_LIVE_PENDING"
+  "phase": "SOURCE_AND_LIVE_CLOSED_PASS_ACCEPTANCE_CI_PENDING",
+  "sourceCommit": "f1da84af2a3d496953fe20320236669c46d89642",
+  "liveAcceptance": {
+    "host": "aliemad-Labtop",
+    "packageSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+    "installedVersion": "4.2.0-linux.14-r41",
+    "installedRelease": "LINUX_4.2.0_R14_R41_UPDATE_REVISION_FIX",
+    "integrity": "9/9 PASS",
+    "preExistingExternalTun": "tun0",
+    "physicalUnderlay": "enp1s0 via 192.168.20.1",
+    "routeAndTunPreserved": true,
+    "prepublishUpdate": {
+      "localRevision": 14,
+      "remoteRevision": 13,
+      "updateAvailable": false,
+      "publicTag": "v4.2.0-r40-final"
+    },
+    "signalFullExit": "PASS"
+  }
 }
