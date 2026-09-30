@@ -233,7 +233,7 @@
     },
     {
       "context": "Windows R38 final installer upgrade-guard and installed acceptance",
-      "claimDecision": "The final Windows R38 installer closes only strictly-owned idle FreeNetHub UI processes before upgrade, refuses promotion when known FreeNetHub runtime listeners are active, includes the helper in the 21-file frozen build input set, and passed a real idle-UI upgrade. Final installer SHA-256 is B8B284AB...57598. Installed payload then matched source exactly (17 app files, 17 gateway files, RELEASE parity) and all five installed UI smoke tabs passed with the default route unchanged and no runtime listeners left behind.",
+      "claimDecision": "The final Windows R38 installer closes only strictly-owned idle FreeNetHub UI processes before upgrade, refuses promotion when known FreeNetHub runtime listeners are active, includes the helper in the 21-file frozen build input set, and passed a real idle-UI upgrade. Final installer SHA-256 is 455D8305...89A97. Installed payload then matched source exactly (17 app files, 17 gateway files, RELEASE parity) and all five installed UI smoke tabs passed with the default route unchanged and no runtime listeners left behind.",
       "evidenceSource": [
         "evidence/R38_INSTALLER_BUILD_20260929.json",
         "tests/test_r36_directdpi_product.py => 6 passed",
@@ -256,8 +256,8 @@
         "failure prevention"
       ],
       "provenance": {
-        "installerBytes": 24252352,
-        "installerSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+        "installerBytes": 24243520,
+        "installerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
         "frozenFiles": 21,
         "installedParity": true,
         "uiSmokeTabs": 5,
@@ -265,6 +265,98 @@
         "networkMutation": false,
         "privateUpgradeHarnessSha256": "E660F35457B2BB87E8DBF61909D8AEC57FF1216477CF071E9EC5EA940E149B93",
         "privateUiSmokeHarnessSha256": "C616C7A517A2A18FA4D93E82C984F39A3F00A8C2B491ACD0EED7E73714CDD682"
+      }
+    },
+    {
+      "context": "Windows R38 installer self-reference closure and exact-final acceptance",
+      "claimDecision": "The installer RELEASE parity failure was caused by embedding installerSha256 in RELEASE.json even though RELEASE.json itself is an installer input, creating an unavoidable self-reference cycle. The stable release contract now keeps installerSha256 null and stores the actual setup digest only in external acceptance/build evidence. The builder fails closed if RELEASE.json contains a non-null installerSha256. With that contract, the exact-final Windows setup was rebuilt from 21 frozen inputs, installed, and passed byte-for-byte RELEASE/app/gateway parity plus five-tab UI smoke and route/listener preservation.",
+      "evidenceSource": [
+        "tests/build_r38_direct_method_installer.ps1",
+        "evidence/R38_INSTALLER_BUILD_20260929.json",
+        "tests/verify_r38_installed_payload.py => PASS",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_UPGRADE_GUARD_REGRESSION_20260930.ps1",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_INSTALLED_UI_SMOKE_20260930.ps1"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_EXACT_FINAL_HOSTED_CI_REQUIRED",
+      "rootCause": "RELEASE.json attempted to store the SHA-256 of the installer that embeds RELEASE.json, so post-build metadata updates necessarily broke exact installed/source parity.",
+      "prevention": "Keep installerSha256 null in embedded RELEASE.json, record the artifact digest in external build/acceptance evidence, and make the installer builder fail closed if the embedded release metadata contains a non-null installerSha256.",
+      "reuseTargets": [
+        "Windows R38 release",
+        "release engineering",
+        "installed parity",
+        "CI",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "supersedesInstallerSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+        "finalInstallerBytes": 24243520,
+        "finalInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
+        "frozenFiles": 21,
+        "fullRegression": "146/146 PASS",
+        "directMethodContract": "6/6 PASS",
+        "installedParity": true,
+        "uiSmokeTabs": 5,
+        "routeUnchanged": true,
+        "networkMutation": false
+      }
+    },
+    {
+      "context": "R38 Windows installer digest self-reference closure",
+      "claimDecision": "RELEASE.json was embedded in the Windows installer while also carrying installerSha256. That creates a self-referential artifact identity: writing the installer digest changes RELEASE.json, which changes the installer bytes and therefore changes the digest again. The source contract now keeps RELEASE.json installerSha256 null and marks the digest as external acceptance evidence. The builder fails closed if a non-empty installerSha256 is reintroduced. A staged read-only copy of the resulting installer was accepted end-to-end with SHA-256 455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97.",
+      "evidenceSource": [
+        "RELEASE.json",
+        "tests/build_r38_direct_method_installer.ps1",
+        "tests/test_r36_directdpi_product.py",
+        "evidence/R38_INSTALLER_BUILD_20260929.json",
+        "PRIVATE_LOCAL:.fnh-control/release-staging/r38-final/R38_STAGED_UPGRADE_ACCEPTANCE.ps1",
+        "tests/verify_r38_installed_payload.py",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_INSTALLED_UI_SMOKE_20260930.ps1"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_ROOT_CAUSE_CLOSED",
+      "rootCause": "The installer digest was stored inside RELEASE.json, and RELEASE.json itself is part of the installer payload, making the installer hash self-referential and unstable across metadata updates/rebuilds.",
+      "prevention": "Keep installer digest outside the installer payload in acceptance/release evidence; builder must reject a non-empty RELEASE.json installerSha256. Stage the accepted binary to a private read-only path before final acceptance/publication so later delivery-path rebuilds cannot change release authority.",
+      "reuseTargets": [
+        "Windows R38 release",
+        "release engineering",
+        "CI",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "acceptedInstallerBytes": 24243520,
+        "acceptedInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
+        "stagingPolicy": "PRIVATE_READ_ONLY_COPY",
+        "installedParity": true,
+        "uiSmokeTabs": 5,
+        "routeUnchanged": true
+      }
+    },
+    {
+      "context": "Hosted CI run 116 acceptance-evidence status mismatch",
+      "claimDecision": "Hosted CI failed only the verify_public_tree acceptanceEvidenceContent check because the authoritative RELEASE.json status and the referenced R38 cross-platform acceptance evidence status diverged after the exact-final metadata edits. The acceptance evidence status was realigned to RELEASE.status; no runtime, installer payload, Linux package, route, or network behavior changed.",
+      "evidenceSource": [
+        "GitHub Actions run 116 windows-unit / Verify public manifests",
+        "tests/verify_public_tree.py acceptanceEvidenceContent contract",
+        "RELEASE.json",
+        "evidence/R38_CROSSPLATFORM_DEEP_AUDIT_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "FIXED_PENDING_HOSTED_CI_REVALIDATION",
+      "rootCause": "A metadata writer left the acceptance evidence on a candidate-status label while RELEASE.json had already advanced to the local-final/hosted-CI-required status. Local verification had been run before that final status divergence.",
+      "prevention": "Treat RELEASE.status and acceptanceEvidence.status as an atomic metadata pair; after either changes, rebuild PUBLIC_MANIFEST.json and run verify_public_tree.py on the committed tree. The existing verifier is the minimum sufficient guard.",
+      "reuseTargets": [
+        "CI",
+        "release qualification",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "runId": 36681505259,
+        "jobId": 109777747056,
+        "networkMutation": false
       }
     }
   ]

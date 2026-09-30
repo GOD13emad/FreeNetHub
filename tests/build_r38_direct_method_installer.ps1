@@ -9,6 +9,8 @@ $FreezeFiles=@(
  'app\directdns\ctrld.exe','app\directdns\ctrld.toml','app\directdns\LICENSE-ctrld.txt',
  'gateway\manifest.json','windows\installer\FreeNetHub.iss','windows\installer\Prepare-Upgrade.ps1','Uninstall-FreeNetHub.ps1','RELEASE.json'
 )
+$ReleaseMeta=Get-Content -LiteralPath (Join-Path $Root 'RELEASE.json') -Raw | ConvertFrom-Json
+if($null -ne $ReleaseMeta.installerSha256 -and [string]$ReleaseMeta.installerSha256 -ne ''){throw 'R38_RELEASE_INSTALLER_HASH_SELF_REFERENCE'}
 $Freeze=@{}
 foreach($rel in $FreezeFiles){$Freeze[$rel]=(Get-FileHash -LiteralPath (Join-Path $Root $rel) -Algorithm SHA256).Hash}
 $Iscc=Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'

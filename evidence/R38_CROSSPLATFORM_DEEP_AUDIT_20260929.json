@@ -7,18 +7,19 @@
   "status": "R38_R12_LOCAL_FINAL_HOSTED_CI_REQUIRED",
   "objective": "Deep front-to-back audit of Windows R38 and Linux R11/R12 while preserving active external/user network state.",
   "windows": {
-    "sourceRegression": "PASS_145_OF_145",
-    "directMethodContract": "PASS_5_OF_5",
+    "sourceRegression": "PASS_146_OF_146",
+    "directMethodContract": "PASS_6_OF_6",
     "publicTree": "PASS",
     "securityScan": "PASS",
     "powershellParse": "PASS",
     "installer": {
-      "status": "PASS_FINAL_LOCAL",
-      "bytes": 24252352,
-      "sha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+      "status": "PASS_FINAL_STAGED_EXTERNAL_DIGEST",
+      "bytes": 24243520,
+      "sha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
       "authenticode": "NotSigned",
       "frozenFiles": 21,
-      "upgradeHelperFrozen": true
+      "upgradeHelperFrozen": true,
+      "digestAuthority": "EXTERNAL_ACCEPTANCE_EVIDENCE_NOT_RELEASE_PAYLOAD"
     },
     "installed": {
       "runtimeStatus": "PASS",
@@ -28,7 +29,9 @@
       "releaseParity": true,
       "uiSmoke": "PASS_5_OF_5",
       "routeUnchanged": true,
-      "runtimeListenersAfter": 0
+      "runtimeListenersAfter": 0,
+      "exactInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97",
+      "acceptedInstallerSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97"
     },
     "networkMutationDuringFinalAudit": false,
     "promotion": "LOCAL_FINAL_HOSTED_CI_REQUIRED",
@@ -40,7 +43,13 @@
       "routeUnchanged": true,
       "listenersAfter": 0,
       "ownedUiChildrenAfter": 0,
-      "setupSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598"
+      "setupSha256": "455D8305ECAB7E1E581795FF1F71BF8882483093F0CB7E20E502DFE8AB989A97"
+    },
+    "installerDigestSelfReference": {
+      "status": "FIXED",
+      "policy": "RELEASE_JSON_INSTALLER_SHA256_MUST_BE_NULL",
+      "digestLocation": "EXTERNAL_ACCEPTANCE_EVIDENCE",
+      "builderGuard": "R38_RELEASE_INSTALLER_HASH_SELF_REFERENCE"
     }
   },
   "linux": {
@@ -98,9 +107,8 @@
     }
   },
   "openGates": [
-    "HOSTED_CI_R38_R12",
-    "TRUSTED_WINDOWS_AUTHENTICODE",
-    "HOSTED_CI_FINAL_R38_R12"
+    "HOSTED_CI_FINAL_R38_R12",
+    "TRUSTED_WINDOWS_AUTHENTICODE"
   ],
   "evidence": [
     "evidence/R38_PROJECT_KNOWLEDGE_20260929.json",
