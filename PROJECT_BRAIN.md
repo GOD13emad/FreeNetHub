@@ -1,10 +1,10 @@
 # PROJECT BRAIN — FreeNet Hub
 
 Status: CURRENT
-Brain version: r37-windows-runtime-final-2026-09-29
-Installed authority: 4.2.0-local-r37-final
-Source authority: 4.2.0-local-r37-final
-Promotion state: PUBLIC WINDOWS R37 FINAL RELEASED; LINUX 4.2.0-linux.11-r37 EXACT PACKAGE + UX E2E PASS; PUBLIC LINUX R11 CI/RELEASE ← CURRENT
+Brain version: r39-public-final-control-sync-2026-09-30
+Installed authority: Windows 4.2.0-local-r39-online-noadmin; Linux 4.2.0-linux.12-r38
+Source authority: origin/main (R39 public-final line; control state synchronized 2026-09-30)
+Promotion state: R39 PUBLIC FINAL; Windows online update + non-admin launch CLOSED_PASS; Linux R12 continuity CLOSED_PASS; trusted Authenticode remains external/open ← CURRENT
 
 ## Final Objective / DoD
 FreeNet Hub is the comprehensive free multi-transport connectivity product. It must expose the widest practical set of independent censorship-resilient paths under one understandable UI, with explicit Browser / Full System / Console capability boundaries, pre-connect measurement where technically meaningful, fail-closed behavior, rollback for network mutation, and no hidden DIRECT fallback.
@@ -144,7 +144,7 @@ Fix:
 - iOS production packet-forwarding core/device signing — OPEN external gate; hosted simulator lifecycle PASS.
 
 ## Exact Next Action
-Create the Linux R11 public commit from the exact locally verified candidate, require hosted CI to PASS, then publish `FreeNetHub_4.2.0_Linux_R11.zip` with SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` without invalidating Windows R37. After release, run installed UpdateCheck and require remoteRevision=11 with updateAvailable=false.
+Preserve the accepted R39 Windows / Linux R12 baseline. No core runtime mutation is required from current evidence. The only release-quality external gate is trusted Windows Authenticode; any future functional change must use a new revision, preserve non-admin normal launch, and re-run online-update plus rollback/regression gates.
 
 ## HISTORY
 - 2026-09-29 Linux R11 UX final candidate: exact package SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` installed with zero route mutation; UI minimum 842x602; explicit scope/method selection; base/selected/all-method tests; two-stage node testing; seven sort modes; instant IP visibility; direct update flow. Live UI WARP Ping, sequential all-method testing, 2000-node endpoint test, real node benchmark, IP reveal and update check all exercised. Evidence: `evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json`.
@@ -205,3 +205,5 @@ Create the Linux R11 public commit from the exact locally verified candidate, re
 - Privileged Direct DPI/full-system/gateway helpers remain explicit/on-demand; ordinary app launch and ordinary update do not require admin.
 - External gate still OPEN: production trusted Windows Authenticode signing (NotSigned).
 - Evidence: evidence/R39_PUBLIC_FINAL_ACCEPTANCE_20260930.json and evidence/R39_PROJECT_KNOWLEDGE_20260930.json.
+
+- 2026-09-30 R39 control sync: reconciled stale Brain header/next-action against authoritative public-final evidence. origin/main=6c10c8c; R39 public acceptance evidence SHA-256 7D319EBED43D46BB3D4C07B18EF843AC69B5702D8FFEC23A9C786E5F3D1E0653. Runtime behavior unchanged; Windows installed coreVersion=4.0-r39-online-noadmin and Linux installed version=4.2.0-linux.12-r38 were re-read from hosts. RELEASE.json candidate wording is retained as historical build metadata and superseded by R39_PUBLIC_FINAL_ACCEPTANCE evidence.
