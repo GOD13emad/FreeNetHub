@@ -69,6 +69,14 @@
       "supersededPackageSha256": "3BD6FEC23854DA49754756057A9B72320E8A0B628195336C606714FC2301EA7B",
       "correctedPackageSha256": "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8",
       "installedSupersededPackage": false
+    },
+    {
+      "id": "WINDOWS_STANDALONE_MANIFEST_EOL_HASH_DRIFT",
+      "status": "FIXED",
+      "rootCause": "Hosted CI checkout normalized RUNTIME_ACCEPTANCE.json to LF while standalone MANIFEST raw sha256 was generated from Windows CRLF bytes.",
+      "prevention": "Standalone MANIFEST now records raw runtime sha256 plus canonical Git sourceSha256; public-tree CI verifies sourceSha256 while installed integrity retains raw sha256.",
+      "failedCiRun": 36726955508,
+      "failedJob": 109926182942
     }
   ],
   "linuxR13Candidate": {

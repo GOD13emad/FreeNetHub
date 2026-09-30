@@ -33,3 +33,11 @@ def test_linux_close_hides_and_real_shutdown_cleans_owned_runtime():
     assert "browser=core.stop_all()" in s
     assert "console=core.console_stop()" in s
     assert "signal.signal(signal.SIGTERM,self._request_signal_quit)" in s
+
+def test_windows_standalone_manifest_uses_dual_runtime_and_source_hashes():
+    builder=(ROOT/"windows/standalone/Build-Manifest42.py").read_text(encoding="utf-8")
+    verifier=(ROOT/"tests/verify_public_tree.py").read_text(encoding="utf-8")
+    assert "sourceSha256" in builder
+    assert "canonical_sha" in builder
+    assert 'row.get("sourceSha256")' in verifier
+    assert "hc(p)!=source_sha" in verifier

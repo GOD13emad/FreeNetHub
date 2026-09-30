@@ -1045,8 +1045,8 @@
     },
     {
       "file": "evidence/R40_DEEP_AUDIT_ACCEPTANCE_20260930.json",
-      "bytes": 3470,
-      "sha256": "81DF2BA3F6B18664C99C377243AACC0AE15114A30A6F63ECE64F74F06ABCF123"
+      "bytes": 3980,
+      "sha256": "3C36444A544DFEA32B14EA8A0E136FF8E9E810BF94D632C77A6DA9382909DD5C"
     },
     {
       "file": "evidence/R40_INSTALLER_BUILD_20260930.json",
@@ -1845,8 +1845,8 @@
     },
     {
       "file": "tests/test_lifecycle_safety.py",
-      "bytes": 1658,
-      "sha256": "34305EEFF6ABE9A2FE9A08EC13837228443DD6404B04CE727A479A70B4EAB805"
+      "bytes": 2068,
+      "sha256": "8AD8D006AA3596E7665F7102FF45BFFF7841F67449E26CCD99915F83A9830B83"
     },
     {
       "file": "tests/test_nodehub.py",
@@ -1910,8 +1910,8 @@
     },
     {
       "file": "tests/verify_public_tree.py",
-      "bytes": 5064,
-      "sha256": "2E3550493162D6A8606F96D59A9003648A2687D521FF49453359DC4846F3A805"
+      "bytes": 5310,
+      "sha256": "89ECB7E4C1F8C6E1B27BFA7B5D21471752554FF1210BDFC4DC55FCDC544C1F05"
     },
     {
       "file": "tests/verify_r23_artifact.ps1",
@@ -2035,8 +2035,8 @@
     },
     {
       "file": "windows/standalone/Build-Manifest42.py",
-      "bytes": 905,
-      "sha256": "6FE07E515B5A7A8EA709EDA502E65C17684D117A41FDA626DB7ACEE1D91BBB65"
+      "bytes": 1271,
+      "sha256": "DA90CD94FDC45A76B8AA7D89337719C5F1AC6D498191F201FC17235FCBCB484B"
     },
     {
       "file": "windows/standalone/FreeNetHub.exe",
@@ -2070,8 +2070,8 @@
     },
     {
       "file": "windows/standalone/MANIFEST.json",
-      "bytes": 1881,
-      "sha256": "00548DFDCAD42840E89A70DBA3A90119A77F7D255BB9746289C0E06CAB7B426A"
+      "bytes": 2871,
+      "sha256": "77919E11CB49CC1B68EB7589A453BB8C21D7DD36A11984DA8B6E128ED67901C6"
     },
     {
       "file": "windows/standalone/README_FA.md",
