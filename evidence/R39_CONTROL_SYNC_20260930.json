@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "status": "PASS_CONTROL_SYNC",
+  "objective": "PROJECT_AUTHORITY_AND_BRAIN_RECONCILIATION",
+  "publicFinalEvidence": "evidence/R39_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
+  "publicFinalEvidenceSha256": "7d319ebed43d46bb3d4c07b18ef843ac69b5702d8ffec23a9c786e5f3d1e0653",
+  "windowsInstalled": {
+    "coreVersion": "4.0-r39-online-noadmin",
+    "runtimeStatus": "PASS",
+    "networkMutationObserved": false
+  },
+  "linuxInstalled": {
+    "version": "4.2.0-linux.12-r38",
+    "networkMutationOnInstall": false
+  },
+  "decision": "No runtime mutation; synchronize project-control state only",
+  "releaseJsonNote": "Candidate wording retained as historical build metadata; public-final acceptance evidence is authoritative",
+  "confidence": "HIGH",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "handoff",
+    "final audit"
+  ],
+  "preSyncAuthoritativeMain": "6c10c8c52f838bf737d0badc88d6dd913ee5a0c1"
+}
