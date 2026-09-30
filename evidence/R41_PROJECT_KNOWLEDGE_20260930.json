@@ -108,6 +108,59 @@
         "public project metadata",
         "release handoff"
       ]
+    },
+    {
+      "claimDecision": "R41 workspace closeout leaves one clean canonical main worktree on each host and only main as an active GitHub branch.",
+      "evidenceSource": "Windows and Linux git status/worktree audits after archive-backed cleanup; GitHub branches API and open PR/issue queries.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "handoff",
+        "failure prevention",
+        "repository governance"
+      ]
+    },
+    {
+      "claimDecision": "Legacy dirty/non-merged states were preserved before destructive cleanup.",
+      "evidenceSource": "Windows archive manifest AC2A40DFD14A83BC26AF1C68EC4A1D9562ED43BEDC6A589491D29F8F0ABDA96E; Windows branch bundle 0987AB8F1EF45C3BF6D1E91481E9B7ECA3F8B451F5DA533368FC2576F948E7BB; Linux bundle 3cfd30a8eabf62d2eca8e1803d362c23d0883e3a5594ffcbcaeab9315ed7d39d; Linux SHA sums baf05b01b60731400361ae66ee07e79dcd9c0b74a5ca35e0d3da2882975bb85e.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "audit",
+        "recovery",
+        "account transfer"
+      ]
+    },
+    {
+      "claimDecision": "CI #160 Android failure is not evidence of a product regression; it is a probable UI hierarchy readiness race after a successful Activity launch.",
+      "evidenceSource": "Run #160/job 110053208621: emulator/ADB/build/install succeeded and am start -W returned Status: ok; first UI hierarchy was pulled, then the expected text assertion failed. Android official docs distinguish launch completion from UI-state waiting and recommend timeout/stability waits in UI Automator.",
+      "confidence": "PROBABLE_HIGH",
+      "reuseTargets": [
+        "CI reliability",
+        "failure prevention",
+        "Android virtual acceptance"
+      ],
+      "sources": [
+        "https://developer.android.com/tools/adb",
+        "https://developer.android.com/training/testing/other-components/ui-automator"
+      ]
+    },
+    {
+      "claimDecision": "Use bounded state polling inside the Android emulator harness instead of rerunning the whole hosted job.",
+      "evidenceSource": "dump_until_contains retries only hierarchy acquisition/state publication for up to 15 seconds, preserves all product assertions, fails closed with diagnostics, and is regression-guarded.",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "CI harness",
+        "regression policy"
+      ]
+    },
+    {
+      "claimDecision": "Android UI hierarchy synchronization hardening is accepted.",
+      "evidenceSource": "Fresh hosted CI #162 on head 7bb945a passed android-emulator-runtime directly without manual rerun; iOS simulator and aggregate virtual-acceptance also passed.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "CI reliability",
+        "final handoff",
+        "failure prevention"
+      ]
     }
   ],
   "provenance": {
@@ -115,6 +168,7 @@
     "baseMain": "0149583d797260b47adae0175b3a2a92b814488a",
     "release": "v4.2.0-r41-final",
     "runtimeReleaseCommit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
-    "controlClosureMergeCommit": "f56d8d30213fbde4f5702d6a49d85c5591e7dabc"
+    "controlClosureMergeCommit": "f56d8d30213fbde4f5702d6a49d85c5591e7dabc",
+    "workspaceCloseoutEvidence": "evidence/R41_FINAL_WORKSPACE_CLOSEOUT_20260930.json"
   }
 }

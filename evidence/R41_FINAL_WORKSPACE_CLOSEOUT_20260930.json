@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "status": "PASS_FINAL_WORKSPACE_CLOSEOUT",
+  "scope": "FreeNetHub R41 desktop final repository/host workspace closure",
+  "runtimeReleaseAuthority": {
+    "commit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
+    "tag": "v4.2.0-r41-final",
+    "windowsRuntime": "R40 accepted unchanged",
+    "linuxRuntime": "4.2.0-linux.14-r41"
+  },
+  "controlBaselineBeforeCloseout": "a575975453f0424615d798559f9d4abb3a4d663f",
+  "github": {
+    "activeBranches": [
+      "main"
+    ],
+    "openPullRequests": 0,
+    "openIssues": 0,
+    "latestMainCi": {
+      "runNumber": 158,
+      "runId": 36753920992,
+      "conclusion": "success",
+      "virtualAcceptance": "success"
+    },
+    "deferredMaintenanceClosedPullRequests": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "repositoryDescription": "R41 / Windows R40 + Linux R14 synchronized"
+  },
+  "windowsWorkspace": {
+    "canonicalRoot": "WINDOWS_PROJECT_ROOT/FreeNetHub",
+    "branch": "main",
+    "worktrees": 1,
+    "status": "CLEAN_SYNCED_WITH_ORIGIN_MAIN",
+    "legacyArchive": {
+      "path": "WINDOWS_LEGACY_ARCHIVE_ROOT/Windows",
+      "manifestSha256": "AC2A40DFD14A83BC26AF1C68EC4A1D9562ED43BEDC6A589491D29F8F0ABDA96E",
+      "nonMergedBranchesBundleSha256": "0987AB8F1EF45C3BF6D1E91481E9B7ECA3F8B451F5DA533368FC2576F948E7BB",
+      "archiveVerification": "PASS",
+      "untrackedZipCount": 3,
+      "untrackedZipEntries": 16
+    }
+  },
+  "linuxWorkspace": {
+    "canonicalRoot": "LINUX_PROJECT_ROOT/FreeNetHub",
+    "branch": "main",
+    "worktrees": 1,
+    "status": "CLEAN_SYNCED_WITH_ORIGIN_MAIN",
+    "legacyArchive": {
+      "path": "LINUX_LEGACY_ARCHIVE_ROOT/Linux",
+      "nonMergedBranchesBundleSha256": "3cfd30a8eabf62d2eca8e1803d362c23d0883e3a5594ffcbcaeab9315ed7d39d",
+      "untrackedTarSha256": "0a9cb92bad203f831adef9b7ab174d0bba8015ff8f16c0519919c55a716eb962",
+      "sha256SumsFileSha256": "baf05b01b60731400361ae66ee07e79dcd9c0b74a5ca35e0d3da2882975bb85e",
+      "archiveVerification": "PASS"
+    }
+  },
+  "installedSnapshot": {
+    "windows": {
+      "runtimeStatus": "PASS",
+      "runtime": "SELF_CONTAINED",
+      "defaultRoute": "Ethernet 3 via 192.168.20.1",
+      "ownedRuntimeProcesses": 0,
+      "authenticode": "MISSING_EXTERNAL_NOTSIGNED"
+    },
+    "linux": {
+      "version": "4.2.0-linux.14-r41",
+      "integrity": "9/9 PASS",
+      "externalTun0Preserved": true,
+      "freeNetHubRuntimeProcesses": 0
+    }
+  },
+  "cleanup": {
+    "remoteLegacyBranchesDeleted": 9,
+    "windowsSupersededWorktreesRemoved": 7,
+    "linuxSupersededWorktreesRemoved": 3,
+    "nonMergedLegacyHistoryArchivedBeforeDeletion": true,
+    "destructiveCleanupWithoutBackup": false
+  },
+  "decision": "R41 desktop project and final workspace closeout are CLOSED_PASS. Android hosted-CI hierarchy synchronization hardening is validated by direct CI #162 success. No further runtime or CI mutation is justified by current evidence.",
+  "exactNextAction": "No action. Preserve baseline. Only create a successor revision for a new requirement/bug or externally provisioned trusted Windows signing identity.",
+  "confidence": "HIGH",
+  "ciHardening": {
+    "id": "ANDROID_EMULATOR_UI_HIERARCHY_READINESS_RACE",
+    "status": "CLOSED_PASS",
+    "trigger": {
+      "runNumber": 160,
+      "runId": 36763840737,
+      "jobId": 110053208621,
+      "head": "4f36b5c92da789be00d96388c8e1ffffe5e38fe8",
+      "observed": "Android build, emulator boot, ADB, APK install and MainActivity launch all succeeded; the job failed immediately after the first UI Automator hierarchy pull because the expected fail-closed text was not yet present."
+    },
+    "comparison": {
+      "ci151": "Different transient: adb device offline after deeper lifecycle progress; targeted retry passed.",
+      "ci160": "ADB remained online and launch returned Status: ok; failure was a one-shot accessibility hierarchy assertion after launch."
+    },
+    "rootCause": {
+      "classification": "PROBABLE_HIGH_CONFIDENCE",
+      "cause": "The test assumed Activity launch completion implies immediate publication of the expected accessibility/UI hierarchy state.",
+      "productRegressionEvidence": "NONE",
+      "runtimeProductChanged": false
+    },
+    "methodEvidence": [
+      {
+        "source": "Android Developers — Android Debug Bridge",
+        "url": "https://developer.android.com/tools/adb",
+        "finding": "am start -W waits for Activity launch completion."
+      },
+      {
+        "source": "Android Developers — UI Automator",
+        "url": "https://developer.android.com/training/testing/other-components/ui-automator",
+        "finding": "UI tests should use bounded element/state waiting and explicit UI/app stability mechanisms rather than assume immediate hierarchy readiness."
+      }
+    ],
+    "prevention": {
+      "change": "Replace one-shot uiautomator dump assertions at lifecycle transitions with a bounded 15x1s dump_until_contains state wait.",
+      "failClosed": true,
+      "wholeJobBlindRetry": false,
+      "diagnosticsOnTimeout": [
+        "adb get-state",
+        "last uiautomator output",
+        "last pulled hierarchy",
+        "emulator log tail"
+      ],
+      "regression": "tests/test_android_ci_hierarchy_wait.py"
+    },
+    "localValidation": {
+      "regression": "3/3 PASS",
+      "workflowYamlParse": "PASS",
+      "diffCheck": "PASS"
+    },
+    "promotionGate": "CLOSED_PASS",
+    "hostedValidation": {
+      "runNumber": 162,
+      "runId": 36765328910,
+      "head": "7bb945a8b8f6d6a0a4fd62fd8015454e833f41b8",
+      "androidEmulatorRuntime": "PASS_DIRECT_NO_RERUN",
+      "iosSimulatorRuntime": "PASS",
+      "virtualAcceptance": "PASS",
+      "conclusion": "SUCCESS"
+    },
+    "adjudication": "Bounded hierarchy-state synchronization is accepted as effective prevention for the CI #160 timing failure; root-cause classification remains PROBABLE_HIGH rather than overstated as proven."
+  }
+}
