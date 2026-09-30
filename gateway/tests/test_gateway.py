@@ -88,4 +88,26 @@ class GatewayTests(unittest.TestCase):
  def test_unverified_wireguard_contract(self):
   p={"kind":"wireguard","country":"NL","capabilities":{"tcp":True,"udp":True,"country_verified":False},"endpoint":{"type":"wireguard","tag":"provider"}}
   x=M.console_contract("WARP",p,"NL");self.assertFalse(x["ready"]);self.assertIn("COUNTRY_NOT_RUNTIME_VERIFIED",x["reasons"])
+ def test_stop_is_fail_closed_on_incomplete_console_rollback(self):
+  text=(G/"stop_elevated.ps1").read_text(encoding="utf-8-sig")
+  for marker in (
+   "FIREWALL_RULE_STOP_INCOMPLETE",
+   "PRESTATE_MISSING_FOR_CONSOLE_ROLLBACK",
+   "CONSOLE_GATEWAY_IP_STOP_INCOMPLETE",
+   "CONSOLE_FORWARDING_RESTORE_INCOMPLETE",
+   "OWNER_STATE_REMOVE_INCOMPLETE",
+  ):
+   self.assertIn(marker,text)
+  self.assertIn("if(Test-Path $Owner){Fail 'OWNER_STATE_REMOVE_INCOMPLETE' $o}",text)
+ def test_apply_failure_rollback_is_verified_and_promoted_owner_uses_stop_path(self):
+  text=(G/"apply_elevated.ps1").read_text(encoding="utf-8-sig")
+  for marker in (
+   "APPLY_FAILED_PROMOTED_ROLLBACK_INCOMPLETE",
+   "APPLY_FAILED_FIREWALL_ROLLBACK_INCOMPLETE",
+   "APPLY_FAILED_PROCESS_ROLLBACK_INCOMPLETE",
+   "APPLY_FAILED_GATEWAY_IP_ROLLBACK_INCOMPLETE",
+   "APPLY_FAILED_FORWARDING_ROLLBACK_INCOMPLETE",
+  ):
+   self.assertIn(marker,text)
+  self.assertIn("Join-Path $PSScriptRoot 'stop_elevated.ps1'",text)
 if __name__=="__main__":unittest.main(verbosity=2)

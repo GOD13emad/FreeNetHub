@@ -487,6 +487,13 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  function Install-VerifiedUpdate([string]$path){
   if(!$path -or !(Test-Path -LiteralPath $path)){$script:C.UpdateStatus.Text='فایل آپدیت معتبر پیدا نشد.';return}
+  $directDpi=Get-DirectDpiStatus
+  $gateway=Gateway-Refresh
+  if(!$gateway){$script:C.UpdateStatus.Text='وضعیت Gateway قابل راستی‌آزمایی نیست؛ برای جلوگیری از قطع ناقص، نصب آپدیت شروع نشد.';return}
+  if($script:CurrentMode -or $script:FullSystemActive -or [bool]$gateway.running -or $directDpi.active -or $directDpi.stale){
+   $script:C.UpdateStatus.Text='قبل از نصب آپدیت، اتصال‌های متعلق به FreeNet Hub را Stop/rollback کنید. برنامه باز می‌ماند.'
+   return
+  }
   if([Windows.MessageBox]::Show('Installer از GitHub دانلود و SHA-256 آن تأیید شده است. برنامه بسته و نصب بدون reboot شروع شود؟','FreeNet Hub Update','YesNo','Question') -ne 'Yes'){return}
   try{
    $psi=[Diagnostics.ProcessStartInfo]::new();$psi.FileName=$path;$psi.UseShellExecute=$false
@@ -960,7 +967,7 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
 
  }
 
- $script:Window.Add_Closing({param($s,$e)if($script:GatewayTask){$e.Cancel=$true;$script:C.GatewayDetail.Text='عملیات Gateway هنوز در حال اجراست؛ پس از پایان دوباره ببندید.';return};if($script:Task){$e.Cancel=$true;Cancel-Work;return};if(!$Smoke -and !$script:AllowClose -and ($script:CurrentMode -or $script:FullSystemActive)){$a=[Windows.MessageBox]::Show('بستن پنل، تونل را قطع نمی‌کند و پایش متوقف می‌شود. پنل بسته شود؟ برای حفظ پایش، Cancel و سپس Minimize را بزنید.','FreeNet Hub','OKCancel','Information');if($a -ne 'OK'){$e.Cancel=$true}}})
+ $script:Window.Add_Closing({param($s,$e)if(!$Smoke -and $script:ShellHosted -and !$script:AllowClose){$e.Cancel=$true;$script:Window.WindowState='Minimized';return};if($script:GatewayTask){$e.Cancel=$true;$script:C.GatewayDetail.Text='عملیات Gateway هنوز در حال اجراست؛ پس از پایان دوباره ببندید.';return};if($script:Task){$e.Cancel=$true;Cancel-Work;return};if(!$Smoke -and !$script:AllowClose -and ($script:CurrentMode -or $script:FullSystemActive)){$a=[Windows.MessageBox]::Show('بستن پنل، تونل را قطع نمی‌کند و پایش متوقف می‌شود. پنل بسته شود؟ برای حفظ پایش، Cancel و سپس Minimize را بزنید.','FreeNet Hub','OKCancel','Information');if($a -ne 'OK'){$e.Cancel=$true}}})
 
  $script:Timer=[Windows.Threading.DispatcherTimer]::new();$script:Timer.Interval=[TimeSpan]::FromMilliseconds(400);$script:NextCheck=[DateTime]::UtcNow.AddSeconds(45);$script:NextNodeRefresh=[DateTime]::UtcNow;$script:NextNodeBenchmark=[DateTime]::UtcNow.AddMinutes(1);$script:BenchmarkAllActive=$false
 

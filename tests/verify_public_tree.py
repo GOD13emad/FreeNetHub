@@ -37,7 +37,14 @@ public_index={row["file"] for row in pm.get("files",[])}
 
 gm,gatewaybad=verify_manifest(R/"gateway",R/"gateway"/"manifest.json","files")
 cm,crossbad=verify_manifest(R/"crossplatform",R/"crossplatform"/"MANIFEST.json","files")
-wm,winbad=verify_manifest(R/"windows"/"standalone",R/"windows"/"standalone"/"MANIFEST.json","files")
+wm=json.loads((R/"windows"/"standalone"/"MANIFEST.json").read_text(encoding="utf-8-sig"))
+winbad=[]
+for row in wm["files"]:
+    rel=row.get("file",row.get("name"))
+    p=R/"windows"/"standalone"/rel
+    source_sha=str(row.get("sourceSha256") or "").upper()
+    if not p.is_file() or not source_sha or hc(p)!=source_sha:
+        winbad.append(rel)
 
 for row in gm["files"]:
     rel="gateway/"+row.get("file",row.get("name"))

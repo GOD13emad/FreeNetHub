@@ -31,7 +31,8 @@ finally:
             if port in ports:hits.append(port)
     out["cleanup"]={"projectListeners":sorted(set(hits)),"pass":not hits}
     if hits: out["status"]="FAIL";out["error"]="CLEANUP_RESIDUE"
-PROJECT=pathlib.Path(__file__).resolve().parent.parent\nev=PROJECT/"evidence"/"R28_WARP_PROVIDER_ACCEPTANCE_20260928.json"
+PROJECT=pathlib.Path(__file__).resolve().parent.parent
+ev=PROJECT/"evidence"/"R28_WARP_PROVIDER_ACCEPTANCE_20260928.json"
 ev.write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 print(json.dumps(out,ensure_ascii=False,indent=2))
 sys.exit(0 if out["status"]=="PASS" else 28)

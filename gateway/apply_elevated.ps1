@@ -79,16 +79,32 @@ try{
  Out-J $Owner $owner
  Out-J $Result ([ordered]@{status='PASS';owner=$owner;consoleManual=if($Mode -eq 'CONSOLE_ONLY'){[ordered]@{ip=$ConsoleCfg.suggested_console_ip;prefix=24;gateway=$ConsoleCfg.gateway;dns=$ConsoleCfg.dns}}else{$null}})
 }catch{
- # Best-effort immediate rollback if ownership was not promoted.
- if(Test-Path $Owner){ } else {
-  Get-NetFirewallRule -DisplayName $fwName -ErrorAction SilentlyContinue|Remove-NetFirewallRule
+ $primaryError=$_.Exception.Message
+ # Fail closed: any start failure must restore prestate before returning failure.
+ if(Test-Path $Owner){
+  $stopScript=Join-Path $PSScriptRoot 'stop_elevated.ps1'
+  & pwsh.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $stopScript
+  $stopExit=$LASTEXITCODE
+  $stopResult=Join-Path $Runtime 'stop_result.json'
+  $stopRecord=$null
+  if(Test-Path $stopResult){try{$stopRecord=Get-Content $stopResult -Raw -Encoding UTF8|ConvertFrom-Json}catch{}}
+  if($stopExit -ne 0 -or !$stopRecord -or [string]$stopRecord.status -ne 'PASS'){Fail ('APPLY_FAILED_PROMOTED_ROLLBACK_INCOMPLETE: '+$primaryError)}
+ } else {
+  Get-NetFirewallRule -DisplayName $fwName -ErrorAction SilentlyContinue|Remove-NetFirewallRule -ErrorAction SilentlyContinue
+  if(Get-NetFirewallRule -DisplayName $fwName -ErrorAction SilentlyContinue){Fail ('APPLY_FAILED_FIREWALL_ROLLBACK_INCOMPLETE: '+$primaryError)}
   if($p -and -not $p.HasExited){Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue}
+  if($p -and (Get-Process -Id $p.Id -ErrorAction SilentlyContinue)){Fail ('APPLY_FAILED_PROCESS_ROLLBACK_INCOMPLETE: '+$primaryError)}
   if($Mode -eq 'CONSOLE_ONLY' -and (Test-Path $Pre)){
    $x=Get-Content $Pre -Raw -Encoding UTF8|ConvertFrom-Json;$c=$x.console
    if($c){
     $hadGateway=@($c.addresses|Where-Object{$_.IPAddress -eq [string]$ConsoleCfg.gateway}).Count -gt 0
-    if(-not $hadGateway){Remove-NetIPAddress -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -IPAddress ([string]$ConsoleCfg.gateway) -PolicyStore ActiveStore -Confirm:$false -ErrorAction SilentlyContinue}
+    if(-not $hadGateway){
+     Remove-NetIPAddress -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -IPAddress ([string]$ConsoleCfg.gateway) -PolicyStore ActiveStore -Confirm:$false -ErrorAction SilentlyContinue
+     if(Get-NetIPAddress -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -IPAddress ([string]$ConsoleCfg.gateway) -ErrorAction SilentlyContinue){Fail ('APPLY_FAILED_GATEWAY_IP_ROLLBACK_INCOMPLETE: '+$primaryError)}
+    }
     Set-NetIPInterface -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -Forwarding $c.forwarding -PolicyStore ActiveStore -ErrorAction SilentlyContinue
+    $restoredIf=Get-NetIPInterface -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue|Select-Object -First 1
+    if(!$restoredIf -or [string]$restoredIf.Forwarding -ne [string]$c.forwarding){Fail ('APPLY_FAILED_FORWARDING_ROLLBACK_INCOMPLETE: '+$primaryError)}
    }
   }
  }

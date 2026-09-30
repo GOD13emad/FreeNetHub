@@ -46,13 +46,13 @@
     },
     {
       "file": "apply_elevated.ps1",
-      "bytes": 6379,
-      "sha256": "1D9209D0257627FC3307A490453956CF73011B805F370BB26D878BD00CB5F0BB"
+      "bytes": 7764,
+      "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
     },
     {
       "file": "stop_elevated.ps1",
-      "bytes": 4455,
-      "sha256": "B82B8282E72BFD6D5AE4414E9391B682A163202C79AA30D5C46ED87D0C5CB712"
+      "bytes": 5216,
+      "sha256": "0B86645215F11150BEC8E8444ADF4E7ED6964D8BB53285FDBF927B2E19EB591F"
     },
     {
       "file": "console_provider.ps1",

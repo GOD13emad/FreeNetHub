@@ -563,6 +563,31 @@ class Unit(unittest.TestCase):
    return {'coreVersion':'4.0-r28-final-provider-capability'} if str(path).endswith('manifest.json') else {}
   with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',side_effect=fake_read):
    r=E.update_release();self.assertFalse(r['updateAvailable']);self.assertEqual(r['currentRevisionNumber'],28);self.assertEqual(r['remoteRevisionNumber'],27)
+ def test_update_release_fails_closed_when_local_revision_is_unparseable(self):
+  body=json.dumps({'tag_name':'v4.2.0-r29','name':'R29','published_at':'x','html_url':'https://example.invalid','assets':[{'name':'FreeNetHub_4.2.0_R29_Setup.exe','browser_download_url':'https://example.invalid/x.exe','size':1,'digest':'sha256:'+'a'*64}]})
+  with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',return_value={'releaseRevision':'unknown'}):
+   r=E.update_release();self.assertFalse(r['revisionComparable']);self.assertFalse(r['updateAvailable']);self.assertEqual(r['remoteRevisionNumber'],29)
+ def test_update_release_fails_closed_when_remote_revision_is_unparseable(self):
+  body=json.dumps({'tag_name':'latest','name':'Latest','published_at':'x','html_url':'https://example.invalid','assets':[{'name':'FreeNetHub_Setup.exe','browser_download_url':'https://example.invalid/x.exe','size':1,'digest':'sha256:'+'a'*64}]})
+  with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',return_value={'releaseRevision':'4.2.0-local-r28-final'}):
+   r=E.update_release();self.assertFalse(r['revisionComparable']);self.assertFalse(r['updateAvailable']);self.assertEqual(r['remoteRevisionNumber'],0)
+ def test_update_release_selects_highest_revisioned_installer_asset(self):
+  assets=[
+   {'name':'FreeNetHub_4.2.0_R28_Setup.exe','browser_download_url':'https://example.invalid/r28.exe','size':1,'digest':'sha256:'+'a'*64},
+   {'name':'FreeNetHub_4.2.0_R30_Setup.exe','browser_download_url':'https://example.invalid/r30.exe','size':1,'digest':'sha256:'+'b'*64},
+   {'name':'FreeNetHub_Setup.exe','browser_download_url':'https://example.invalid/unversioned.exe','size':1,'digest':'sha256:'+'c'*64},
+  ]
+  body=json.dumps({'tag_name':'v4.2.0-r30','name':'R30','published_at':'x','html_url':'https://example.invalid','assets':assets})
+  with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',return_value={'releaseRevision':'4.2.0-local-r29-final'}):
+   r=E.update_release();self.assertTrue(r['revisionComparable']);self.assertTrue(r['updateAvailable']);self.assertEqual(r['remoteRevisionNumber'],30);self.assertEqual(r['asset']['name'],'FreeNetHub_4.2.0_R30_Setup.exe')
+ def test_update_release_ignores_non_installer_exe_even_with_higher_revision(self):
+  assets=[
+   {'name':'FreeNetHub_4.2.0_R99_Diagnostic.exe','browser_download_url':'https://example.invalid/tool.exe','size':1,'digest':'sha256:'+'c'*64},
+   {'name':'FreeNetHub_4.2.0_R40_LifecycleSafe_Setup.exe','browser_download_url':'https://example.invalid/setup.exe','size':1,'digest':'sha256:'+'d'*64},
+  ]
+  body=json.dumps({'tag_name':'v4.2.0-r40','name':'R40','published_at':'x','html_url':'https://example.invalid','assets':assets})
+  with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',return_value={'releaseRevision':'4.2.0-local-r39-final'}):
+   r=E.update_release();self.assertTrue(r['updateAvailable']);self.assertEqual(r['remoteRevisionNumber'],40);self.assertEqual(r['asset']['name'],'FreeNetHub_4.2.0_R40_LifecycleSafe_Setup.exe')
  def test_system_speed_probe_failure_is_structured_when_session_is_active(self):
   sess={'mode':'PC_TUNNEL','provider':'WARP'}
   badtrace={'exit':28,'code':'000','body':'','seconds':None}

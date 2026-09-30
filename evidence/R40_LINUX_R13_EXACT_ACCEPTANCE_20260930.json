@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "status": "PASS_LINUX_R13_EXACT_ACCEPTANCE",
+  "sourceCommit": "ab6a24658de9df0f0fe2d06aa48455474af818ea",
+  "package": {
+    "path": "delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R13.zip",
+    "bytes": 212774,
+    "sha256": "3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF",
+    "files": 22
+  },
+  "install": {
+    "version": "4.2.0-linux.13-r40",
+    "release": "LINUX_4.2.0_R13_R40_LIFECYCLE_SAFE",
+    "integrity": "9/9 PASS",
+    "networkMutationOnInstall": false,
+    "routePreserved": true,
+    "externalTunPreserved": true
+  },
+  "prePostNetwork": {
+    "physicalDefault": "192.168.20.1 via enp1s0",
+    "externalTun": "tun0",
+    "externalTunDefault": "10.211.1.78 via tun0",
+    "routeUnchanged": true,
+    "tunUnchanged": true
+  },
+  "lifecycle": {
+    "installedUiLaunch": "PASS",
+    "signalFullExit": "PASS",
+    "cleanupFailClosedContract": "PASS_STATIC_AND_SIGNAL_LIVE",
+    "processExited": true,
+    "routeUnchanged": true,
+    "externalTunUnchanged": true,
+    "closeToHide": "STATIC_CONTRACT_ONLY_GUI_CONTROL_NOT_EXPOSED"
+  },
+  "updateCheckPrePublish": {
+    "status": "EXTERNAL_RATE_LIMIT",
+    "error": "HTTP 403 GitHub unauthenticated rate limit exceeded",
+    "adjudication": "Not product regression; post-publish update check remains required."
+  },
+  "supersededPackages": [
+    "3BD6FEC23854DA49754756057A9B72320E8A0B628195336C606714FC2301EA7B",
+    "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8"
+  ],
+  "confidence": "HIGH"
+}

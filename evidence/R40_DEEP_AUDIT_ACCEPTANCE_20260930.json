@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "status": "R40_LIFECYCLE_SAFE_CANDIDATE",
+  "objective": "R40 lifecycle-safety hardening after deep line-level audit",
+  "baseMain": "1900a1b7af1d303d3cf1e56bd76ac7878c1f30c9",
+  "confirmedFindings": [
+    {
+      "id": "WIN_SHELL_EXIT_ORPHAN_RISK",
+      "status": "CONFIRMED",
+      "finding": "R39 tray Full Exit called ExitAll(0) directly without verified owned-runtime cleanup.",
+      "fix": "ExitCleanly invokes fail-closed cleanup and exits only after cleanup exit 0."
+    },
+    {
+      "id": "UPDATE_ACTIVE_RUNTIME_GUARD",
+      "status": "CONFIRMED_GAP",
+      "finding": "R39 UI update install path did not independently reject active/stale FreeNetHub-owned runtime before installer launch.",
+      "fix": "UI and Prepare-Upgrade now fail closed on active/unverifiable Gateway/Direct-DPI/runtime state."
+    },
+    {
+      "id": "GATEWAY_ROLLBACK_VERIFICATION",
+      "status": "CONFIRMED_GAP",
+      "finding": "Gateway apply/stop had best-effort cleanup branches that could return after silent rollback failure.",
+      "fix": "Critical rollback removals/restores are verified and fail closed on residue."
+    },
+    {
+      "id": "UPDATE_REVISION_PARSE",
+      "status": "CONFIRMED_GAP",
+      "finding": "Unparseable local/remote revision could previously be treated as update-available.",
+      "fix": "Revision comparison now requires parseable positive local and remote revisions and selects highest revisioned installer asset."
+    },
+    {
+      "id": "LINUX_CLOSE_LIFECYCLE",
+      "status": "CONFIRMED_GAP",
+      "finding": "Linux close/shutdown lifecycle lacked explicit hide-on-close plus owned-runtime cleanup on real shutdown/signals.",
+      "fix": "Close hides; shutdown/SIGTERM/SIGINT invokes browser and console cleanup."
+    },
+    {
+      "id": "UPDATE_ASSET_TYPE_CONFUSION",
+      "status": "CONFIRMED_FIXED",
+      "finding": "Updater asset discovery accepted any FreeNetHub_*.exe, so an unrelated higher-revision diagnostic/tool executable could outrank the installer.",
+      "fix": "Only FreeNetHub_*_Setup.exe assets are eligible; dedicated regression proves a hypothetical R99 diagnostic is ignored in favor of R40 Setup."
+    },
+    {
+      "id": "WIN_CLOSE_STARTUP_TASK_PRECEDENCE",
+      "status": "CONFIRMED_FIXED_LIVE_PASS",
+      "finding": "During startup Inventory/NodeRefresh work, Closing evaluated Task before ShellHosted tray behavior; first X only cancelled work and left the window visible.",
+      "fix": "ShellHosted Closing is evaluated first and sets WindowState=Minimized; Shell timer hides it to tray. Exact-installed live diagnostic: iconic at 100ms, hidden by 250ms, shell/child alive through 4s, second launch restores same instance."
+    },
+    {
+      "id": "LINUX_EXIT_FAIL_CLOSED",
+      "status": "SOURCE_FIXED_LIVE_PENDING",
+      "finding": "Cleanup only in GTK shutdown callback could not veto a user/signal exit if cleanup failed.",
+      "fix": "Explicit Full Exit/SIGTERM/SIGINT now runs browser+console cleanup in a worker and calls quit only after aggregate PASS; failure presents UI and keeps app alive. Shutdown callback remains fallback."
+    }
+  ],
+  "validation": {
+    "pytest": "181/181 PASS on final local source candidate",
+    "pythonCompile": "PASS",
+    "powershellParse": "PASS",
+    "csharpCompile": "PASS",
+    "securityScan": "PASS",
+    "gatewayFocused": "18 PASS",
+    "linuxParityStatic": "PASS",
+    "mobileFailClosed": "PASS",
+    "windowsExactInstall": "PASS",
+    "windowsInstalledParity": "app 17/17 + gateway 17/17 PASS",
+    "windowsFiveTabSmoke": "5/5 PASS",
+    "windowsCloseToTray": "PASS hidden by 250ms; shell+child remain alive; second launch restores same instance",
+    "windowsFullExitCleanup": "PASS; zero project listeners/TUN/Gateway owner/Direct-DPI residue",
+    "windowsUpdateDowngradeGuard": "PASS local R40 vs public R39 => updateAvailable=false",
+    "windowsRoutePreservation": "PASS Ethernet 3 -> 192.168.20.1 unchanged",
+    "linuxR13ExactInstall": "PASS",
+    "linuxR13Integrity": "9/9 PASS",
+    "linuxR13RoutePreservation": "PASS",
+    "linuxR13ExternalTunPreservation": "PASS",
+    "linuxR13SignalFullExit": "PASS",
+    "hostedCi142": "PASS run 36734201519 / #142"
+  },
+  "pending": [
+    "fresh hosted CI on acceptance-evidence commit",
+    "merge + post-merge CI + v4.2.0-r40-final publication",
+    "post-publish Windows 40=40 and Linux 13=13 update checks"
+  ],
+  "confidence": "HIGH",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "release handoff",
+    "R40 final acceptance"
+  ],
+  "version": "4.2.0",
+  "phase": "PRODUCT_HARDENING_LIVE_AND_CI_PASS_FINAL_PROMOTION_PENDING",
+  "failuresAndPrevention": [
+    {
+      "id": "LINUX_R13_EMBEDDED_INSTALL_METADATA_MISMATCH",
+      "status": "FIXED_BEFORE_INSTALL",
+      "rootCause": "Initial R13 package builder renamed package/manifest but source install.sh and legacy runtime VERSION still embedded R12 metadata.",
+      "prevention": "R13 builder now asserts expected version in both runtime modules and exact version/release markers in install.sh before packaging.",
+      "supersededPackageSha256": "3BD6FEC23854DA49754756057A9B72320E8A0B628195336C606714FC2301EA7B",
+      "correctedPackageSha256": "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8",
+      "installedSupersededPackage": false
+    },
+    {
+      "id": "WINDOWS_STANDALONE_MANIFEST_EOL_HASH_DRIFT",
+      "status": "FIXED",
+      "rootCause": "Hosted CI checkout normalized RUNTIME_ACCEPTANCE.json to LF while standalone MANIFEST raw sha256 was generated from Windows CRLF bytes.",
+      "prevention": "Standalone MANIFEST now records raw runtime sha256 plus canonical Git sourceSha256; public-tree CI verifies sourceSha256 while installed integrity retains raw sha256.",
+      "failedCiRun": 36726955508,
+      "failedJob": 109926182942
+    },
+    {
+      "id": "WINDOWS_CLOSE_TO_TRAY_STARTUP_TASK_ORDER",
+      "status": "ROOT_CAUSE_FIXED_AND_LIVE_REGRESSION_PASS",
+      "rootCause": "Closing handler checked active Task/Gateway before ShellHosted behavior, so startup Inventory caused X to cancel work instead of minimizing. A first attempted direct Hide inside Closing destroyed the WPF child and was rejected.",
+      "prevention": "ShellHosted branch now precedes Task/Gateway and uses WindowState=Minimized; shell timer performs HideToTray. Live WM_CLOSE interval diagnostic is required for regression."
+    }
+  ],
+  "linuxR13Candidate": {
+    "bytes": 212774,
+    "sha256": "3FFE2DBFBF5D2473D3B6C2AFCF39AD553337790BEDC6ACAC47BA8C8264C132FF",
+    "installAcceptance": "PASS",
+    "evidence": "evidence/R40_LINUX_R13_EXACT_ACCEPTANCE_20260930.json",
+    "routePreserved": true,
+    "externalTunPreserved": true,
+    "signalFullExit": "PASS",
+    "closeToHide": "STATIC_CONTRACT_ONLY_GUI_CONTROL_NOT_EXPOSED"
+  },
+  "productCandidateCommit": "9eb44a264466fa430ec62c87ebb2ee4b369cf74b",
+  "windowsR40Candidate": {
+    "bytes": 24248017,
+    "sha256": "C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32",
+    "installAcceptance": "PASS",
+    "evidence": "evidence/R40_WINDOWS_EXACT_ACCEPTANCE_20260930.json"
+  },
+  "acceptanceState": "WINDOWS_AND_LINUX_CLOSED_PASS_PROMOTION_PENDING"
+}

@@ -75,8 +75,10 @@ if($tun){Fail 'TUN_ADAPTER_STOP_INCOMPLETE' $o}
 
 if($o.firewallRule){
  Get-NetFirewallRule -DisplayName ([string]$o.firewallRule) -ErrorAction SilentlyContinue|Remove-NetFirewallRule -ErrorAction SilentlyContinue
+ if(Get-NetFirewallRule -DisplayName ([string]$o.firewallRule) -ErrorAction SilentlyContinue){Fail 'FIREWALL_RULE_STOP_INCOMPLETE' $o}
 }
 
+if([string]$o.mode -eq 'CONSOLE_ONLY' -and -not (Test-Path $Pre)){Fail 'PRESTATE_MISSING_FOR_CONSOLE_ROLLBACK' $o}
 if(Test-Path $Pre){
  $x=Get-Content $Pre -Raw -Encoding UTF8|ConvertFrom-Json
  $c=$x.console
@@ -84,11 +86,17 @@ if(Test-Path $Pre){
   $d=Get-Content (Join-Path $PSScriptRoot 'gateway_defaults.json') -Raw -Encoding UTF8|ConvertFrom-Json
   $cc=Get-FnhConsoleConfig $d
   $hadGateway=@($c.addresses|Where-Object{$_.IPAddress -eq [string]$cc.gateway}).Count -gt 0
-  if(-not $hadGateway){Remove-NetIPAddress -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -IPAddress ([string]$cc.gateway) -PolicyStore ActiveStore -Confirm:$false -ErrorAction SilentlyContinue}
+  if(-not $hadGateway){
+   Remove-NetIPAddress -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -IPAddress ([string]$cc.gateway) -PolicyStore ActiveStore -Confirm:$false -ErrorAction SilentlyContinue
+   if(Get-NetIPAddress -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -IPAddress ([string]$cc.gateway) -ErrorAction SilentlyContinue){Fail 'CONSOLE_GATEWAY_IP_STOP_INCOMPLETE' $o}
+  }
   Set-NetIPInterface -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -Forwarding $c.forwarding -PolicyStore ActiveStore -ErrorAction SilentlyContinue
+  $restoredIf=Get-NetIPInterface -InterfaceIndex $c.ifIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue|Select-Object -First 1
+  if(!$restoredIf -or [string]$restoredIf.Forwarding -ne [string]$c.forwarding){Fail 'CONSOLE_FORWARDING_RESTORE_INCOMPLETE' $o}
  }
 }
 Remove-Item $Owner -Force -ErrorAction SilentlyContinue
+if(Test-Path $Owner){Fail 'OWNER_STATE_REMOVE_INCOMPLETE' $o}
 Out-J $Result ([ordered]@{
  status='PASS';state='STOPPED';recoveredOwner=$recovered;stoppedPid=[int]$o.pid;
  tunRemoved=$true;utc=[DateTimeOffset]::UtcNow.ToString('o')
