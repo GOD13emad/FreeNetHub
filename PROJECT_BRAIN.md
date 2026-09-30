@@ -4,7 +4,7 @@ Status: FINAL_DESKTOP_ACCEPTED_R41
 Brain version: r41-final-workspace-closeout-2026-09-30
 Installed authority: Windows 4.2.0-local-r40-lifecycle-safe (FINAL_ACCEPTED, unchanged in R41); Linux 4.2.0-linux.14-r41 (FINAL_ACCEPTED)
 Source authority: runtime/release target 967fe5920a00f102e408002f8ffb030e4d15b6fd; project-control authority is current origin/main, where control-only closure commits may advance without changing accepted runtime bytes
-Promotion state: R41 PUBLIC FINAL runtime remains CLOSED_PASS; final workspace closeout is blocked only on Android hosted-CI hierarchy synchronization hardening validation; trusted Authenticode MISSING_EXTERNAL ← CURRENT
+Promotion state: R41 PUBLIC FINAL + WORKSPACE CLOSED_PASS; Android CI hierarchy synchronization hardening CLOSED_PASS via direct CI #162; Windows R40 and Linux R14 unchanged/accepted; trusted Authenticode MISSING_EXTERNAL ← CURRENT
 Desktop closure scope:
 - Included: Windows R40 desktop runtime/release continuity; Linux R14 desktop runtime/release; updater/integrity/CI/release continuity.
 - Excluded separate tracks: physical Console field E2E; Android production forwarding/signing; iOS production forwarding/device signing; optional Linux Node Full-System privileged helper.
@@ -150,7 +150,7 @@ Fix:
 - iOS production packet-forwarding core/device signing — DEFERRED_SEPARATE_TRACK; hosted simulator lifecycle PASS; not part of desktop final DoD.
 
 ## Exact Next Action
-Validate the bounded Android UI-hierarchy wait on fresh hosted CI without manual job rerun. If Android emulator runtime and aggregate virtual-acceptance PASS directly, mark workspace closeout CLOSED_PASS, merge PR #21, require post-merge main CI PASS, then freeze with no further action.
+Merge PR #21 after final control-only CI, require post-merge main CI PASS, delete the temporary closeout branch, synchronize Windows/Linux canonical main worktrees, then preserve the frozen R41 baseline with no further action.
 
 ## HISTORY
 - 2026-09-29 Linux R11 UX final candidate: exact package SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` installed with zero route mutation; UI minimum 842x602; explicit scope/method selection; base/selected/all-method tests; two-stage node testing; seven sort modes; instant IP visibility; direct update flow. Live UI WARP Ping, sequential all-method testing, 2000-node endpoint test, real node benchmark, IP reveal and update check all exercised. Evidence: `evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json`.
@@ -231,3 +231,5 @@ Validate the bounded Android UI-hierarchy wait on fresh hosted CI without manual
 - 2026-09-30 FINAL WORKSPACE CLOSEOUT: GitHub reduced to branch main only with zero open PRs/issues; obsolete Dependabot major-upgrade PRs #2-#5 closed as deferred maintenance. Windows and Linux each reduced to one clean canonical main worktree synced to origin/main. Dirty/non-merged legacy states were archived before cleanup: Windows archive manifest SHA-256 AC2A40DF...A96E and branch bundle 0987AB8F...E7BB; Linux branch bundle 3cfd30a8...d39d and verified SHA256SUMS baf05b01...b85e. No runtime/network mutation was performed by workspace cleanup. Evidence: evidence/R41_FINAL_WORKSPACE_CLOSEOUT_20260930.json.
 
 - 2026-09-30 Android CI hardening candidate: PR #21 CI #160 proved emulator boot/ADB/build/APK install/MainActivity launch PASS (Status: ok) but failed on a one-shot first UI hierarchy state assertion. This differs from the earlier #151 ADB-offline transient. Root cause is PROBABLE_HIGH: hierarchy publication can lag Activity launch completion. Official Android UI Automator guidance favors bounded element/state waiting and stability controls. Harness now uses bounded dump_until_contains waits at all lifecycle transitions, preserves fail-closed assertions, emits diagnostics on timeout, and has a static regression guard. Promotion requires a fresh direct PASS, not a blind job rerun. Evidence: evidence/R41_FINAL_WORKSPACE_CLOSEOUT_20260930.json.
+
+- 2026-09-30 Android CI hardening validation: fresh CI #162 (run 36765328910) on hardened head 7bb945a passed android-emulator-runtime directly with no manual rerun; ios-simulator-runtime and aggregate virtual-acceptance also PASS. Prevention is CLOSED_PASS while root-cause wording remains PROBABLE_HIGH rather than overstated.

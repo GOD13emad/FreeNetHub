@@ -151,6 +151,16 @@
         "CI harness",
         "regression policy"
       ]
+    },
+    {
+      "claimDecision": "Android UI hierarchy synchronization hardening is accepted.",
+      "evidenceSource": "Fresh hosted CI #162 on head 7bb945a passed android-emulator-runtime directly without manual rerun; iOS simulator and aggregate virtual-acceptance also passed.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "CI reliability",
+        "final handoff",
+        "failure prevention"
+      ]
     }
   ],
   "provenance": {

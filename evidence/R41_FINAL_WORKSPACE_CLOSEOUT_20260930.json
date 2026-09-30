@@ -79,12 +79,12 @@
     "nonMergedLegacyHistoryArchivedBeforeDeletion": true,
     "destructiveCleanupWithoutBackup": false
   },
-  "decision": "R41 desktop project is operationally frozen. No open product work, no open repository work, no stale active branches, and one clean canonical main worktree per host.",
+  "decision": "R41 desktop project and final workspace closeout are CLOSED_PASS. Android hosted-CI hierarchy synchronization hardening is validated by direct CI #162 success. No further runtime or CI mutation is justified by current evidence.",
   "exactNextAction": "No action. Preserve baseline. Only create a successor revision for a new requirement/bug or externally provisioned trusted Windows signing identity.",
   "confidence": "HIGH",
   "ciHardening": {
     "id": "ANDROID_EMULATOR_UI_HIERARCHY_READINESS_RACE",
-    "status": "CANDIDATE_PENDING_HOSTED_VALIDATION",
+    "status": "CLOSED_PASS",
     "trigger": {
       "runNumber": 160,
       "runId": 36763840737,
@@ -131,6 +131,16 @@
       "workflowYamlParse": "PASS",
       "diffCheck": "PASS"
     },
-    "promotionGate": "Fresh hosted CI on the hardened exact head must pass Android emulator runtime directly and aggregate virtual-acceptance without a manual job rerun."
+    "promotionGate": "CLOSED_PASS",
+    "hostedValidation": {
+      "runNumber": 162,
+      "runId": 36765328910,
+      "head": "7bb945a8b8f6d6a0a4fd62fd8015454e833f41b8",
+      "androidEmulatorRuntime": "PASS_DIRECT_NO_RERUN",
+      "iosSimulatorRuntime": "PASS",
+      "virtualAcceptance": "PASS",
+      "conclusion": "SUCCESS"
+    },
+    "adjudication": "Bounded hierarchy-state synchronization is accepted as effective prevention for the CI #160 timing failure; root-cause classification remains PROBABLE_HIGH rather than overstated as proven."
   }
 }
