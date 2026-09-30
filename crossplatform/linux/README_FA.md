@@ -1,6 +1,6 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.13-r40
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.14-r41
 
-نسخهٔ Linux R13 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
+نسخهٔ Linux R14 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
 
 ## رابط R37
 
@@ -20,7 +20,7 @@
   - Custom HTTP/SOCKS proxy و Direct.
 - Full System:
   - WARP رسمی Cloudflare، با ownership/rollback موجود.
-  - Full-System Node در Linux R13 ادعا نمی‌شود؛ بدون helper privileged/CAP_NET_ADMIN fail-closed می‌ماند.
+  - Full-System Node در Linux R14 ادعا نمی‌شود؛ بدون helper privileged/CAP_NET_ADMIN fail-closed می‌ماند.
 - Console:
   - NetworkManager-owned hotspot/gateway مستقل؛ physical game/country E2E همچنان gate خارجی است.
 

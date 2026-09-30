@@ -22,7 +22,7 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 
-VERSION = "4.2.0-linux.13-r40"
+VERSION = "4.2.0-linux.14-r41"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -1001,6 +1001,10 @@ def _linux_revision_from_name(name):
     m=re.search(r"_Linux_R(\d+)\.zip$",str(name or ""),re.I)
     return int(m.group(1)) if m else None
 
+def _linux_revision_from_version(version):
+    m=re.search(r"-linux\.(\d+)-r\d+$",str(version or ""),re.I)
+    return int(m.group(1)) if m else None
+
 def update_check():
     req=urllib.request.Request("https://api.github.com/repos/GOD13emad/FreeNetHub/releases/latest",headers={"User-Agent":"FreeNetHub-Linux-R37/1","Accept":"application/vnd.github+json"})
     try:
@@ -1012,7 +1016,9 @@ def update_check():
     linux_assets=[a for a in assets if _linux_revision_from_name(a.get("name")) is not None]
     linux=max(linux_assets,key=lambda a:_linux_revision_from_name(a.get("name")),default=None)
     remote_rev=_linux_revision_from_name(linux.get("name")) if linux else None
-    local_rev=12
+    local_rev=_linux_revision_from_version(VERSION)
+    if local_rev is None:
+        return {"ok":False,"error":"LOCAL_LINUX_REVISION_UNPARSEABLE","current":VERSION,"tag":j.get("tag_name"),"assets":assets}
     return {"ok":True,"current":VERSION,"localRevision":local_rev,"tag":j.get("tag_name"),"published":j.get("published_at"),"linuxAsset":linux,"remoteRevision":remote_rev,"updateAvailable":bool(remote_rev is not None and remote_rev>local_rev),"assets":assets}
 
 def update_install():

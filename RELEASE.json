@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-local-r40-lifecycle-safe",
-  "status": "R40_LIFECYCLE_SAFE_CANDIDATE",
+  "releaseRevision": "4.2.0-r41-linux-update-revision-fix",
+  "status": "R41_LINUX_UPDATE_REVISION_FIX_CANDIDATE",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -21,12 +21,12 @@
   "viewSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
   "desktopShellSha256": "42399C7A30ECC88588AAA0F68782629ADB4A049F2576F978C5EAC1F35E2D6435",
   "gatewayManifestSha256": "DA4C24B3C3611138AE80788966961C5F33C73917983F39B522852C40EACB9247",
-  "crossPlatformManifestSha256": "3A551ABD7383ABAF7AD286AD8463E6FE53BD86207FC3818E36E66D3CBC64C39E",
+  "crossPlatformManifestSha256": "6C74E8DFB3A7F0F487559511BF4262199C5409F9334301E4B625FD7A7FA013C7",
   "installerSha256": null,
-  "acceptanceEvidence": "evidence/R40_DEEP_AUDIT_ACCEPTANCE_20260930.json",
+  "acceptanceEvidence": "evidence/R41_LINUX_UPDATE_REVISION_FIX_20260930.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "CANDIDATE_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R13_R40_LIFECYCLE_SAFE",
+    "linux": "CANDIDATE_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R14_R41_UPDATE_REVISION_FIX",
     "android": "BUILD_ACCEPTED_CORE_NOT_LINKED",
     "ios": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN"
   },
@@ -78,7 +78,7 @@
     "nativeLinuxAcceptanceEvidence": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
     "v4.2.0PublishedReleaseAuthority": true,
     "githubReleaseImmutableObserved": false,
-    "nativeLinuxVersion": "4.2.0-linux.13-r40",
+    "nativeLinuxVersion": "4.2.0-linux.14-r41",
     "nativeLinuxLegacyProfileMigration": "PASS_EXACT_FINGERPRINT_ONLY",
     "nativeLinuxUninstaller": "PASS_OWNED_UUID_SCOPE_PRIVATE_STATE_PRESERVED",
     "nativeLinuxDirectCurrentProbe": "NETWORK_TRANSIENT_BOOTSTRAP_55_PERCENT_AT_90S",
@@ -708,5 +708,19 @@
     "installedAcceptance": "SEE_ACCEPTANCE_EVIDENCE",
     "trustedSigning": "OPEN_NOTSIGNED",
     "physicalConsoleE2E": "UNPROVEN_EXTERNAL_HARDWARE_GATE"
+  },
+  "r41LinuxUpdateRevisionFix": {
+    "status": "CANDIDATE",
+    "publicRelease": false,
+    "basePublicRelease": "v4.2.0-r40-final",
+    "windowsRuntime": "UNCHANGED_R40_ACCEPTED",
+    "linuxRuntime": "R14_CANDIDATE",
+    "rootCause": "LINUX_LOCAL_REVISION_HARDCODE_DRIFT",
+    "sameRevisionRegression": "PASS",
+    "malformedVersionFailClosed": "PASS",
+    "ciCurrentPackageBuilder": "tests/build_linux_r14_package.py",
+    "installedAcceptance": "PENDING",
+    "windowsContinuity": "R40_ACCEPTED_UNCHANGED",
+    "linuxArtifact": "R14_CANDIDATE"
   }
 }

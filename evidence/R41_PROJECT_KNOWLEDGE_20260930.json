@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "status": "CURRENT",
+  "context": "R41 Linux updater revision authority fix",
+  "records": [
+    {
+      "claimDecision": "R40/Linux R13 updater false-positive is a product bug, not an external-service artifact.",
+      "evidenceSource": "Live installed update_check: current=4.2.0-linux.13-r40, localRevision=12, remoteRevision=13, updateAvailable=true; route/tun unchanged.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "release notes",
+        "failure prevention",
+        "tests"
+      ]
+    },
+    {
+      "claimDecision": "Do not mutate published R40/R13 asset; create Linux R14 under R41.",
+      "evidenceSource": "Published v4.2.0-r40-final already carries accepted digests; revision bump avoids mutable-release ambiguity.",
+      "confidence": "CONFIRMED_DECISION",
+      "reuseTargets": [
+        "release process",
+        "handoff"
+      ]
+    },
+    {
+      "claimDecision": "Minimum sufficient fix is dynamic VERSION-derived local revision + fail-closed malformed version + CI current-builder guard.",
+      "evidenceSource": "Focused regression PASS; no Windows runtime mutation required.",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "architecture",
+        "regression policy"
+      ]
+    },
+    {
+      "claimDecision": "R41 source candidate passed full local gate before promotion.",
+      "evidenceSource": "181/181 pytest PASS; public-tree verifier PASS; security scan zero hits; Linux R14 package deterministic build PASS.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "PROJECT_BRAIN",
+        "release handoff",
+        "R41 final acceptance"
+      ]
+    },
+    {
+      "claimDecision": "Linux R14 exact live acceptance closed the R40 false-update regression.",
+      "evidenceSource": "Exact package B3FD52...FF984 installed; 9/9 integrity; local14 vs public remote13 => updateAvailable=false; route and external tun0 unchanged.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "PROJECT_BRAIN",
+        "release notes",
+        "regression evidence"
+      ]
+    },
+    {
+      "claimDecision": "R41 source commit passed hosted CI #148 including aggregate virtual acceptance.",
+      "evidenceSource": "GitHub Actions run 36739836044, conclusion success.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "release handoff",
+        "final acceptance"
+      ]
+    }
+  ],
+  "provenance": {
+    "branch": "r41-linux-update-revision-fix",
+    "baseMain": "0149583d797260b47adae0175b3a2a92b814488a"
+  }
+}
