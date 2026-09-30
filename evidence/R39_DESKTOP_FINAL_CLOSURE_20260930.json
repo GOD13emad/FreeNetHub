@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "status": "PASS_DESKTOP_FINAL_CLOSURE_WITH_EXTERNAL_SIGNING_MISSING",
+  "scope": "WINDOWS_R39_PLUS_LINUX_R12_DESKTOP",
+  "preClosureMain": "3b2be7d21d983b36ab90166b9fede85c59ecb24f",
+  "release": {
+    "tag": "v4.2.0-r39-final",
+    "targetCommit": "c80d9a16d315a15c185b6eba67c3a97f70d5c1ce",
+    "windowsAsset": "FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe",
+    "windowsSha256": "28d0d9d64f9580f6b800bea53f3e8310c4a2c52cd052e7f56bf721d4e0927f9f",
+    "linuxAsset": "FreeNetHub_4.2.0_Linux_R12.zip",
+    "linuxSha256": "9b0d413c168ec5def50cf29a574e243b8f4195c1cfdb9008e4307cf09c4a4cc3"
+  },
+  "hostedCI": {
+    "pullRequest": {
+      "runNumber": 131,
+      "runId": 36708555313,
+      "conclusion": "success"
+    },
+    "postMergeMain": {
+      "runNumber": 132,
+      "runId": 36709914043,
+      "conclusion": "success",
+      "virtualAcceptance": "success"
+    }
+  },
+  "windowsInstalled": {
+    "coreVersion": "4.0-r39-online-noadmin",
+    "appManifestIntegrity": "17/17 PASS",
+    "gatewayManifestIntegrity": "17/17 PASS",
+    "runtime": "SELF_CONTAINED PASS",
+    "update": {
+      "localRevision": 39,
+      "remoteRevision": 39,
+      "updateAvailable": false,
+      "assetDigest": "sha256:28d0d9d64f9580f6b800bea53f3e8310c4a2c52cd052e7f56bf721d4e0927f9f"
+    },
+    "route": {
+      "unchanged": true,
+      "interface": "Ethernet 3",
+      "nextHop": "192.168.20.1"
+    },
+    "launcherAuthenticode": "NotSigned"
+  },
+  "linuxInstalled": {
+    "version": "4.2.0-linux.12-r38",
+    "integrity": "9/9 PASS via INSTALL.sha256",
+    "update": {
+      "localRevision": 12,
+      "remoteRevision": 12,
+      "updateAvailable": false,
+      "assetDigest": "sha256:9b0d413c168ec5def50cf29a574e243b8f4195c1cfdb9008e4307cf09c4a4cc3"
+    },
+    "routeUnchanged": true,
+    "preExistingTun0Untouched": true,
+    "physicalUnderlay": "enp1s0 via 192.168.20.1"
+  },
+  "signingAudit": {
+    "status": "MISSING_EXTERNAL",
+    "localCodeSigningCertificates": 0,
+    "githubSigningSecrets": 0,
+    "azureCliAuthenticated": true,
+    "azureAccount": "tenant-level account; no usable subscription present",
+    "installedLauncher": "NotSigned",
+    "reason": "Publicly trusted signing requires externally provisioned and identity-validated signing authority. Test/self-signed certificates do not satisfy production trust.",
+    "officialSources": [
+      "https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options",
+      "https://learn.microsoft.com/en-us/windows/msix/package/signing-package-overview",
+      "https://learn.microsoft.com/en-us/windows/apps/dev-tools/winapp-cli/security"
+    ]
+  },
+  "separateDeferredTracks": [
+    "PHYSICAL_CONSOLE_FIELD_E2E",
+    "ANDROID_PRODUCTION_FORWARDING_AND_SIGNING",
+    "IOS_PRODUCTION_FORWARDING_AND_DEVICE_SIGNING",
+    "OPTIONAL_LINUX_NODE_FULL_SYSTEM_PRIVILEGED_HELPER"
+  ],
+  "decision": "Windows R39 + Linux R12 functional desktop product is FINAL_ACCEPTED. No runtime mutation is justified. Authenticode remains explicitly MISSING_EXTERNAL and must not be represented as PASS.",
+  "confidence": "HIGH",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "release handoff",
+    "desktop final audit"
+  ]
+}
