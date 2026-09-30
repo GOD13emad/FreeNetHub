@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import signal
 import subprocess
 import sys
 import threading
@@ -139,6 +140,21 @@ class FreeNetHub(Adw.Application):
         self.monitor_failures=0
         self.repairs=0
         self._syncing_ip=False
+        self._shutdown_started=False
+        self.connect("shutdown",self._on_shutdown)
+        signal.signal(signal.SIGTERM,self._request_signal_quit)
+        signal.signal(signal.SIGINT,self._request_signal_quit)
+
+    def _request_signal_quit(self,*_args):
+        GLib.idle_add(self.quit)
+
+    def _on_shutdown(self,*_args):
+        if not self._shutdown_started:
+            self._shutdown_started=True
+            browser=core.stop_all()
+            console=core.console_stop()
+            if not browser.get("ok") or not console.get("ok"):
+                print("FREENETHUB_SHUTDOWN_CLEANUP_FAIL",json.dumps({"browser":browser,"console":console},ensure_ascii=False),file=sys.stderr)
 
     def do_activate(self):
         if self.win:
@@ -147,6 +163,7 @@ class FreeNetHub(Adw.Application):
         self.apply_theme(self.dark)
 
         self.win=Adw.ApplicationWindow(application=self)
+        self.win.set_hide_on_close(True)
         self.win.set_title(f"FreeNet Hub · {core.VERSION}")
         self.win.set_default_size(1000,650)
         self.win.set_size_request(720,480)
@@ -242,7 +259,7 @@ class FreeNetHub(Adw.Application):
         status.append(iprow)
         root.append(status)
 
-        scopes=card();scopes.append(label("۱ · محدوده اتصال (Scope)","section-title"));scopes.append(label("مرورگر امن‌ترین حالت پیش‌فرض است. «کل سیستم» در Linux R12 فقط WARP رسمی است.","muted"))
+        scopes=card();scopes.append(label("۱ · محدوده اتصال (Scope)","section-title"));scopes.append(label("مرورگر امن‌ترین حالت پیش‌فرض است. «کل سیستم» در Linux R13 فقط WARP رسمی است.","muted"))
         scope_widgets=[]
         for key,text,sub in [
             ("BROWSER","◎ مرورگر","فقط مرورگر/پروفایل FreeNet Hub"),
@@ -493,7 +510,7 @@ class FreeNetHub(Adw.Application):
             title=next((x[1] for x in METHODS if x[0]==self.method),self.method)
             self.methods_current.set_text(f"{title} · {names.get(scope,scope)}")
         if scope=="CONSOLE":self.status_detail.set_text("Console Gateway مستقل انتخاب شد.")
-        elif scope=="SYSTEM":self.status_detail.set_text("Full System در Linux R12 فقط WARP رسمی است.")
+        elif scope=="SYSTEM":self.status_detail.set_text("Full System در Linux R13 فقط WARP رسمی است.")
         else:self.status_detail.set_text("Browser scope پیش‌فرض امن است.")
         return False
 

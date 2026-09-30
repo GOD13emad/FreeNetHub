@@ -7,6 +7,6 @@ for n in files:
  p=R/n
  if not p.is_file(): raise SystemExit('MISSING '+n)
  b=p.read_bytes(); rows.append({'name':n,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest().upper()})
-m={'product':'FreeNet Hub','version':'4.2.0','state':'R39_NOADMIN_LAUNCH_ACCEPTED','scope':'WINDOWS_STANDALONE_420_R39_NOADMIN','files':rows}
+m={'product':'FreeNet Hub','version':'4.2.0','state':'R40_LIFECYCLE_SAFE_CANDIDATE','scope':'WINDOWS_STANDALONE_420_R40_LIFECYCLE_SAFE','files':rows}
 (R/'MANIFEST.json').write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps({'files':len(rows),'manifestSha256':hashlib.sha256((R/'MANIFEST.json').read_bytes()).hexdigest().upper()}))

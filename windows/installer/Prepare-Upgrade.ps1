@@ -1,6 +1,15 @@
 param([Parameter(Mandatory=$true)][string]$AppRoot)
 $ErrorActionPreference='Stop'
 $ports=19410,19413,19414,19450,19452,19453,19460,9909
+$gatewayCtl=Join-Path $AppRoot 'gateway\gateway_control.ps1'
+if(Test-Path -LiteralPath $gatewayCtl){
+  $raw=& pwsh.exe -NoProfile -ExecutionPolicy Bypass -File $gatewayCtl -Action Status 2>$null|Out-String
+  if($LASTEXITCODE -ne 0 -or !$raw){ exit 44 }
+  try{$gatewayStatus=$raw|ConvertFrom-Json}catch{exit 44}
+  if($gatewayStatus.result -and [bool]$gatewayStatus.result.running){ exit 42 }
+}
+$directDpiState=Join-Path $env:ProgramData 'FreeNetHub\directdpi\state.json'
+if(Test-Path -LiteralPath $directDpiState){ exit 42 }
 $active=Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $ports -contains $_.LocalPort }
 if(@($active).Count){ exit 42 }
 $script=[IO.Path]::GetFullPath((Join-Path $AppRoot 'app\FreeNetHub.ps1'))

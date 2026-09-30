@@ -750,16 +750,21 @@ def update_release():
  try:j=json.loads(r.get('body',''))
  except ValueError as ex:raise RuntimeError('UPDATE_RESPONSE_INVALID') from ex
  assets=[a for a in (j.get('assets') or []) if isinstance(a,dict) and str(a.get('name','')).lower().endswith('.exe') and str(a.get('name','')).startswith('FreeNetHub_')]
- asset=assets[0] if assets else None
+ ranked=[]
+ for a in assets:
+  m=re.search(r'(?i)(?:^|[-_])r(\d+)(?:[-_]|$)',str(a.get('name','')))
+  if m:ranked.append((int(m.group(1)),a))
+ asset=max(ranked,key=lambda x:x[0])[1] if ranked else (assets[0] if assets else None)
  release=read(ROOT/'RELEASE.json',{}) or {}
  manifest=read(ROOT/'app'/'manifest.json',{}) or {}
  local_rev=str(release.get('releaseRevision') or manifest.get('coreVersion') or '')
  lm=re.search(r'(?i)(?:^|[-_])r(\d+)(?:[-_]|$)',local_rev)
  rm=re.search(r'(?i)(?:^|[-_])r(\d+)(?:[-_]|$)',str(asset.get('name','')) if asset else '')
  local_n=int(lm.group(1)) if lm else 0;remote_n=int(rm.group(1)) if rm else 0
- update_available=bool(asset and (remote_n==0 or local_n==0 or remote_n>local_n))
+ revision_comparable=bool(local_n>0 and remote_n>0)
+ update_available=bool(asset and revision_comparable and remote_n>local_n)
  return {'tag':str(j.get('tag_name') or ''),'name':str(j.get('name') or ''),'published':j.get('published_at'),'htmlUrl':j.get('html_url'),
-         'currentRevision':local_rev,'currentRevisionNumber':local_n,'remoteRevisionNumber':remote_n,'updateAvailable':update_available,
+         'currentRevision':local_rev,'currentRevisionNumber':local_n,'remoteRevisionNumber':remote_n,'revisionComparable':revision_comparable,'updateAvailable':update_available,
          'asset':({'name':asset.get('name'),'url':asset.get('browser_download_url'),'bytes':asset.get('size'),'digest':asset.get('digest')} if asset else None),'rootPath':root_network_public(ctx)}
 
 def update_download():

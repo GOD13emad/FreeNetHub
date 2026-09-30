@@ -14,7 +14,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\..\delivery\github_v4.2.0
-OutputBaseFilename=FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup
+OutputBaseFilename=FreeNetHub_4.2.0_R40_LifecycleSafe_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -26,7 +26,7 @@ ChangesAssociations=no
 ChangesEnvironment=no
 VersionInfoVersion=4.2.0.0
 VersionInfoProductName=FreeNet Hub
-VersionInfoDescription=FreeNet Hub 4.2 R39 Online Update / No-Admin Launch installer
+VersionInfoDescription=FreeNet Hub 4.2 R40 Lifecycle-Safe / No-Admin Launch installer
 MinVersion=10.0.19041
 
 [Languages]

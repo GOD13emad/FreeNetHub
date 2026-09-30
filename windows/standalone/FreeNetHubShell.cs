@@ -88,7 +88,7 @@ internal sealed class ShellContext : ApplicationContext
         menu.Items.Add("باز کردن FreeNet Hub",null,delegate{Restore();});
         menu.Items.Add("راه‌اندازی مجدد رابط",null,delegate{Restart();});
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("خروج کامل",null,delegate{ExitAll(0);});
+        menu.Items.Add("خروج کامل",null,delegate{ExitCleanly();});
         tray.ContextMenuStrip=menu;
         tray.DoubleClick+=delegate{Restore();};
         timer=new System.Windows.Forms.Timer(); timer.Interval=250; timer.Tick+=delegate{Tick();};
@@ -187,6 +187,47 @@ internal sealed class ShellContext : ApplicationContext
         try { if(child!=null && !child.HasExited) child.Kill(); } catch { }
         Thread.Sleep(250);
         StartChild(); timer.Start();
+    }
+
+    void ExitCleanly()
+    {
+        try {
+            string root=AppDomain.CurrentDomain.BaseDirectory;
+            string cleanup=Path.Combine(root,"Uninstall-FreeNetHub.ps1");
+            if(!File.Exists(cleanup)) {
+                MessageBox.Show("مسیر cleanup ایمن FreeNet Hub پیدا نشد؛ برنامه برای جلوگیری از باقی‌ماندن اتصال بسته نشد.\n"+cleanup,
+                    "FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                return;
+            }
+            string jobs=Path.Combine(root,"jobs");
+            Directory.CreateDirectory(jobs);
+            string result=Path.Combine(jobs,"exit-cleanup-"+Guid.NewGuid().ToString("N")+".json");
+            var psi=new ProcessStartInfo();
+            psi.FileName=powershell;
+            psi.UseShellExecute=false;
+            psi.CreateNoWindow=true;
+            psi.WindowStyle=ProcessWindowStyle.Hidden;
+            psi.Arguments="-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \""+
+                cleanup.Replace("\"","\\\"")+"\" -ResultPath \""+result.Replace("\"","\\\"")+"\"";
+            var cleanupProcess=Process.Start(psi);
+            if(cleanupProcess==null) {
+                MessageBox.Show("فرآیند cleanup شروع نشد؛ FreeNet Hub بسته نشد.","FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                return;
+            }
+            if(!cleanupProcess.WaitForExit(150000)) {
+                try { cleanupProcess.Kill(); } catch { }
+                MessageBox.Show("cleanup در زمان مجاز کامل نشد؛ برای جلوگیری از باقی‌ماندن اتصال، برنامه باز ماند.","FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                return;
+            }
+            if(cleanupProcess.ExitCode!=0) {
+                MessageBox.Show("cleanup شبکه به PASS نرسید (Exit "+cleanupProcess.ExitCode+"). FreeNet Hub بسته نشد.\nEvidence: "+result,
+                    "FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                return;
+            }
+            ExitAll(0);
+        } catch(Exception ex) {
+            MessageBox.Show("خروج کامل ایمن نشد؛ برنامه باز ماند.\n"+ex.Message,"FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+        }
     }
 
     void ExitAll(int code)

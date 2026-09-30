@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "status": "R40_LIFECYCLE_SAFE_CANDIDATE",
+  "objective": "R40 lifecycle-safety hardening after deep line-level audit",
+  "baseMain": "1900a1b7af1d303d3cf1e56bd76ac7878c1f30c9",
+  "confirmedFindings": [
+    {
+      "id": "WIN_SHELL_EXIT_ORPHAN_RISK",
+      "status": "CONFIRMED",
+      "finding": "R39 tray Full Exit called ExitAll(0) directly without verified owned-runtime cleanup.",
+      "fix": "ExitCleanly invokes fail-closed cleanup and exits only after cleanup exit 0."
+    },
+    {
+      "id": "UPDATE_ACTIVE_RUNTIME_GUARD",
+      "status": "CONFIRMED_GAP",
+      "finding": "R39 UI update install path did not independently reject active/stale FreeNetHub-owned runtime before installer launch.",
+      "fix": "UI and Prepare-Upgrade now fail closed on active/unverifiable Gateway/Direct-DPI/runtime state."
+    },
+    {
+      "id": "GATEWAY_ROLLBACK_VERIFICATION",
+      "status": "CONFIRMED_GAP",
+      "finding": "Gateway apply/stop had best-effort cleanup branches that could return after silent rollback failure.",
+      "fix": "Critical rollback removals/restores are verified and fail closed on residue."
+    },
+    {
+      "id": "UPDATE_REVISION_PARSE",
+      "status": "CONFIRMED_GAP",
+      "finding": "Unparseable local/remote revision could previously be treated as update-available.",
+      "fix": "Revision comparison now requires parseable positive local and remote revisions and selects highest revisioned installer asset."
+    },
+    {
+      "id": "LINUX_CLOSE_LIFECYCLE",
+      "status": "CONFIRMED_GAP",
+      "finding": "Linux close/shutdown lifecycle lacked explicit hide-on-close plus owned-runtime cleanup on real shutdown/signals.",
+      "fix": "Close hides; shutdown/SIGTERM/SIGINT invokes browser and console cleanup."
+    }
+  ],
+  "validation": {
+    "pytest": "179 PASS before version metadata mutation; one metadata contract failure found and fixed without weakening test",
+    "pythonCompile": "PASS",
+    "powershellParse": "PASS",
+    "csharpCompile": "PASS",
+    "securityScan": "PASS",
+    "gatewayFocused": "18 PASS",
+    "linuxParityStatic": "PASS",
+    "mobileFailClosed": "PASS"
+  },
+  "pending": [
+    "public-tree verifier after canonical metadata fix",
+    "exact Windows R40 installer build/install/runtime smoke",
+    "exact Linux R13 package/install/runtime smoke",
+    "hosted CI before merge/release"
+  ],
+  "confidence": "HIGH",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "release handoff",
+    "R40 final acceptance"
+  ],
+  "version": "4.2.0",
+  "phase": "SOURCE_AUDIT_PASS_INSTALL_ACCEPTANCE_PENDING"
+}

@@ -63,5 +63,6 @@ try:
     for c in cases: rows.append(run_case(*c))
 finally: shutil.rmtree(WORK,ignore_errors=True)
 out={"schema":2,"date":"2026-09-28","status":"PASS" if all(x["status"]=="PASS" for x in rows) else "FAIL","singboxVersion":runtime["singbox"].get("version"),"serverDns":"sing-box local DNS + route.default_domain_resolver=local","cases":rows,"privacy":"Synthetic loopback credentials/configs deleted; no public-node material used."}
-PROJECT=pathlib.Path(__file__).resolve().parent.parent\npath=PROJECT/"evidence"/"R28_HERMETIC_PROTOCOL_LOOPBACK2_ACCEPTANCE_20260928.json";path.write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+PROJECT=pathlib.Path(__file__).resolve().parent.parent
+path=PROJECT/"evidence"/"R28_HERMETIC_PROTOCOL_LOOPBACK2_ACCEPTANCE_20260928.json";path.write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 print(json.dumps(out,ensure_ascii=False,indent=2));sys.exit(0 if out["status"]=="PASS" else 28)

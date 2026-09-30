@@ -77,7 +77,8 @@ finally:
     import shutil
     shutil.rmtree(WORK,ignore_errors=True)
 out={"schema":1,"date":"2026-09-28","status":"PASS" if all(x["status"]=="PASS" for x in rows) else "FAIL","singboxVersion":runtime["singbox"].get("version"),"cases":rows,"privacy":"Synthetic loopback-only credentials/configs were deleted; no public node data used."}
-PROJECT=pathlib.Path(__file__).resolve().parent.parent\nev=PROJECT/"evidence"/"R28_HERMETIC_PROTOCOL_LOOPBACK_ACCEPTANCE_20260928.json"
+PROJECT=pathlib.Path(__file__).resolve().parent.parent
+ev=PROJECT/"evidence"/"R28_HERMETIC_PROTOCOL_LOOPBACK_ACCEPTANCE_20260928.json"
 ev.write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 print(json.dumps(out,ensure_ascii=False,indent=2))
 sys.exit(0 if out["status"]=="PASS" else 28)
