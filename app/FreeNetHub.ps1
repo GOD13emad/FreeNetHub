@@ -9,7 +9,7 @@ $ErrorActionPreference='Stop'
 $script:Root=Split-Path $PSScriptRoot -Parent
 New-Item -ItemType Directory -Path (Join-Path $script:Root 'logs'),(Join-Path $script:Root 'jobs'),(Join-Path $script:Root 'evidence') -Force|Out-Null
 
-$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:ConnectionScope='BROWSER';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:NodeRows=@();$script:NodeSelected='';$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''})
+$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:ConnectionScope='BROWSER';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:NodeRows=@();$script:NodeSelected='';$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''});$script:StartupUpdateChecked=$false;$script:StartupUpdateDue=[DateTime]::UtcNow.AddSeconds(12)
 
 function Read-Json([string]$p){if(!(Test-Path -LiteralPath $p)){return $null};if((Get-Item $p).Length -gt 4194304){throw 'RESULT_TOO_LARGE'};Get-Content -LiteralPath $p -Raw -Encoding utf8|ConvertFrom-Json -AsHashtable}
 
@@ -1146,7 +1146,11 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
 
     if($script:Tick % 25 -eq 0){Paint-Health}
 
-    if(!$Smoke -and !$script:Task -and !$script:GatewayTask -and $script:C.Tabs.SelectedIndex -eq 2){
+    if(!$Smoke -and !$script:Task -and !$script:GatewayTask -and !$script:StartupUpdateChecked -and [DateTime]::UtcNow -ge $script:StartupUpdateDue){
+     $script:StartupUpdateChecked=$true
+     Start-Work 'UpdateCheck'
+    }
+    elseif(!$Smoke -and !$script:Task -and !$script:GatewayTask -and $script:C.Tabs.SelectedIndex -eq 2){
      if([DateTime]::UtcNow -ge $script:NextNodeRefresh){Start-Work 'NodeRefreshPublic' 'NODE'}
      elseif([DateTime]::UtcNow -ge $script:NextNodeBenchmark){Start-Work 'NodeBenchmarkBatch' 'NODE'}
     }

@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "path": "delivery/github_v4.2.0/FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe",
+  "bytes": 24264406,
+  "sha256": "28D0D9D64F9580F6B800BEA53F3E8310C4A2C52CD052E7F56BF721D4E0927F9F",
+  "authenticode": "NotSigned",
+  "frozenFiles": 25,
+  "built": "2026-09-30T12:38:12.1782574+03:30"
+}

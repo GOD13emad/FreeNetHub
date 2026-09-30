@@ -180,3 +180,16 @@ Create the Linux R11 public commit from the exact locally verified candidate, re
 - 2026-09-28 R33: official sing-box-based NODE Full-System architecture adopted; WARP+NODE only, other methods remain Browser-only until UDP/system evidence exists.
 - 2026-09-28 R32: local audit closure PASS and installed authority.
 - 2026-09-28 R31: architecture boundary locked; VPN Gate/OpenVPN excluded from FreeNet Hub.
+
+## 2026-09-30 R39 ONLINE UPDATE + NO-ADMIN NORMAL-LAUNCH LOCAL GATE
+- Previous accepted/public state: R38 Windows + Linux R12 at GitHub release `v4.2.0-r38-final`; immutable published digests remain authoritative.
+- R39 objective: ordinary Windows launch must stay non-elevated; online update must be revision-aware and SHA-256 verified.
+- Normal-launch authority: shell manifest `asInvoker`; Inno installer `PrivilegesRequired=lowest`; launcher no longer invokes dependency installation/winget on ordinary startup. Missing dependency metadata fails closed with a user message; repair remains Setup/update responsibility.
+- Privileged operations remain explicit/on-demand only: Direct DPI / full-system / gateway may elevate when deliberately selected; the main UI does not elevate.
+- Online update: delayed startup `UpdateCheck` plus existing manual update; GitHub latest release; downgrade/same revision rejected; asset digest must contain SHA-256; downloaded installer hash is verified before launch; installer starts with `UseShellExecute=false`.
+- Local V&V: pytest `150/150 PASS`; R28 static PASS; Linux parity PASS; security scan PASS; PowerShell parse PASS; C# launcher compile PASS; shell runtime acceptance PASS with single-instance/tray/icon and zero FreeNetHub network artifacts.
+- Pre-publish update behavior: local R39 vs public R38 => `updateAvailable=false`, proving downgrade prevention; default route unchanged.
+- R39 local installer candidate: `FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe`, 24,264,406 bytes, SHA-256 `28D0D9D64F9580F6B800BEA53F3E8310C4A2C52CD052E7F56BF721D4E0927F9F`, 25 frozen build inputs, Authenticode `NotSigned`.
+- Brain status: CURRENT. Public promotion is not yet claimed.
+- Open critical path: public-tree verify -> commit/push -> hosted CI -> merge main -> publish R39 -> live R38-to-R39 online update -> exact installed parity/UI smoke -> post-publish UpdateCheck 39=39.
+- External/open gate retained: trusted Windows Authenticode signing.

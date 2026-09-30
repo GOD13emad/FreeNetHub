@@ -232,7 +232,7 @@ internal static class Program
                 Application.SetCompatibleTextRenderingDefault(false);
                 string script=args.Length>0 ? args[0] : DiscoverScript();
                 string ps=DiscoverPowerShell();
-                if(!EnsureDependencies(script,ps)) return;
+                if(!ValidateDependencies(script,ps)) return;
                 Application.Run(new ShellContext(script,ps,activation));
             }
         }
@@ -258,31 +258,21 @@ internal static class Program
         return candidates[0];
     }
 
-    static bool EnsureDependencies(string script,string ps)
+    static bool ValidateDependencies(string script,string ps)
     {
+        // Normal launch is deliberately non-elevated. Runtime installation/repair belongs to Setup/update only.
         try {
             if(!File.Exists(script) || !File.Exists(ps)) return true;
             var appDir=Path.GetDirectoryName(script);
             if(String.IsNullOrEmpty(appDir)) return true;
             var deps=Path.Combine(appDir,"dependencies.json");
             if(File.Exists(deps)) return true;
-            var root=Directory.GetParent(appDir);
-            if(root==null) return true;
-            var setup=Path.Combine(root.FullName,"Setup-WindowsDependencies.ps1");
-            if(!File.Exists(setup)) return true;
-            var psi=new ProcessStartInfo();
-            psi.FileName=ps; psi.UseShellExecute=false; psi.CreateNoWindow=true; psi.WindowStyle=ProcessWindowStyle.Hidden;
-            psi.WorkingDirectory=root.FullName;
-            psi.Arguments="-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \""+setup.Replace("\"","\\\"")+"\" -InstallMissingRuntime";
-            using(var p=Process.Start(psi)) {
-                if(p==null || !p.WaitForExit(180000) || p.ExitCode!=0 || !File.Exists(deps)) {
-                    MessageBox.Show("آماده‌سازی runtime کامل نشد. PowerShell 7 و Python را بررسی کنید و Setup را دوباره اجرا کنید.","FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
-                    return false;
-                }
-            }
-            return true;
+            MessageBox.Show(
+                "فایل runtime برنامه آماده نیست. FreeNet Hub در اجرای عادی هیچ نصب یا درخواست Administrator انجام نمی‌دهد. لطفاً Setup/Update را دوباره اجرا کنید.",
+                "FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            return false;
         } catch(Exception ex) {
-            MessageBox.Show("آماده‌سازی runtime ناموفق بود:\n"+ex.Message,"FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            MessageBox.Show("بررسی runtime ناموفق بود:\n"+ex.Message,"FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
             return false;
         }
     }

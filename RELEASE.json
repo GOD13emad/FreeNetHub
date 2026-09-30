@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-local-r38-direct-method",
-  "status": "R38_R12_LOCAL_FINAL_HOSTED_CI_REQUIRED",
+  "releaseRevision": "4.2.0-local-r39-online-noadmin",
+  "status": "R39_ONLINE_NOADMIN_CANDIDATE",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -12,16 +12,18 @@
     "ROOT_ROUTE_UPDATE_BYPASS",
     "CONFIGURABLE_PRECONNECT_TESTS",
     "DIRECT_NETWORK",
-    "DIRECT_DPI_CANDIDATE"
+    "DIRECT_DPI_CANDIDATE",
+    "ONLINE_UPDATE",
+    "NOADMIN_NORMAL_LAUNCH"
   ],
   "engineSha256": "FA3C22B7AB96D346A3255C9A0A6FEF9020626F181B8D68BC8AF3710ECB60E2FE",
-  "uiSha256": "C00B71E1075D8BB8FA2B0176760A143B3F5D00AB286FAC2457E00C4DA06751C7",
+  "uiSha256": "295EBDAA482BA0F66F99B39BE44CCA9B3369407C58867C88B2B110C67E7C071C",
   "viewSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
-  "desktopShellSha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB",
+  "desktopShellSha256": "EA771EFEFBF2F131474933285A0C13AF7F0188F9712E5C401E51CF696E4165C1",
   "gatewayManifestSha256": "33DEFA7B54BD60BB0BC61D7F0374BC2539DDB186EEA201B7910CA1186BC2267F",
   "crossPlatformManifestSha256": "59618BDB16F1364E4B8269261D0083C792DCB11406BDC9263B05DCBCA4A4AC3C",
   "installerSha256": null,
-  "acceptanceEvidence": "evidence/R38_CROSSPLATFORM_DEEP_AUDIT_20260929.json",
+  "acceptanceEvidence": "evidence/R39_ONLINE_NOADMIN_ACCEPTANCE_20260930.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "CANDIDATE_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R12_R38_AUDIT_FIX",
@@ -173,7 +175,7 @@
       "productionCredentialGatesRemainExternal": true
     }
   },
-  "appManifestSha256": "84A1962C07987ADD2A78C51938BBA16EB12004C85658D9495FACC9C011CE487E",
+  "appManifestSha256": "616BEB240B8DC698779C8531FEB369AEA11B0E21A68D2AB8C39F5975B82F67F8",
   "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
   "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
   "installerStatus": "DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE",
@@ -678,5 +680,18 @@
     "exactPackageInstall": "PASS_REPRODUCIBLE_PACKAGE",
     "hostedCi": "OPEN",
     "packageReproducibility": "PASS_WINDOWS_LINUX_IDENTICAL"
+  },
+  "r39OnlineNoAdmin": {
+    "status": "LOCAL_REGRESSION_PENDING",
+    "normalLaunchExecutionLevel": "AS_INVOKER",
+    "normalLaunchRuntimeBootstrap": false,
+    "installerPrivileges": "LOWEST_PER_USER",
+    "startupOnlineUpdateCheck": true,
+    "updateSha256Required": true,
+    "updateDowngradeBlocked": true,
+    "updateInstallerUseShellExecute": false,
+    "privilegedFeatures": "ON_DEMAND_HELPER_ONLY",
+    "publicRelease": false,
+    "trustedSigning": "OPEN_NOTSIGNED"
   }
 }

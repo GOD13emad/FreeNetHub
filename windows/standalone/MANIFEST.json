@@ -1,13 +1,13 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "state": "TARGET_RUNTIME_ACCEPTED",
-  "scope": "WINDOWS_STANDALONE_420",
+  "state": "R39_NOADMIN_LAUNCH_ACCEPTED",
+  "scope": "WINDOWS_STANDALONE_420_R39_NOADMIN",
   "files": [
     {
       "name": "FreeNetHub.exe",
-      "bytes": 39936,
-      "sha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB"
+      "bytes": 39424,
+      "sha256": "EA771EFEFBF2F131474933285A0C13AF7F0188F9712E5C401E51CF696E4165C1"
     },
     {
       "name": "FreeNetHub.ico",
@@ -21,8 +21,8 @@
     },
     {
       "name": "FreeNetHubShell.cs",
-      "bytes": 13865,
-      "sha256": "B743A6B1E0C1C8566B60E8FE8581AA314B85B5574FDC314317FA61ABBA67154B"
+      "bytes": 13285,
+      "sha256": "348A7A26BB5973426E431366E2B637F0C9222795B408ADE2A30569E998ADEACD"
     },
     {
       "name": "FreeNetHubShell.manifest",
@@ -51,13 +51,13 @@
     },
     {
       "name": "RUNTIME_ACCEPTANCE.json",
-      "bytes": 655,
-      "sha256": "FDAFAD666EC639E0FD9102FDBF15C8DBF4F0ADC872649D2D6F9EF44328FB4826"
+      "bytes": 787,
+      "sha256": "12576ECB5B1C1065C39721C7144A4498A2EB61BDE6FF7B54FFD3F14BA556F04B"
     },
     {
       "name": "Test-FreeNetHubShell42.ps1",
-      "bytes": 5392,
-      "sha256": "58AA8ACA7E19033DE337E6F88CB62B8DC3636815D9F458948C72551B04F00E6C"
+      "bytes": 5580,
+      "sha256": "6F9E6E3B102F1AF19CD115BC67DA99813901A822F84F50050EC82BCC5A5D2DEF"
     }
   ]
 }
