@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-09-30",
-  "status": "CURRENT",
+  "status": "CURRENT_FINAL",
   "context": "R41 Linux updater revision authority fix",
   "records": [
     {
@@ -60,10 +60,41 @@
         "release handoff",
         "final acceptance"
       ]
+    },
+    {
+      "claimDecision": "R41 public release is accepted on main and published with exact digests.",
+      "evidenceSource": "main 967fe592; v4.2.0-r41-final; Windows C64CC9...17F32 and Linux B3FD52...FF984.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "PROJECT_BRAIN",
+        "release handoff",
+        "final report"
+      ]
+    },
+    {
+      "claimDecision": "Post-merge CI #151 first Android emulator attempt was infrastructure-transient, not a product regression.",
+      "evidenceSource": "First job passed build/install and real VPN consent stages then failed only with 'adb: device offline'; targeted same-commit retry on a fresh runner passed the complete Android runtime and aggregate virtual-acceptance.",
+      "confidence": "CONFIRMED_ADJUDICATION",
+      "reuseTargets": [
+        "CI failure prevention",
+        "final report"
+      ]
+    },
+    {
+      "claimDecision": "Post-publish update semantics are closed for both installed desktop authorities.",
+      "evidenceSource": "Windows local40/remote40 no-update with unchanged Ethernet route; Linux local14/remote14 no-update, 9/9 integrity, unchanged routes and external tun0.",
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "PROJECT_BRAIN",
+        "updater regression",
+        "release acceptance"
+      ]
     }
   ],
   "provenance": {
     "branch": "r41-linux-update-revision-fix",
-    "baseMain": "0149583d797260b47adae0175b3a2a92b814488a"
+    "baseMain": "0149583d797260b47adae0175b3a2a92b814488a",
+    "publicMain": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
+    "release": "v4.2.0-r41-final"
   }
 }

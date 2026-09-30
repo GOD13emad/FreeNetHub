@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-r41-linux-update-revision-fix",
+  "version": "4.2.0-r41-final",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -1080,8 +1080,13 @@
     },
     {
       "file": "evidence/R41_PROJECT_KNOWLEDGE_20260930.json",
-      "bytes": 2561,
-      "sha256": "2038A3D2FDD31C0BE3A39DA6403457976113D63AF9D34497ECC740589BC2669F"
+      "bytes": 3997,
+      "sha256": "8261B3F32D97A3AFE4715207F88E4BF920E9B3DB8679F8BF03D47FB815964CC2"
+    },
+    {
+      "file": "evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
+      "bytes": 3597,
+      "sha256": "FC61E9219B3EB36ECB28CACAACE6380012D861B3851CFB684258C9AAD879ED64"
     },
     {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
@@ -1280,8 +1285,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 33840,
-      "sha256": "FB49CF376F1F5FCD605B5D747CA52C65D02D3A52A016A0BE71549EC2101A0CB1"
+      "bytes": 34486,
+      "sha256": "8A12EDD43985C1A2E0DB628BB53A6C678D3476F7839A79AB90F6390F79950E01"
     },
     {
       "file": "pytest.ini",
@@ -1300,8 +1305,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 25992,
-      "sha256": "3ACEE7B2B83B8B46E720F3750F64AF9D0BDB69B98F044B91A16DD92279052DE7"
+      "bytes": 26134,
+      "sha256": "55B75C6501E6F138B04D27F27AAE134F52DA55C66ECC742ABC6BFF4893DDEEE3"
     },
     {
       "file": "SECURITY.md",
