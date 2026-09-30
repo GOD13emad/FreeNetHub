@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "version": "4.2.0",
+  "releaseRevision": "4.2.0-local-r39-online-noadmin",
+  "status": "PASS_PUBLIC_FINAL",
+  "objective": "ONLINE_UPDATE_PLUS_NOADMIN_NORMAL_LAUNCH",
+  "source": {
+    "branchCommit": "f78be11a1ca2b467704725d87558318f2bdcbb3a",
+    "mainCommit": "c80d9a16d315a15c185b6eba67c3a97f70d5c1ce"
+  },
+  "ci": {
+    "branchRun": 36695973824,
+    "branchRunNumber": 124,
+    "branchConclusion": "success",
+    "mainRun": 36698146779,
+    "mainConclusion": "success"
+  },
+  "release": {
+    "tag": "v4.2.0-r39-final",
+    "draft": false,
+    "prerelease": false,
+    "targetCommit": "c80d9a16d315a15c185b6eba67c3a97f70d5c1ce"
+  },
+  "windows": {
+    "asset": "FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe",
+    "bytes": 24264406,
+    "sha256": "28D0D9D64F9580F6B800BEA53F3E8310C4A2C52CD052E7F56BF721D4E0927F9F",
+    "githubDigestMatch": true,
+    "authenticode": "NotSigned",
+    "onlineUpgrade": {
+      "fromRevision": 38,
+      "toRevision": 39,
+      "runnerIsAdmin": false,
+      "runnerIntegrity": "Medium",
+      "preUpdateAvailable": true,
+      "downloadVerified": true,
+      "installerUseShellExecute": false,
+      "installerExit": 0,
+      "postUpdateAvailable": false,
+      "routeUnchanged": true,
+      "listenersAfter": 0
+    },
+    "normalLaunch": {
+      "requestedExecutionLevel": "asInvoker",
+      "appCompatRunAsAdmin": false,
+      "runtimeBootstrapOnLaunch": false,
+      "mediumTokenLaunchObserved": true,
+      "autoStartupUpdateCheckObserved": true,
+      "autoCheckLocalRevision": 39,
+      "autoCheckRemoteRevision": 39,
+      "autoCheckUpdateAvailable": false,
+      "routeUnchanged": true,
+      "listenersAfter": 0
+    },
+    "installedParity": {
+      "appFiles": 17,
+      "appMismatches": [],
+      "gatewayFiles": 17,
+      "gatewayMismatches": [],
+      "releaseParity": true,
+      "note": "Legacy verifier reported only stale REVISION assertion because it is R38-specific; byte parity and RELEASE parity passed."
+    }
+  },
+  "linux": {
+    "asset": "FreeNetHub_4.2.0_Linux_R12.zip",
+    "bytes": 210029,
+    "sha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+    "githubDigestMatch": true,
+    "localRevision": 12,
+    "remoteRevision": 12,
+    "updateAvailable": false,
+    "tagSeen": "v4.2.0-r39-final"
+  },
+  "tests": {
+    "pytest": "PASS_150_OF_150",
+    "r39Contract": "PASS_2_OF_2",
+    "publicTree": "PASS",
+    "securityScan": "PASS",
+    "powershellParse": "PASS",
+    "csharpCompile": "PASS",
+    "shellRuntime": "PASS"
+  },
+  "openExternalGates": [
+    "TRUSTED_WINDOWS_AUTHENTICODE"
+  ],
+  "interpretation": "R39 public final closes online-update and non-admin normal-launch requirements. Only production trusted Authenticode signing remains external/open."
+}

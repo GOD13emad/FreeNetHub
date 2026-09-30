@@ -193,3 +193,15 @@ Create the Linux R11 public commit from the exact locally verified candidate, re
 - Brain status: CURRENT. Public promotion is not yet claimed.
 - Open critical path: public-tree verify -> commit/push -> hosted CI -> merge main -> publish R39 -> live R38-to-R39 online update -> exact installed parity/UI smoke -> post-publish UpdateCheck 39=39.
 - External/open gate retained: trusted Windows Authenticode signing.
+
+## 2026-09-30 R39 PUBLIC FINAL — ONLINE UPDATE + NO-ADMIN NORMAL LAUNCH
+- Previous accepted state: R38 Windows + Linux R12 public final.
+- Current authority: main c80d9a16d315a15c185b6eba67c3a97f70d5c1ce; release v4.2.0-r39-final; hosted main CI run 36698146779 PASS.
+- Windows R39 asset: FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe, 24,264,406 bytes, SHA-256 28D0D9D64F9580F6B800BEA53F3E8310C4A2C52CD052E7F56BF721D4E0927F9F; GitHub digest exact match.
+- Live online-upgrade gate CLOSED_PASS: installed R38 detected R39, SHA-256-verified download, then installed with exit 0 from a real non-admin/Medium-integrity runner using UseShellExecute=false; post-state local=39/remote=39, updateAvailable=false, route unchanged, zero FreeNetHub listeners.
+- Normal-launch gate CLOSED_PASS: launcher is asInvoker, no RUNASADMIN AppCompat flag, no dependency/winget bootstrap during startup; installed R39 UI + owned PowerShell child ran under normal user context, no tunnel/listener was created, and delayed automatic UpdateCheck fired with 39=39/no update.
+- Installed byte parity: 17 app + 17 gateway files and RELEASE parity exact; legacy R38 verifier's only failure was its stale hard-coded revision assertion.
+- Linux continuity CLOSED_PASS: unchanged R12 SHA-256 9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3 is present in R39 release; installed Linux reports local=12, remote=12, updateAvailable=false.
+- Privileged Direct DPI/full-system/gateway helpers remain explicit/on-demand; ordinary app launch and ordinary update do not require admin.
+- External gate still OPEN: production trusted Windows Authenticode signing (NotSigned).
+- Evidence: evidence/R39_PUBLIC_FINAL_ACCEPTANCE_20260930.json and evidence/R39_PROJECT_KNOWLEDGE_20260930.json.

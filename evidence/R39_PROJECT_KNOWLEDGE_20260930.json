@@ -394,6 +394,38 @@
         "normalLaunchNetworkMutation": false,
         "prepublishUpdateRouteUnchanged": true
       }
+    },
+    {
+      "context": "R39 public final online-update and non-admin launch acceptance",
+      "claimDecision": "R39 was merged to main and published as v4.2.0-r39-final. A live upgrade from installed R38 used the product UpdateCheck/UpdateDownload path, verified the GitHub SHA-256, and installed from a Medium-integrity non-admin token with UseShellExecute=false and exit 0. Post-install revision became R39, route/listeners stayed unchanged, and normal R39 launch from the same non-admin context started successfully and automatically performed its delayed UpdateCheck. Linux R12 was carried forward unchanged and correctly reports local=remote=12 with no update.",
+      "evidenceSource": [
+        "evidence/R39_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
+        "evidence/R39_INSTALLER_BUILD_20260930.json",
+        "GitHub Actions run 36698146779",
+        "GitHub release v4.2.0-r39-final",
+        "installed R38-to-R39 live E2E",
+        "installed R39 startup auto-UpdateCheck job"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_PUBLIC_FINAL",
+      "rootCause": "Normal startup previously mixed application launch with dependency repair/bootstrap, while update checking was manual-only. This could cause package-install behavior at launch and did not proactively surface updates.",
+      "prevention": "Keep UI asInvoker and installer per-user/lowest privilege; never bootstrap dependencies during normal launch; perform only delayed read-only UpdateCheck automatically; require newer revision and GitHub SHA-256 before update install; keep privileged networking helpers explicit and on-demand.",
+      "reuseTargets": [
+        "Windows R39",
+        "self-update",
+        "installer",
+        "release engineering",
+        "PROJECT_BRAIN",
+        "future regressions"
+      ],
+      "provenance": {
+        "mainCommit": "c80d9a16d315a15c185b6eba67c3a97f70d5c1ce",
+        "release": "v4.2.0-r39-final",
+        "windowsInstallerSha256": "28D0D9D64F9580F6B800BEA53F3E8310C4A2C52CD052E7F56BF721D4E0927F9F",
+        "linuxR12Sha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+        "runnerIsAdmin": false,
+        "routeUnchanged": true
+      }
     }
   ]
 }
