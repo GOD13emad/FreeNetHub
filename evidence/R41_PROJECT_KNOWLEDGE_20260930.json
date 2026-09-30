@@ -128,6 +128,29 @@
         "recovery",
         "account transfer"
       ]
+    },
+    {
+      "claimDecision": "CI #160 Android failure is not evidence of a product regression; it is a probable UI hierarchy readiness race after a successful Activity launch.",
+      "evidenceSource": "Run #160/job 110053208621: emulator/ADB/build/install succeeded and am start -W returned Status: ok; first UI hierarchy was pulled, then the expected text assertion failed. Android official docs distinguish launch completion from UI-state waiting and recommend timeout/stability waits in UI Automator.",
+      "confidence": "PROBABLE_HIGH",
+      "reuseTargets": [
+        "CI reliability",
+        "failure prevention",
+        "Android virtual acceptance"
+      ],
+      "sources": [
+        "https://developer.android.com/tools/adb",
+        "https://developer.android.com/training/testing/other-components/ui-automator"
+      ]
+    },
+    {
+      "claimDecision": "Use bounded state polling inside the Android emulator harness instead of rerunning the whole hosted job.",
+      "evidenceSource": "dump_until_contains retries only hierarchy acquisition/state publication for up to 15 seconds, preserves all product assertions, fails closed with diagnostics, and is regression-guarded.",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "CI harness",
+        "regression policy"
+      ]
     }
   ],
   "provenance": {

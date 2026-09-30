@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 19328,
-      "sha256": "59ABA0FBA0C2B23D81E29925938B85F2B038DD14B3E13063B1CB79ECA54E5F1E"
+      "bytes": 20134,
+      "sha256": "934DC0042175067C89F28E7ECD8F2BFF0E457A025D27EB4F3ADB3B9A4D38DDB9"
     },
     {
       "file": ".gitignore",
@@ -1075,8 +1075,8 @@
     },
     {
       "file": "evidence/R41_FINAL_WORKSPACE_CLOSEOUT_20260930.json",
-      "bytes": 3070,
-      "sha256": "B44D1E649DBAC14B003EACDAFA82DAEF3153632093131DE72D8428986D2DF9D9"
+      "bytes": 5507,
+      "sha256": "F15DFB5137EAA63A964E0F154295AF64C695BAA53E911FD2BDD40C394B78B73A"
     },
     {
       "file": "evidence/R41_LINUX_UPDATE_REVISION_FIX_20260930.json",
@@ -1085,8 +1085,8 @@
     },
     {
       "file": "evidence/R41_PROJECT_KNOWLEDGE_20260930.json",
-      "bytes": 6013,
-      "sha256": "DB4D8C8CD995FA660DE3323A0A4813237F0280A1CBF896BAEBB4F3296A139154"
+      "bytes": 7323,
+      "sha256": "2A2B6AE107DE943C7E4A6F7A0A426A29E92E220853ABA5919EFF2DAE30DF3843"
     },
     {
       "file": "evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
@@ -1290,8 +1290,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 35667,
-      "sha256": "F2E5D646F8E28F4C2A0F45B86F33A31D779636F2AF01E61EEC97CC5B23090765"
+      "bytes": 36447,
+      "sha256": "DE2AB7F7BFBF8EE1A79431E98635017EE0BF28C4075E7B69B9669CE4A11A1878"
     },
     {
       "file": "pytest.ini",
@@ -1867,6 +1867,11 @@
       "file": "tests/security_scan_public.py",
       "bytes": 2589,
       "sha256": "EE22F6075F9D7876EBD1543B258DB36798F8BB66533AB5B9FB8C4BF83E089723"
+    },
+    {
+      "file": "tests/test_android_ci_hierarchy_wait.py",
+      "bytes": 1236,
+      "sha256": "86E29B9C4DAC857819A196E4DDD31FB4F49E173DA3B15BE3B46FCDD4F5769753"
     },
     {
       "file": "tests/test_clean_install.py",

@@ -81,5 +81,56 @@
   },
   "decision": "R41 desktop project is operationally frozen. No open product work, no open repository work, no stale active branches, and one clean canonical main worktree per host.",
   "exactNextAction": "No action. Preserve baseline. Only create a successor revision for a new requirement/bug or externally provisioned trusted Windows signing identity.",
-  "confidence": "HIGH"
+  "confidence": "HIGH",
+  "ciHardening": {
+    "id": "ANDROID_EMULATOR_UI_HIERARCHY_READINESS_RACE",
+    "status": "CANDIDATE_PENDING_HOSTED_VALIDATION",
+    "trigger": {
+      "runNumber": 160,
+      "runId": 36763840737,
+      "jobId": 110053208621,
+      "head": "4f36b5c92da789be00d96388c8e1ffffe5e38fe8",
+      "observed": "Android build, emulator boot, ADB, APK install and MainActivity launch all succeeded; the job failed immediately after the first UI Automator hierarchy pull because the expected fail-closed text was not yet present."
+    },
+    "comparison": {
+      "ci151": "Different transient: adb device offline after deeper lifecycle progress; targeted retry passed.",
+      "ci160": "ADB remained online and launch returned Status: ok; failure was a one-shot accessibility hierarchy assertion after launch."
+    },
+    "rootCause": {
+      "classification": "PROBABLE_HIGH_CONFIDENCE",
+      "cause": "The test assumed Activity launch completion implies immediate publication of the expected accessibility/UI hierarchy state.",
+      "productRegressionEvidence": "NONE",
+      "runtimeProductChanged": false
+    },
+    "methodEvidence": [
+      {
+        "source": "Android Developers — Android Debug Bridge",
+        "url": "https://developer.android.com/tools/adb",
+        "finding": "am start -W waits for Activity launch completion."
+      },
+      {
+        "source": "Android Developers — UI Automator",
+        "url": "https://developer.android.com/training/testing/other-components/ui-automator",
+        "finding": "UI tests should use bounded element/state waiting and explicit UI/app stability mechanisms rather than assume immediate hierarchy readiness."
+      }
+    ],
+    "prevention": {
+      "change": "Replace one-shot uiautomator dump assertions at lifecycle transitions with a bounded 15x1s dump_until_contains state wait.",
+      "failClosed": true,
+      "wholeJobBlindRetry": false,
+      "diagnosticsOnTimeout": [
+        "adb get-state",
+        "last uiautomator output",
+        "last pulled hierarchy",
+        "emulator log tail"
+      ],
+      "regression": "tests/test_android_ci_hierarchy_wait.py"
+    },
+    "localValidation": {
+      "regression": "3/3 PASS",
+      "workflowYamlParse": "PASS",
+      "diffCheck": "PASS"
+    },
+    "promotionGate": "Fresh hosted CI on the hardened exact head must pass Android emulator runtime directly and aggregate virtual-acceptance without a manual job rerun."
+  }
 }
