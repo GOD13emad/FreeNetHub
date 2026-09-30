@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "status": "WINDOWS_4.2_R38_DIRECT_METHOD_LOCAL_FINAL",
+  "objective": "Qualify the R38 FreeNetHub Direct Method from the actual installed payload while preserving the accepted R37 rollback baseline and clean Windows network state.",
+  "architecture": "LOOPBACK_ULA_CTRLD_DOH_NRPT_PLUS_ZAPRET",
+  "priorAcceptedBaseline": {
+    "revision": "4.2.0-local-r37-final",
+    "backup": "%LOCALAPPDATA%\\FreeNetHub_R38_PreInstall_Backup_20260929_1450",
+    "releaseSha256": "EBFAC3958FE51DB620F177B4B508EA9A78A2CD773BA3AB18244FAC43271008E9"
+  },
+  "build": {
+    "evidence": "evidence/R38_INSTALLER_BUILD_20260929.json",
+    "evidenceSha256": "7396B3709EB03846C657F29F8DEA7E46E610215046D6EC122DF93F41A74ABF8",
+    "candidateInstallerSha256": "82EDBC14DFFE112F5A46513818035B4EE49D82FEC68F8D049A6485B5916950B7",
+    "bytes": 24245986,
+    "authenticode": "NotSigned",
+    "frozenFiles": 20,
+    "status": "PASS"
+  },
+  "failureRootCause": {
+    "symptom": "Two early installer executions returned exit code 1.",
+    "rootCause": "The first EXE was an incomplete artifact produced while the original synchronous ISCC command was terminated by the 15-second command timeout; file existence was incorrectly insufficient as a completion signal.",
+    "evidence": "Incomplete EXE was 15410692 bytes; completed detached build EXE is 24245986 bytes and has a PASS build record.",
+    "prevention": "Never promote or execute an installer solely because the output path exists. Require builder completion evidence, frozen-source verification, final size/hash, then execute only the hash-pinned completed artifact."
+  },
+  "install": {
+    "exit": 0,
+    "installedRevision": "4.2.0-local-r38-direct-method",
+    "runtimeBootstrap": "PASS",
+    "appParity": "17/17 PASS",
+    "gatewayParity": "17/17 PASS",
+    "releaseParity": true,
+    "uiSmokeTabs": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    }
+  },
+  "installedDirectMethod": {
+    "runtimeEvidence": "%LOCALAPPDATA%\\Programs\\FreeNetHub\\evidence\\R38_DIRECT_METHOD_RUNTIME.json",
+    "runtimeEvidenceSha256": "103AF9A7F3CF4A9D7F266619D450A06B6F07796D68D0A802684955C23A189BC5",
+    "runtimeStatus": "PASS_ACTIVE",
+    "youtube": "HTTP 204",
+    "openai": "HTTP 401 reachable",
+    "github": "HTTP 200",
+    "adapterDnsDuringActive": [
+      "192.168.20.1"
+    ],
+    "broadRouteCountDuringActive": 0,
+    "winHttpDuringActive": "DIRECT",
+    "icsDuringActive": {
+      "state": "Running",
+      "pid": 5044
+    },
+    "stopEvidence": "%LOCALAPPDATA%\\Programs\\FreeNetHub\\evidence\\R38_DIRECT_METHOD_STOP.json",
+    "stopEvidenceSha256": "331EA287913293E6BDA674C6226635A014702E52B2C185481ACC81224BF2170D",
+    "stopStatus": "PASS"
+  },
+  "postState": {
+    "routeInterface": "Ethernet 3",
+    "nextHop": "192.168.20.1",
+    "adapterDns": [
+      "192.168.20.1"
+    ],
+    "ownedNrpt": 0,
+    "ula": 0,
+    "ctrldOwned": 0,
+    "winwsOwned": 0,
+    "broadRouteCount": 0,
+    "winHttp": "DIRECT",
+    "ics": {
+      "state": "Running",
+      "pid": 5044
+    }
+  },
+  "conclusion": "Installed R38 Direct Method behavior and rollback are accepted. A metadata-only final packaging pass may follow without repeating the already hash-stable network lifecycle code.",
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "revision": "R38",
+  "lifecycleStatus": "PASS_INSTALLED_LIFECYCLE",
+  "acceptanceResult": "PASS",
+  "authority": {
+    "sourceRevision": "4.2.0-local-r38-direct-method",
+    "installedRevision": "4.2.0-local-r38-direct-method",
+    "installedLifecycle": "PASS",
+    "publicRelease": false
+  }
+}

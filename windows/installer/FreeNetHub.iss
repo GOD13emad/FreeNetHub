@@ -14,7 +14,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\..\delivery\github_v4.2.0
-OutputBaseFilename=FreeNetHub_4.2.0_R37_Final_Setup
+OutputBaseFilename=FreeNetHub_4.2.0_R38_DirectMethod_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -26,9 +26,8 @@ ChangesAssociations=no
 ChangesEnvironment=no
 VersionInfoVersion=4.2.0.0
 VersionInfoProductName=FreeNet Hub
-VersionInfoDescription=FreeNet Hub 4.2 R37 Final installer
+VersionInfoDescription=FreeNet Hub 4.2 R38 Direct Method installer
 MinVersion=10.0.19041
-AppMutex=Local\FreeNetHub.Desktop.SingleInstance.v41
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -46,6 +45,7 @@ Name: "{app}\gateway\runtime"
 Type: filesandordirs; Name: "{app}\\runtime"
 
 [Files]
+Source: "Prepare-Upgrade.ps1"; Flags: dontcopy
 Source: "..\standalone\FreeNetHub.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\standalone\FreeNetHub.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\app\engine.py"; DestDir: "{app}\app"; Flags: ignoreversion
@@ -138,13 +138,32 @@ end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
-  P, Winget: String;
+  P, Winget, Helper, Params: String;
   ResultCode: Integer;
 begin
   NeedsRestart := False;
   Result := '';
   P := FindPwsh;
-  if P <> '' then exit;
+
+  if P <> '' then begin
+    ExtractTemporaryFile('Prepare-Upgrade.ps1');
+    Helper := ExpandConstant('{tmp}\Prepare-Upgrade.ps1');
+    Params := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' +
+      Helper + '" -AppRoot "' + ExpandConstant('{app}') + '"';
+    if not Exec(P, Params, ExpandConstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode) then begin
+      Result := 'Free Net Hub could not verify the upgrade process state.';
+      exit;
+    end;
+    if ResultCode = 42 then begin
+      Result := 'Free Net Hub is carrying an active connection. Disconnect it before upgrading; Setup made no network changes.';
+      exit;
+    end;
+    if ResultCode <> 0 then begin
+      Result := 'Free Net Hub could not close its previous UI process safely. Close the app and run Setup again.';
+      exit;
+    end;
+    exit;
+  end;
 
   Winget := FileSearch('winget.exe', GetEnv('PATH'));
   if Winget = '' then

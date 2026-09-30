@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-local-r37-final",
+  "version": "4.2.0-local-r38-direct-method",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -11,7 +11,7 @@
     {
       "file": ".github/workflows/ci.yml",
       "bytes": 19222,
-      "sha256": "0B7E0E06DDE0F7E53A8542AD1A08D296E266AF802795DD01221BED0CFF3CC38D"
+      "sha256": "9C84CA9761D83157A9567E36543D1F791D575BF3A1D7CA03A1E15567D4D4D590"
     },
     {
       "file": ".gitignore",
@@ -60,13 +60,13 @@
     },
     {
       "file": "app/directdpi/Start-DirectDpi.ps1",
-      "bytes": 15304,
-      "sha256": "B3E56671EEF480A8A02ADB4410300125B5FBD93604F695726AB6748E955B1392"
+      "bytes": 16114,
+      "sha256": "ACAD9E00FD9043D2EB8D7B3B891BAD8B5DCBFFA8B92FA89F91960118FD23F595"
     },
     {
       "file": "app/directdpi/Stop-DirectDpi.ps1",
-      "bytes": 7033,
-      "sha256": "6D43E6A13ECAB1A47830B45562C8C8C5BD27DDF445B66F0634AD0F3DA6A3C199"
+      "bytes": 7729,
+      "sha256": "F3F05344BC4595F87123A4287BA715D93E980B8EB3165C29BDF207FA652DE465"
     },
     {
       "file": "app/directdpi/tools/cygwin1.dll",
@@ -100,13 +100,13 @@
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 93416,
-      "sha256": "55F4D8A4244391FB1B23FBE9B05A592328A4D4442F839E83407170CEF794C77C"
+      "bytes": 93583,
+      "sha256": "C00B71E1075D8BB8FA2B0176760A143B3F5D00AB286FAC2457E00C4DA06751C7"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 4483,
-      "sha256": "4B8F04ABA54662D511084DA7BC543BDC11C3A919061CFEDECAE0661D7DA2D081"
+      "bytes": 4503,
+      "sha256": "84A1962C07987ADD2A78C51938BBA16EB12004C85658D9495FACC9C011CE487E"
     },
     {
       "file": "app/nodehub.py",
@@ -165,8 +165,8 @@
     },
     {
       "file": "crossplatform/common/platform_matrix.json",
-      "bytes": 3991,
-      "sha256": "A287294C5D2D577A68718077FFB477ABE07B0331EB399124ECC1172C7325347F"
+      "bytes": 3993,
+      "sha256": "5378FA419E3F7F57C41411C23569DA68FACC26DB4D71768EE37E8B9A761402A4"
     },
     {
       "file": "crossplatform/common/verify_fail_closed.py",
@@ -226,17 +226,17 @@
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
       "bytes": 42640,
-      "sha256": "927ADE33064931122D1C1F767D3A5B7DE934D35748471057EA4EB3AC23B15CC9"
+      "sha256": "3C6045872722A4BCFA85C5FF23854CBD1F91A0880133E43527FB0805AE3DBB12"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
       "bytes": 55317,
-      "sha256": "984C1E942ABD01998BD89AF6A0781035D731F0025910C9CF59724374A474CC28"
+      "sha256": "9838DC0FF5EC70EDAD377C7497813F257D743C8F700BC91D6BB4C3887934AB25"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_r37.py",
-      "bytes": 50392,
-      "sha256": "02A8FBF0AECED7CE5AE4D91DD9EE3FC5AB40333923ADC4A1B5F0ADD019BD020C"
+      "bytes": 50607,
+      "sha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -250,8 +250,8 @@
     },
     {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 5624,
-      "sha256": "1115F7A094FEE99038571BCDEEA9DD8F9C78A0ABD38A49423B3BDDAAAD08693E"
+      "bytes": 5625,
+      "sha256": "53424AED93F221251D60F9DE28949978E3DDE963DF35392E6BA5E9321A0FBA07"
     },
     {
       "file": "crossplatform/linux/install_singbox_pinned.sh",
@@ -276,7 +276,7 @@
     {
       "file": "crossplatform/linux/README_FA.md",
       "bytes": 3449,
-      "sha256": "AAA649E5BD96DFD34B344B598044A2B715EAAD5F9FA170C0C2D347219729AD66"
+      "sha256": "1713D089CB41A2964C7C1E35914E88D8CF3DCD54CF25880753B1E46515614FF3"
     },
     {
       "file": "crossplatform/linux/recover_warp_remote.sh",
@@ -286,7 +286,7 @@
     {
       "file": "crossplatform/linux/selftest.py",
       "bytes": 1829,
-      "sha256": "981644AF06EA8A2FB534505D7F1C10153BF186DF73120C2E5554F68847C2C9DF"
+      "sha256": "128898511D09F3865B0DD558EFAF30A32BE4F2F1E48D4D8FE698BDC7F1A3E24A"
     },
     {
       "file": "crossplatform/linux/test_browser_profile.py",
@@ -305,8 +305,8 @@
     },
     {
       "file": "crossplatform/linux/test_r37_parity.py",
-      "bytes": 4460,
-      "sha256": "BDEB5B20C2EEA7A33AC1EE1BB51D61AA54EAE1B82D4AA959A656AA5E858C8F87"
+      "bytes": 7307,
+      "sha256": "96E99237F2F46EDBB1BA6B3DC4ED67B96DE5EB4417BB543C64930508A57B69B0"
     },
     {
       "file": "crossplatform/linux/test_scope_policy.py",
@@ -325,13 +325,13 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 6928,
-      "sha256": "5309370F5018561FB3D613412999D97F4D1437B13FDA114982D208F8A4675F04"
+      "bytes": 6929,
+      "sha256": "59618BDB16F1364E4B8269261D0083C792DCB11406BDC9263B05DCBCA4A4AC3C"
     },
     {
       "file": "crossplatform/README_FA.md",
       "bytes": 1291,
-      "sha256": "443ED37384FB7621976B1A9F245ADBA1E8B59F7919B8143D44EB1C42E219401D"
+      "sha256": "8D17069C722960AA48FA551079F3249C3D653551F53764A1BA50594F8B01C40C"
     },
     {
       "file": "data/.gitkeep",
@@ -959,14 +959,69 @@
       "sha256": "3D13EF970FF10E5FBE797418DB6EF599004FBE0C983C726675DDCD9247F1FEEF"
     },
     {
+      "file": "evidence/R38_CROSSPLATFORM_DEEP_AUDIT_20260929.json",
+      "bytes": 4063,
+      "sha256": "264777A062B5607F99D6860E56CCFCE2DE3714F36B5F8E741E372FC21E7EFCF3"
+    },
+    {
+      "file": "evidence/R38_DIRECT_METHOD_CYCLE1_RUNTIME_20260929.json",
+      "bytes": 3749,
+      "sha256": "5052136AD643BC2672918F67367CD8E7F9BBD908ADDA387A79019E0B781F44AF"
+    },
+    {
+      "file": "evidence/R38_DIRECT_METHOD_CYCLE1_STOP_20260929.json",
+      "bytes": 939,
+      "sha256": "CC19EA329CE39D42EBBF47CF648712739E932CEE2D639DECC94F0ECD750BB7B3"
+    },
+    {
+      "file": "evidence/R38_DIRECT_METHOD_CYCLE2_RUNTIME_20260929.json",
+      "bytes": 3745,
+      "sha256": "FF230420F5E54CE352B5AE0057E9A017E0851E81590BE7DD9487D704F1C723BF"
+    },
+    {
+      "file": "evidence/R38_DIRECT_METHOD_CYCLE2_STOP_20260929.json",
+      "bytes": 939,
+      "sha256": "CC19EA329CE39D42EBBF47CF648712739E932CEE2D639DECC94F0ECD750BB7B3"
+    },
+    {
+      "file": "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json",
+      "bytes": 2849,
+      "sha256": "60549CEECA76A55B06EE4E896891E8CEC7644712341068DC8C4EBDEE9F83C5C6"
+    },
+    {
+      "file": "evidence/R38_DIRECT_METHOD_RUNTIME.json",
+      "bytes": 3745,
+      "sha256": "FF230420F5E54CE352B5AE0057E9A017E0851E81590BE7DD9487D704F1C723BF"
+    },
+    {
+      "file": "evidence/R38_DIRECT_METHOD_STOP.json",
+      "bytes": 939,
+      "sha256": "CC19EA329CE39D42EBBF47CF648712739E932CEE2D639DECC94F0ECD750BB7B3"
+    },
+    {
+      "file": "evidence/R38_INSTALLER_BUILD_20260929.json",
+      "bytes": 304,
+      "sha256": "C376659B1B3C8DF704A1F00C94E16F151CA01E80C649A8B16106335E07457DBD"
+    },
+    {
+      "file": "evidence/R38_PROJECT_KNOWLEDGE_20260929.json",
+      "bytes": 17113,
+      "sha256": "248849E149639431D381557EDB3A847163BB99BF431BDF47D8DA5EE4231E93EC"
+    },
+    {
+      "file": "evidence/R38_WINDOWS_DIRECT_METHOD_INSTALL_ACCEPTANCE_20260929.json",
+      "bytes": 3618,
+      "sha256": "E9A21C35456EC58223384BDBDDBC37C363C13BD5DD626F42B02CE5D8E84C849D"
+    },
+    {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
       "bytes": 2126,
       "sha256": "FE39F0868C138A3A3CDB57548BCD7AEB562B0BCB72328590D91ACDC0EB6B2D41"
     },
     {
       "file": "evidence/unit_tests.json",
-      "bytes": 587,
-      "sha256": "4E5BFF8E06B6481C3797EA3A01AC03575B86E876AD3016F06075F9CD5033ED50"
+      "bytes": 221,
+      "sha256": "4229B16D600B7F8FBD30EBCDED3FA7C90FF8A35FF4CB7D952666E0C476772F1A"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1156,17 +1211,17 @@
     {
       "file": "README.md",
       "bytes": 5040,
-      "sha256": "E7759A2F31BFADC2A7A59E8818F8988F2B6BE6BCA46B1CCE062073A8B6F1CC82"
+      "sha256": "CE913603315073FD9E977906D556FA112E9A24CEF57085530202F8FF8EB212F1"
     },
     {
       "file": "README_FA.md",
       "bytes": 3590,
-      "sha256": "8A3F0FE52BC87E3A2F30D3F6EBB4F17EBE1400E70D613D9B0B591F31748C6100"
+      "sha256": "091E375631BE610B34E9D044F1FFA6756EC7C8805E09228C42BCE02410A87586"
     },
     {
       "file": "RELEASE.json",
-      "bytes": 22700,
-      "sha256": "A340B846713A7A4E4CC21DE64B7D382C5DB5AEBE87CADC5288843E366D037F17"
+      "bytes": 24229,
+      "sha256": "FE1A3A1D303A9930F9264409655BD65341534D3AD6C811F1CC448F9BE6A4A4DF"
     },
     {
       "file": "SECURITY.md",
@@ -1187,6 +1242,11 @@
       "file": "tests/build_linux_r11_package.py",
       "bytes": 2103,
       "sha256": "A118D485AABECF693F4935DFA9DA9B9422A47203CEC6A33500429037EC3EACF2"
+    },
+    {
+      "file": "tests/build_linux_r12_package.py",
+      "bytes": 2442,
+      "sha256": "D8F752E185DF5409F8651E6966972C919BF12D767930D081D538E398E8641350"
     },
     {
       "file": "tests/build_linux_r9_package.py",
@@ -1317,6 +1377,16 @@
       "file": "tests/build_r37_product_metadata.py",
       "bytes": 3426,
       "sha256": "05154404C9B08BEB6708325469CA213A0D642E5FED087C0BD0A5EBB5B758D1EF"
+    },
+    {
+      "file": "tests/build_r38_direct_method_installer.ps1",
+      "bytes": 2062,
+      "sha256": "9026C8466FE296FB3473F34364F346CD6654C2784B63A3541F6DF348FB956EBF"
+    },
+    {
+      "file": "tests/build_r38_direct_method_metadata.py",
+      "bytes": 2928,
+      "sha256": "FB343154787A05DE4528EFCA1B64C4DBDE5D27B37364B8D1D340450D2623BC6A"
     },
     {
       "file": "tests/chat4_r37_final_smoke.ps1",
@@ -1665,8 +1735,8 @@
     },
     {
       "file": "tests/rebuild_crossplatform_manifest.py",
-      "bytes": 929,
-      "sha256": "0DB442CE76DB03B0149245914083DB0F6DC3FAA52C4059CCD135AC4335F18D00"
+      "bytes": 930,
+      "sha256": "561479EE85EFC2E54BA6433B26EF02519409A9B1D2258E64AA8B0B5A6E15AF7C"
     },
     {
       "file": "tests/rebuild_public_manifest.py",
@@ -1760,8 +1830,8 @@
     },
     {
       "file": "tests/test_r36_directdpi_product.py",
-      "bytes": 4494,
-      "sha256": "FA1111134531AD22321263874EBDB913811DA12230B98BA92F1E53C273E404FC"
+      "bytes": 6654,
+      "sha256": "F6CFEB0B1D690E123B946468888E38CEB9A786DEE1ED535F1F17EC7A5BBA5E6F"
     },
     {
       "file": "tests/verify_public_tree.py",
@@ -1789,6 +1859,11 @@
       "sha256": "48FEFDF1CB394AC75F4FFDF690E8B51A2BE32D8EC0AC472D973373E1F103B605"
     },
     {
+      "file": "tests/verify_r38_installed_payload.py",
+      "bytes": 1836,
+      "sha256": "528B00CEC13F4E8CCAE9CFCDCD6A3C177DEC80A6D5E0146EDD7CA3B27D033D2E"
+    },
+    {
       "file": "tests/virtual_codesign.ps1",
       "bytes": 2035,
       "sha256": "D61199A493062262922C2619AD6B311964E4C21FC0A61EF8092B2A31A6C58C4F"
@@ -1805,8 +1880,13 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 11037,
-      "sha256": "37361C839C35E392C1A0E0DEBE6D31AC474AB02D1A0ACE10F82BCB1BE75666D1"
+      "bytes": 11894,
+      "sha256": "5E15D3CD087730A88FA9AA87A7811776B40908582B4D1BF4079B74565FE5810B"
+    },
+    {
+      "file": "windows/installer/Prepare-Upgrade.ps1",
+      "bytes": 1353,
+      "sha256": "6DA25D603A3E217A9197F13F0F950EC4E9B5B09BCD12866EF7C7041E3AA5D2C9"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",

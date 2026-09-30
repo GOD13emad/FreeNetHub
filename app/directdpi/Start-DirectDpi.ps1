@@ -5,28 +5,32 @@ $ErrorActionPreference='Stop'
 
 $AppDir=Split-Path -Parent $PSScriptRoot
 $Root=Split-Path -Parent $AppDir
-$Tools=Join-Path $PSScriptRoot 'tools'
-$Winws=Join-Path $Tools 'winws.exe'
+$CtrldDir=Join-Path $AppDir 'directdns'
+$Ctrld=Join-Path $CtrldDir 'ctrld.exe'
+$CtrldSock=Join-Path $CtrldDir 'ctrld_control.sock'
+$CtrldTemplate=Join-Path $CtrldDir 'ctrld.toml'
+$ZapretDir=Join-Path $PSScriptRoot 'tools'
+$Winws=Join-Path $ZapretDir 'winws.exe'
 $HostList=Join-Path $PSScriptRoot 'hosts.txt'
-$DirectDnsDir=Join-Path $AppDir 'directdns'
-$Ctrld=Join-Path $DirectDnsDir 'ctrld.exe'
-$CtrldTemplate=Join-Path $DirectDnsDir 'ctrld.toml'
-$DnsRuntimeDir=Join-Path $env:ProgramData 'FreeNetHub\directdns'
-$DnsRuntimeConfig=Join-Path $DnsRuntimeDir 'ctrld.toml'
-$StateDir=Join-Path $env:ProgramData 'FreeNetHub\directdpi'
-$StatePath=Join-Path $StateDir 'state.json'
-$EvidencePath=Join-Path $Root 'evidence\R36_DIRECT_DPI_RUNTIME.json'
-$Interface=''
-$script:DirectLocalIp=''
+$Runtime=Join-Path $env:ProgramData 'FreeNetHub\directdpi'
+$RuntimeCtrld=Join-Path $Runtime 'ctrld'
+$RuntimeConfig=Join-Path $RuntimeCtrld 'ctrld.toml'
+$StatePath=Join-Path $Runtime 'state.json'
+$Evidence=Join-Path $Root 'evidence\R38_DIRECT_METHOD_RUNTIME.json'
+$Ula='fd53:4444:48::53'
+$LoopbackIndex=1
+$NrptDisplay='FreeNetHub.DirectMethod'
+$NrptComment='Owned by FreeNetHub Direct Method; safe to remove only by this method.'
 
 $Expected=@{
+ 'ctrld.exe'='FC966FD7DD5EE850A9709F632789CFB5BBC06C45D903D24B8ECFCE3306B658CD'
+ 'ctrld.toml'='2E1AF2EF934367465B15284DE93016B839849D717F9A8DC4AC18858FC123EAE2'
  'winws.exe'='A14BFF1DF6234EA555D2E0C61B589F0707C0B12D6C9B7EECCDA76012154996E8'
  'WinDivert.dll'='C1E060EE19444A259B2162F8AF0F3FE8C4428A1C6F694DCE20DE194AC8D7D9A2'
  'WinDivert64.sys'='8DA085332782708D8767BCACE5327A6EC7283C17CFB85E40B03CD2323A90DDC2'
  'cygwin1.dll'='103104A52E5293CE418944725DF19E2BF81AD9269B9A120D71D39028E821499B'
+ 'hosts.txt'='9C8DBCC6FCFA607BEE4AE16F2DFDEB8D025D66FFD94208A53ED480C2B6892D4B'
 }
-$ExpectedCtrld='FC966FD7DD5EE850A9709F632789CFB5BBC06C45D903D24B8ECFCE3306B658CD'
-$ExpectedCtrldConfig='2E1AF2EF934367465B15284DE93016B839849D717F9A8DC4AC18858FC123EAE2'
 
 function Test-Admin{
  $id=[Security.Principal.WindowsIdentity]::GetCurrent()
@@ -34,37 +38,62 @@ function Test-Admin{
  return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 function Write-JsonAtomic([string]$Path,$Value){
- $dir=Split-Path -Parent $Path
- New-Item -ItemType Directory -Force -Path $dir|Out-Null
+ $d=Split-Path -Parent $Path
+ New-Item -ItemType Directory -Force -Path $d|Out-Null
  $tmp=$Path+'.'+[guid]::NewGuid().ToString('N')+'.tmp'
- [IO.File]::WriteAllText($tmp,($Value|ConvertTo-Json -Depth 18),[Text.UTF8Encoding]::new($false))
+ [IO.File]::WriteAllText($tmp,($Value|ConvertTo-Json -Depth 24),[Text.UTF8Encoding]::new($false))
  [IO.File]::Move($tmp,$Path,$true)
 }
-function Resolve-PhysicalDefaultInterface{
- $routes=@(
+function Resolve-PhysicalDefault{
+ $rs=@(
   Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue |
    Where-Object {$_.State -eq 'Alive'} |
    Sort-Object @{Expression={[int]$_.RouteMetric+[int]$_.InterfaceMetric}},RouteMetric,InterfaceMetric
  )
- if(-not $routes.Count){throw 'DIRECT_DPI_NO_DEFAULT_ROUTE'}
- $r=$routes[0]
- $ip=Get-NetIPAddress -InterfaceIndex $r.InterfaceIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue |
-  Where-Object {$_.IPAddress -and $_.IPAddress -notlike '169.254.*'} |
-  Select-Object -First 1
- $ad=Get-NetAdapter -InterfaceIndex $r.InterfaceIndex -ErrorAction SilentlyContinue
- if(-not $ip -or -not $ad -or $ad.Status -ne 'Up'){throw 'DIRECT_DPI_DEFAULT_ROUTE_UNUSABLE'}
- if($ad.InterfaceDescription -match '(?i)Wintun|WireGuard|TAP|TUN|VPN|Loopback'){throw 'DIRECT_DPI_DEFAULT_ROUTE_NOT_PHYSICAL'}
- [pscustomobject]@{Alias=[string]$ad.Name;Index=[int]$r.InterfaceIndex;LocalIp=[string]$ip.IPAddress;NextHop=[string]$r.NextHop;Description=[string]$ad.InterfaceDescription}
+ if(-not $rs.Count){throw 'NO_DEFAULT_ROUTE'}
+ $r=$rs[0]
+ $a=Get-NetAdapter -InterfaceIndex $r.InterfaceIndex -ErrorAction Stop
+ $ip=Get-NetIPAddress -InterfaceIndex $r.InterfaceIndex -AddressFamily IPv4 -ErrorAction Stop |
+  Where-Object {$_.IPAddress -and $_.IPAddress -notlike '169.254.*'} | Select-Object -First 1
+ if($a.Status -ne 'Up' -or -not $ip){throw 'DEFAULT_INTERFACE_UNUSABLE'}
+ if($a.InterfaceDescription -match '(?i)Wintun|WireGuard|TAP|TUN|VPN|Loopback'){throw 'DEFAULT_ROUTE_NOT_PHYSICAL'}
+ [pscustomobject]@{Alias=[string]$a.Name;Index=[int]$r.InterfaceIndex;LocalIp=[string]$ip.IPAddress;NextHop=[string]$r.NextHop;Description=[string]$a.InterfaceDescription}
+}
+function Get-Ics{
+ $s=Get-CimInstance Win32_Service -Filter "Name='SharedAccess'" -ErrorAction SilentlyContinue
+ if(-not $s){return [ordered]@{exists=$false;state='';pid=0}}
+ [ordered]@{exists=$true;state=[string]$s.State;pid=[int64]$s.ProcessId}
+}
+function Get-NrptSignature{
+ @(
+  Get-DnsClientNrptRule -ErrorAction SilentlyContinue |
+   Sort-Object Name |
+   ForEach-Object {
+    [ordered]@{
+     Name=[string]$_.Name
+     DisplayName=[string]$_.DisplayName
+     Namespace=@($_.Namespace|ForEach-Object{[string]$_})
+     NameServers=@($_.NameServers|ForEach-Object{[string]$_})
+     Comment=[string]$_.Comment
+    }
+   }
+ )
+}
+function Safe-StartsWith($Value,[string]$Prefix){
+ try{$s=[string]$Value;return ($s.Length -gt 0 -and $s.StartsWith($Prefix,[StringComparison]::OrdinalIgnoreCase))}catch{return $false}
+}
+function Safe-Contains($Value,[string]$Needle){
+ try{$s=[string]$Value;return ($s.Length -gt 0 -and $s.Contains($Needle,[StringComparison]::OrdinalIgnoreCase))}catch{return $false}
 }
 function Get-OwnedDrivers{
  @(
   Get-CimInstance Win32_SystemDriver -ErrorAction SilentlyContinue |
-   Where-Object {$_.Name -match '^WinDivert' -and $_.PathName -and $_.PathName.Contains($PSScriptRoot,[StringComparison]::OrdinalIgnoreCase)}
+   Where-Object {$_.Name -match '^WinDivert' -and (Safe-Contains $_.PathName $Root)}
  )
 }
 function Stop-OwnedWinws{
  Get-Process winws -ErrorAction SilentlyContinue |
-  Where-Object {$_.Path -and $_.Path.StartsWith($PSScriptRoot,[StringComparison]::OrdinalIgnoreCase)} |
+  Where-Object {Safe-StartsWith $_.Path $ZapretDir} |
   Stop-Process -Force -ErrorAction SilentlyContinue
  Start-Sleep -Milliseconds 350
  foreach($d in @(Get-OwnedDrivers)){
@@ -74,183 +103,173 @@ function Stop-OwnedWinws{
  }
  Start-Sleep -Milliseconds 500
 }
-function Get-CtrldService{
- Get-CimInstance Win32_Service -Filter "Name='ctrld'" -ErrorAction SilentlyContinue
-}
-function Test-OwnedCtrldService($svc){
- if(-not $svc -or -not $svc.PathName){return $false}
- return $svc.PathName.Contains($Ctrld,[StringComparison]::OrdinalIgnoreCase)
-}
-function Get-CtrldCatchAll{
+function Get-OwnedCtrld{
  @(
-  Get-DnsClientNrptRule -ErrorAction SilentlyContinue |
-   Where-Object {
-    $ns=@($_.Namespace)|ForEach-Object{[string]$_}
-    $sv=@($_.NameServers)|ForEach-Object{[string]$_}
-    ($ns -contains '.') -and ($sv -contains '::1')
-   } |
-   ForEach-Object {[pscustomobject]@{Name=[string]$_.Name;Namespace=@($_.Namespace);NameServers=@($_.NameServers)}}
+  Get-Process ctrld -ErrorAction SilentlyContinue |
+   Where-Object {Safe-StartsWith $_.Path $CtrldDir}
  )
 }
-function Cleanup-OwnedCtrld([string]$Iface){
- $svc=Get-CtrldService
- if($svc -and -not(Test-OwnedCtrldService $svc)){throw 'DIRECT_DNS_FOREIGN_CTRLD_SERVICE'}
- if($svc){
-  $out=@(& $Ctrld uninstall --iface $Iface -v 2>&1)
-  $code=$LASTEXITCODE
-  Start-Sleep -Seconds 2
-  $svc2=Get-CtrldService
-  if($svc2 -and (Test-OwnedCtrldService $svc2)){
-   & sc.exe stop ctrld|Out-Null
-   Start-Sleep -Milliseconds 500
-   & sc.exe delete ctrld|Out-Null
-   Start-Sleep -Milliseconds 700
-  }
-  if($code -ne 0 -and (Get-CtrldService)){throw ('DIRECT_DNS_UNINSTALL_EXIT_'+$code)}
- }
- Get-Process ctrld -ErrorAction SilentlyContinue |
-  Where-Object {$_.Path -and $_.Path.StartsWith($DirectDnsDir,[StringComparison]::OrdinalIgnoreCase)} |
-  Stop-Process -Force -ErrorAction SilentlyContinue
- Start-Sleep -Milliseconds 300
+function Get-Ula{
+ @(Get-NetIPAddress -InterfaceIndex $LoopbackIndex -AddressFamily IPv6 -ErrorAction SilentlyContinue|Where-Object IPAddress -eq $Ula)
 }
-function Restore-Prestate($s){
- Stop-OwnedWinws
- try{Cleanup-OwnedCtrld ([string]$s.interface)}catch{}
- if([string]$s.preDnsMode -eq 'DHCP'){
-  Set-DnsClientServerAddress -InterfaceAlias ([string]$s.interface) -ResetServerAddresses
- }elseif(@($s.preDns).Count){
-  Set-DnsClientServerAddress -InterfaceAlias ([string]$s.interface) -ServerAddresses @($s.preDns)
+function Remove-OwnedNrpt([string]$RuleName){
+ if(-not $RuleName){return}
+ $r=Get-DnsClientNrptRule -Name $RuleName -ErrorAction SilentlyContinue
+ if($r){
+  if([string]$r.DisplayName -ne $NrptDisplay -or [string]$r.Comment -ne $NrptComment){throw 'NRPT_OWNERSHIP_MISMATCH'}
+  Remove-DnsClientNrptRule -Name $RuleName -Force -ErrorAction Stop
  }
- Clear-DnsClientCache -ErrorAction SilentlyContinue
- Remove-Item -LiteralPath $DnsRuntimeDir -Recurse -Force -ErrorAction SilentlyContinue
 }
-function Curl-Probe([string]$Url,[int]$Timeout=8){
- $tmp=[IO.Path]::GetTempFileName()
- try{
-  if(-not $script:DirectLocalIp){throw 'DIRECT_DPI_LOCAL_IP_UNRESOLVED'}
-  $meta=& curl.exe -4 --interface $script:DirectLocalIp --noproxy '*' -sS -o $tmp -w '%{http_code}|%{remote_ip}|%{time_connect}|%{time_appconnect}|%{time_total}' --max-time $Timeout $Url 2>&1
-  [ordered]@{url=$Url;exit=$LASTEXITCODE;meta=($meta -join [Environment]::NewLine);bytes=(Get-Item $tmp).Length}
- }finally{
-  Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+function Remove-OwnedUla($s){
+ $created=$false
+ if($s.PSObject.Properties.Name -contains 'ulaCreated'){$created=[bool]$s.ulaCreated}
+ if(-not $created){return}
+ $a=@(Get-Ula)
+ if($a.Count){
+  $x=$a[0]
+  if([int]$x.PrefixLength -ne 128 -or -not [bool]$x.SkipAsSource){throw 'ULA_OWNERSHIP_MISMATCH'}
+  Remove-NetIPAddress -InterfaceIndex $LoopbackIndex -IPAddress $Ula -AddressFamily IPv6 -Confirm:$false -ErrorAction Stop
  }
 }
 function Dns-Probe([string]$Name){
  try{
   $sw=[Diagnostics.Stopwatch]::StartNew()
-  $a=@([System.Net.Dns]::GetHostAddresses($Name)|Where-Object AddressFamily -eq InterNetwork|ForEach-Object IPAddressToString|Select-Object -Unique)
+  $a=@([Net.Dns]::GetHostAddresses($Name)|Where-Object AddressFamily -eq InterNetwork|ForEach-Object IPAddressToString|Select-Object -Unique)
   $sw.Stop()
-  [ordered]@{
-   name=$Name;ok=($a.Count -gt 0);ms=$sw.ElapsedMilliseconds;answers=$a
-   private=@($a|Where-Object{$_ -match '^(10\.|127\.|169\.254\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.)'})
-  }
- }catch{
-  [ordered]@{name=$Name;ok=$false;answers=@();private=@();error=$_.Exception.Message}
- }
+  $private=@($a|Where-Object{$_ -match '^(10\.|127\.|169\.254\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.)'})
+  [ordered]@{name=$Name;ok=($a.Count -gt 0 -and $private.Count -eq 0);ms=$sw.ElapsedMilliseconds;answers=$a;private=$private}
+ }catch{[ordered]@{name=$Name;ok=$false;ms=-1;answers=@();private=@();error=$_.Exception.Message}}
 }
-function Get-IcsState{
- $s=Get-CimInstance Win32_Service -Filter "Name='SharedAccess'" -ErrorAction SilentlyContinue
- if(-not $s){return [ordered]@{exists=$false;state='';pid=0}}
- [ordered]@{exists=$true;state=[string]$s.State;pid=[int64]$s.ProcessId}
+function Curl-Probe([string]$Url,[string]$LocalIp,[int]$Timeout=7){
+ $m=& curl.exe -4 --interface $LocalIp --noproxy '*' -sS -o NUL -w '%{http_code}|%{remote_ip}|%{time_connect}|%{time_appconnect}|%{time_total}' --max-time $Timeout $Url 2>&1
+ [ordered]@{url=$Url;exit=$LASTEXITCODE;meta=($m -join ' ')}
 }
-
-if(-not(Test-Admin)){
- $pwsh=(Get-Command pwsh.exe -ErrorAction Stop).Source
- $args=@('-NoProfile','-ExecutionPolicy','Bypass','-File',$PSCommandPath)
- $p=Start-Process -FilePath $pwsh -Verb RunAs -ArgumentList $args -PassThru -Wait
- exit $p.ExitCode
-}
-
-$route=Resolve-PhysicalDefaultInterface
-$Interface=[string]$route.Alias
-$script:DirectLocalIp=[string]$route.LocalIp
-
-foreach($n in $Expected.Keys){
- $f=Join-Path $Tools $n
- if(-not(Test-Path -LiteralPath $f)){throw ('DIRECT_DPI_BINARY_MISSING_'+$n)}
- if((Get-FileHash -LiteralPath $f -Algorithm SHA256).Hash -ne $Expected[$n]){throw ('DIRECT_DPI_HASH_MISMATCH_'+$n)}
-}
-if(-not(Test-Path -LiteralPath $Ctrld)){throw 'DIRECT_DNS_BINARY_MISSING'}
-if((Get-FileHash -LiteralPath $Ctrld -Algorithm SHA256).Hash -ne $ExpectedCtrld){throw 'DIRECT_DNS_BINARY_HASH_MISMATCH'}
-if(-not(Test-Path -LiteralPath $CtrldTemplate)){throw 'DIRECT_DNS_CONFIG_MISSING'}
-if((Get-FileHash -LiteralPath $CtrldTemplate -Algorithm SHA256).Hash -ne $ExpectedCtrldConfig){throw 'DIRECT_DNS_CONFIG_HASH_MISMATCH'}
-if(@(Get-NetRoute -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.DestinationPrefix -in @('0.0.0.0/1','128.0.0.0/1')}).Count){throw 'DIRECT_DPI_REFUSE_FULL_ROUTE_OVERRIDE'}
-
-$svcPre=Get-CtrldService
-if($svcPre -and -not(Test-OwnedCtrldService $svcPre)){throw 'DIRECT_DNS_FOREIGN_CTRLD_SERVICE'}
-
-if(Test-Path -LiteralPath $StatePath){
- $old=Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8|ConvertFrom-Json
- $svc=Get-CtrldService
- $winwsAlive=$false
- if($old.pid){$winwsAlive=[bool](Get-Process -Id ([int]$old.pid) -ErrorAction SilentlyContinue)}
- if([string]$old.phase -eq 'ACTIVE' -and $winwsAlive -and $svc -and (Test-OwnedCtrldService $svc) -and $svc.State -eq 'Running'){
-  [ordered]@{schema=1;status='ALREADY_ACTIVE';pid=[int]$old.pid;state=$StatePath}|ConvertTo-Json -Depth 5
-  exit 0
- }
- Restore-Prestate $old
+function Rollback($s){
+ try{Remove-OwnedNrpt ([string]$s.nrptRuleName)}catch{}
+ Clear-DnsClientCache -ErrorAction SilentlyContinue
+ if($s.PSObject.Properties.Name -contains 'winwsPid' -and $s.winwsPid){Stop-Process -Id ([int]$s.winwsPid) -Force -ErrorAction SilentlyContinue}
+ Stop-OwnedWinws
+ if($s.PSObject.Properties.Name -contains 'ctrldPid' -and $s.ctrldPid){Stop-Process -Id ([int]$s.ctrldPid) -Force -ErrorAction SilentlyContinue}
+ Get-OwnedCtrld|Stop-Process -Force -ErrorAction SilentlyContinue
+ Start-Sleep -Milliseconds 400
+ Remove-Item -LiteralPath $CtrldSock -Force -ErrorAction SilentlyContinue
+ try{Remove-OwnedUla $s}catch{}
+ Remove-Item -LiteralPath $RuntimeCtrld -Recurse -Force -ErrorAction SilentlyContinue
+ Clear-DnsClientCache -ErrorAction SilentlyContinue
  Remove-Item -LiteralPath $StatePath -Force -ErrorAction SilentlyContinue
 }
 
-if(Get-CtrldService){throw 'DIRECT_DNS_STALE_SERVICE_WITHOUT_STATE'}
-if(Get-Process ctrld -ErrorAction SilentlyContinue|Where-Object{$_.Path -and $_.Path.StartsWith($DirectDnsDir,[StringComparison]::OrdinalIgnoreCase)}){throw 'DIRECT_DNS_STALE_PROCESS_WITHOUT_STATE'}
-
-New-Item -ItemType Directory -Force -Path $StateDir,(Join-Path $Root 'evidence')|Out-Null
-$preDns=@((Get-DnsClientServerAddress -InterfaceAlias $Interface -AddressFamily IPv4 -ErrorAction Stop).ServerAddresses)
-$preNetsh=(netsh interface ipv4 show dnsservers name=$Interface|Out-String)
-$preDnsMode=$(if($preNetsh -match 'DHCP'){'DHCP'}else{'STATIC'})
-$preCatchAll=@(Get-CtrldCatchAll)
-$preIcs=Get-IcsState
-$runtimeState=[ordered]@{
- schema=2;phase='PREPARED';interface=$Interface;pid=0
- preDns=$preDns;preDnsMode=$preDnsMode;preNetsh=$preNetsh
- preCtrldCatchAllCount=$preCatchAll.Count
- preIcs=$preIcs
- dnsRuntimeConfig=$DnsRuntimeConfig
- directDns=[ordered]@{engine='ctrld';version='1.5.7';listener='[::1]:53';upstream='https://76.76.10.11/p0'}
- route=[ordered]@{interfaceIndex=$route.Index;localIp=$route.LocalIp;nextHop=$route.NextHop}
- hostlist=$HostList;winws=$Winws;prepared=(Get-Date).ToString('o')
+if(-not(Test-Admin)){
+ $p=Start-Process pwsh.exe -Verb RunAs -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',$PSCommandPath) -PassThru -Wait
+ exit $p.ExitCode
 }
-Write-JsonAtomic $StatePath $runtimeState
 
-$ev=[ordered]@{
- schema=2;status='FAIL';mode='DIRECT_ENCRYPTED_DNS_PLUS_DPI_NO_VPN_NO_PROXY'
- pre=[ordered]@{dns=$preDns;dnsMode=$preDnsMode;ctrldCatchAll=$preCatchAll;ics=$preIcs}
- dnsStage=$null;live=$null;cleanup=$null;error=''
+New-Item -ItemType Directory -Force -Path $Runtime,(Join-Path $Root 'evidence')|Out-Null
+$files=@{
+ 'ctrld.exe'=$Ctrld
+ 'ctrld.toml'=$CtrldTemplate
+ 'winws.exe'=$Winws
+ 'WinDivert.dll'=Join-Path $ZapretDir 'WinDivert.dll'
+ 'WinDivert64.sys'=Join-Path $ZapretDir 'WinDivert64.sys'
+ 'cygwin1.dll'=Join-Path $ZapretDir 'cygwin1.dll'
+ 'hosts.txt'=$HostList
 }
-$proc=$null
+foreach($n in $Expected.Keys){
+ $p=$files[$n]
+ if(-not(Test-Path -LiteralPath $p)){throw ('MISSING_'+$n)}
+ if((Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash -ne $Expected[$n]){throw ('HASH_MISMATCH_'+$n)}
+}
+if(Get-CimInstance Win32_Service -Filter "Name='ctrld'" -ErrorAction SilentlyContinue){throw 'REFUSE_EXISTING_CTRLD_SERVICE'}
+if(@(Get-NetRoute -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.DestinationPrefix -in @('0.0.0.0/1','128.0.0.0/1')}).Count){throw 'REFUSE_BROAD_TUNNEL_ROUTE'}
+
+if(Test-Path -LiteralPath $StatePath){
+ $old=Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8|ConvertFrom-Json
+ $ca=(@(Get-OwnedCtrld).Count -gt 0)
+ $wa=(@(Get-Process winws -ErrorAction SilentlyContinue|Where-Object{$_.Path -and $_.Path.StartsWith($ZapretDir,[StringComparison]::OrdinalIgnoreCase)}).Count -gt 0)
+ $ua=(@(Get-Ula).Count -eq 1)
+ $nr=$false
+ if($old.nrptRuleName){$nr=[bool](Get-DnsClientNrptRule -Name ([string]$old.nrptRuleName) -ErrorAction SilentlyContinue)}
+ if([string]$old.phase -eq 'ACTIVE' -and $ca -and $wa -and $ua -and $nr){
+  [ordered]@{status='ALREADY_ACTIVE';state=$StatePath;ctrldPid=$old.ctrldPid;winwsPid=$old.winwsPid;nrptRule=$old.nrptRuleName}|ConvertTo-Json -Depth 5
+  return
+ }
+ Rollback $old
+}
+if(Get-DnsClientNrptRule -ErrorAction SilentlyContinue|Where-Object{$_.DisplayName -eq $NrptDisplay}){throw 'REFUSE_OWNED_NRPT_WITHOUT_STATE'}
+if(@(Get-Ula).Count){throw 'REFUSE_ULA_WITHOUT_STATE'}
+if(@(Get-OwnedCtrld).Count){throw 'STALE_OWNED_CTRLD_WITHOUT_STATE'}
+if(Test-Path -LiteralPath $CtrldSock){Remove-Item -LiteralPath $CtrldSock -Force -ErrorAction SilentlyContinue}
+if(Get-Process winws -ErrorAction SilentlyContinue|Where-Object{Safe-StartsWith $_.Path $ZapretDir}){throw 'STALE_OWNED_WINWS_WITHOUT_STATE'}
+if(Test-Path -LiteralPath $RuntimeCtrld){Remove-Item -LiteralPath $RuntimeCtrld -Recurse -Force -ErrorAction SilentlyContinue}
+
+$route=Resolve-PhysicalDefault
+$pre=[ordered]@{
+ dnsV4=@((Get-DnsClientServerAddress -InterfaceAlias $route.Alias -AddressFamily IPv4).ServerAddresses)
+ dnsV6=@((Get-DnsClientServerAddress -InterfaceAlias $route.Alias -AddressFamily IPv6).ServerAddresses)
+ nrpt=@(Get-NrptSignature)
+ ulaExists=(@(Get-Ula).Count -gt 0)
+ ics=Get-Ics
+ broadRouteCount=@(Get-NetRoute -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.DestinationPrefix -in @('0.0.0.0/1','128.0.0.0/1')}).Count
+ winHttp=(netsh winhttp show proxy|Out-String).Trim()
+}
+if($pre.ulaExists){throw 'ULA_PREEXISTS'}
+$state=[ordered]@{
+ schema=3;phase='PREPARED';architecture='LOOPBACK_ULA_CTRLD_DOH_NRPT_PLUS_ZAPRET'
+ root=$Root;interface=$route.Alias;localIp=$route.LocalIp;prepared=(Get-Date).ToString('o')
+ pre=$pre;ulaAddress=$Ula;ulaCreated=$false;nrptRuleName='';ctrldPid=0;winwsPid=0;runtimeConfig=$RuntimeConfig
+}
+Write-JsonAtomic $StatePath $state
+
+$ev=[ordered]@{schema=3;status='FAIL';architecture=$state.architecture;pre=$pre;dnsStage=$null;live=$null;error=''}
 try{
- Stop-OwnedWinws
- New-Item -ItemType Directory -Force -Path $DnsRuntimeDir|Out-Null
- Copy-Item -LiteralPath $CtrldTemplate -Destination $DnsRuntimeConfig -Force
- if((Get-FileHash -LiteralPath $DnsRuntimeConfig -Algorithm SHA256).Hash -ne $ExpectedCtrldConfig){throw 'DIRECT_DNS_RUNTIME_CONFIG_COPY_MISMATCH'}
+ New-Item -ItemType Directory -Force -Path $RuntimeCtrld|Out-Null
+ $cfg=Get-Content -LiteralPath $CtrldTemplate -Raw -Encoding UTF8
+ $cfg=$cfg.Replace('ip = "::1"',('ip = "'+$Ula+'"'))
+ [IO.File]::WriteAllText($RuntimeConfig,$cfg,[Text.UTF8Encoding]::new($false))
 
- $startOut=@(& $Ctrld start --config $DnsRuntimeConfig --intercept-mode dns --iface $Interface -v 2>&1)
- $startCode=$LASTEXITCODE
- if($startCode -ne 0){throw ('DIRECT_DNS_START_EXIT_'+$startCode+'_'+($startOut -join ' | '))}
- Start-Sleep -Seconds 3
+ New-NetIPAddress -InterfaceIndex $LoopbackIndex -IPAddress $Ula -PrefixLength 128 -AddressFamily IPv6 -SkipAsSource $true -PolicyStore ActiveStore|Out-Null
+ $state.ulaCreated=$true
+ Write-JsonAtomic $StatePath $state
+ $ready=$false
+ for($i=0;$i -lt 40;$i++){
+  Start-Sleep -Milliseconds 100
+  $a=Get-NetIPAddress -InterfaceIndex $LoopbackIndex -AddressFamily IPv6 -IPAddress $Ula -ErrorAction SilentlyContinue
+  if($a -and $a.AddressState -in @('Preferred','Deprecated')){$ready=$true;break}
+ }
+ if(-not $ready){throw 'ULA_NOT_READY'}
 
- $svc=Get-CtrldService
- if(-not $svc -or -not(Test-OwnedCtrldService $svc) -or $svc.State -ne 'Running'){throw 'DIRECT_DNS_SERVICE_NOT_RUNNING'}
- $udp=@(Get-NetUDPEndpoint -LocalAddress '::1' -LocalPort 53 -ErrorAction SilentlyContinue)
- $tcp=@(Get-NetTCPConnection -LocalAddress '::1' -LocalPort 53 -State Listen -ErrorAction SilentlyContinue)
- if(-not $udp.Count -or -not $tcp.Count){throw 'DIRECT_DNS_IPV6_LOOPBACK_LISTENER_MISSING'}
+ $cp=Start-Process -FilePath $Ctrld -ArgumentList @('run',('--config='+$RuntimeConfig),'--silent') -WorkingDirectory $RuntimeCtrld -WindowStyle Hidden -PassThru
+ $state.ctrldPid=$cp.Id
+ Write-JsonAtomic $StatePath $state
+ Start-Sleep -Seconds 2
+ if($cp.HasExited){throw ('CTRLD_EXIT_'+$cp.ExitCode)}
+ $udp=@(Get-NetUDPEndpoint -LocalAddress $Ula -LocalPort 53 -ErrorAction SilentlyContinue|Where-Object OwningProcess -eq $cp.Id)
+ $tcp=@(Get-NetTCPConnection -LocalAddress $Ula -LocalPort 53 -State Listen -ErrorAction SilentlyContinue|Where-Object OwningProcess -eq $cp.Id)
+ if(-not $udp.Count -or -not $tcp.Count){throw 'ULA_LISTENER_NOT_OWNED'}
 
- $icsNow=Get-IcsState
- if($preIcs.exists -and ($icsNow.state -ne $preIcs.state -or $icsNow.pid -ne $preIcs.pid)){throw 'DIRECT_DNS_ICS_CHANGED'}
-
+ $rule=Add-DnsClientNrptRule -Namespace '.' -NameServers $Ula -DisplayName $NrptDisplay -Comment $NrptComment -PassThru
+ $state.nrptRuleName=[string]$rule.Name
+ Write-JsonAtomic $StatePath $state
  Clear-DnsClientCache
- Start-Sleep -Seconds 1
- $dy=Dns-Probe 'www.youtube.com'
- $dg=Dns-Probe 'github.com'
- $do=Dns-Probe 'api.openai.com'
- foreach($d in @($dy,$dg,$do)){if(-not $d.ok -or $d.private.Count){throw ('DIRECT_DNS_RESOLUTION_FAIL_'+$d.name)}}
- $cd0=Curl-Probe 'https://76.76.10.11/p0' 5
- if($cd0.exit -ne 0 -or $cd0.meta -notmatch '^(200|400)\|'){throw 'DIRECT_DNS_UPSTREAM_HTTPS_FAIL'}
+ $dns=@();$allOk=$false
+ for($attempt=1;$attempt -le 5 -and -not $allOk;$attempt++){
+  Start-Sleep -Seconds 1
+  $dns=@()
+  foreach($n in @('www.youtube.com','github.com','api.openai.com')){$dns+=Dns-Probe $n}
+  $allOk=(@($dns|Where-Object{-not $_.ok}).Count -eq 0)
+ }
+ if(-not $allOk){throw 'SYSTEM_DNS_VIA_ULA_FAIL'}
+ $icsNow=Get-Ics
+ if($pre.ics.exists -and ($icsNow.state -ne $pre.ics.state -or $icsNow.pid -ne $pre.ics.pid)){throw 'ICS_CHANGED_DURING_DNS_STAGE'}
+ $dnsNow=@((Get-DnsClientServerAddress -InterfaceAlias $route.Alias -AddressFamily IPv4).ServerAddresses)
+ if(($dnsNow -join '|') -ne ($pre.dnsV4 -join '|')){throw 'ADAPTER_DNS_CHANGED'}
+ $cd=Curl-Probe 'https://76.76.10.11/p0' $route.LocalIp 5
+ if($cd.exit -ne 0 -or $cd.meta -notmatch '^(200|400)\|'){throw 'CONTROL_D_DOH_DIRECT_FAIL'}
  $ev.dnsStage=[ordered]@{
-  startOutput=$startOut;service=$svc|Select-Object Name,State,StartMode,PathName
-  listener=[ordered]@{udp=$udp;tcp=$tcp}
-  dns=@($dy,$dg,$do);controlD=$cd0
-  nrpt=@(Get-CtrldCatchAll);ics=$icsNow
+  ula=(Get-NetIPAddress -InterfaceIndex $LoopbackIndex -IPAddress $Ula -AddressFamily IPv6|Select-Object IPAddress,PrefixLength,AddressState,SkipAsSource)
+  ctrldPid=$cp.Id;udp=$udp.Count;tcp=$tcp.Count
+  nrptRule=$rule|Select-Object Name,DisplayName,Namespace,NameServers,Comment
+  dns=$dns;adapterDns=$dnsNow;controlD=$cd;ics=$icsNow
  }
 
  $args=@(
@@ -262,63 +281,43 @@ try{
   '--dpi-desync-split-pos=1,midsld',
   '--dpi-desync-fooling=badseq,md5sig'
  )
- $proc=Start-Process -FilePath $Winws -ArgumentList $args -WorkingDirectory $Tools -WindowStyle Hidden -PassThru
+ $wp=Start-Process -FilePath $Winws -ArgumentList $args -WorkingDirectory $ZapretDir -WindowStyle Hidden -PassThru
+ $state.winwsPid=$wp.Id
+ Write-JsonAtomic $StatePath $state
  Start-Sleep -Seconds 3
- if($proc.HasExited){throw ('DIRECT_DPI_WINWS_EXITED_'+$proc.ExitCode)}
+ if($wp.HasExited){throw ('WINWS_EXIT_'+$wp.ExitCode)}
 
- Clear-DnsClientCache
- Start-Sleep -Milliseconds 500
- $dy2=Dns-Probe 'www.youtube.com'
- $yt=Curl-Probe 'https://www.youtube.com/generate_204' 8
- $oa=Curl-Probe 'https://api.openai.com/v1/models' 6
- $gh=Curl-Probe 'https://github.com/' 6
+ $dy=Dns-Probe 'www.youtube.com'
+ $yt=Curl-Probe 'https://www.youtube.com/generate_204' $route.LocalIp 8
+ $oa=Curl-Probe 'https://api.openai.com/v1/models' $route.LocalIp 7
+ $gh=Curl-Probe 'https://github.com/' $route.LocalIp 7
  $routes=@(Get-NetRoute -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.DestinationPrefix -in @('0.0.0.0/1','128.0.0.0/1')})
- $proxy=(netsh winhttp show proxy|Out-String)
- $icsLive=Get-IcsState
+ $proxy=(netsh winhttp show proxy|Out-String).Trim()
+ $icsLive=Get-Ics
+ if(-not $dy.ok){throw 'YOUTUBE_DNS_NOT_CLEAN'}
+ if($yt.exit -ne 0 -or $yt.meta -notmatch '^(200|204)\|'){throw 'YOUTUBE_HTTPS_FAIL'}
+ if($oa.exit -ne 0 -or $oa.meta -notmatch '^(200|401|403)\|'){throw 'OPENAI_HTTPS_FAIL'}
+ if($gh.exit -ne 0 -or $gh.meta -notmatch '^(200|301|302)\|'){throw 'GITHUB_HTTPS_FAIL'}
+ if($routes.Count){throw 'BROAD_ROUTE_APPEARED'}
+ if($proxy -notmatch 'Direct access'){throw 'WINHTTP_PROXY_CHANGED'}
+ if($pre.ics.exists -and ($icsLive.state -ne $pre.ics.state -or $icsLive.pid -ne $pre.ics.pid)){throw 'ICS_CHANGED_LIVE'}
+ if(@(Get-OwnedDrivers).Count -lt 1){throw 'WINDIVERT_DRIVER_MISSING'}
 
- $ytOk=($yt.exit -eq 0 -and $yt.meta -match '^(200|204)\|')
- $dnsOk=($dy2.ok -and $dy2.private.Count -eq 0)
- $oaOk=($oa.meta -match '^(200|401|403)\|')
- $ghOk=($gh.meta -match '^(200|301|302)\|')
- $direct=($routes.Count -eq 0 -and $proxy -match 'Direct access')
- $icsOk=(-not $preIcs.exists) -or ($icsLive.state -eq $preIcs.state -and $icsLive.pid -eq $preIcs.pid)
- if(-not($ytOk -and $dnsOk -and $oaOk -and $ghOk -and $direct -and $icsOk)){throw 'DIRECT_DPI_END_TO_END_NOT_PASS'}
-
+ $state.phase='ACTIVE';$state.started=(Get-Date).ToString('o')
+ Write-JsonAtomic $StatePath $state
+ $ev.status='PASS_ACTIVE'
  $ev.live=[ordered]@{
-  pid=$proc.Id;dns=$dy2;youtube=$yt;openai=$oa;github=$gh
-  broadRoutes=$routes.Count;proxy=$proxy;ics=$icsLive
-  drivers=@(Get-OwnedDrivers|Select-Object Name,State,StartMode,PathName)
+  ctrldPid=$cp.Id;winwsPid=$wp.Id;dns=$dy;youtube=$yt;openai=$oa;github=$gh
+  ics=$icsLive;proxy=$proxy;broadRouteCount=$routes.Count
+  drivers=@(Get-OwnedDrivers|Select-Object Name,State,PathName)
  }
- $runtimeState.phase='ACTIVE'
- $runtimeState.pid=$proc.Id
- $runtimeState.started=(Get-Date).ToString('o')
- Write-JsonAtomic $StatePath $runtimeState
- $ev.status='PASS_ACTIVE_DIRECT_DPI'
- Write-JsonAtomic $EvidencePath $ev
- [ordered]@{schema=2;status=$ev.status;pid=$proc.Id;state=$StatePath;evidence=$EvidencePath}|ConvertTo-Json -Depth 6
- exit 0
+ Write-JsonAtomic $Evidence $ev
+ [ordered]@{status='PASS_ACTIVE';state=$StatePath;ctrldPid=$cp.Id;winwsPid=$wp.Id;nrptRule=$state.nrptRuleName;ula=$Ula;evidence=$Evidence}|ConvertTo-Json -Depth 6
+ return
 }catch{
  $ev.error=$_.Exception.Message
- try{
-  if(Test-Path -LiteralPath $StatePath){
-   $s=Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8|ConvertFrom-Json
-   Restore-Prestate $s
-  }else{
-   if($proc -and -not $proc.HasExited){Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue}
-   Stop-OwnedWinws
-  }
- }catch{$ev.cleanup=[ordered]@{rollbackError=$_.Exception.Message}}
- Remove-Item -LiteralPath $StatePath -Force -ErrorAction SilentlyContinue
- $ev.cleanup=[ordered]@{
-  dns=@((Get-DnsClientServerAddress -InterfaceAlias $Interface -AddressFamily IPv4 -ErrorAction SilentlyContinue).ServerAddresses)
-  ctrldService=@(Get-CtrldService|Select-Object Name,State,PathName)
-  ctrldProcess=@(Get-Process ctrld -ErrorAction SilentlyContinue|Select-Object Id,Path)
-  ctrldCatchAll=@(Get-CtrldCatchAll)
-  ics=Get-IcsState
-  winws=@(Get-Process winws -ErrorAction SilentlyContinue|Where-Object{$_.Path -and $_.Path.StartsWith($PSScriptRoot,[StringComparison]::OrdinalIgnoreCase)}|Select-Object Id)
-  drivers=@(Get-OwnedDrivers)
- }
- Write-JsonAtomic $EvidencePath $ev
- [ordered]@{schema=2;status='FAIL_ROLLED_BACK';error=$ev.error;evidence=$EvidencePath}|ConvertTo-Json -Depth 6
- exit 8
+ try{Rollback $state}catch{}
+ Write-JsonAtomic $Evidence $ev
+ [ordered]@{status='FAIL_ROLLED_BACK';error=$ev.error;evidence=$Evidence}|ConvertTo-Json -Depth 6
+ throw ('START_FAIL_'+$ev.error)
 }

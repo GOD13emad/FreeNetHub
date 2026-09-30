@@ -12,14 +12,14 @@ Windows R37 با رابط پنج‌بخشی Dashboard / Methods / Nodes / Tools 
 
 برای Windows از `FreeNetHub_4.2.0_R37_Final_Setup.exe` در Release `v4.2.0-r37-final` استفاده کنید. SHA-256 پذیرفته‌شده: `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64`.
 
-## Linux R11 / R37
+## Linux R12 / R38
 
-نسخهٔ فعلی Linux برابر `4.2.0-linux.11-r37` است و معماری UI ویندوز R37 را با پنج بخش Dashboard / Methods / Nodes / Tools / Settings روی GTK4/Libadwaita پیاده می‌کند.
+نسخهٔ فعلی Linux برابر `4.2.0-linux.12-r38` است و معماری UI ویندوز R37 را با پنج بخش Dashboard / Methods / Nodes / Tools / Settings روی GTK4/Libadwaita پیاده می‌کند.
 
 - Browser: AUTO، Node Pool، WARP، GOOL، CFON، Tor/obfs4/Snowflake، Custom و Direct.
 - Node Pool: import URL/File/Clipboard، public refresh، Test All مستقل، benchmark محدود، sort/filter، Favorite/Pin، metadata، History و Export Raw/Base64.
 - sing-box 1.14.2 و warp-plus 1.2.6 به‌صورت app-local و hash-pinned از release رسمی upstream provision می‌شوند.
-- Full-System در Linux R11 فقط WARP رسمی است؛ Full-System Node بدون helper privileged و acceptance مستقل ادعا نمی‌شود.
+- Full-System در Linux R12 فقط WARP رسمی است؛ Full-System Node بدون helper privileged و acceptance مستقل ادعا نمی‌شود.
 - Console Gateway software policy و rollback حفظ شده‌اند؛ تست فیزیکی game/country همچنان external gate است.
 - UpdateCheck revision-aware است و downgrade را نصب نمی‌کند؛ Install Update فقط asset جدیدتر با SHA-256 معتبر را می‌پذیرد.
 - نصب و بازشدن برنامه هیچ VPN/proxy/Hotspot را خودکار روشن نمی‌کند و route موجود—including VPN خارجی—در acceptance دقیق package بدون تغییر باقی ماند.

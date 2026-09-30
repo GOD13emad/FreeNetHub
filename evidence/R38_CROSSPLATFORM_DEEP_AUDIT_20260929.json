@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "product": "FreeNet Hub",
+  "version": "4.2.0",
+  "revision": "R38",
+  "status": "R38_R12_LOCAL_FINAL_HOSTED_CI_REQUIRED",
+  "objective": "Deep front-to-back audit of Windows R38 and Linux R11/R12 while preserving active external/user network state.",
+  "windows": {
+    "sourceRegression": "PASS_145_OF_145",
+    "directMethodContract": "PASS_5_OF_5",
+    "publicTree": "PASS",
+    "securityScan": "PASS",
+    "powershellParse": "PASS",
+    "installer": {
+      "status": "PASS_FINAL_LOCAL",
+      "bytes": 24252352,
+      "sha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+      "authenticode": "NotSigned",
+      "frozenFiles": 21,
+      "upgradeHelperFrozen": true
+    },
+    "installed": {
+      "runtimeStatus": "PASS",
+      "parity": "PASS",
+      "appFiles": 17,
+      "gatewayFiles": 17,
+      "releaseParity": true,
+      "uiSmoke": "PASS_5_OF_5",
+      "routeUnchanged": true,
+      "runtimeListenersAfter": 0
+    },
+    "networkMutationDuringFinalAudit": false,
+    "promotion": "LOCAL_FINAL_HOSTED_CI_REQUIRED",
+    "upgradeGuard": {
+      "status": "PASS",
+      "idleOwnedUiClosed": true,
+      "activeRuntimePolicy": "FAIL_CLOSED_EXIT_42",
+      "installerExit": 0,
+      "routeUnchanged": true,
+      "listenersAfter": 0,
+      "ownedUiChildrenAfter": 0,
+      "setupSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598"
+    }
+  },
+  "linux": {
+    "priorPublished": "4.2.0-linux.11-r37",
+    "candidate": "4.2.0-linux.12-r38",
+    "fullLiveAudit": {
+      "methods": 7,
+      "baselineExternalTun0Preserved": true,
+      "initialFailures": [
+        "TOR lifecycle predicate",
+        "GOOL 350KB upload timeout"
+      ]
+    },
+    "torFix": {
+      "status": "PASS_STATIC_AND_LIVE",
+      "rootCause": "Stopped Tor status was reused as running; benchmark also over-coupled proxy health to a site-specific YouTube probe.",
+      "prevention": "Require running state; use Cloudflare trace as proxy-health criterion and report YouTube reachability separately."
+    },
+    "goolFix": {
+      "status": "PASS_STATIC_AND_LIVE",
+      "rootCause": "Upload request omitted Cloudflare speedtest bytes query parameter; one-shot behavior was intermittent. Upstream Cloudflare uses __up with bytes measurement semantics.",
+      "policy": "100KB proxy sample, 350KB direct/base, and __up?bytes=N"
+    },
+    "permissions": "PASS_0700_STATE_0600_SESSION",
+    "integrity": "PASS_AFTER_LOCAL_FIX",
+    "uiLauncherSmoke": "PASS_GTK_PROCESS_NO_STDERR",
+    "package": {
+      "status": "PASS_REPRODUCIBLE_EXACT_INSTALL",
+      "name": "FreeNetHub_4.2.0_Linux_R12.zip",
+      "bytes": 210029,
+      "sha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+      "reproducibility": "PASS_WINDOWS_LINUX_IDENTICAL",
+      "supersededHashes": [
+        "01C9DDD2104853E7095A4C034138D98872B06FE3DEAF33B25862338997FA9820",
+        "C358FB2EEE614DC6DD5A8CE252CEFFC16924F0054F2E46C3DC2D37A38CF6092D"
+      ]
+    },
+    "publicRelease": false,
+    "latestTargetedLive": {
+      "sourceSha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A",
+      "tor": "PASS",
+      "gool": "PASS_4.12_DOWN_0.24_UP",
+      "sessionCleanup": "PASS",
+      "physicalBaseRoutePreserved": "PASS"
+    },
+    "exactPackageInstall": {
+      "status": "PASS",
+      "packageSha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+      "packageBytes": 210029,
+      "installedVersion": "4.2.0-linux.12-r38",
+      "installedSourceSha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A",
+      "integrity": "PASS",
+      "routeAndInterfacesPreserved": "PASS",
+      "networkMutationOnInstall": false
+    }
+  },
+  "openGates": [
+    "HOSTED_CI_R38_R12",
+    "TRUSTED_WINDOWS_AUTHENTICODE",
+    "HOSTED_CI_FINAL_R38_R12"
+  ],
+  "evidence": [
+    "evidence/R38_PROJECT_KNOWLEDGE_20260929.json",
+    "evidence/R38_INSTALLER_BUILD_20260929.json",
+    "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json"
+  ]
+}

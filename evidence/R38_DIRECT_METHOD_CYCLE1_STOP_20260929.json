@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "actions": [
+    "Removed owned NRPT catch-all",
+    "Stopped winws and removed owned WinDivert driver",
+    "Stopped ctrld foreground resolver",
+    "Removed owned loopback ULA"
+  ],
+  "post": {
+    "dnsV4": [
+      "192.168.20.1"
+    ],
+    "dnsV6": [],
+    "nrpt": [
+      {
+        "Name": "DNS_RESILIENCY_slscr.update.microsoft.com",
+        "DisplayName": "",
+        "Namespace": [
+          "slscr.update.microsoft.com"
+        ],
+        "NameServers": [
+          "162.159.36.2"
+        ],
+        "Comment": ""
+      }
+    ],
+    "ulaExists": false,
+    "ics": {
+      "exists": true,
+      "state": "Running",
+      "pid": 5044
+    },
+    "broadRouteCount": 0,
+    "winHttp": "Current WinHTTP proxy settings:\r\n\r\n    Direct access (no proxy server).",
+    "ctrldOwnedCount": 0,
+    "winwsOwnedCount": 0,
+    "driverOwnedCount": 0,
+    "runtimeCtrldExists": false,
+    "ctrldSocketExists": false
+  }
+}

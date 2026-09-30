@@ -793,7 +793,7 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
   $winwsAlive=$false
   if($pidValue -gt 0){$winwsAlive=[bool](Get-Process -Id $pidValue -ErrorAction SilentlyContinue)}
   $dnsAlive=$false
-  try{$dnsAlive=((Get-Service ctrld -ErrorAction SilentlyContinue).Status -eq 'Running')}catch{}
+  try{$dnsAlive=$false; if($state -and $state.ctrldPid){ $cp=Get-Process -Id ([int]$state.ctrldPid) -ErrorAction SilentlyContinue; $dnsAlive=[bool]($cp -and $cp.Path -and $cp.Path.StartsWith((Join-Path $PSScriptRoot 'directdns'),[StringComparison]::OrdinalIgnoreCase)) }}catch{}
   $active=($winwsAlive -and $dnsAlive -and [string]$state.phase -eq 'ACTIVE')
   return @{active=$active;phase=[string]$state.phase;pid=$pidValue;stale=(-not $active);dns=$dnsAlive}
  }
@@ -802,7 +802,7 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
   if(!$script:C.ContainsKey('DirectDpiStatus')){return}
   $s=Get-DirectDpiStatus
   if($s.active){
-   $script:C.DirectDpiStatus.Text='Direct DPI: فعال — DNS امن + bypass محدود، بدون VPN/Proxy'
+   $script:C.DirectDpiStatus.Text='Direct DPI: فعال — ULA + DoH + DPI، بدون VPN/Proxy'
    $script:C.DirectDpiStart.IsEnabled=$false
    $script:C.DirectDpiStop.IsEnabled=$true
   }elseif($s.stale){

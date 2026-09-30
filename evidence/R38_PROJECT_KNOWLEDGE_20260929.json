@@ -1,0 +1,271 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "context": "R38 Direct Method integration",
+  "status": "CURRENT",
+  "records": [
+    {
+      "claimDecision": "The authoritative Direct Method architecture is Loopback ULA + ctrld 1.5.7/DoH + NRPT + zapret/winws/WinDivert; the older Native-DoH handoff note is superseded.",
+      "evidenceSource": [
+        "DirectDnsDpiHarness/evidence/FINAL_RELEASE_ACCEPTANCE_20260929.json",
+        "DirectDnsDpiHarness/PROJECT_BRAIN.md"
+      ],
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "FreeNetHub architecture",
+        "release notes",
+        "handoff"
+      ]
+    },
+    {
+      "claimDecision": "Reuse the existing FreeNetHub Direct DPI method rather than add a duplicate method; replace only its obsolete service/adapter-DNS lifecycle.",
+      "evidenceSource": [
+        "app/FreeNetHub.ps1",
+        "app/View.xaml",
+        "app/directdpi/*",
+        "app/directdns/*"
+      ],
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "UI",
+        "maintenance"
+      ]
+    },
+    {
+      "claimDecision": "FreeNetHub integrated lifecycle passed two independent Start/active/Stop cycles with exact cleanup and preserved adapter DNS, WinHTTP direct, ICS PID 5044, broad-route zero, and unrelated NRPT.",
+      "evidenceSource": [
+        "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "release qualification",
+        "documentation",
+        "future regression"
+      ]
+    },
+    {
+      "claimDecision": "Source/live integration may be promoted only after package/installer parity; do not infer installed-release acceptance from source/live tests.",
+      "evidenceSource": [
+        "project release process"
+      ],
+      "confidence": "CONFIRMED",
+      "reuseTargets": [
+        "promotion gate"
+      ]
+    },
+    {
+      "context": "R38 regression contract reconciliation",
+      "claimDecision": "The two failing Direct-DPI product tests were stale: they still required the superseded adapter-DNS/ctrld-service lifecycle. The authoritative accepted R38 architecture preserves adapter DNS and runs ctrld foreground on an owned loopback ULA with a temporary owned NRPT catch-all. Tests were updated to assert the accepted ULA/NRPT ownership and exact pre/post DNS equality contract; runtime Start/Stop scripts were not changed.",
+      "evidenceSource": [
+        "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json",
+        "evidence/R38_WINDOWS_DIRECT_METHOD_INSTALL_ACCEPTANCE_20260929.json",
+        "tests/test_r36_directdpi_product.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_165_OF_165_SOURCE_REGRESSION",
+      "reuseTargets": [
+        "CI",
+        "release qualification",
+        "failure prevention"
+      ],
+      "provenance": {
+        "runtimeMutation": false,
+        "networkMutation": false,
+        "pytest": "165 passed in 4.94s"
+      }
+    },
+    {
+      "context": "R38 Linux-R11 rebase and public-evidence security reconciliation",
+      "claimDecision": "R38 Direct Method was rebased onto the accepted Linux R11 origin/main without runtime-code conflict. The former two rollback-contract failures remain closed after rebase (Windows/source tests 145/145 PASS; Direct-DPI contract 5/5 PASS). A separate pre-push security gate then found machine-local Windows paths embedded in four R38 evidence files. The evidence was sanitized to project-relative or EXTERNAL provenance while retaining the underlying measurements; cycle evidence hashes and the integration acceptance references were updated. No Windows VPN, route, adapter DNS, Connect, Disconnect, or Direct Method lifecycle action was executed during this reconciliation.",
+      "evidenceSource": [
+        "git rebase origin/main -> b9f1d14 before sanitation commit",
+        "python -m pytest tests -q => 145 passed",
+        "python -m pytest tests/test_r36_directdpi_product.py -q => 5 passed",
+        "python tests/security_scan_public.py => PASS after sanitation",
+        "evidence/R38_DIRECT_METHOD_INTEGRATION_ACCEPTANCE_20260929.json",
+        "evidence/R38_DIRECT_METHOD_CYCLE1_RUNTIME_20260929.json",
+        "evidence/R38_DIRECT_METHOD_CYCLE2_RUNTIME_20260929.json"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_PREPUSH_SECURITY_AND_ROLLBACK_CONTRACT",
+      "rootCause": "Raw live evidence serialized an absolute WinDivert driver PathName and the integration acceptance stored an absolute standalone-authority path. These are valid local provenance but invalid public-tree material.",
+      "prevention": "Before any push or release, require tests/security_scan_public.py. Public evidence must encode project-owned paths relative to the repository and external authority as EXTERNAL:<project-relative-reference>; raw machine-local provenance remains private/local if needed. The existing security scan is the minimum sufficient regression guard; no duplicate gate is added.",
+      "reuseTargets": [
+        "CI",
+        "release qualification",
+        "PROJECT_BRAIN",
+        "handoff",
+        "failure prevention"
+      ],
+      "provenance": {
+        "runtimeMutation": false,
+        "networkMutation": false,
+        "sanitizedCycle1Sha256": "5052136AD643BC2672918F67367CD8E7F9BBD908ADDA387A79019E0B781F44AF",
+        "sanitizedCycle2Sha256": "FF230420F5E54CE352B5AE0057E9A017E0851E81590BE7DD9487D704F1C723BF",
+        "sanitizedIntegrationAcceptanceSha256": "60549CEECA76A55B06EE4E896891E8CEC7644712341068DC8C4EBDEE9F83C5C6"
+      }
+    },
+    {
+      "context": "Cross-platform deep audit - Linux R11 runtime defects",
+      "claimDecision": "Live all-method audit on the actual Linux R11 install preserved the external tun0 and FreeNetHub cleanup but exposed two reproducible method-test defects: Tor benchmark treated status ok/state stopped as active and never started Tor; GOOL proxy upload used a 350KB sample that exceeded the 30s timeout on a slow but working path.",
+      "evidenceSource": [
+        "installed:evidence/R11_LIVE_METHOD_AUDIT_20260929.py output",
+        "installed:evidence/R11_TOR_FIX_LIVE_20260929.py output",
+        "installed:evidence/R11_GOOL_UPLOAD_RAW_20260929.py output",
+        "installed:evidence/R11_GOOL_POSTFIX_20260929.py output",
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "crossplatform/linux/test_r37_parity.py"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_FIXED_AND_LIVE_REGRESSED",
+      "rootCause": "Tor lifecycle predicate checked only tor_status.ok, although stopped is a valid ok status. Proxy upload benchmark used the same 350KB payload as direct access; GOOL uploaded at about 11.7KB/s and timed out before receiving HTTP 200, while a 100KB sample completed with HTTP 200.",
+      "prevention": "Require Tor running state, not status-ok alone, before reusing Tor. Use a 100KB upload sample for proxy benchmarks and retain 350KB for direct/base. Keep explicit cleanup and physical-route preservation checks.",
+      "reuseTargets": [
+        "Linux R12",
+        "benchmark semantics",
+        "UI Test All",
+        "future regression",
+        "release notes"
+      ]
+    },
+    {
+      "context": "Cross-platform deep audit - Windows R38 protected active session",
+      "claimDecision": "Windows R38 source/public-tree gates pass, and the final installer builds with frozen inputs, but the currently installed payload is older than the final R38 Windows source. A browser WARP FreeNetHub session is currently CONNECTED_HEALTHY, so force-closing the app or forcing installer promotion is intentionally deferred to preserve the user's active connection.",
+      "evidenceSource": [
+        "python -m pytest tests -q => 145 passed",
+        "tests/test_r36_directdpi_product.py => 5 passed",
+        "tests/verify_public_tree.py => PASS",
+        "tests/security_scan_public.py => PASS",
+        "evidence/R38_PARITY_DIAG_20260929.py local diagnostic",
+        "installed session.json read-only audit"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "SOURCE_PASS_INSTALLED_PROMOTION_DEFERRED_ACTIVE_SESSION",
+      "rootCause": "The currently running installed app holds the product single-instance/app mutex and is actively carrying a browser WARP session. The protected installed payload predates final R38 FreeNetHub.ps1 and DirectDPI Start/Stop bytes.",
+      "prevention": "Do not terminate or replace an active user session for release validation. Promote the hash-pinned installer only after the active FreeNetHub session is naturally stopped, then require exact installed parity and five-tab route-preserving smoke before public Windows R38 promotion.",
+      "reuseTargets": [
+        "Windows R38 release gate",
+        "handoff",
+        "PROJECT_BRAIN",
+        "installer acceptance"
+      ]
+    },
+    {
+      "context": "R38/R12 deep-audit reconciliation after targeted Linux live diagnostics",
+      "claimDecision": "The earlier GOOL result was confounded by concurrent diagnostics and an orphaned project warp-plus listener. After strict-signature recovery, a clean isolated run showed Cloudflare upload reliability when the official upload bytes query parameter was supplied. The production upload URL was changed to __up?bytes=N, Tor proxy health was decoupled from site-specific YouTube reachability, and the final targeted live run passed Tor and GOOL with all FreeNetHub ports/session cleaned and the physical base route unchanged. Windows session.json's connected record is no longer treated as evidence of an active connection because no known runtime listeners were present; Windows installed promotion remains open until a final rebuilt installer is installed and verified.",
+      "evidenceSource": [
+        "installed:evidence/R12_GOOL_UPLOAD_DIAG_RESULT_20260929.json",
+        "installed:evidence/R12_GOOL_ORPHAN_RECOVERY_20260929.py output",
+        "installed:evidence/R12_GOOL_UPLOAD_BYTES_PARAM_DIAG_20260929.py output",
+        "installed:evidence/R12_FINAL_TARGETED_LIVE_20260929.py output",
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "crossplatform/linux/test_r37_parity.py",
+        "Cloudflare speedtest upstream measurement configuration",
+        "warp-plus upstream README"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LINUX_TARGETED_LIVE_WINDOWS_INSTALL_PROMOTION_OPEN",
+      "rootCause": "GOOL upload request semantics omitted bytes=N and the diagnostic environment briefly violated one-writer/one-provider-test isolation; Tor benchmark conflated provider health with a site-specific application probe.",
+      "prevention": "Serialize live provider diagnostics; recover only strictly proven project-owned orphans; send Cloudflare upload bytes=N; keep application reachability separate from provider-health evidence; never promote a Windows installer built before final cross-platform metadata/source stabilization.",
+      "reuseTargets": [
+        "Linux R12",
+        "Windows R38",
+        "CI",
+        "release qualification",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "linuxSourceSha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A",
+        "linuxPackageSha256": "01C9DDD2104853E7095A4C034138D98872B06FE3DEAF33B25862338997FA9820",
+        "crossPlatformManifestCanonicalSha256": "59618BDB16F1364E4B8269261D0083C792DCB11406BDC9263B05DCBCA4A4AC3C",
+        "networkMutationWindows": false
+      }
+    },
+    {
+      "context": "Linux R12 cross-platform package reproducibility closure",
+      "claimDecision": "The R12 package builder initially produced different ZIP digests on Windows and Linux despite identical committed payload bytes. Canonical Git bytes alone did not remove the difference because DEFLATE output can vary with platform/zlib implementation. The package is small, so the builder now uses canonical Git bytes plus ZIP_STORED and fixed ZIP metadata. Windows and Linux independently produced the identical 210029-byte ZIP with SHA-256 9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3.",
+      "evidenceSource": [
+        "tests/build_linux_r12_package.py",
+        "Windows build output: 210029 bytes / 9B0D413C...C4A4CC3",
+        "Linux build output: 210029 bytes / 9B0D413C...C4A4CC3"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_REPRODUCIBLE_PACKAGE_WINDOWS_LINUX",
+      "rootCause": "Compressed ZIP bytes were not a stable cross-platform artifact identity even with fixed timestamps and canonical source bytes.",
+      "prevention": "For this small release artifact, use ZIP_STORED, fixed ZipInfo metadata, and canonical Git-filtered payload bytes. This is the minimum sufficient reproducibility control; no extra archive-normalization stage is needed.",
+      "reuseTargets": [
+        "Linux R12 release",
+        "CI",
+        "release engineering",
+        "PROJECT_BRAIN",
+        "failure prevention"
+      ],
+      "provenance": {
+        "packageBytes": 210029,
+        "packageSha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+        "builderSha256": "D8F752E185DF5409F8651E6966972C919BF12D767930D081D538E398E8641350"
+      }
+    },
+    {
+      "context": "Linux R12 reproducible exact-package install acceptance",
+      "claimDecision": "The final reproducible R12 ZIP (ZIP_STORED canonical Git bytes) was installed on the Linux laptop. Installer-pinned sing-box 1.14.2 and warp-plus 1.2.6 verified, all INSTALL.sha256 entries passed, installed version is 4.2.0-linux.12-r38, installed freenet_hub_linux_r37.py SHA-256 is 5599ED9A...D257B1A, and IPv4 routes plus interface inventory were byte-for-byte unchanged before/after install. No network connection was started.",
+      "evidenceSource": [
+        "Linux terminal exact install output for 9B0D413C...C4A4CC3",
+        "installed:INSTALL.json",
+        "installed:INSTALL.sha256"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_EXACT_PACKAGE_INSTALL",
+      "reuseTargets": [
+        "Linux R12 release",
+        "CI",
+        "PROJECT_BRAIN",
+        "handoff"
+      ],
+      "provenance": {
+        "packageBytes": 210029,
+        "packageSha256": "9B0D413C168EC5DEF50CF29A574E243B8F4195C1CFDB9008E4307CF09C4A4CC3",
+        "installedSourceSha256": "5599ED9A437E132327DFCF0F3191CB29CA28718566A1F6D4555BBE566D257B1A",
+        "routeAndInterfacesPreserved": true,
+        "networkMutationOnInstall": false
+      }
+    },
+    {
+      "context": "Windows R38 final installer upgrade-guard and installed acceptance",
+      "claimDecision": "The final Windows R38 installer closes only strictly-owned idle FreeNetHub UI processes before upgrade, refuses promotion when known FreeNetHub runtime listeners are active, includes the helper in the 21-file frozen build input set, and passed a real idle-UI upgrade. Final installer SHA-256 is B8B284AB...57598. Installed payload then matched source exactly (17 app files, 17 gateway files, RELEASE parity) and all five installed UI smoke tabs passed with the default route unchanged and no runtime listeners left behind.",
+      "evidenceSource": [
+        "evidence/R38_INSTALLER_BUILD_20260929.json",
+        "tests/test_r36_directdpi_product.py => 6 passed",
+        "full tests => 146 passed",
+        "tests/verify_r38_installed_payload.py => PASS",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_UPGRADE_GUARD_REGRESSION_20260930.ps1",
+        "PRIVATE_LOCAL:.fnh-control/private-audit/20260930/R38_WINDOWS_INSTALLED_UI_SMOKE_20260930.ps1",
+        "windows/installer/Prepare-Upgrade.ps1"
+      ],
+      "confidence": "CONFIRMED",
+      "status": "PASS_LOCAL_FINAL_HOSTED_CI_REQUIRED",
+      "rootCause": "Inno RestartManager could not upgrade while the parent FreeNetHub.exe UI still held installed files. The first helper only closed the owned pwsh child, so silent setup aborted. The helper now closes both the owned child and the exact-path parent UI, but only after proving no known runtime listener is active.",
+      "prevention": "Keep upgrade logic fail-closed on active runtime ports; prove process ownership by exact script/executable path before termination; freeze the helper as an installer build input; require real idle-UI upgrade regression, installed parity, five-tab UI smoke, and route/listener preservation.",
+      "reuseTargets": [
+        "Windows R38 release",
+        "installer regression",
+        "CI",
+        "PROJECT_BRAIN",
+        "handoff",
+        "failure prevention"
+      ],
+      "provenance": {
+        "installerBytes": 24252352,
+        "installerSha256": "B8B284ABF8FE86D9B206896B5A1C26B222F3C11993F07CA871E2314871657598",
+        "frozenFiles": 21,
+        "installedParity": true,
+        "uiSmokeTabs": 5,
+        "routeUnchanged": true,
+        "networkMutation": false,
+        "privateUpgradeHarnessSha256": "E660F35457B2BB87E8DBF61909D8AEC57FF1216477CF071E9EC5EA940E149B93",
+        "privateUiSmokeHarnessSha256": "C616C7A517A2A18FA4D93E82C984F39A3F00A8C2B491ACD0EED7E73714CDD682"
+      }
+    }
+  ]
+}

@@ -49,7 +49,7 @@ jobs:
           python3 crossplatform/linux/test_browser_profile.py
           python3 crossplatform/linux/test_scope_policy.py
           python3 crossplatform/linux/test_r37_parity.py
-          python3 tests/build_linux_r11_package.py
+          python3 tests/build_linux_r12_package.py
           bash -n crossplatform/linux/install.sh crossplatform/linux/uninstall.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/install_singbox_pinned.sh crossplatform/linux/install_warpplus_pinned.sh crossplatform/linux/recover_warp_remote.sh
   android-build:
     runs-on: ubuntu-24.04
