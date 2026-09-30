@@ -1,10 +1,14 @@
 # PROJECT BRAIN — FreeNet Hub
 
-Status: CURRENT
-Brain version: r39-public-final-control-sync-2026-09-30
+Status: FINAL_DESKTOP_ACCEPTED
+Brain version: r39-desktop-final-closure-2026-09-30
 Installed authority: Windows 4.2.0-local-r39-online-noadmin; Linux 4.2.0-linux.12-r38
-Source authority: origin/main (R39 public-final line; control state synchronized 2026-09-30)
-Promotion state: R39 PUBLIC FINAL; Windows online update + non-admin launch CLOSED_PASS; Linux R12 continuity CLOSED_PASS; trusted Authenticode remains external/open ← CURRENT
+Source authority: R39 public-final line; desktop-final closure seeded from main 3b2be7d21d983b36ab90166b9fede85c59ecb24f
+Promotion state: WINDOWS R39 + LINUX R12 DESKTOP FINAL ACCEPTED; post-merge main CI #132 CLOSED_PASS; trusted Authenticode MISSING_EXTERNAL; mobile/physical-console/optional privileged-extension tracks are separate and non-blocking for desktop FINAL ← CURRENT
+Desktop closure scope:
+- Included: Windows R39 desktop release and installed runtime; Linux R12 desktop release and installed runtime; updater/integrity/CI/release continuity.
+- Excluded separate tracks: physical Console field E2E; Android production forwarding/signing; iOS production forwarding/device signing; optional Linux Node Full-System privileged helper.
+- Distribution trust: Windows Authenticode remains MISSING_EXTERNAL. Self-signed/test certificates do not satisfy this gate.
 
 ## Final Objective / DoD
 FreeNet Hub is the comprehensive free multi-transport connectivity product. It must expose the widest practical set of independent censorship-resilient paths under one understandable UI, with explicit Browser / Full System / Console capability boundaries, pre-connect measurement where technically meaningful, fail-closed behavior, rollback for network mutation, and no hidden DIRECT fallback.
@@ -119,8 +123,8 @@ Fix:
 10. GitHub release `v4.2.0-r37-final` + asset digest verification + post-publish self-update check — Completed/PASS.
 11. Linux R9 R37-parity UI/backend convergence + installed acceptance — Completed/PASS.
 12. Linux R9 exact package + manifest/security/local public gate — Completed/PASS.
-13. ← CURRENT: Linux R9 Git commit/push, hosted CI and release promotion.
-14. External gates: trusted Authenticode, physical Console field E2E, Linux Node Full-System privileged helper, Android/iOS production forwarding/signing.
+13. Linux public promotion through R12 and R39 release continuity — Completed/PASS; R9 is superseded history.
+14. Desktop final closure — Completed/PASS. External identity signing and separate mobile/physical-console/optional privileged-extension tracks remain explicitly outside desktop DoD.
 
 ## Open Gates / Critical Path
 - R37 Windows runtime/product behavior — CLOSED_PASS.
@@ -133,18 +137,18 @@ Fix:
 - Hosted CI follow-up #99 / run `36546861061` — CLOSED_PASS, including aggregate virtual-acceptance.
 - Public GitHub release `v4.2.0-r37-final` targeting `45e21a1bc64aefaf3276751754c0f4f4fd1fb649` — CLOSED_PASS.
 - Post-publish installed UpdateCheck — CLOSED_PASS: local=37, remote=37, selected asset digest matches, `updateAvailable=false`.
-- Trusted Windows Authenticode — OPEN_NOTSIGNED external gate.
+- Trusted Windows Authenticode — MISSING_EXTERNAL distribution-trust gate; no local code-signing certificate/private key, no GitHub signing secret, and Azure account has no usable subscription. Functional desktop release is not blocked; do not claim signed distribution.
 - Linux R9 R37-parity installed runtime — CLOSED_PASS: Dashboard/Methods/Nodes/Tools/Settings; Node metadata/history/export/bounded benchmark; revision-aware update; app-local pinned sing-box 1.14.2 and warp-plus 1.2.6; WARP/GOOL/CFON browser live PASS; route preserved.
 - Linux R9 historical package — SUPERSEDED by R11; prior CLOSED_PASS: `FreeNetHub_4.2.0_Linux_R9.zip`, SHA-256 `7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8`, internal SHA256SUMS PASS, exact install/integrity/UI-restart/route-preservation PASS.
 - Linux R9 local public verifier/security/regression — CLOSED_PASS.
-- Linux R9 Git/hosted CI/release — ← CURRENT.
-- Physical console game/country E2E — UNPROVEN external hardware gate.
+- Linux R9 Git/hosted CI/release — SUPERSEDED/CLOSED by Linux R12 carried in R39 public final.
+- Physical console game/country E2E — DEFERRED_SEPARATE_TRACK external hardware validation; not part of Windows/Linux desktop final DoD.
 - Direct-DPI installed lifecycle — UNPROVEN optional extension; fail-closed and non-blocking for core product.
-- Android production forwarding core/signing — OPEN external gate; hosted fail-closed emulator lifecycle PASS.
-- iOS production packet-forwarding core/device signing — OPEN external gate; hosted simulator lifecycle PASS.
+- Android production forwarding core/signing — DEFERRED_SEPARATE_TRACK; hosted fail-closed emulator lifecycle PASS; not part of desktop final DoD.
+- iOS production packet-forwarding core/device signing — DEFERRED_SEPARATE_TRACK; hosted simulator lifecycle PASS; not part of desktop final DoD.
 
 ## Exact Next Action
-Preserve the accepted R39 Windows / Linux R12 baseline. No core runtime mutation is required from current evidence. The only release-quality external gate is trusted Windows Authenticode; any future functional change must use a new revision, preserve non-admin normal launch, and re-run online-update plus rollback/regression gates.
+No further desktop runtime mutation is required. Preserve Windows R39 / Linux R12. If a publicly trusted code-signing identity is later provisioned through an external identity/subscription/CA process, publish a signed successor revision and re-run installer/update/parity gates; otherwise R39/R12 remains the accepted functional desktop final.
 
 ## HISTORY
 - 2026-09-29 Linux R11 UX final candidate: exact package SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` installed with zero route mutation; UI minimum 842x602; explicit scope/method selection; base/selected/all-method tests; two-stage node testing; seven sort modes; instant IP visibility; direct update flow. Live UI WARP Ping, sequential all-method testing, 2000-node endpoint test, real node benchmark, IP reveal and update check all exercised. Evidence: `evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json`.
@@ -207,3 +211,5 @@ Preserve the accepted R39 Windows / Linux R12 baseline. No core runtime mutation
 - Evidence: evidence/R39_PUBLIC_FINAL_ACCEPTANCE_20260930.json and evidence/R39_PROJECT_KNOWLEDGE_20260930.json.
 
 - 2026-09-30 R39 control sync: reconciled stale Brain header/next-action against authoritative public-final evidence. origin/main=6c10c8c; R39 public acceptance evidence SHA-256 7D319EBED43D46BB3D4C07B18EF843AC69B5702D8FFEC23A9C786E5F3D1E0653. Runtime behavior unchanged; Windows installed coreVersion=4.0-r39-online-noadmin and Linux installed version=4.2.0-linux.12-r38 were re-read from hosts. RELEASE.json candidate wording is retained as historical build metadata and superseded by R39_PUBLIC_FINAL_ACCEPTANCE evidence.
+
+- 2026-09-30 DESKTOP FINAL CLOSURE: Windows installed app/gateway integrity 17/17 + 17/17 PASS; self-contained runtime PASS; live UpdateCheck local=39/remote=39/updateAvailable=false and exact default-route preservation PASS. Linux INSTALL.sha256 9/9 PASS; live update local=12/remote=12/updateAvailable=false with route table unchanged and pre-existing tun0 untouched. R39 PR CI #131 and post-merge main CI #132 both PASS including Android/iOS virtual runtime and aggregate virtual-acceptance. Trusted Windows Authenticode remains MISSING_EXTERNAL after direct audit found zero local code-signing certificates, zero GitHub signing secrets, and Azure tenant-only login without a usable subscription. Desktop functional product is FINAL_ACCEPTED; signing is not falsely promoted. Evidence: evidence/R39_DESKTOP_FINAL_CLOSURE_20260930.json.
