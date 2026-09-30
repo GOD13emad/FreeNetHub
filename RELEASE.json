@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
   "version": "4.2.0",
-  "releaseRevision": "4.2.0-r41-linux-update-revision-fix",
-  "status": "R41_LINUX_UPDATE_REVISION_FIX_CANDIDATE",
+  "releaseRevision": "4.2.0-r41-final",
+  "status": "R41_PUBLIC_FINAL",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -23,10 +23,10 @@
   "gatewayManifestSha256": "DA4C24B3C3611138AE80788966961C5F33C73917983F39B522852C40EACB9247",
   "crossPlatformManifestSha256": "6C74E8DFB3A7F0F487559511BF4262199C5409F9334301E4B625FD7A7FA013C7",
   "installerSha256": null,
-  "acceptanceEvidence": "evidence/R41_LINUX_UPDATE_REVISION_FIX_20260930.json",
+  "acceptanceEvidence": "evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "CANDIDATE_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R14_R41_UPDATE_REVISION_FIX",
+    "linux": "PUBLIC_FINAL_NATIVE_LINUX_4.2.0_R14_R41",
     "android": "BUILD_ACCEPTED_CORE_NOT_LINKED",
     "ios": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN"
   },
@@ -710,17 +710,21 @@
     "physicalConsoleE2E": "UNPROVEN_EXTERNAL_HARDWARE_GATE"
   },
   "r41LinuxUpdateRevisionFix": {
-    "status": "CANDIDATE",
-    "publicRelease": false,
+    "status": "PUBLIC_FINAL",
+    "publicRelease": true,
     "basePublicRelease": "v4.2.0-r40-final",
     "windowsRuntime": "UNCHANGED_R40_ACCEPTED",
-    "linuxRuntime": "R14_CANDIDATE",
-    "rootCause": "LINUX_LOCAL_REVISION_HARDCODE_DRIFT",
+    "linuxRuntime": "R14_ACCEPTED",
+    "rootCause": "LINUX_LOCAL_REVISION_HARDCODE_DRIFT_CLOSED_PASS",
     "sameRevisionRegression": "PASS",
     "malformedVersionFailClosed": "PASS",
     "ciCurrentPackageBuilder": "tests/build_linux_r14_package.py",
-    "installedAcceptance": "PENDING",
+    "installedAcceptance": "PASS",
     "windowsContinuity": "R40_ACCEPTED_UNCHANGED",
-    "linuxArtifact": "R14_CANDIDATE"
+    "linuxArtifact": "R14_CANDIDATE",
+    "releaseTag": "v4.2.0-r41-final",
+    "targetCommit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
+    "postPublishUpdate": "WINDOWS_40_EQ_40_LINUX_14_EQ_14_PASS",
+    "trustedSigning": "MISSING_EXTERNAL"
   }
 }

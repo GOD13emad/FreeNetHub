@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "date": "2026-09-30",
+  "version": "4.2.0",
+  "status": "R41_PUBLIC_FINAL",
+  "scope": "WINDOWS_R40_UNCHANGED_PLUS_LINUX_R14_R41",
+  "mainCommit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
+  "pullRequest": 18,
+  "release": {
+    "tag": "v4.2.0-r41-final",
+    "targetCommit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
+    "published": "2026-09-30T17:05:18Z",
+    "windowsAsset": {
+      "name": "FreeNetHub_4.2.0_R40_LifecycleSafe_Setup.exe",
+      "bytes": 24248017,
+      "sha256": "C64CC98D08D3216BFAADE7D50A2F62D7B6734C8A9490CEFC6C52D395D1D17F32",
+      "runtimeRevision": 40,
+      "changedInR41": false
+    },
+    "linuxAsset": {
+      "name": "FreeNetHub_4.2.0_Linux_R14.zip",
+      "bytes": 213124,
+      "sha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+      "runtimeVersion": "4.2.0-linux.14-r41"
+    }
+  },
+  "rootCauseClosure": {
+    "id": "LINUX_LOCAL_REVISION_HARDCODE_DRIFT",
+    "status": "CLOSED_PASS",
+    "failure": "R40/Linux R13 had VERSION 13 but update_check hard-coded localRevision=12, producing false same-version updateAvailable=true after R40 publication.",
+    "prevention": [
+      "Linux local revision is derived from VERSION.",
+      "Malformed local VERSION fails closed.",
+      "Regression covers same/newer/malformed revisions and Linux asset filtering.",
+      "Hosted linux-static builds current R14 package instead of historical R12."
+    ],
+    "sourceEvidence": "evidence/R41_LINUX_UPDATE_REVISION_FIX_20260930.json"
+  },
+  "validation": {
+    "localPytest": "181/181 PASS",
+    "publicTreeVerifier": "PASS",
+    "securityScan": "PASS",
+    "sourceCi": {
+      "runNumber": 148,
+      "runId": 36739836044,
+      "conclusion": "success"
+    },
+    "acceptanceCi": {
+      "runNumber": 150,
+      "runId": 36741651814,
+      "conclusion": "success"
+    },
+    "postMergeCi": {
+      "runNumber": 151,
+      "runId": 36747416836,
+      "finalConclusion": "success after targeted Android job retry",
+      "firstAndroidAttempt": "FAIL_EXTERNAL_TRANSIENT_ADB_DEVICE_OFFLINE after build/install/VPN-consent stages had passed",
+      "retryAndroidAttempt": "PASS same commit on fresh runner",
+      "iosSimulator": "PASS",
+      "virtualAcceptance": "PASS",
+      "adjudication": "INFRA_TRANSIENT_NOT_PRODUCT_REGRESSION"
+    },
+    "windowsPostPublish": {
+      "currentRevision": 40,
+      "remoteWindowsRevision": 40,
+      "updateAvailable": false,
+      "assetDigest": "sha256:c64cc98d08d3216bfaade7d50a2f62d7b6734c8a9490cefc6c52d395d1d17f32",
+      "route": "Ethernet 3 via 192.168.20.1",
+      "routeUnchanged": true
+    },
+    "linuxPostPublish": {
+      "current": "4.2.0-linux.14-r41",
+      "localRevision": 14,
+      "remoteRevision": 14,
+      "updateAvailable": false,
+      "assetDigest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+      "integrity": "9/9 PASS",
+      "routeUnchanged": true,
+      "externalTun0Preserved": true
+    }
+  },
+  "installedAuthority": {
+    "windows": "4.2.0-local-r40-lifecycle-safe",
+    "linux": "4.2.0-linux.14-r41"
+  },
+  "externalGates": {
+    "windowsTrustedAuthenticode": "MISSING_EXTERNAL",
+    "physicalConsoleFieldE2E": "DEFERRED_SEPARATE_TRACK",
+    "androidProductionForwardingSigning": "DEFERRED_SEPARATE_TRACK",
+    "iosProductionForwardingDeviceSigning": "DEFERRED_SEPARATE_TRACK",
+    "optionalLinuxNodeFullSystemPrivilegedHelper": "DEFERRED_SEPARATE_TRACK"
+  },
+  "decision": "R41 desktop functional release is FINAL_ACCEPTED. No further runtime mutation is justified by current evidence.",
+  "confidence": "HIGH"
+}
