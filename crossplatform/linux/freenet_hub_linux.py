@@ -16,7 +16,7 @@ import uuid
 import zipfile
 
 APP = "FreeNet Hub"
-VERSION = "4.2.0-linux.12-r38"
+VERSION = "4.2.0-linux.13-r40"
 STATE = pathlib.Path.home() / ".local" / "share" / "FreeNetHub"
 EVIDENCE = STATE / "evidence"
 TOR_STATE = STATE / "tor"

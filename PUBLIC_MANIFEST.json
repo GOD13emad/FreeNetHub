@@ -226,7 +226,7 @@
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
       "bytes": 42640,
-      "sha256": "3C6045872722A4BCFA85C5FF23854CBD1F91A0880133E43527FB0805AE3DBB12"
+      "sha256": "CD0783A8ED34754002B1A145B4525ED5A63BA6DD1DA8AB8D451699C67D07FCF9"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
@@ -250,8 +250,8 @@
     },
     {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 5625,
-      "sha256": "53424AED93F221251D60F9DE28949978E3DDE963DF35392E6BA5E9321A0FBA07"
+      "bytes": 5630,
+      "sha256": "31E80AE3CEEA269103540BF0C9F0F831B489710FD5B068D99A5E373618B3C78F"
     },
     {
       "file": "crossplatform/linux/install_singbox_pinned.sh",
@@ -276,7 +276,7 @@
     {
       "file": "crossplatform/linux/README_FA.md",
       "bytes": 3449,
-      "sha256": "1713D089CB41A2964C7C1E35914E88D8CF3DCD54CF25880753B1E46515614FF3"
+      "sha256": "F64C69AEAE7ECBB26A5B9C22F1EB377C1E91BDE2CC2F29111B4E06C713F4D374"
     },
     {
       "file": "crossplatform/linux/recover_warp_remote.sh",
@@ -286,7 +286,7 @@
     {
       "file": "crossplatform/linux/selftest.py",
       "bytes": 1829,
-      "sha256": "128898511D09F3865B0DD558EFAF30A32BE4F2F1E48D4D8FE698BDC7F1A3E24A"
+      "sha256": "80184F70B659B7816130AA01AC7E97BE2D6B70F684583E8617560BAAB5050571"
     },
     {
       "file": "crossplatform/linux/test_browser_profile.py",
@@ -306,7 +306,7 @@
     {
       "file": "crossplatform/linux/test_r37_parity.py",
       "bytes": 7307,
-      "sha256": "96E99237F2F46EDBB1BA6B3DC4ED67B96DE5EB4417BB543C64930508A57B69B0"
+      "sha256": "AA16428C09B78D75A780DACFE119E19F133B15268B82FB11AB29E7E1DD336A6D"
     },
     {
       "file": "crossplatform/linux/test_scope_policy.py",
@@ -326,7 +326,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 6929,
-      "sha256": "9670CA59038EF2B1E83A3F26793C6DF2C598274B10DEE731CA13B47F9B8B1FBD"
+      "sha256": "B804228B57B68546FFF76A01790B7D92F88B2E2BEC4964DEBB2E93795ED4F3B3"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1045,8 +1045,13 @@
     },
     {
       "file": "evidence/R40_DEEP_AUDIT_ACCEPTANCE_20260930.json",
-      "bytes": 2606,
-      "sha256": "05330384614DFABF8F25FB02DB35490B0DFB481F1153CDBC6DA12D419342583F"
+      "bytes": 3470,
+      "sha256": "81DF2BA3F6B18664C99C377243AACC0AE15114A30A6F63ECE64F74F06ABCF123"
+    },
+    {
+      "file": "evidence/R40_INSTALLER_BUILD_20260930.json",
+      "bytes": 305,
+      "sha256": "37B346CA54882C2D0DF4F0A6A1FBDEF4CC65A510B4310542AC991DAD55BB241A"
     },
     {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
@@ -1266,7 +1271,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 25415,
-      "sha256": "14C42C7E909F247E94AA38F768E3648A77F14444DDD71A8F6C2DF5ACAD64EDF1"
+      "sha256": "AF7FE61D3992D3DBD531C6D61DA41DCA7854676E293968713F5F05A999CEFCEC"
     },
     {
       "file": "SECURITY.md",
@@ -1295,8 +1300,8 @@
     },
     {
       "file": "tests/build_linux_r13_package.py",
-      "bytes": 2447,
-      "sha256": "4EE0E083E78CCAC0E9E2B6EEFA02C448EFAA21CFDE595E1F1E2DF42A5DF81148"
+      "bytes": 2924,
+      "sha256": "F36ED18C9249E83BCC5CF9773ED657DB9D92113E6EE25701E1FAA2E74FC65C99"
     },
     {
       "file": "tests/build_linux_r9_package.py",

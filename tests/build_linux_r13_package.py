@@ -5,6 +5,8 @@ R=pathlib.Path(__file__).resolve().parent.parent
 L=R/"crossplatform"/"linux"
 OUT=R/"delivery"/"github_v4.2.0"/"FreeNetHub_4.2.0_Linux_R13.zip"
 ROOT="FreeNetHub_4.2.0_Linux_R13"
+EXPECTED_VERSION="4.2.0-linux.13-r40"
+EXPECTED_RELEASE="LINUX_4.2.0_R13_R40_LIFECYCLE_SAFE"
 FILES=[
  "freenet_hub_linux.py","freenet_hub_linux_r37.py","freenet_hub_linux_gtk.py","nodehub_shared.py",
  "install.sh","install_singbox_pinned.sh","install_warpplus_pinned.sh","install_warp_official.sh",
@@ -12,6 +14,13 @@ FILES=[
  "bridges_obfs4.txt","bridges_snowflake.txt","README_FA.md","selftest.py","test_browser_profile.py",
  "test_console_policy.py","test_private_state_permissions.py","test_scope_policy.py","test_r37_parity.py"
 ]
+for rel in ("freenet_hub_linux.py","freenet_hub_linux_r37.py"):
+ txt=(L/rel).read_text(encoding="utf-8")
+ if EXPECTED_VERSION not in txt: raise SystemExit("VERSION_CONTRACT_MISMATCH:"+rel)
+install_text=(L/"install.sh").read_text(encoding="utf-8")
+if EXPECTED_VERSION not in install_text or EXPECTED_RELEASE not in install_text:
+ raise SystemExit("INSTALL_METADATA_CONTRACT_MISMATCH")
+
 def canonical_bytes(p):
  p=pathlib.Path(p).resolve()
  rel=p.relative_to(R).as_posix()

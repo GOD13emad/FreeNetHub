@@ -59,5 +59,21 @@
     "R40 final acceptance"
   ],
   "version": "4.2.0",
-  "phase": "SOURCE_AUDIT_PASS_INSTALL_ACCEPTANCE_PENDING"
+  "phase": "SOURCE_AUDIT_PASS_INSTALL_ACCEPTANCE_PENDING",
+  "failuresAndPrevention": [
+    {
+      "id": "LINUX_R13_EMBEDDED_INSTALL_METADATA_MISMATCH",
+      "status": "FIXED_BEFORE_INSTALL",
+      "rootCause": "Initial R13 package builder renamed package/manifest but source install.sh and legacy runtime VERSION still embedded R12 metadata.",
+      "prevention": "R13 builder now asserts expected version in both runtime modules and exact version/release markers in install.sh before packaging.",
+      "supersededPackageSha256": "3BD6FEC23854DA49754756057A9B72320E8A0B628195336C606714FC2301EA7B",
+      "correctedPackageSha256": "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8",
+      "installedSupersededPackage": false
+    }
+  ],
+  "linuxR13Candidate": {
+    "bytes": 210783,
+    "sha256": "861ECEF5DAE2C73CF18166C4D228C48EE39889F62A75B5155091DCAE2CC2E0E8",
+    "installAcceptance": "PENDING"
+  }
 }
