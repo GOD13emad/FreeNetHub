@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "version": "4.2.0",
+  "releaseRevision": "4.2.0-local-r39-online-noadmin",
+  "status": "R39_ONLINE_NOADMIN_CANDIDATE",
+  "objective": "ONLINE_UPDATE_PLUS_NOADMIN_NORMAL_LAUNCH",
+  "normalLaunch": {
+    "requestedExecutionLevel": "asInvoker",
+    "installerPrivileges": "lowest",
+    "runtimeBootstrapOnLaunch": false,
+    "shellAcceptance": "PASS",
+    "shellExeSha256": "EA771EFEFBF2F131474933285A0C13AF7F0188F9712E5C401E51CF696E4165C1",
+    "networkMutationOnLaunch": false
+  },
+  "onlineUpdate": {
+    "startupCheck": true,
+    "startupDelaySeconds": 12,
+    "githubLatestRelease": true,
+    "revisionAware": true,
+    "sha256Required": true,
+    "downgradeBlocked": true,
+    "installerUseShellExecute": false,
+    "perUserInstall": true,
+    "livePrepublishCheck": "OPEN"
+  },
+  "privilegedFeatures": {
+    "policy": "ON_DEMAND_ONLY",
+    "note": "Direct DPI / full-system / gateway may elevate only when explicitly selected; normal app launch does not."
+  },
+  "tests": {
+    "r39Contract": "PASS_2_OF_2",
+    "powershellParse": "PASS",
+    "csharpCompile": "PASS",
+    "shellRuntime": "PASS"
+  },
+  "openGates": [
+    "PUBLIC_TREE",
+    "HOSTED_CI",
+    "MERGE_MAIN",
+    "PUBLICATION",
+    "LIVE_R38_TO_R39_ONLINE_UPDATE",
+    "POSTINSTALL_PARITY",
+    "POSTPUBLISH_UPDATE"
+  ],
+  "localValidation": {
+    "pytest": "PASS_150_OF_150",
+    "verifyR28Static": "PASS",
+    "linuxParity": "PASS",
+    "securityScan": "PASS",
+    "shellRuntime": "PASS",
+    "prepublishUpdateCheck": {
+      "status": "PASS",
+      "localRevision": 39,
+      "remoteRevision": 38,
+      "updateAvailable": false,
+      "routeUnchanged": true,
+      "interpretation": "DOWNGRADE_BLOCKED"
+    },
+    "installerBuild": {
+      "status": "PASS",
+      "asset": "FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe",
+      "bytes": 24264406,
+      "sha256": "28D0D9D64F9580F6B800BEA53F3E8310C4A2C52CD052E7F56BF721D4E0927F9F",
+      "frozenFiles": 25,
+      "authenticode": "NotSigned"
+    }
+  }
+}

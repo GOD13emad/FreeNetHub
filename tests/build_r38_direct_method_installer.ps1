@@ -7,7 +7,7 @@ $FreezeFiles=@(
  'app\directdpi\Start-DirectDpi.ps1','app\directdpi\Stop-DirectDpi.ps1','app\directdpi\hosts.txt',
  'app\directdpi\tools\winws.exe','app\directdpi\tools\WinDivert.dll','app\directdpi\tools\WinDivert64.sys','app\directdpi\tools\cygwin1.dll',
  'app\directdns\ctrld.exe','app\directdns\ctrld.toml','app\directdns\LICENSE-ctrld.txt',
- 'gateway\manifest.json','windows\installer\FreeNetHub.iss','windows\installer\Prepare-Upgrade.ps1','Uninstall-FreeNetHub.ps1','RELEASE.json'
+ 'gateway\manifest.json','windows\standalone\FreeNetHub.exe','windows\standalone\FreeNetHubShell.cs','windows\standalone\FreeNetHubShell.manifest','windows\standalone\MANIFEST.json','windows\installer\FreeNetHub.iss','windows\installer\Prepare-Upgrade.ps1','Uninstall-FreeNetHub.ps1','RELEASE.json'
 )
 $ReleaseMeta=Get-Content -LiteralPath (Join-Path $Root 'RELEASE.json') -Raw | ConvertFrom-Json
 if($null -ne $ReleaseMeta.installerSha256 -and [string]$ReleaseMeta.installerSha256 -ne ''){throw 'R38_RELEASE_INSTALLER_HASH_SELF_REFERENCE'}
@@ -15,23 +15,23 @@ $Freeze=@{}
 foreach($rel in $FreezeFiles){$Freeze[$rel]=(Get-FileHash -LiteralPath (Join-Path $Root $rel) -Algorithm SHA256).Hash}
 $Iscc=Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'
 if(!(Test-Path -LiteralPath $Iscc)){throw 'ISCC_NOT_FOUND'}
-$Installer=Join-Path $Root 'delivery\github_v4.2.0\FreeNetHub_4.2.0_R38_DirectMethod_Setup.exe'
+$Installer=Join-Path $Root 'delivery\github_v4.2.0\FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe'
 Remove-Item -LiteralPath $Installer -Force -ErrorAction SilentlyContinue
 & $Iscc /Qp (Join-Path $Root 'windows\installer\FreeNetHub.iss')
 if($LASTEXITCODE -ne 0){throw ('ISCC_EXIT_'+$LASTEXITCODE)}
-if(!(Test-Path -LiteralPath $Installer)){throw 'R38_INSTALLER_MISSING'}
+if(!(Test-Path -LiteralPath $Installer)){throw 'R39_INSTALLER_MISSING'}
 foreach($rel in $FreezeFiles){
  $now=(Get-FileHash -LiteralPath (Join-Path $Root $rel) -Algorithm SHA256).Hash
- if($now -ne $Freeze[$rel]){throw ('R38_SOURCE_CHANGED_DURING_BUILD_'+$rel)}
+ if($now -ne $Freeze[$rel]){throw ('R39_SOURCE_CHANGED_DURING_BUILD_'+$rel)}
 }
 $r=[ordered]@{
  status='PASS'
- path='delivery/github_v4.2.0/FreeNetHub_4.2.0_R38_DirectMethod_Setup.exe'
+ path='delivery/github_v4.2.0/FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe'
  bytes=(Get-Item -LiteralPath $Installer).Length
  sha256=(Get-FileHash -LiteralPath $Installer -Algorithm SHA256).Hash
  authenticode=[string](Get-AuthenticodeSignature -LiteralPath $Installer).Status
  frozenFiles=$FreezeFiles.Count
  built=(Get-Date).ToString('o')
 }
-$r|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $Root 'evidence\R38_INSTALLER_BUILD_20260929.json') -Encoding UTF8
+$r|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $Root 'evidence\R39_INSTALLER_BUILD_20260930.json') -Encoding UTF8
 $r|ConvertTo-Json -Depth 4

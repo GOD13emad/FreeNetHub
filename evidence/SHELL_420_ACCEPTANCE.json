@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "utc": "2026-09-30T09:02:50.0757048+00:00",
+  "exeVersion": "4.2.0.0",
+  "exeSha256": "EA771EFEFBF2F131474933285A0C13AF7F0188F9712E5C401E51CF696E4165C1",
+  "shellPid": 36732,
+  "childPid": 53608,
+  "singleInstance": true,
+  "minimizeHiddenToTray": true,
+  "restoredVisible": true,
+  "taskbarWindowIconSet": true,
+  "ownerAppUserModelId": "FreeNetHub.Desktop",
+  "ownerAppUserModelIdResult": 0,
+  "processAppUserModelIdSet": true,
+  "noNewTerminalProcesses": true,
+  "onlineUpdateCheckExpected": true,
+  "networkMutationRequested": false,
+  "networkArtifacts": {
+    "tun": 0,
+    "p19410": 0,
+    "p19591": 0,
+    "p19594": 0,
+    "wslOwner": false,
+    "providerOwner": false,
+    "usbAttached": false
+  },
+  "accepted": true
+}

@@ -2,10 +2,10 @@
   "schema": 1,
   "product": "FreeNet Hub",
   "shellVersion": "4.2.0",
-  "state": "TARGET_RUNTIME_ACCEPTED",
+  "state": "R39_NOADMIN_LAUNCH_ACCEPTED",
   "evidence": "evidence/SHELL_420_ACCEPTANCE.json",
   "exeVersion": "4.2.0.0",
-  "exeSha256": "4A948276D3FB74B9A525401FA405164C348CA029E605B341A6A3D68AC3F9AB9A",
+  "exeSha256": "EA771EFEFBF2F131474933285A0C13AF7F0188F9712E5C401E51CF696E4165C1",
   "singleInstance": true,
   "minimizeHiddenToTray": true,
   "restoredVisible": true,
@@ -13,12 +13,15 @@
   "appUserModelId": "FreeNetHub.Desktop",
   "appUserModelIdResult": 0,
   "noNewTerminalProcesses": true,
-  "networkRequestedOnLaunch": false,
   "networkArtifactsOnLaunch": {
     "tun": 0,
     "p19410": 0,
     "p19591": 0,
     "firewall": 0
   },
-  "accepted": true
+  "accepted": true,
+  "onlineUpdateCheckExpected": true,
+  "networkMutationRequestedOnLaunch": false,
+  "normalLaunchRuntimeBootstrap": false,
+  "requestedExecutionLevel": "asInvoker"
 }

@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-local-r38-direct-method",
+  "version": "4.2.0-local-r39-online-noadmin",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -100,13 +100,13 @@
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 93583,
-      "sha256": "C00B71E1075D8BB8FA2B0176760A143B3F5D00AB286FAC2457E00C4DA06751C7"
+      "bytes": 93908,
+      "sha256": "295EBDAA482BA0F66F99B39BE44CCA9B3369407C58867C88B2B110C67E7C071C"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 4503,
-      "sha256": "84A1962C07987ADD2A78C51938BBA16EB12004C85658D9495FACC9C011CE487E"
+      "bytes": 4534,
+      "sha256": "616BEB240B8DC698779C8531FEB369AEA11B0E21A68D2AB8C39F5975B82F67F8"
     },
     {
       "file": "app/nodehub.py",
@@ -1014,9 +1014,29 @@
       "sha256": "E9A21C35456EC58223384BDBDDBC37C363C13BD5DD626F42B02CE5D8E84C849D"
     },
     {
+      "file": "evidence/R39_INSTALLER_BUILD_20260930.json",
+      "bytes": 305,
+      "sha256": "B81D91DE9B72ABADDDB9CCFB4299510AE3A89CEFEDF917D3D89547E02BF627AF"
+    },
+    {
+      "file": "evidence/R39_ONLINE_NOADMIN_ACCEPTANCE_20260930.json",
+      "bytes": 1990,
+      "sha256": "72900ABC1785CEB09FADEFDBD3ABDF5C6B2D4BA7C756F175101D64A92BAD080E"
+    },
+    {
+      "file": "evidence/R39_PROJECT_KNOWLEDGE_20260930.json",
+      "bytes": 25961,
+      "sha256": "324C497D655350A5D2A81F6F8FB46C3C213737132F965C7702BFFCA601F1A897"
+    },
+    {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
       "bytes": 2126,
       "sha256": "FE39F0868C138A3A3CDB57548BCD7AEB562B0BCB72328590D91ACDC0EB6B2D41"
+    },
+    {
+      "file": "evidence/SHELL_420_ACCEPTANCE.json",
+      "bytes": 748,
+      "sha256": "187A66637A92E100F8DEC6914DA5DABCF5F2066C09E9ABA0844CC6371E6A7833"
     },
     {
       "file": "evidence/unit_tests.json",
@@ -1205,8 +1225,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 25080,
-      "sha256": "A994F3EBB4647F88167001DC34217A5F6BEE71C1CDC4446775968D7D744C8840"
+      "bytes": 27068,
+      "sha256": "962A8775006CC197ECDEBF3E0E3C5C716F5D7AA014938BDCE45338B103AA43BF"
     },
     {
       "file": "README.md",
@@ -1220,8 +1240,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 24153,
-      "sha256": "D73E8BD80D333304497768E0BEF86FFC2EDD24D27683469A1E400302AD26E77C"
+      "bytes": 24674,
+      "sha256": "30428DEF2971A443199B8BE714EC7BB34542E8C48F8423D73CD88F354726282D"
     },
     {
       "file": "SECURITY.md",
@@ -1380,8 +1400,8 @@
     },
     {
       "file": "tests/build_r38_direct_method_installer.ps1",
-      "bytes": 2300,
-      "sha256": "AFCFD41D24EF94893D47251AC07A76C153E1A7C980FC7FFEB20EDC98B7404FBC"
+      "bytes": 2459,
+      "sha256": "E23DE133737E47729057CD92CB11F8911A6505359D6B0CFB4D92DE1491D43F1B"
     },
     {
       "file": "tests/build_r38_direct_method_metadata.py",
@@ -1834,6 +1854,11 @@
       "sha256": "FC0E2F8FA836BD9F01DE078A02A9F6D28EB8B9FA3BD34B3551C42A2A0B22DF8C"
     },
     {
+      "file": "tests/test_r39_online_noadmin.py",
+      "bytes": 1977,
+      "sha256": "5E010C586D0FD4E669BDC2E7EF415DE721FA1D5DB69371BB936A0CE10C9772D3"
+    },
+    {
       "file": "tests/verify_public_tree.py",
       "bytes": 5064,
       "sha256": "2E3550493162D6A8606F96D59A9003648A2687D521FF49453359DC4846F3A805"
@@ -1880,8 +1905,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 11894,
-      "sha256": "5E15D3CD087730A88FA9AA87A7811776B40908582B4D1BF4079B74565FE5810B"
+      "bytes": 11913,
+      "sha256": "BA4710470F2F1BA31C55DCA4043AC352CA89D15CE774AE26CA768C12DC259F6C"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",
@@ -1960,13 +1985,13 @@
     },
     {
       "file": "windows/standalone/Build-Manifest42.py",
-      "bytes": 881,
-      "sha256": "39FD4537AFF35BCD780FD55D250F42DC869A038E04D0F81C6C6D2E203CEA776F"
+      "bytes": 897,
+      "sha256": "56D344720F461463320E76862EBFA74CC263C62F1C8E2A9178C7C41F83583D86"
     },
     {
       "file": "windows/standalone/FreeNetHub.exe",
-      "bytes": 39936,
-      "sha256": "D349ADCB0ABC3B39601A5F7F873821C4F017C9B4BE2AF37C14FC94F1EAFB02DB"
+      "bytes": 39424,
+      "sha256": "EA771EFEFBF2F131474933285A0C13AF7F0188F9712E5C401E51CF696E4165C1"
     },
     {
       "file": "windows/standalone/FreeNetHub.ico",
@@ -1980,8 +2005,8 @@
     },
     {
       "file": "windows/standalone/FreeNetHubShell.cs",
-      "bytes": 13865,
-      "sha256": "B743A6B1E0C1C8566B60E8FE8581AA314B85B5574FDC314317FA61ABBA67154B"
+      "bytes": 13285,
+      "sha256": "348A7A26BB5973426E431366E2B637F0C9222795B408ADE2A30569E998ADEACD"
     },
     {
       "file": "windows/standalone/FreeNetHubShell.manifest",
@@ -1995,8 +2020,8 @@
     },
     {
       "file": "windows/standalone/MANIFEST.json",
-      "bytes": 1857,
-      "sha256": "BF6C56E11C0CA135584FBFD3D8C25C737CA3A1FC8097BC92F00076E1057345A6"
+      "bytes": 1873,
+      "sha256": "98999CD56216487E8F44E86DB3C1D9A4E6F39157BB31955958415E63AF0BCF90"
     },
     {
       "file": "windows/standalone/README_FA.md",
@@ -2010,13 +2035,13 @@
     },
     {
       "file": "windows/standalone/RUNTIME_ACCEPTANCE.json",
-      "bytes": 655,
-      "sha256": "FDAFAD666EC639E0FD9102FDBF15C8DBF4F0ADC872649D2D6F9EF44328FB4826"
+      "bytes": 787,
+      "sha256": "12576ECB5B1C1065C39721C7144A4498A2EB61BDE6FF7B54FFD3F14BA556F04B"
     },
     {
       "file": "windows/standalone/Test-FreeNetHubShell42.ps1",
-      "bytes": 5392,
-      "sha256": "58AA8ACA7E19033DE337E6F88CB62B8DC3636815D9F458948C72551B04F00E6C"
+      "bytes": 5580,
+      "sha256": "6F9E6E3B102F1AF19CD115BC67DA99813901A822F84F50050EC82BCC5A5D2DEF"
     },
     {
       "file": "windows/standalone/Verify-FreeNetHubShell.ps1",
