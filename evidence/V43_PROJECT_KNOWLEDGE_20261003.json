@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-10-03",
-  "status": "CURRENT_CANDIDATE",
+  "status": "CURRENT_FINAL",
   "project": "FreeNet Hub 4.3.0 installer correction",
   "records": [
     {
@@ -24,7 +24,7 @@
     {
       "claimDecision": "Fresh install and upgrade are separate lifecycle paths: fresh install has no previous runtime to inspect; upgrade retains safety verification.",
       "evidenceSource": "Root-cause analysis plus lifecycle-safety regressions.",
-      "status": "PROPOSAL_IMPLEMENTED_PENDING_HOSTED_PROMOTION",
+      "status": "CLOSED_PASS",
       "confidence": "HIGH",
       "rejectedAlternative": "Remove Prepare-Upgrade safety verification entirely; rejected because it weakens real upgrade rollback protection.",
       "reuseTargets": [
@@ -66,13 +66,58 @@
         "GitHub release",
         "post-publish verification"
       ]
+    },
+    {
+      "claimDecision": "Hosted fresh-install validation closed the original installer failure on both PR and post-merge main.",
+      "evidenceSource": "CI #167 and CI #168 windows-installer-fresh both PASS; each built V43 then installed into an absent app directory.",
+      "status": "CONFIRMED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "release acceptance",
+        "installer regression",
+        "support"
+      ]
+    },
+    {
+      "claimDecision": "The exact public Windows asset upgraded an installed 4.2 R40 system to 4.3 successfully without changing the default route.",
+      "evidenceSource": "Live install exit 0; installed version 4.3.0 / revision 4.3.0-r43-final; Ethernet 3 -> 192.168.20.1 unchanged.",
+      "status": "CONFIRMED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "upgrade acceptance",
+        "release notes",
+        "support"
+      ]
+    },
+    {
+      "claimDecision": "Post-publish updater semantics are closed for both Windows and Linux.",
+      "evidenceSource": "Windows 43=43 no-update with exact GitHub digest; Linux 14=14 no-update from latest v4.3.0 with unchanged R14 digest and unchanged route.",
+      "status": "CONFIRMED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "updater regression",
+        "release handoff"
+      ]
+    },
+    {
+      "claimDecision": "GitHub Releases was simplified to one public release, v4.3.0, while Git tags/history were preserved.",
+      "evidenceSource": "16 superseded release objects deleted after archiving pre-cleanup release inventory SHA-256 B32D30624F1E9776F6309F295F815CD798875DABBA9E5C3608783FB791CE66EB; v4.3.0 remains latest.",
+      "status": "CONFIRMED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "repository governance",
+        "handoff",
+        "release hygiene"
+      ]
     }
   ],
   "openGates": [
-    "Hosted Windows exact fresh-install into absent app directory",
-    "Aggregate hosted CI on exact candidate",
-    "Post-publish latest-release asset/hash/update verification",
-    "Trusted Windows Authenticode remains external/missing"
+    "Trusted Windows Authenticode identity remains external/missing; public installer is NotSigned."
   ],
-  "exactNextAction": "Run final local gates, commit/push candidate, require hosted fresh-install and aggregate CI before release promotion."
+  "exactNextAction": "No product action. Preserve v4.3.0 as the single public release. Create a successor only for a new evidence-backed bug/requirement or an externally provisioned trusted Windows signing identity.",
+  "provenance": {
+    "runtimeReleaseCommit": "5930326185bbeb1118a1fb4381d56e79d0af78bd",
+    "releaseTag": "v4.3.0",
+    "releaseInventoryArchiveSha256": "B32D30624F1E9776F6309F295F815CD798875DABBA9E5C3608783FB791CE66EB"
+  }
 }

@@ -28,7 +28,89 @@
     "securityScan": "PASS_ZERO_HITS",
     "gitDiffCheck": "PASS"
   },
-  "promotionGate": "HOSTED_WINDOWS_FRESH_INSTALL_AND_AGGREGATE_CI_REQUIRED",
+  "promotionGate": "CLOSED_PASS",
   "confidence": "HIGH",
-  "version": "4.3.0"
+  "version": "4.3.0",
+  "hostedValidation": {
+    "prCi": {
+      "runNumber": 167,
+      "runId": 37143150840,
+      "head": "82daa9e006c6eadbfb54ed6f5a5cfc69feaab5a9",
+      "windowsInstallerFresh": "PASS",
+      "virtualAcceptance": "PASS"
+    },
+    "postMergeCi": {
+      "runNumber": 168,
+      "runId": 37143551715,
+      "mainCommit": "5930326185bbeb1118a1fb4381d56e79d0af78bd",
+      "windowsInstallerFresh": "PASS",
+      "virtualAcceptance": "PASS"
+    }
+  },
+  "publicRelease": {
+    "tag": "v4.3.0",
+    "name": "FreeNet Hub 4.3.0 Final",
+    "targetCommit": "5930326185bbeb1118a1fb4381d56e79d0af78bd",
+    "windows": {
+      "name": "FreeNetHub_4.3.0_R43_Setup.exe",
+      "bytes": 24259520,
+      "sha256": "E577BFC662E8D5EF8C6B2512C4904E6161A114F7EB78AB7FE02F62D347FDFD91"
+    },
+    "linux": {
+      "name": "FreeNetHub_4.2.0_Linux_R14.zip",
+      "bytes": 213124,
+      "sha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+      "unchangedBaseline": true
+    }
+  },
+  "liveUpgradeAcceptance": {
+    "fromVersion": "4.2.0",
+    "fromRevision": "4.2.0-local-r40-lifecycle-safe",
+    "toVersion": "4.3.0",
+    "toRevision": "4.3.0-r43-final",
+    "installerExit": 0,
+    "routeUnchanged": true,
+    "defaultRoute": "Ethernet 3 via 192.168.20.1",
+    "postPublishUpdate": {
+      "currentRevisionNumber": 43,
+      "remoteRevisionNumber": 43,
+      "updateAvailable": false,
+      "assetDigest": "sha256:e577bfc662e8d5ef8c6b2512c4904e6161a114f7eb78ab7fe02f62d347fdfd91"
+    }
+  },
+  "linuxPostCleanupAcceptance": {
+    "current": "4.2.0-linux.14-r41",
+    "localRevision": 14,
+    "remoteRevision": 14,
+    "updateAvailable": false,
+    "latestTag": "v4.3.0",
+    "assetDigest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+    "routeUnchanged": true
+  },
+  "releaseHygiene": {
+    "remainingPublicReleases": [
+      "v4.3.0"
+    ],
+    "deletedReleaseObjects": [
+      "v4.2.0-r41-final",
+      "v4.2.0-r40-final",
+      "v4.2.0-r39-final",
+      "v4.2.0-r38-final",
+      "v4.2.0-r37-final",
+      "v4.2.0-r18-virtual-final",
+      "v4.2.0-r17-final",
+      "v4.2.0-r16-clean",
+      "v4.2.0-linux.8",
+      "v4.2.0-r15",
+      "v4.2.0-linux.7",
+      "v4.2.0-linux.6",
+      "v4.2.0-linux.5",
+      "v4.2.0",
+      "v4.1.2",
+      "v4.1.1"
+    ],
+    "gitTagsPreserved": true,
+    "preCleanupInventorySha256": "B32D30624F1E9776F6309F295F815CD798875DABBA9E5C3608783FB791CE66EB"
+  },
+  "decision": "PUBLIC_FINAL_CLOSED_PASS"
 }
