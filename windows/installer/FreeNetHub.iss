@@ -1,5 +1,5 @@
 #define MyAppName "FreeNet Hub"
-#define MyAppVersion "4.2.0"
+#define MyAppVersion "4.3.0"
 #define MyAppPublisher "FreeNet Hub"
 #define MyAppExeName "FreeNetHub.exe"
 
@@ -13,8 +13,8 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-OutputDir=..\..\delivery\github_v4.2.0
-OutputBaseFilename=FreeNetHub_4.2.0_R40_LifecycleSafe_Setup
+OutputDir=..\..\delivery\github_v4.3.0
+OutputBaseFilename=FreeNetHub_4.3.0_R43_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -24,9 +24,9 @@ CloseApplications=yes
 RestartApplications=no
 ChangesAssociations=no
 ChangesEnvironment=no
-VersionInfoVersion=4.2.0.0
+VersionInfoVersion=4.3.0.0
 VersionInfoProductName=FreeNet Hub
-VersionInfoDescription=FreeNet Hub 4.2 R40 Lifecycle-Safe / No-Admin Launch installer
+VersionInfoDescription=FreeNet Hub 4.3 Final / clean-install-safe / no-admin launch installer
 MinVersion=10.0.19041
 
 [Languages]
@@ -145,47 +145,55 @@ begin
   Result := '';
   P := FindPwsh;
 
-  if P <> '' then begin
-    ExtractTemporaryFile('Prepare-Upgrade.ps1');
-    Helper := ExpandConstant('{tmp}\Prepare-Upgrade.ps1');
-    Params := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' +
-      Helper + '" -AppRoot "' + ExpandConstant('{app}') + '"';
-    if not Exec(P, Params, ExpandConstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode) then begin
-      Result := 'Free Net Hub could not verify the upgrade process state.';
-      exit;
-    end;
-    if ResultCode = 42 then begin
-      Result := 'Free Net Hub is carrying an active connection. Disconnect it before upgrading; Setup made no network changes.';
-      exit;
-    end;
-    if ResultCode <> 0 then begin
-      Result := 'Free Net Hub could not close its previous UI process safely. Close the app and run Setup again.';
-      exit;
-    end;
-    exit;
-  end;
-
-  Winget := FileSearch('winget.exe', GetEnv('PATH'));
-  if Winget = '' then
-    Winget := ExpandConstant('{localappdata}\Microsoft\WindowsApps\winget.exe');
-  if not FileExists(Winget) then begin
-    Result := 'PowerShell 7 is required and Windows Package Manager (winget) was not found. Install PowerShell 7, then run Setup again.';
-    exit;
-  end;
-
-  if (not Exec(Winget, 'install --id Microsoft.PowerShell --exact --source winget --accept-source-agreements --accept-package-agreements --silent --disable-interactivity',
-      '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode)) or (ResultCode <> 0) then begin
-    Result := 'PowerShell 7 prerequisite installation failed. No FreeNet Hub network changes were made.';
-    exit;
-  end;
-
-  P := FindPwsh;
+  { PowerShell 7 is a product prerequisite on both fresh install and upgrade. }
   if P = '' then begin
-    P := AddBackslash(GetEnv('ProgramFiles')) + 'PowerShell\7\pwsh.exe';
-    if not FileExists(P) then begin
-      Result := 'PowerShell 7 was installed but pwsh.exe could not be resolved. Sign out/in or install PowerShell 7 and rerun Setup.';
+    Winget := FileSearch('winget.exe', GetEnv('PATH'));
+    if Winget = '' then
+      Winget := ExpandConstant('{localappdata}\Microsoft\WindowsApps\winget.exe');
+    if not FileExists(Winget) then begin
+      Result := 'PowerShell 7 is required and Windows Package Manager (winget) was not found. Install PowerShell 7, then run Setup again.';
       exit;
     end;
+
+    if (not Exec(Winget, 'install --id Microsoft.PowerShell --exact --source winget --accept-source-agreements --accept-package-agreements --silent --disable-interactivity',
+        '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode)) or (ResultCode <> 0) then begin
+      Result := 'PowerShell 7 prerequisite installation failed. No FreeNet Hub network changes were made.';
+      exit;
+    end;
+
+    P := FindPwsh;
+    if P = '' then begin
+      P := AddBackslash(GetEnv('ProgramFiles')) + 'PowerShell\7\pwsh.exe';
+      if not FileExists(P) then begin
+        Result := 'PowerShell 7 was installed but pwsh.exe could not be resolved. Sign out/in or install PowerShell 7 and rerun Setup.';
+        exit;
+      end;
+    end;
+  end;
+
+  // Fresh install: the app directory does not exist yet, so there is no
+  // previous FreeNet Hub runtime to verify or close. The old installer used
+  // that missing directory as Exec WorkingDir and CreateProcess failed.
+  if not DirExists(ExpandConstant('{app}')) then
+    exit;
+
+  // Upgrade/reinstall: verify only the previous installed instance. Use the
+  // Setup temporary directory as an existing WorkingDir; AppRoot is explicit.
+  ExtractTemporaryFile('Prepare-Upgrade.ps1');
+  Helper := ExpandConstant('{tmp}\Prepare-Upgrade.ps1');
+  Params := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' +
+    Helper + '" -AppRoot "' + ExpandConstant('{app}') + '"';
+  if not Exec(P, Params, ExpandConstant('{tmp}'), SW_HIDE, ewWaitUntilTerminated, ResultCode) then begin
+    Result := 'Free Net Hub could not start upgrade preparation: ' + SysErrorMessage(ResultCode);
+    exit;
+  end;
+  if ResultCode = 42 then begin
+    Result := 'Free Net Hub is carrying an active connection. Disconnect it before upgrading; Setup made no network changes.';
+    exit;
+  end;
+  if ResultCode <> 0 then begin
+    Result := 'Free Net Hub could not close the previous installation safely (code ' + IntToStr(ResultCode) + '). Close the app and run Setup again.';
+    exit;
   end;
 end;
 

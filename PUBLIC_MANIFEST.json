@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.2.0-r41-final",
+  "version": "4.3.0-r43-final",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 20134,
-      "sha256": "934DC0042175067C89F28E7ECD8F2BFF0E457A025D27EB4F3ADB3B9A4D38DDB9"
+      "bytes": 22536,
+      "sha256": "BB98A60BBACAF0ADF6343EE172FC68EF0DEFF9E211095A1417BF223152F85FEB"
     },
     {
       "file": ".gitignore",
@@ -105,8 +105,8 @@
     },
     {
       "file": "app/manifest.json",
-      "bytes": 4460,
-      "sha256": "7F2ADC722F4BD3ECED97A060864B02C3F35C3AF7A468CBE2855B6237FC8CE246"
+      "bytes": 4454,
+      "sha256": "A070CBFB3094F43044461CB91E3AD00F406D9CCEEFDC3C9AC5ECCBC96EA80E50"
     },
     {
       "file": "app/nodehub.py",
@@ -1109,6 +1109,21 @@
       "sha256": "4229B16D600B7F8FBD30EBCDED3FA7C90FF8A35FF4CB7D952666E0C476772F1A"
     },
     {
+      "file": "evidence/V43_INSTALLER_ACCEPTANCE_20261003.json",
+      "bytes": 1635,
+      "sha256": "CFF5A35787AFB8D5D4E610CA54FCE92D797038296DAAB9A672E9E44C676F17A2"
+    },
+    {
+      "file": "evidence/V43_INSTALLER_BUILD_20261003.json",
+      "bytes": 329,
+      "sha256": "0B3D298E7C8548FA022C107933EDEBCAE3D950F72062C87E05DA7A1AB397CAB6"
+    },
+    {
+      "file": "evidence/V43_PROJECT_KNOWLEDGE_20261003.json",
+      "bytes": 3316,
+      "sha256": "B3214C386F3CBA92CA01338BAB88EA247CB46244636C3BAB1B02A146E4A85A39"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1290,8 +1305,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 36727,
-      "sha256": "3B2A035C2C089E9D1FF545CC33084B781E6508E02215DE8B637A977439081B7F"
+      "bytes": 37777,
+      "sha256": "71FC4FD975D1130CF4BE7E1F90371DA0B2C6C018F0F09313D301DAFFB4419373"
     },
     {
       "file": "pytest.ini",
@@ -1310,8 +1325,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 26134,
-      "sha256": "55B75C6501E6F138B04D27F27AAE134F52DA55C66ECC742ABC6BFF4893DDEEE3"
+      "bytes": 26658,
+      "sha256": "7C824B9FA2E77F262967EB0C9B8AAE53EFA60CC9F6FE2B508D4AE3AD84CB5018"
     },
     {
       "file": "SECURITY.md",
@@ -1497,6 +1512,11 @@
       "file": "tests/build_r40_lifecycle_metadata.py",
       "bytes": 3742,
       "sha256": "A277F7A6F783601D833CB659404F4B330561755D9B6F4987E3166CE7371FD3FC"
+    },
+    {
+      "file": "tests/build_v43_installer.ps1",
+      "bytes": 2618,
+      "sha256": "8E57C9BB114E1057614F44878413F4591E050772FD5672F00AFF6D3E2D9ED39B"
     },
     {
       "file": "tests/chat4_r37_final_smoke.ps1",
@@ -1959,6 +1979,11 @@
       "sha256": "5E010C586D0FD4E669BDC2E7EF415DE721FA1D5DB69371BB936A0CE10C9772D3"
     },
     {
+      "file": "tests/test_v43_installer_fresh_install.py",
+      "bytes": 1908,
+      "sha256": "ACBDA23268F7CB44FBBE9979D8E81B5B8759E7822F317BFF8586ABD3DBEA9B46"
+    },
+    {
       "file": "tests/verify_public_tree.py",
       "bytes": 5310,
       "sha256": "89ECB7E4C1F8C6E1B27BFA7B5D21471752554FF1210BDFC4DC55FCDC544C1F05"
@@ -2005,8 +2030,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 11914,
-      "sha256": "F44421EAA7FFC64A376E103F9BACC351C58FCBB3F96B9FF10DB3B0D9915247F2"
+      "bytes": 12486,
+      "sha256": "79B5E2BDB0C78BA059E88F722184F59BEF64E6A997225441E30A7B3B3957082A"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",

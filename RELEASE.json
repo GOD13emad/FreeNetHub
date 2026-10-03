@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
-  "version": "4.2.0",
-  "releaseRevision": "4.2.0-r41-final",
-  "status": "R41_PUBLIC_FINAL",
+  "version": "4.3.0",
+  "releaseRevision": "4.3.0-r43-final",
+  "status": "V43_RELEASE",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -23,7 +23,7 @@
   "gatewayManifestSha256": "DA4C24B3C3611138AE80788966961C5F33C73917983F39B522852C40EACB9247",
   "crossPlatformManifestSha256": "6C74E8DFB3A7F0F487559511BF4262199C5409F9334301E4B625FD7A7FA013C7",
   "installerSha256": null,
-  "acceptanceEvidence": "evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
+  "acceptanceEvidence": "evidence/V43_INSTALLER_ACCEPTANCE_20261003.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "PUBLIC_FINAL_NATIVE_LINUX_4.2.0_R14_R41",
@@ -175,7 +175,7 @@
       "productionCredentialGatesRemainExternal": true
     }
   },
-  "appManifestSha256": "7F2ADC722F4BD3ECED97A060864B02C3F35C3AF7A468CBE2855B6237FC8CE246",
+  "appManifestSha256": "A070CBFB3094F43044461CB91E3AD00F406D9CCEEFDC3C9AC5ECCBC96EA80E50",
   "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
   "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
   "installerStatus": "DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE",
@@ -726,5 +726,16 @@
     "targetCommit": "967fe5920a00f102e408002f8ffb030e4d15b6fd",
     "postPublishUpdate": "WINDOWS_40_EQ_40_LINUX_14_EQ_14_PASS",
     "trustedSigning": "MISSING_EXTERNAL"
+  },
+  "v43InstallerFix": {
+    "status": "V43_RELEASE",
+    "publicRelease": false,
+    "windowsAsset": "FreeNetHub_4.3.0_R43_Setup.exe",
+    "rootCause": "FRESH_INSTALL_EXEC_USED_NONEXISTENT_APP_DIRECTORY_AS_WORKINGDIR",
+    "freshInstallPolicy": "SKIP_UPGRADE_GUARD_WHEN_APP_ROOT_DOES_NOT_EXIST",
+    "upgradeWorkingDirectory": "INNO_TMP_EXISTING_DIRECTORY",
+    "upgradeGuard": "PRESERVED_FOR_EXISTING_INSTALL",
+    "backwardUpdateCompatibility": "R43_ASSET_NAME_VISIBLE_TO_R41_UPDATER",
+    "linuxRuntime": "UNCHANGED_R14_R41"
   }
 }
