@@ -1,10 +1,10 @@
 # PROJECT BRAIN — FreeNet Hub
 
-Status: V43_INSTALLER_CORRECTION_CANDIDATE
-Brain version: v43-installer-fresh-install-correction-2026-10-03
-Installed authority: Windows 4.2.0-local-r40-lifecycle-safe (FINAL_ACCEPTED, unchanged in R41); Linux 4.2.0-linux.14-r41 (FINAL_ACCEPTED)
-Source authority: accepted runtime baseline remains R41/R40+Linux R14; V43 Windows installer candidate is branch v4.3-installer-final and is not promoted until hosted fresh-install + aggregate CI pass
-Promotion state: R41 is superseded for Windows distribution by V43 installer correction candidate; local exact build + regressions PASS, hosted fresh-install gate OPEN; Linux R14 remains unchanged/accepted; trusted Authenticode MISSING_EXTERNAL ← CURRENT
+Status: FINAL_DESKTOP_ACCEPTED_V43
+Brain version: v43-public-final-2026-10-03
+Installed authority: Windows 4.3.0-r43-final (FINAL_ACCEPTED); Linux 4.2.0-linux.14-r41 (FINAL_ACCEPTED, unchanged)
+Source authority: runtime/release target 5930326185bbeb1118a1fb4381d56e79d0af78bd / tag v4.3.0; project-control authority is current origin/main and may advance through control-only evidence commits without changing accepted runtime bytes
+Promotion state: V43 PUBLIC FINAL; PR CI #167 + post-merge CI #168 fresh-install/aggregate CLOSED_PASS; live 4.2→4.3 upgrade CLOSED_PASS with route unchanged; Windows 43=43 and Linux 14=14 post-publish CLOSED_PASS; only public GitHub release is v4.3.0; trusted Authenticode MISSING_EXTERNAL ← CURRENT
 Desktop closure scope:
 - Included: Windows R40 desktop runtime/release continuity; Linux R14 desktop runtime/release; updater/integrity/CI/release continuity.
 - Excluded separate tracks: physical Console field E2E; Android production forwarding/signing; iOS production forwarding/device signing; optional Linux Node Full-System privileged helper.
@@ -150,7 +150,7 @@ Fix:
 - iOS production packet-forwarding core/device signing — DEFERRED_SEPARATE_TRACK; hosted simulator lifecycle PASS; not part of desktop final DoD.
 
 ## Exact Next Action
-Promote V43 only after the exact branch passes hosted Windows fresh-install into an absent app directory plus aggregate CI. Then publish one public 4.3 release, verify post-publish update behavior, and remove superseded release objects while preserving Git tags/history.
+No product action. Preserve FreeNet Hub v4.3.0 as the single public release and accepted desktop baseline. Create a successor only for a new evidence-backed bug/requirement or an externally provisioned trusted Windows signing identity.
 
 ## HISTORY
 - 2026-09-29 Linux R11 UX final candidate: exact package SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` installed with zero route mutation; UI minimum 842x602; explicit scope/method selection; base/selected/all-method tests; two-stage node testing; seven sort modes; instant IP visibility; direct update flow. Live UI WARP Ping, sequential all-method testing, 2000-node endpoint test, real node benchmark, IP reveal and update check all exercised. Evidence: `evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json`.
@@ -235,3 +235,5 @@ Promote V43 only after the exact branch passes hosted Windows fresh-install into
 - 2026-09-30 Android CI hardening validation: fresh CI #162 (run 36765328910) on hardened head 7bb945a passed android-emulator-runtime directly with no manual rerun; ios-simulator-runtime and aggregate virtual-acceptance also PASS. Prevention is CLOSED_PASS while root-cause wording remains PROBABLE_HIGH rather than overstated.
 
 - 2026-10-03 V43 INSTALLER CORRECTION CANDIDATE: owner screenshot proved a fresh-install blocker in the published 4.2 installer: PrepareToInstall invoked pwsh.exe with {app} as Exec WorkingDir before that directory existed, so process launch failed and Setup displayed could not verify the upgrade process state. Root cause is source-confirmed. V43 separates fresh install from upgrade: absent app root bypasses previous-install verification; existing installs retain lifecycle safety and execute Prepare-Upgrade.ps1 from Setup {tmp} with explicit AppRoot. Removing the lifecycle guard entirely was rejected as unnecessary and less safe. Exact current installer: FreeNetHub_4.3.0_R43_Setup.exe, SHA-256 E577BFC662E8D5EF8C6B2512C4904E6161A114F7EB78AB7FE02F62D347FDFD91, Authenticode MISSING_EXTERNAL_NOTSIGNED. Hosted clean-install gate remains OPEN before promotion. Evidence: evidence/V43_INSTALLER_ACCEPTANCE_20261003.json; knowledge: evidence/V43_PROJECT_KNOWLEDGE_20261003.json.
+
+- 2026-10-03 V43 PUBLIC FINAL: PR #22 head 82daa9e passed CI #167 including exact fresh install into an absent app directory and aggregate virtual-acceptance; merged runtime commit 5930326185bbeb1118a1fb4381d56e79d0af78bd passed post-merge CI #168 with the same fresh-install gate. Public release v4.3.0 carries Windows SHA-256 E577BFC662E8D5EF8C6B2512C4904E6161A114F7EB78AB7FE02F62D347FDFD91 and unchanged Linux R14 SHA-256 B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984. Exact public Windows asset upgraded live 4.2 R40 -> 4.3 R43 with exit 0 and route unchanged; post-publish Windows 43=43/no-update and Linux 14=14/no-update PASS. GitHub Releases reduced to v4.3.0 only; 16 superseded release objects removed after inventory archive SHA-256 B32D30624F1E9776F6309F295F815CD798875DABBA9E5C3608783FB791CE66EB, while Git tags/history were preserved. Authenticode remains MISSING_EXTERNAL/NotSigned. Evidence: evidence/V43_INSTALLER_ACCEPTANCE_20261003.json.
