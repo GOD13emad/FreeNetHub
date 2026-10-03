@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "date": "2026-10-03",
+  "status": "CURRENT_CANDIDATE",
+  "project": "FreeNet Hub 4.3.0 installer correction",
+  "records": [
+    {
+      "context": "Owner supplied screenshot from the published Windows installer on a system where installation could not proceed.",
+      "claimDecision": "Fresh-install failure is caused by the not-yet-created application directory being used as Inno Setup Exec WorkingDir before Prepare-Upgrade.ps1 can run.",
+      "evidenceSource": [
+        "windows/installer/FreeNetHub.iss previous PrepareToInstall implementation",
+        "Observed exact installer error",
+        "Official Inno Setup Exec documentation: https://jrsoftware.org/ishelp/topic_isxfunc_exec.htm"
+      ],
+      "status": "CONFIRMED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "release notes",
+        "installer architecture",
+        "failure prevention",
+        "support"
+      ]
+    },
+    {
+      "claimDecision": "Fresh install and upgrade are separate lifecycle paths: fresh install has no previous runtime to inspect; upgrade retains safety verification.",
+      "evidenceSource": "Root-cause analysis plus lifecycle-safety regressions.",
+      "status": "PROPOSAL_IMPLEMENTED_PENDING_HOSTED_PROMOTION",
+      "confidence": "HIGH",
+      "rejectedAlternative": "Remove Prepare-Upgrade safety verification entirely; rejected because it weakens real upgrade rollback protection.",
+      "reuseTargets": [
+        "installer architecture",
+        "future upgrade design"
+      ]
+    },
+    {
+      "claimDecision": "V43 uses Setup temporary directory as upgrade-helper WorkingDir and passes AppRoot explicitly.",
+      "evidenceSource": "windows/installer/FreeNetHub.iss; tests/test_v43_installer_fresh_install.py",
+      "status": "CONFIRMED_SOURCE",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "regression tests",
+        "installer maintenance"
+      ]
+    },
+    {
+      "claimDecision": "Public Windows asset keeps R43 in filename although user-facing release is 4.3.0 because installed R41 ranks Windows update assets by R-number.",
+      "evidenceSource": "app/engine.py update_release asset-selection logic",
+      "status": "CONFIRMED_COMPATIBILITY_DECISION",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "auto-update",
+        "release packaging"
+      ]
+    },
+    {
+      "claimDecision": "Current exact V43 installer build authority before hosted promotion.",
+      "evidenceSource": "evidence/V43_INSTALLER_BUILD_20261003.json",
+      "status": "CONFIRMED_LOCAL_BUILD",
+      "confidence": "HIGH",
+      "provenance": {
+        "path": "delivery/github_v4.3.0/FreeNetHub_4.3.0_R43_Setup.exe",
+        "sha256": "E577BFC662E8D5EF8C6B2512C4904E6161A114F7EB78AB7FE02F62D347FDFD91",
+        "bytes": 24259520
+      },
+      "reuseTargets": [
+        "GitHub release",
+        "post-publish verification"
+      ]
+    }
+  ],
+  "openGates": [
+    "Hosted Windows exact fresh-install into absent app directory",
+    "Aggregate hosted CI on exact candidate",
+    "Post-publish latest-release asset/hash/update verification",
+    "Trusted Windows Authenticode remains external/missing"
+  ],
+  "exactNextAction": "Run final local gates, commit/push candidate, require hosted fresh-install and aggregate CI before release promotion."
+}

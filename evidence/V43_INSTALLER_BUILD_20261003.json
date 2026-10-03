@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "version": "4.3.0",
+  "revision": "R43",
+  "path": "delivery/github_v4.3.0/FreeNetHub_4.3.0_R43_Setup.exe",
+  "bytes": 24259520,
+  "sha256": "E577BFC662E8D5EF8C6B2512C4904E6161A114F7EB78AB7FE02F62D347FDFD91",
+  "authenticode": "NotSigned",
+  "frozenFiles": 25,
+  "built": "2026-10-03T16:11:46.5496487Z"
+}

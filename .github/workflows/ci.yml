@@ -373,6 +373,46 @@ jobs:
           xcrun simctl io "$UDID" screenshot /tmp/fnh-ios-relaunch.png >/dev/null
           test -s /tmp/fnh-ios-relaunch.png
 
+  windows-installer-fresh:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Ensure Inno Setup compiler
+        shell: pwsh
+        run: |
+          $candidates=@(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
+            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+          )
+          $iscc=$candidates|Where-Object{$_ -and (Test-Path -LiteralPath $_)}|Select-Object -First 1
+          if(-not $iscc){
+            choco install innosetup --no-progress -y
+            $iscc=$candidates|Where-Object{$_ -and (Test-Path -LiteralPath $_)}|Select-Object -First 1
+          }
+          if(-not $iscc){ throw 'ISCC_NOT_FOUND_AFTER_INSTALL' }
+          Write-Host "ISCC=$iscc"
+      - name: Build exact FreeNet Hub 4.3 installer
+        shell: pwsh
+        run: ./tests/build_v43_installer.ps1
+      - name: Fresh install exact artifact into absent app directory
+        shell: pwsh
+        run: |
+          $installer=(Resolve-Path 'delivery\github_v4.3.0\FreeNetHub_4.3.0_R43_Setup.exe').Path
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-v43-fresh'
+          Remove-Item -LiteralPath $probe -Recurse -Force -ErrorAction SilentlyContinue
+          if(Test-Path -LiteralPath $probe){ throw 'FRESH_PROBE_DIR_PREEXISTS' }
+          $p=Start-Process -FilePath $installer -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
+          if($p.ExitCode -ne 0){ throw ('V43_FRESH_INSTALL_EXIT_'+$p.ExitCode) }
+          foreach($rel in @('FreeNetHub.exe','RELEASE.json','app\FreeNetHub.ps1','app\dependencies.json','INSTALL_RUNTIME_STATUS.json','PWSH_PATH.txt')){
+            if(!(Test-Path -LiteralPath (Join-Path $probe $rel))){ throw ('V43_FRESH_INSTALL_MISSING_'+$rel) }
+          }
+          $release=Get-Content -LiteralPath (Join-Path $probe 'RELEASE.json') -Raw -Encoding UTF8|ConvertFrom-Json
+          if([string]$release.version -ne '4.3.0'){ throw 'V43_FRESH_INSTALL_VERSION_MISMATCH' }
+          if([string]$release.releaseRevision -ne '4.3.0-r43-final'){ throw 'V43_FRESH_INSTALL_REVISION_MISMATCH' }
+
   virtual-acceptance:
     needs:
       - windows-unit
@@ -381,6 +421,7 @@ jobs:
       - ios-static
       - console-virtual-e2e
       - windows-virtual-signing
+      - windows-installer-fresh
       - android-emulator-runtime
       - ios-simulator-runtime
     runs-on: ubuntu-24.04
