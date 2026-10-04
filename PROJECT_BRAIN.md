@@ -307,3 +307,10 @@ Desktop/public v4.3.2 objective: CLOSED_PASS. No desktop release blocker remains
 
 ### Exact Next Action
 Commit the control-only Brain/Evidence/Public Manifest closure, verify the public tree/security scan, push it to main, and require one final repository-state CI PASS. Then record that CI result without changing runtime/release authority.
+
+
+### V432 repository-state closure — 2026-10-04
+- Control-only main commit `db38157a3affad6ace0f4796e554271eda27d5f1` passed CI #190 / run `37214169321` with all 10 jobs SUCCESS, including exact Windows fresh-install, Linux static, console virtual, Android API36 emulator, iOS simulator and aggregate `virtual-acceptance`.
+- Runtime/installer diff versus tag `v4.3.2` is empty. Runtime release authority therefore remains `v4.3.2 -> dd8bee89be71e39777152b6428c2ec0b1ba50809`; the repository closure commit is control/evidence only.
+- Status: FINAL / PUBLIC_FINAL_CLOSED. No desktop/public-release blocker remains.
+- Exact Next Action: none for v4.3.2. Preserve tag/assets immutably; begin any future runtime change under a new change set. External Authenticode, physical-console field E2E, and production mobile forwarding/signing/device gates remain separate.

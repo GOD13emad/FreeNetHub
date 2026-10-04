@@ -132,6 +132,25 @@
         "architecture",
         "release notes"
       ]
+    },
+    {
+      "context": "Final repository-state closure",
+      "claimDecision": "Control-only commit db38157a3affad6ace0f4796e554271eda27d5f1 changed Brain/Evidence/Public Manifest only, had zero runtime/installer diff versus v4.3.2, and passed hosted CI #190 including fresh Windows install, Linux, console virtual, Android API36 emulator, iOS simulator and aggregate virtual-acceptance.",
+      "evidenceSource": [
+        "GitHub Actions run 37214169321 / CI #190",
+        "git runtime diff vs v4.3.2 = empty"
+      ],
+      "confidence": "HIGH",
+      "status": "CONFIRMED_REPOSITORY_CLOSURE",
+      "reuseTargets": [
+        "handoff",
+        "audit",
+        "repository authority"
+      ],
+      "provenance": {
+        "controlCommit": "db38157a3affad6ace0f4796e554271eda27d5f1",
+        "runtimeAuthority": "v4.3.2 -> dd8bee89be71e39777152b6428c2ec0b1ba50809"
+      }
     }
   ]
 }

@@ -132,6 +132,15 @@
     "evidence/V432_R46_CANDIDATE_ACCEPTANCE_20261004.json",
     "evidence/V432_POSTPUBLISH_UPDATECHECK_20261004.json"
   ],
-  "finalObjectiveResult": "Desktop/public release objective CLOSED_PASS for v4.3.2 R46 with exact published bytes and post-publish updater semantics verified.",
-  "exactNextAction": "No desktop release blocker remains. Treat v4.3.2 tag/asset bytes as immutable; future work starts as a new change set. External signing, physical-console field validation, and production mobile forwarding remain explicitly separate."
+  "finalObjectiveResult": "Desktop/public release objective CLOSED_PASS and final repository control/evidence state CI #190 SUCCESS; v4.3.2 runtime/tag authority remains immutable.",
+  "exactNextAction": "No desktop release blocker remains. Treat v4.3.2 tag/asset bytes as immutable. Future runtime work starts as a new change set; external signing, physical-console field validation, and production mobile forwarding remain separate.",
+  "repositoryClosure": {
+    "commit": "db38157a3affad6ace0f4796e554271eda27d5f1",
+    "runNumber": 190,
+    "runId": 37214169321,
+    "status": "SUCCESS",
+    "scope": "CONTROL_ONLY_BRAIN_EVIDENCE_PUBLIC_MANIFEST",
+    "runtimeDiffVsTag": "NONE",
+    "runtimeAuthorityRemains": "v4.3.2 -> dd8bee89be71e39777152b6428c2ec0b1ba50809"
+  }
 }
