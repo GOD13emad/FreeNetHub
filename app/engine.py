@@ -507,26 +507,95 @@ def node_refresh_public(force=False):
  receipt={'schema':1,'status':'PASS','checkedUtc':stamp,'lastSuccessUtc':stamp,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'sourceFamilies':families,'sources':ok,'failedSources':failed,'sourceStats':stats,'parsedRaw':parsed_raw,'freshPublicUnique':len(incoming_ids),'staleDropped':dropped,'total':len(pool['nodes']),'endpointTest':'DEFERRED_TO_NODE_TEST_ALL','cachedReachable':cached_reachable}
  write(ROOT/'data'/'node_public_refresh.json',receipt)
  return {'refreshed':True,'fresh':True,'ageSeconds':0.0,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'imported':len(incoming_ids),'parsedRaw':parsed_raw,'staleDropped':dropped,'total':len(pool['nodes']),'reachableCached':cached_reachable,'endpointTest':'DEFERRED_TO_NODE_TEST_ALL','selected':pool.get('selected'),'sourceFamilies':families,'sources':ok,'failedSources':failed,'sourceStats':stats,'nodes':node_public_rows(pool),'warning':'Public shared nodes are untrusted and temporary; run Test All before relying on a node.'}
-def direct_route():
- pwsh=dep_path('pwsh') or shutil.which('pwsh.exe') or shutil.which('pwsh')
- if not pwsh:raise ValueError('DEPENDENCY_NOT_CONFIGURED_PWSH')
- script="$r=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Sort-Object @{e={$_.RouteMetric + (Get-NetIPInterface -InterfaceIndex $_.InterfaceIndex -AddressFamily IPv4).InterfaceMetric}} | Select-Object -First 1;if(!$r){exit 3};$a=Get-NetAdapter -InterfaceIndex $r.InterfaceIndex -IncludeHidden -ErrorAction SilentlyContinue;$ip=Get-NetIPAddress -InterfaceIndex $r.InterfaceIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.IPAddress -notlike '169.254.*'}|Select-Object -First 1;$ov=@(Get-NetRoute -AddressFamily IPv4 -ErrorAction SilentlyContinue|Where-Object{$_.DestinationPrefix -ne '0.0.0.0/0' -and [int](($_.DestinationPrefix -split '/')[1]) -le 8 -and $_.InterfaceIndex -ne $r.InterfaceIndex}|Select-Object DestinationPrefix,InterfaceAlias,InterfaceIndex,NextHop,RouteMetric);[pscustomobject]@{ifIndex=$r.InterfaceIndex;nextHop=$r.NextHop;routeMetric=$r.RouteMetric;adapterName=$a.Name;description=$a.InterfaceDescription;hardware=[bool]$a.HardwareInterface;status=[string]$a.Status;ip=$ip.IPAddress;overrideRoutes=$ov}|ConvertTo-Json -Compress -Depth 4"
- r=native([pwsh,'-NoProfile','-Command',script],8)
- if r['exit']!=0:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE')
- try:x=json.loads(r['out'])
- except (ValueError,TypeError) as ex:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE') from ex
- label=(str(x.get('adapterName',''))+' '+str(x.get('description',''))).lower()
- suspicious=bool(re.search(r'\b(vpn|warp|wireguard|openvpn|tap|tun|wintun|tailscale|zerotier|mihomo|sing-box)\b',label))
- raw_overrides=x.pop('overrideRoutes',[]) or []
- if isinstance(raw_overrides,dict):raw_overrides=[raw_overrides]
- overrides=[]
- for row in raw_overrides:
+def _route_print_ipv4_rows(text):
+ rows=[]
+ for line in str(text or '').splitlines():
+  m=re.match(r'^\s*(\d{1,3}(?:\.\d{1,3}){3})\s+(\d{1,3}(?:\.\d{1,3}){3})\s+(\S+)\s+(\d{1,3}(?:\.\d{1,3}){3})\s+(\d+)\s*$',line)
+  if not m:continue
+  dest,mask,gateway,interface,metric=m.groups()
   try:
-   net=ipaddress.ip_network(str(row.get('DestinationPrefix') or ''),strict=False)
-   if net.version==4 and net.prefixlen<=8 and net.is_global and not net.is_multicast:overrides.append(row)
-  except (ValueError,AttributeError):pass
- x['systemOverrideRoutes']=overrides
- x['trustedPhysical']=bool(x.get('hardware') and str(x.get('status','')).lower()=='up' and not suspicious and x.get('ip') and not overrides)
+   net=ipaddress.ip_network(dest+'/'+mask,strict=False);ipaddress.ip_address(interface)
+  except ValueError:
+   continue
+  rows.append({'network':net,'destination':dest,'netmask':mask,'gateway':gateway,'interface':interface,'metric':int(metric)})
+ return rows
+
+def _windows_ipv4_ifindex(ip):
+ if os.name!='nt':raise RuntimeError('WINDOWS_IP_HELPER_REQUIRED')
+ DWORD=C.c_uint32;ULONG=C.c_uint32;USHORT=C.c_ushort
+ class MIB_IPADDRROW(C.Structure):
+  _fields_=[('dwAddr',DWORD),('dwIndex',DWORD),('dwMask',DWORD),('dwBCastAddr',DWORD),('dwReasmSize',DWORD),('unused1',USHORT),('wType',USHORT)]
+ api=C.WinDLL('iphlpapi.dll')
+ fn=api.GetIpAddrTable;fn.argtypes=[C.c_void_p,C.POINTER(ULONG),C.c_int];fn.restype=DWORD
+ size=ULONG(0);fn(None,C.byref(size),0)
+ if not size.value:raise RuntimeError('DIRECT_IP_TABLE_UNAVAILABLE')
+ buf=C.create_string_buffer(size.value)
+ rc=int(fn(buf,C.byref(size),0))
+ if rc!=0:raise RuntimeError('DIRECT_IP_TABLE_UNAVAILABLE')
+ count=int(C.cast(buf,C.POINTER(DWORD))[0]);base=C.addressof(buf)+C.sizeof(DWORD)
+ for i in range(count):
+  row=MIB_IPADDRROW.from_address(base+i*C.sizeof(MIB_IPADDRROW))
+  addr=socket.inet_ntoa(C.string_at(C.addressof(row),4))
+  if addr==str(ip):return int(row.dwIndex)
+ raise RuntimeError('DIRECT_ROUTE_IDENTITY_MISMATCH')
+
+def _windows_if_row2(idx):
+ if os.name!='nt':raise RuntimeError('WINDOWS_IP_HELPER_REQUIRED')
+ U32=C.c_uint32;U64=C.c_uint64;U8=C.c_ubyte
+ class GUID(C.Structure):
+  _fields_=[('Data1',U32),('Data2',C.c_ushort),('Data3',C.c_ushort),('Data4',U8*8)]
+ class MIB_IF_ROW2(C.Structure):
+  _fields_=[
+   ('InterfaceLuid',U64),('InterfaceIndex',U32),('InterfaceGuid',GUID),
+   ('Alias',C.c_wchar*257),('Description',C.c_wchar*257),
+   ('PhysicalAddressLength',U32),('PhysicalAddress',U8*32),('PermanentPhysicalAddress',U8*32),
+   ('Mtu',U32),('Type',U32),('TunnelType',U32),('MediaType',U32),('PhysicalMediumType',U32),
+   ('AccessType',U32),('DirectionType',U32),('InterfaceAndOperStatusFlags',U8),('_pad',U8*3),
+   ('OperStatus',U32),('AdminStatus',U32),('MediaConnectState',U32),('NetworkGuid',GUID),('ConnectionType',U32),
+   ('TransmitLinkSpeed',U64),('ReceiveLinkSpeed',U64),
+   ('InOctets',U64),('InUcastPkts',U64),('InNUcastPkts',U64),('InDiscards',U64),('InErrors',U64),('InUnknownProtos',U64),
+   ('InUcastOctets',U64),('InMulticastOctets',U64),('InBroadcastOctets',U64),
+   ('OutOctets',U64),('OutUcastPkts',U64),('OutNUcastPkts',U64),('OutDiscards',U64),('OutErrors',U64),
+   ('OutUcastOctets',U64),('OutMulticastOctets',U64),('OutBroadcastOctets',U64),('OutQLen',U64)
+  ]
+ api=C.WinDLL('iphlpapi.dll')
+ fn=api.GetIfEntry2;fn.argtypes=[C.POINTER(MIB_IF_ROW2)];fn.restype=U32
+ row=MIB_IF_ROW2();row.InterfaceIndex=int(idx)
+ rc=int(fn(C.byref(row)))
+ if rc!=0 or int(row.InterfaceIndex)!=int(idx):raise RuntimeError('DIRECT_ADAPTER_IDENTITY_UNAVAILABLE')
+ flags=int(row.InterfaceAndOperStatusFlags)
+ return {
+  'ifIndex':int(row.InterfaceIndex),'adapterName':str(row.Alias or ''),'description':str(row.Description or ''),
+  'hardware':bool(flags&1),'connectorPresent':bool(flags&4),'status':'Up' if int(row.OperStatus)==1 else str(int(row.OperStatus)),
+  'ifType':int(row.Type),'transmitLinkSpeed':int(row.TransmitLinkSpeed),'receiveLinkSpeed':int(row.ReceiveLinkSpeed)
+ }
+
+def direct_route():
+ rr=native(['route.exe','print','-4'],6)
+ if rr.get('exit')!=0:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE')
+ rows=_route_print_ipv4_rows(rr.get('out',''))
+ defaults=[x for x in rows if x['network'].prefixlen==0]
+ if not defaults:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE')
+ default=min(defaults,key=lambda x:x['metric'])
+ try:gateway=str(ipaddress.ip_address(default['gateway']))
+ except ValueError as ex:raise RuntimeError('DIRECT_ROUTE_UNAVAILABLE') from ex
+ idx=_windows_ipv4_ifindex(default['interface'])
+ adapter=_windows_if_row2(idx)
+ label=(str(adapter.get('adapterName',''))+' '+str(adapter.get('description',''))).lower()
+ suspicious=bool(re.search(r'\b(vpn|warp|wireguard|openvpn|tap|tun|wintun|tailscale|zerotier|mihomo|sing-box|fortinet|tunnelbear|hyper-v|vethernet)\b',label))
+ overrides=[]
+ for row in rows:
+  net=row['network']
+  if net.prefixlen==0 or net.prefixlen>8 or not net.is_global or net.is_multicast:continue
+  if row['interface']==default['interface']:continue
+  overrides.append({'DestinationPrefix':str(net),'InterfaceAlias':'','InterfaceIndex':None,'NextHop':row['gateway'],'RouteMetric':row['metric']})
+ x={
+  'ifIndex':idx,'nextHop':gateway,'routeMetric':default['metric'],'interfaceMetric':None,
+  'adapterName':adapter.get('adapterName',''),'description':adapter.get('description',''),
+  'hardware':bool(adapter.get('hardware')),'status':adapter.get('status',''),'ifType':adapter.get('ifType'),
+  'ip':default['interface'],'systemOverrideRoutes':overrides,'routeProof':'ROUTE_EXE+WINDOWS_IPHELPER'
+ }
+ x['trustedPhysical']=bool(x['hardware'] and str(x['status']).lower()=='up' and not suspicious and x['ip'] and not overrides)
  return x
 
 def ping_direct(seconds=None):
@@ -789,14 +858,18 @@ def update_download():
  return {'tag':rel.get('tag'),'name':rel.get('name'),'published':rel.get('published'),'installer':str(dest),'sha256':actual,'bytes':dest.stat().st_size,'verified':True,'rootPath':root_network_public(ctx)}
 
 def direct_speed():
- progress('Direct ISP speed test: no FreeNetHub browser proxy','DIRECT');t=test_timeouts()
+ progress('Direct test · verifying physical default route','DIRECT');t=test_timeouts()
  route=direct_route()
  if not route.get('trustedPhysical'):raise RuntimeError('DIRECT_SPEED_NON_PHYSICAL_DEFAULT_ROUTE')
+ progress('Direct test · verifying HTTPS exit','DIRECT')
  a=curl('https://www.cloudflare.com/cdn-cgi/trace','',seconds=t['ping']);tr=trace(a.get('body',''))
  if a.get('exit')!=0 or a.get('code')!='200' or not tr:raise RuntimeError('DIRECT_SPEED_TRACE_FAILED')
  if str(tr.get('warp','')).lower()=='on' or str(tr.get('gateway','')).lower()=='on':raise RuntimeError('DIRECT_SPEED_SYSTEM_TUNNEL_DETECTED')
+ progress('Direct test · measuring Ping','DIRECT')
  ping=ping_direct(t['ping'])
+ progress('Direct test · measuring Download','DIRECT')
  down=curl('https://speed.cloudflare.com/__down?bytes=5000000','',seconds=t['download'],body=False,size=5100000)
+ progress('Direct test · measuring Upload','DIRECT')
  up=cloudflare_upload(1000000,t['upload'])
  down_ok=down.get('exit')==0 and down.get('code')=='200' and down.get('bytes')==5000000
  up_ok=up.get('exit')==0 and up.get('code')=='200' and up.get('bytes')==1000000
@@ -1682,6 +1755,6 @@ def main():
   if lock:
    with contextlib.suppress(Exception):lock.seek(0);msvcrt.locking(lock.fileno(),msvcrt.LK_UNLCK,1)
    lock.close()
-  record={'schema':1,'version':'4.0','job':JOB,'action':ns.action,'exit':code,'utc':now(),'result':result};write(result_file,record);write(ROOT/'last.json',record)
+  record={'schema':1,'version':'4.0','job':JOB,'action':ns.action,'mode':ns.mode,'exit':code,'utc':now(),'result':result};write(result_file,record);write(ROOT/'last.json',record)
  return code
 if __name__=='__main__':raise SystemExit(main())

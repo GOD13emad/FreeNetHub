@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
   "version": "4.3.1",
-  "releaseRevision": "4.3.1-r44-final",
-  "status": "V431_RELEASE",
+  "releaseRevision": "4.3.1-r45-preconnect-test-hotfix",
+  "status": "V431_LOCAL_PRECONNECT_TEST_HOTFIX_ACCEPTED_SOURCE",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -16,8 +16,8 @@
     "ONLINE_UPDATE",
     "NOADMIN_NORMAL_LAUNCH"
   ],
-  "engineSha256": "0713974B523D84B07EDAD888B80983D8E935600BAC202B92453CBC25D190AD4C",
-  "uiSha256": "F8469A4E588E04F847875455AB6460432E2C4F4E773E3C1D8C8D166E00A4B004",
+  "engineSha256": "70DE29328B9E2457F5CF0034E93C06EBFCBACCEF633191E51AFFB1713DD5EFC8",
+  "uiSha256": "3A42607A81E614220503B11BC3EABAEB10298A67DD11C2A14DF692DEFEA3C485",
   "viewSha256": "8E59E0DAB66DC85B174DAE39993E4CF61E30A0F5B4BEF13803AC0E68E7E1CE3F",
   "desktopShellSha256": "42399C7A30ECC88588AAA0F68782629ADB4A049F2576F978C5EAC1F35E2D6435",
   "gatewayManifestSha256": "DA4C24B3C3611138AE80788966961C5F33C73917983F39B522852C40EACB9247",
@@ -173,9 +173,40 @@
       "androidEmulator": "CI_REQUIRED_BUILD_INSTALL_LAUNCH_FAIL_CLOSED",
       "iosSimulator": "CI_REQUIRED_BUILD_INSTALL_LAUNCH",
       "productionCredentialGatesRemainExternal": true
+    },
+    "preconnectTestHotfixR45": {
+      "status": "OWNER_INSTALLED_BACKEND_PASS__VISUAL_POSTCLICK_OPEN",
+      "rootCause": "DIRECT_SPEED route discovery used a slow aggregate NetTCPIP PowerShell query and raised CHILD_DEADLINE before metrics could be painted.",
+      "fix": "route.exe IPv4 table + Windows IP Helper adapter identity; explicit RUNNING/FAIL/TIMEOUT dashboard feedback.",
+      "sourceLive": {
+        "exit": 0,
+        "pingMs": 96.0,
+        "downloadMbps": 37.92,
+        "uploadMbps": 5.36,
+        "trustedPhysical": true,
+        "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER"
+      },
+      "unitRegression": "PASS_130",
+      "networkMutation": false,
+      "installedLive": {
+        "exit": 0,
+        "pingMs": 93.3,
+        "downloadMbps": 36.0,
+        "uploadMbps": 4.82,
+        "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER"
+      },
+      "cfonPostHotfix": {
+        "exit": 0,
+        "healthy": true,
+        "connected": true,
+        "state": "CONNECTED_HEALTHY",
+        "country": "AT"
+      },
+      "visualUiPostClick": "UNPROVEN_GUI_HELPER_TIMEOUT",
+      "evidence": "evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json"
     }
   },
-  "appManifestSha256": "F3AF7BFAF9493DBFBCF7006975D15CC9A51766DB572B2995A35DA4C79EF3A5F7",
+  "appManifestSha256": "588BCE10A77F23B853C162DF90C9A760200A1823D5B9620C94CA5FC28C75CD6C",
   "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
   "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
   "installerStatus": "DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE",

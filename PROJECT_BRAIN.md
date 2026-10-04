@@ -1,10 +1,10 @@
 # PROJECT BRAIN — FreeNet Hub
 
-Status: CURRENT / V431_PUBLIC_FINAL
-Brain version: v431-public-final-2026-10-04
-Installed authority: Windows owner machine 4.3.1-r44-final exact candidate PASS (17/17 integrity, UI window + NodeList live PASS, route unchanged); public v4.3.0 is SUPERSEDED_PENDING_V431; Linux 4.2.0-linux.14-r41 unchanged/accepted
+Status: CURRENT / V431_PUBLIC_FINAL + OWNER_LOCAL_R45_PRECONNECT_HOTFIX
+Brain version: v431-public-final+r45-owner-hotfix-2026-10-04
+Installed authority: Windows owner machine v4.3.1 with local R45 pre-connect-test hotfix applied in place; app manifest 17/17 PASS; installed Speed/DIRECT backend PASS (93.3 ms / 36.0 Mbps / 4.82 Mbps) and CFON remained CONNECTED_HEALTHY. Visual post-click table rendering is UNPROVEN because GUI helper timed out. Public artifact authority remains v4.3.1/R44.
 Source authority: runtime release tag v4.3.1 -> 3bfbb8f51881eb53579325f80bf4e370bba42c76; main may advance only with post-release evidence/control changes. v4.3.0 release object removed as superseded; its tag/history preserved
-Promotion state: CLOSED_PASS / FINAL_PUBLIC — local exact build/install/UI/node/upgrade PASS; full regression 195/195 PASS; PR CI #183 PASS; post-merge CI #184 PASS; tag CI #185 PASS; public asset hashes exact; v4.3.0 release object removed; Linux R14 unchanged; trusted Authenticode MISSING_EXTERNAL_NONBLOCKING ← CURRENT
+Promotion state: Public v4.3.1 CLOSED_PASS / FINAL_PUBLIC. Owner-local R45 hotfix is INSTALLED_BACKEND_PASS but NOT_PUBLIC; visual post-click UI validation remains OPEN/UNPROVEN. Trusted Authenticode remains MISSING_EXTERNAL_NONBLOCKING ← CURRENT
 Desktop closure scope:
 - Included: Windows R40 desktop runtime/release continuity; Linux R14 desktop runtime/release; updater/integrity/CI/release continuity.
 - Excluded separate tracks: physical Console field E2E; Android production forwarding/signing; iOS production forwarding/device signing; optional Linux Node Full-System privileged helper.
@@ -128,7 +128,9 @@ Fix:
 15. R40 deep lifecycle-safety audit and Linux R13 hardening — Completed/PASS; superseded for Linux updater authority by R41/R14.
 
 16. R41 Linux self-update revision authority + CI current-package guard — Completed/PASS; PUBLIC FINAL.
+17. R45 pre-connect test hotfix on owner Windows — Backend/root-cause/regression/install/connection-preservation Completed/PASS; visual post-click rendering OPEN/UNPROVEN.
 ## Open Gates / Critical Path
+- Owner-local R45 visual post-click UI confirmation — OPEN/UNPROVEN only because Commander GUI helper timed out; installed backend and connection-preservation gates are CLOSED_PASS.
 - R37 Windows runtime/product behavior — CLOSED_PASS.
 - Installed/source manifest parity — CLOSED_PASS.
 - Five-tab UI smoke and no-route-mutation launch — CLOSED_PASS.
@@ -150,9 +152,10 @@ Fix:
 - iOS production packet-forwarding core/device signing — DEFERRED_SEPARATE_TRACK; hosted simulator lifecycle PASS; not part of desktop final DoD.
 
 ## Exact Next Action
-No blocking action remains for the Windows/Linux public release. v4.3.1 is FINAL_PUBLIC and the sole public Release authority. Optional future work: provision trusted Authenticode; keep physical console and Android/iOS production forwarding/signing as separate deferred tracks.
+On the already-running owner Windows UI, press the same pre-connect Ping + Download + Upload test once and visually confirm the three values replace dashes. The installed backend fix is already active and CFON remained healthy; no disconnect or restart is required for this confirmation.
 
 ## HISTORY
+- 2026-10-04 R45 owner-local pre-connect test hotfix: owner symptom 'test shows nothing' traced to installed Speed/DIRECT job ce913b2f... exiting 124/CHILD_DEADLINE. Independent reproduction matched. Stage isolation proved only direct_route() exceeded deadline (~8.685 s); trace/Ping/download/upload probes passed. Slow aggregate NetTCPIP PowerShell discovery was replaced by route.exe + Windows IP Helper while retaining physical-route, broad-override and WARP-off guards. Focused regression 130/130 PASS. Source live test PASS (96.0 ms / 37.92 / 5.36 Mbps); installed live test PASS (93.3 ms / 36.0 / 4.82 Mbps); app integrity 17/17 PASS; CFON postcheck remained CONNECTED_HEALTHY with Cloudflare 200 and YouTube 204. Visual post-click table observation remains UNPROVEN because Commander GUI helper timed out. Evidence: evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json.
 - 2026-09-29 Linux R11 UX final candidate: exact package SHA-256 `F56F55F2B020AC98F888A63E8D5E2705B5738D93F504B556EC9569419FAAED70` installed with zero route mutation; UI minimum 842x602; explicit scope/method selection; base/selected/all-method tests; two-stage node testing; seven sort modes; instant IP visibility; direct update flow. Live UI WARP Ping, sequential all-method testing, 2000-node endpoint test, real node benchmark, IP reveal and update check all exercised. Evidence: `evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json`.
 - 2026-09-29 Linux R9 local public gate CLOSED_PASS: R37-parity GTK UI/backend installed on aliemad-Labtop; pinned sing-box 1.14.2 and warp-plus 1.2.6; browser WARP/GOOL/CFON live PASS; BASE test bypassed pre-existing tun0 via physical enp1s0 with IR/warp=off and real Ping/Download/Upload; deterministic exact ZIP SHA-256 `7693D70E424FE9CE0271C3A5AE6E8F5921838CCD12F52749B7339576A17F98A8` passed clean-HOME install, integrity and route-preservation; canonical public/security gate PASS. Evidence: `evidence/R37_LINUX_R9_PARITY_ACCEPTANCE_20260929.json`.
 - 2026-09-29 R37 PUBLIC FINAL: corrective source/runtime dual-hash commit `45e21a1bc64aefaf3276751754c0f4f4fd1fb649` passed hosted CI #99/run `36546861061` across Windows, Linux, Android build/emulator, iOS static/simulator, console virtual E2E, virtual signing and aggregate virtual acceptance. GitHub release `v4.2.0-r37-final` published as latest with Windows installer SHA-256 `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64` and unchanged accepted Linux R8 SHA-256 `BD9F1311F02D4AA874609D61116EC26C107C5ECD4ED36086C2C3347E0A0C695A`. Post-publish installed UpdateCheck PASS: local=37, remote=37, digest/size exact, updateAvailable=false. Evidence: `evidence/R37_PUBLIC_RELEASE_ACCEPTANCE_20260929.json`.

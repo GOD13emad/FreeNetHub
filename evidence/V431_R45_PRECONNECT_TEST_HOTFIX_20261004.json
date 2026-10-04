@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "project": "FreeNet Hub",
+  "changeSet": "R45_PRECONNECT_TEST_HOTFIX",
+  "status": "INSTALLED_BACKEND_PASS__VISUAL_UI_POSTCLICK_UNPROVEN",
+  "mainBlocker": "Pre-connect test appeared to do nothing; dashboard metrics remained dashes.",
+  "facts": [
+    {
+      "claim": "The owner's original installed test launched Speed/DIRECT but timed out before producing metrics.",
+      "status": "CONFIRMED",
+      "evidence": {
+        "job": "ce913b2f51c6432fad9dc858821e22f2",
+        "action": "Speed",
+        "exit": 124,
+        "error": "CHILD_DEADLINE",
+        "sha256": "A58DFD3ABDF1967ED9FB43D0BC31721B04499AB45D404354626F621E9879D152"
+      }
+    },
+    {
+      "claim": "The failure was reproducible independently of the UI.",
+      "status": "CONFIRMED",
+      "evidence": {
+        "job": "deadbeefdeadbeefdeadbeefdeadbeef",
+        "action": "Speed",
+        "exit": 124,
+        "error": "CHILD_DEADLINE",
+        "sha256": "8B7508C67C1D211EDB91379D2FC269EF1030B0E30FBCA329E98D439BEB3CFD97"
+      }
+    },
+    {
+      "claim": "Root cause was Windows direct-route discovery, not the speed endpoints or base Internet.",
+      "status": "CONFIRMED_ROOT_CAUSE",
+      "evidence": {
+        "directRouteSeconds": 8.685,
+        "directRouteResult": "CHILD_DEADLINE",
+        "cloudflareTraceSeconds": 1.259,
+        "pingDirectSeconds": 3.676,
+        "downloadProbeSeconds": 0.926,
+        "uploadProbeSeconds": 0.938
+      }
+    }
+  ],
+  "decision": {
+    "selected": "Replace slow aggregate NetTCPIP PowerShell route discovery with route.exe IPv4 parsing plus Windows IP Helper interface identity; retain physical-route and broad-override fail-closed guards. Add RUNNING/FAIL/TIMEOUT UI states.",
+    "rationale": "Removes the measured bottleneck while preserving the existing safety outcome; narrower and faster than increasing the timeout.",
+    "rejected": [
+      {
+        "option": "Increase child timeout",
+        "reason": "Would mask the slow probe and make the UI wait longer without improving failure visibility."
+      },
+      {
+        "option": "Relax physical-route or override-route guards",
+        "reason": "Could measure a VPN/tunnel path while reporting it as direct."
+      }
+    ]
+  },
+  "implementation": {
+    "engine": "app/engine.py",
+    "ui": "app/FreeNetHub.ps1",
+    "tests": [
+      "tests/test_engine.py",
+      "tests/test_v432_preconnect_feedback.py"
+    ],
+    "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER",
+    "uiFeedback": [
+      "RUNNING",
+      "FAIL",
+      "TIMEOUT",
+      "N/A"
+    ],
+    "networkMutation": false
+  },
+  "verification": {
+    "unitRegression": {
+      "status": "PASS",
+      "passed": 130,
+      "elapsedSeconds": 6.12
+    },
+    "sourceLive": {
+      "status": "PASS",
+      "job": "43204320432043204320432043204320",
+      "exit": 0,
+      "pingMs": 96.0,
+      "downloadMbps": 37.92,
+      "uploadMbps": 5.36,
+      "trustedPhysical": true,
+      "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER",
+      "sha256": "5C9A7FEFD93C14B67C5BC938365C902482F6F71E330EF814CA324E21E9C73A01"
+    },
+    "installedParity": {
+      "status": "PASS",
+      "files": [
+        "app/engine.py",
+        "app/FreeNetHub.ps1",
+        "app/manifest.json",
+        "RELEASE.json"
+      ],
+      "appManifest": "PASS_17_OF_17"
+    },
+    "installedLive": {
+      "status": "PASS",
+      "job": "45104510451045104510451045104510",
+      "exit": 0,
+      "pingMs": 93.3,
+      "downloadMbps": 36.0,
+      "uploadMbps": 4.82,
+      "trustedPhysical": true,
+      "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER",
+      "cloudflareWarp": "off",
+      "cloudflareGateway": "off",
+      "sha256": "481B5CC65F11C7F5DC6775720E6E7D891CCB71094B9C711286FFEDAEB2937FE9"
+    },
+    "connectionPreservation": {
+      "status": "PASS",
+      "job": "45204520452045204520452045204520",
+      "mode": "CFON",
+      "exit": 0,
+      "healthy": true,
+      "connected": true,
+      "state": "CONNECTED_HEALTHY",
+      "country": "AT",
+      "cloudflareHttps": "200",
+      "youtubeHttps": "204",
+      "sha256": "FE1E4F771985EC2A63E5F78C76F11BE8AE77C331838BCED36058F391A464918B"
+    },
+    "visualUiPostClick": {
+      "status": "UNPROVEN",
+      "reason": "Remote Commander GUI helper returned GUI_HELPER_TIMEOUT and the minimized WPF instance had no observable UI Automation window handle. Backend success plus the existing Speed success handler predict metric painting, but direct visual observation is missing."
+    }
+  },
+  "provenance": {
+    "sourceRoot": "C:\\Users\\Aa.Emad\\source\\repos\\FreeNetHub",
+    "installedRoot": "C:\\Users\\Aa.Emad\\AppData\\Local\\Programs\\FreeNetHub",
+    "prestate": "evidence/V431_R45_PRECONNECT_HOTFIX_PRESTATE.json",
+    "engineSha256": "70DE29328B9E2457F5CF0034E93C06EBFCBACCEF633191E51AFFB1713DD5EFC8",
+    "uiSha256": "3A42607A81E614220503B11BC3EABAEB10298A67DD11C2A14DF692DEFEA3C485",
+    "appManifestSha256": "588BCE10A77F23B853C162DF90C9A760200A1823D5B9620C94CA5FC28C75CD6C"
+  },
+  "failurePrevention": {
+    "rootCause": "Slow aggregate Windows NetTCPIP route discovery exceeded child deadline.",
+    "prevention": "Use bounded route.exe + Windows IP Helper route/interface identity and surface worker RUNNING/FAIL/TIMEOUT states.",
+    "guards": [
+      "trustedPhysical",
+      "NO_BROAD_OVERRIDE_ROUTES",
+      "CF_WARP_OFF"
+    ],
+    "regressions": [
+      "test_direct_route_rejects_broad_foreign_override",
+      "test_direct_route_rejects_virtual_default_adapter",
+      "test_route_print_parser_is_header_locale_independent",
+      "test_ui_marks_test_running_and_timeout_in_dashboard"
+    ]
+  },
+  "exactNextAction": "On the already-running owner UI, press the same pre-connect test once and visually confirm Ping/Download/Upload replace dashes. Backend hotfix is already active; no disconnect/restart is required for the successful-result path."
+}

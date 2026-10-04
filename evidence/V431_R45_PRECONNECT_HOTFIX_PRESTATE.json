@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-04T09:30:52.932339+00:00",
+  "install": "C:\\Users\\Aa.Emad\\AppData\\Local\\Programs\\FreeNetHub",
+  "files": {
+    "app/engine.py": {
+      "sha256": "0713974B523D84B07EDAD888B80983D8E935600BAC202B92453CBC25D190AD4C",
+      "bytes": 104569
+    },
+    "app/FreeNetHub.ps1": {
+      "sha256": "F8469A4E588E04F847875455AB6460432E2C4F4E773E3C1D8C8D166E00A4B004",
+      "bytes": 94613
+    },
+    "app/manifest.json": {
+      "sha256": "F3AF7BFAF9493DBFBCF7006975D15CC9A51766DB572B2995A35DA4C79EF3A5F7",
+      "bytes": 4455
+    },
+    "RELEASE.json": {
+      "sha256": "F9AFC71B1278052D9BC61A39771DEC7956C7164C21F80658E8D34638799FE2D4",
+      "bytes": 27232
+    }
+  }
+}

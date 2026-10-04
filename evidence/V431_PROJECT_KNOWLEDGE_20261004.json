@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-10-04",
-  "status": "FINAL_PUBLIC",
+  "status": "FINAL_PUBLIC_WITH_OWNER_LOCAL_R45_HOTFIX__VISUAL_POSTCLICK_OPEN",
   "project": "FreeNet Hub 4.3.1 integrity hotfix",
   "records": [
     {
@@ -205,11 +205,41 @@
         "final report",
         "future audit"
       ]
+    },
+    {
+      "date": "2026-10-04",
+      "context": "Owner reported that pre-connect Ping/Download/Upload test showed no result and remained as dashes.",
+      "claimDecision": "The test was running but Speed/DIRECT failed with CHILD_DEADLINE in direct_route before UI performance painting. route.exe plus Windows IP Helper fixed the installed backend while preserving fail-closed direct-path proof; explicit RUNNING/FAIL/TIMEOUT feedback was added for future UI loads.",
+      "evidenceSource": [
+        "evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json",
+        "installed job ce913b2f51c6432fad9dc858821e22f2",
+        "installed job 45104510451045104510451045104510",
+        "installed CFON verify job 45204520452045204520452045204520"
+      ],
+      "confidence": "HIGH",
+      "status": "CONFIRMED_INSTALLED_BACKEND_PASS__VISUAL_POSTCLICK_OPEN",
+      "rootCause": "Aggregate Get-NetRoute/Get-NetIPInterface/Get-NetAdapter/Get-NetIPAddress child exceeded the 8-second native child deadline.",
+      "prevention": "Bounded route.exe parser + Windows IP Helper interface identity; preserve physical-route/broad-override/WARP-off guards; UI shows RUNNING/FAIL/TIMEOUT rather than silent dashes.",
+      "regression": "130 focused engine/UI tests PASS; installed Speed/DIRECT PASS at 93.3 ms / 36.0 Mbps down / 4.82 Mbps up; CFON remained CONNECTED_HEALTHY.",
+      "limitation": "Post-click visual rendering on the current minimized WPF instance is UNPROVEN because the Commander GUI helper timed out.",
+      "reuseTargets": [
+        "support",
+        "failure prevention",
+        "Windows networking implementation",
+        "UI regression",
+        "release notes"
+      ],
+      "provenance": {
+        "engineSha256": "70DE29328B9E2457F5CF0034E93C06EBFCBACCEF633191E51AFFB1713DD5EFC8",
+        "uiSha256": "3A42607A81E614220503B11BC3EABAEB10298A67DD11C2A14DF692DEFEA3C485",
+        "evidencePath": "evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json",
+        "evidenceSha256": "79A15EBFFD877D5F5DEC63FC10B7443BD6C211B6646EE7946A2B187D311DB76F"
+      }
     }
   ],
   "openGates": [
     "Trusted Authenticode identity remains external/missing and is non-blocking for functional correctness/publication.",
     "Physical console field E2E and Android/iOS production forwarding/signing are deferred separate tracks outside the Windows/Linux desktop final DoD."
   ],
-  "exactNextAction": "No blocking action remains for the Windows/Linux public release; optional Authenticode and deferred console/mobile production tracks are separate future work."
+  "exactNextAction": "Visually confirm one pre-connect test click on the owner Windows UI. Public v4.3.1 remains the release authority; R45 is owner-local until separately promoted."
 }

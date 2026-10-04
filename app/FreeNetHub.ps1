@@ -305,6 +305,21 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   try{return ([math]::Round([double]$v,1)).ToString()+' '+$unit}catch{return '—'}
  }
 
+ function Paint-TestState([string]$mode,[string]$state,[string]$detail=''){
+  $dashPrefix=$(switch($mode){'AUTO'{'DashSmart'};'NODE'{'DashNode'};'WARP'{'DashWarp'};'DIRECT'{'DashDirect'};default{''}})
+  if($dashPrefix){
+   foreach($k in @('Ping','Down','Up')){$n=$dashPrefix+$k;if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'…'}else{'N/A'})}}
+   $n=$dashPrefix+'State';if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'در حال تست…'}elseif($state -eq 'TIMEOUT'){'TIMEOUT'}else{'FAIL'})}
+  }
+  if($state -eq 'RUNNING'){
+   if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text='در حال تست…'}
+  }else{
+   $script:C.MetricPing.Text='N/A';$script:C.MetricDownload.Text='N/A';$script:C.MetricUpload.Text='N/A';$script:C.MetricCountry.Text='—'
+   $script:C.MetricFreshness.Text='آخرین تست ناموفق: '+[DateTimeOffset]::UtcNow.ToString('o')
+   if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text=$state+' · '+$detail}
+  }
+ }
+
  function Paint-Performance($p,[string]$mode=''){
   if(!$p){return}
   $ping=Format-Metric $p.pingMs 'ms';$down=Format-Metric $p.downloadMbps 'Mbps';$up=Format-Metric $p.uploadMbps 'Mbps'
@@ -455,12 +470,14 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   Select-ModeTag $mode
   if($script:ConnectionScope -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE';return}
   if($script:ConnectionScope -eq 'SYSTEM'){Start-ProviderBenchmark $mode;return}
+   Paint-TestState $mode 'RUNNING'
   Start-Work 'ProviderPing' $mode
  }
 
  function Start-ConfiguredTest([bool]$PingOnly=$false){
   if($script:ConnectionScope -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE';return}
   if([string]$script:Settings.testPathMode -eq 'BASE'){
+    Paint-TestState 'DIRECT' 'RUNNING'
    if($PingOnly){Start-Work 'ProviderPing' 'DIRECT'}else{Start-Work 'Speed' 'DIRECT'}
    return
   }
@@ -470,6 +487,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
  function Start-ProviderBenchmark([string]$mode){
   Select-ModeTag $mode
   if($script:ConnectionScope -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE';return}
+   Paint-TestState $mode 'RUNNING'
   if($script:ConnectionScope -eq 'SYSTEM'){
    $provider=Resolve-SystemProvider $mode
    if(!$provider){$script:C.StatusTitle.Text='روش Full System پشتیبانی نمی‌شود';return}
@@ -1027,7 +1045,16 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
 
      }
 
-     elseif($r.exit -ne 0){$script:C.StatusTitle.Text=if($r.exit -eq 20){'عملیات لغو شد'}elseif($r.exit -eq 124){'مهلت زمانی تمام شد'}else{'عملیات انجام نشد'};$script:C.StatusDetail.Text=Friendly-Error $(if($r.result.ContainsKey('error')){[string]$r.result.error}else{''}) $r.result;$script:C.SidebarState.Text='نیاز به بررسی'}
+     elseif($r.exit -ne 0){
+      $err=$(if($r.result.ContainsKey('error')){[string]$r.result.error}else{'UNKNOWN_ERROR'})
+      $script:C.StatusTitle.Text=if($r.exit -eq 20){'عملیات لغو شد'}elseif($r.exit -eq 124){'مهلت زمانی تمام شد'}else{'عملیات انجام نشد'}
+      $script:C.StatusDetail.Text=Friendly-Error $err $r.result;$script:C.SidebarState.Text='نیاز به بررسی'
+      $failMode=$(switch([string]$r.action){
+       'Speed'{'DIRECT'};'ProviderBenchmark'{[string]$r.mode};'ProviderPing'{[string]$r.mode};'PathSpeed'{[string]$r.mode};'SystemSpeed'{[string]$r.mode};
+       'NodeSpeed'{'NODE'};'NodeSystemPreflight'{'NODE'};'NodeSystemPreflightAuto'{'NODE'};default{''}
+      })
+      if($failMode){Paint-TestState $failMode $(if($r.exit -eq 124){'TIMEOUT'}else{'FAIL'}) $err}
+     }
 
      else{
 

@@ -100,16 +100,36 @@ class Unit(unittest.TestCase):
    out=E.update_release()
   self.assertTrue(out['rootPath']['bound']);self.assertEqual(out['rootPath']['interfaceAlias'],'Ethernet 3')
   self.assertIs(rc.call_args.kwargs['ctx'],ctx)
+ @staticmethod
+ def _route_text(extra=''):
+  return """IPv4 Route Table
+Active Routes:
+Network Destination        Netmask          Gateway       Interface  Metric
+          0.0.0.0          0.0.0.0     192.168.20.1     192.168.20.5     25
+%s
+        224.0.0.0        240.0.0.0         On-link      192.168.20.5    281
+        127.0.0.0        255.0.0.0         On-link         127.0.0.1    331
+"""%extra
+ @staticmethod
+ def _physical_ifrow():
+  return {'ifIndex':18,'adapterName':'Ethernet 3','description':'Intel(R) Ethernet Controller I226-V','hardware':True,'status':'Up','ifType':6}
  def test_direct_route_rejects_broad_foreign_override(self):
-  state={'ifIndex':18,'nextHop':'192.168.20.1','routeMetric':0,'adapterName':'Ethernet 3','description':'Intel','hardware':True,'status':'Up','ip':'192.168.20.5','overrideRoutes':[{'DestinationPrefix':'0.0.0.0/1','InterfaceAlias':'VPN','InterfaceIndex':11,'NextHop':'10.0.0.1','RouteMetric':1}]}
-  with patch.object(E,'dep_path',return_value='pwsh.exe'),patch.object(E,'native',return_value={'exit':0,'out':json.dumps(state),'err':''}):
+  extra='          0.0.0.0        128.0.0.0         10.0.0.1         10.0.0.2      1'
+  with patch.object(E,'native',return_value={'exit':0,'out':self._route_text(extra),'err':''}),patch.object(E,'_windows_ipv4_ifindex',return_value=18),patch.object(E,'_windows_if_row2',return_value=self._physical_ifrow()):
    r=E.direct_route()
   self.assertFalse(r['trustedPhysical']);self.assertEqual(r['systemOverrideRoutes'][0]['DestinationPrefix'],'0.0.0.0/1')
  def test_direct_route_ignores_multicast_and_loopback_routes(self):
-  state={'ifIndex':18,'nextHop':'192.168.20.1','routeMetric':0,'adapterName':'Ethernet 3','description':'Intel','hardware':True,'status':'Up','ip':'192.168.20.5','overrideRoutes':[{'DestinationPrefix':'224.0.0.0/4','InterfaceAlias':'VPN','InterfaceIndex':11},{'DestinationPrefix':'127.0.0.0/8','InterfaceAlias':'Loopback','InterfaceIndex':1}]}
-  with patch.object(E,'dep_path',return_value='pwsh.exe'),patch.object(E,'native',return_value={'exit':0,'out':json.dumps(state),'err':''}):
+  with patch.object(E,'native',return_value={'exit':0,'out':self._route_text(),'err':''}),patch.object(E,'_windows_ipv4_ifindex',return_value=18),patch.object(E,'_windows_if_row2',return_value=self._physical_ifrow()):
    r=E.direct_route()
-  self.assertTrue(r['trustedPhysical']);self.assertEqual(r['systemOverrideRoutes'],[])
+  self.assertTrue(r['trustedPhysical']);self.assertEqual(r['systemOverrideRoutes'],[]);self.assertEqual(r['routeProof'],'ROUTE_EXE+WINDOWS_IPHELPER')
+ def test_direct_route_rejects_virtual_default_adapter(self):
+  virtual={'ifIndex':18,'adapterName':'vEthernet (Default Switch)','description':'Hyper-V Virtual Ethernet Adapter','hardware':False,'status':'Up','ifType':6}
+  with patch.object(E,'native',return_value={'exit':0,'out':self._route_text(),'err':''}),patch.object(E,'_windows_ipv4_ifindex',return_value=18),patch.object(E,'_windows_if_row2',return_value=virtual):
+   r=E.direct_route()
+  self.assertFalse(r['trustedPhysical'])
+ def test_route_print_parser_is_header_locale_independent(self):
+  rows=E._route_print_ipv4_rows('عنوان محلی\n 0.0.0.0 0.0.0.0 192.168.1.1 192.168.1.10 25\n 0.0.0.0 128.0.0.0 10.0.0.1 10.0.0.2 1')
+  self.assertEqual(len(rows),2);self.assertEqual(str(rows[1]['network']),'0.0.0.0/1')
  def test_ping_direct_timeout_is_structured(self):
   with patch.object(E,'dep_path',return_value='pwsh.exe'),patch.object(E,'native',side_effect=TimeoutError('CHILD_DEADLINE')):
    r=E.ping_direct()
