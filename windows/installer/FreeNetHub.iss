@@ -1,5 +1,5 @@
 #define MyAppName "FreeNet Hub"
-#define MyAppVersion "4.3.0"
+#define MyAppVersion "4.3.1"
 #define MyAppPublisher "FreeNet Hub"
 #define MyAppExeName "FreeNetHub.exe"
 
@@ -13,8 +13,8 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-OutputDir=..\..\delivery\github_v4.3.0
-OutputBaseFilename=FreeNetHub_4.3.0_R43_Setup
+OutputDir=..\..\delivery\github_v4.3.1
+OutputBaseFilename=FreeNetHub_4.3.1_R44_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -24,9 +24,9 @@ CloseApplications=yes
 RestartApplications=no
 ChangesAssociations=no
 ChangesEnvironment=no
-VersionInfoVersion=4.3.0.0
+VersionInfoVersion=4.3.1.0
 VersionInfoProductName=FreeNet Hub
-VersionInfoDescription=FreeNet Hub 4.3 Final / clean-install-safe / no-admin launch installer
+VersionInfoDescription=FreeNet Hub 4.3.1 integrity hotfix / clean-install-safe / no-admin launch installer
 MinVersion=10.0.19041
 
 [Languages]

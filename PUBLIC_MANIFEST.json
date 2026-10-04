@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.3.0-r43-final",
+  "version": "4.3.1-r44-final",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 22536,
-      "sha256": "BB98A60BBACAF0ADF6343EE172FC68EF0DEFF9E211095A1417BF223152F85FEB"
+      "bytes": 23429,
+      "sha256": "A2FE402EEE493B23398E0F1C631CF870CAFAB4E68C3CDC358EE85947B1704045"
     },
     {
       "file": ".gitignore",
@@ -105,8 +105,8 @@
     },
     {
       "file": "app/manifest.json",
-      "bytes": 4454,
-      "sha256": "A070CBFB3094F43044461CB91E3AD00F406D9CCEEFDC3C9AC5ECCBC96EA80E50"
+      "bytes": 4455,
+      "sha256": "F3AF7BFAF9493DBFBCF7006975D15CC9A51766DB572B2995A35DA4C79EF3A5F7"
     },
     {
       "file": "app/nodehub.py",
@@ -115,8 +115,8 @@
     },
     {
       "file": "app/View.xaml",
-      "bytes": 68712,
-      "sha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708"
+      "bytes": 70589,
+      "sha256": "8E59E0DAB66DC85B174DAE39993E4CF61E30A0F5B4BEF13803AC0E68E7E1CE3F"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -1109,6 +1109,21 @@
       "sha256": "4229B16D600B7F8FBD30EBCDED3FA7C90FF8A35FF4CB7D952666E0C476772F1A"
     },
     {
+      "file": "evidence/V431_INSTALLER_BUILD_20261004.json",
+      "bytes": 389,
+      "sha256": "E00110182DAAE45961520D890DCF564A9656B52675888DA92F63A0A4249626C0"
+    },
+    {
+      "file": "evidence/V431_INTEGRITY_HOTFIX_ACCEPTANCE_20261004.json",
+      "bytes": 5574,
+      "sha256": "B592F4FB3B74C09D23362400AEEEADDD6D057A62A4EAED300FC07FF361223BBF"
+    },
+    {
+      "file": "evidence/V431_PROJECT_KNOWLEDGE_20261004.json",
+      "bytes": 7790,
+      "sha256": "31C4B7E28C304B42DCD21437E07D0962FC03AD63D1EDDFD2D767BE87894968B2"
+    },
+    {
       "file": "evidence/V43_INSTALLER_ACCEPTANCE_20261003.json",
       "bytes": 4066,
       "sha256": "424CD816877627D7622C69184B1A88E2812AE9991CBF746D88037D6D20A0B708"
@@ -1305,8 +1320,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 38753,
-      "sha256": "310FE3DEAA36BB8439377D6A7B1F5DBFC528656FDACF209EDAA7913D231A9A44"
+      "bytes": 41017,
+      "sha256": "0A0F60C970C15FFA764E14DB17FC0BE6D7BCF69DFE84D405F94B2801DC77A0F0"
     },
     {
       "file": "pytest.ini",
@@ -1325,8 +1340,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 26658,
-      "sha256": "7C824B9FA2E77F262967EB0C9B8AAE53EFA60CC9F6FE2B508D4AE3AD84CB5018"
+      "bytes": 27232,
+      "sha256": "F9AFC71B1278052D9BC61A39771DEC7956C7164C21F80658E8D34638799FE2D4"
     },
     {
       "file": "SECURITY.md",
@@ -1512,6 +1527,11 @@
       "file": "tests/build_r40_lifecycle_metadata.py",
       "bytes": 3742,
       "sha256": "A277F7A6F783601D833CB659404F4B330561755D9B6F4987E3166CE7371FD3FC"
+    },
+    {
+      "file": "tests/build_v431_installer.ps1",
+      "bytes": 3518,
+      "sha256": "1F30BDD62E7705FFA966BA5EBFCD3B85A367EBF0D11206A655CE1B64B1156ACD"
     },
     {
       "file": "tests/build_v43_installer.ps1",
@@ -1915,8 +1935,8 @@
     },
     {
       "file": "tests/test_lifecycle_safety.py",
-      "bytes": 2452,
-      "sha256": "989B1068FA708EDBB9ADC0542D16C1A71EFC4C6F5807047E21DA85BB81F6B4FC"
+      "bytes": 3025,
+      "sha256": "0C03AF8A6FCF6A8E6CAB6B30E9E9DA6C002D2B2EAF18AC716155C8B63A78DEDA"
     },
     {
       "file": "tests/test_nodehub.py",
@@ -1970,8 +1990,8 @@
     },
     {
       "file": "tests/test_r36_directdpi_product.py",
-      "bytes": 7103,
-      "sha256": "FC0E2F8FA836BD9F01DE078A02A9F6D28EB8B9FA3BD34B3551C42A2A0B22DF8C"
+      "bytes": 7462,
+      "sha256": "F6AD9A087AB66A306640D8434BDDAEC4B6564BF2C451071C3D5D06AD7E01E567"
     },
     {
       "file": "tests/test_r39_online_noadmin.py",
@@ -1979,9 +1999,14 @@
       "sha256": "5E010C586D0FD4E669BDC2E7EF415DE721FA1D5DB69371BB936A0CE10C9772D3"
     },
     {
+      "file": "tests/test_v431_integrity_hotfix.py",
+      "bytes": 2268,
+      "sha256": "D3180A15443264E31BBD371CAC1D0E85A6C364790153D65E1386097BCA9B983D"
+    },
+    {
       "file": "tests/test_v43_installer_fresh_install.py",
-      "bytes": 1908,
-      "sha256": "ACBDA23268F7CB44FBBE9979D8E81B5B8759E7822F317BFF8586ABD3DBEA9B46"
+      "bytes": 1914,
+      "sha256": "0945F9B9B0C9A9715D6AACD19BFB3DD4E88A7BC1762F71A5C831B8DEB31B2AC2"
     },
     {
       "file": "tests/verify_public_tree.py",
@@ -2030,13 +2055,13 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 12486,
-      "sha256": "79B5E2BDB0C78BA059E88F722184F59BEF64E6A997225441E30A7B3B3957082A"
+      "bytes": 12499,
+      "sha256": "EAE4D69EA3EB987228B06340E28E613DC465BBDACFB93CD2A35531731948B65C"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",
-      "bytes": 1877,
-      "sha256": "3997ACDEC9D932FD9174D5D3F4A223A76AB27FED2C52B3ED677550CCFA81025D"
+      "bytes": 3984,
+      "sha256": "39F01A2CBCEF9E15AE0D2B279A1965F8EC82F53D7C33527565417AA9E9274614"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",
