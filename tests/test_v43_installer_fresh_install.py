@@ -6,11 +6,11 @@ ISS=(ROOT/"windows/installer/FreeNetHub.iss").read_text(encoding="utf-8-sig")
 def _prepare_block():
     return ISS.split("function PrepareToInstall(var NeedsRestart: Boolean): String;",1)[1].split("procedure CurStepChanged",1)[0]
 
-def test_v43_identity_and_single_public_installer_name():
-    assert '#define MyAppVersion "4.3.0"' in ISS
-    assert r"OutputDir=..\..\delivery\github_v4.3.0" in ISS
-    assert "OutputBaseFilename=FreeNetHub_4.3.0_R43_Setup" in ISS
-    assert "VersionInfoVersion=4.3.0.0" in ISS
+def test_v43_lineage_keeps_single_public_installer_identity():
+    assert '#define MyAppVersion "4.3.1"' in ISS
+    assert r"OutputDir=..\..\delivery\github_v4.3.1" in ISS
+    assert "OutputBaseFilename=FreeNetHub_4.3.1_R44_Setup" in ISS
+    assert "VersionInfoVersion=4.3.1.0" in ISS
 
 def test_fresh_install_skips_upgrade_guard_before_extracting_helper():
     block=_prepare_block()
@@ -32,6 +32,7 @@ def test_upgrade_guard_still_blocks_known_active_runtime():
     helper=(ROOT/"windows/installer/Prepare-Upgrade.ps1").read_text(encoding="utf-8-sig")
     assert "exit 42" in helper
     assert "directdpi" in helper.lower()
+
 def test_hosted_ci_requires_exact_fresh_install_gate():
     workflow=(ROOT/".github/workflows/ci.yml").read_text(encoding="utf-8")
     assert "windows-installer-fresh:" in workflow

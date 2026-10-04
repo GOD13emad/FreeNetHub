@@ -47,3 +47,15 @@ def test_windows_standalone_manifest_uses_dual_runtime_and_source_hashes():
     assert "canonical_sha" in builder
     assert 'row.get("sourceSha256")' in verifier
     assert "hc(p)!=source_sha" in verifier
+
+def test_windows_upgrade_cleans_only_disconnected_owned_orphan_runtime():
+    p=(ROOT/"windows/installer/Prepare-Upgrade.ps1").read_text(encoding="utf-8-sig")
+    assert "session.json" in p
+    assert "$sessionKnown=$false" in p
+    assert "if($sessionConnected){ exit 42 }" in p
+    assert "Test-OwnedRuntimeProcess" in p
+    assert "ParentProcessId" in p
+    assert "if($parent){ exit 42 }" in p
+    assert "if(!$sessionKnown){ exit 42 }" in p
+    assert "Stop-Process -Id ([int]$proc.ProcessId) -Force" in p
+    assert "if((Get-ActiveListeners).Count){ exit 42 }" in p

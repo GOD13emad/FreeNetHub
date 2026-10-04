@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "version": "4.3.1",
+  "status": "V431_RELEASE",
+  "scope": "Windows integrity/startup + node-visibility + safe-upgrade hotfix; Linux R14 unchanged",
+  "reportedFailure": "Application installed but did not open; ui-error.txt contained APP_FILE_CHANGED: View.xaml.",
+  "rootCause": {
+    "status": "CONFIRMED",
+    "details": "v4.3.0 manifest hashes were correct for canonical LF source. The Windows build working tree contained CRLF bytes for View.xaml and directdpi/hosts.txt, and Inno Setup packaged those raw working-copy bytes. Startup integrity correctly rejected the installed CRLF View.xaml.",
+    "viewCanonicalSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
+    "viewPackagedV43Sha256": "834167DE0994D3C852848A7A310C077B9E791A2C09CBEB9E22B712A9EFDE5A66",
+    "hostsCanonicalSha256": "87C8824497FF242B0A6873C5127F7D9A884A665E0AD5183D4AA6F14E9A81470D",
+    "hostsPackagedV43Sha256": "9C8DBCC6FCFA607BEE4AE16F2DFDEB8D025D66FFD94208A53ED480C2B6892D4B",
+    "finalInterpretation": "The integrity guard behaved correctly; the package/manifest contract did not match the exact bytes installed on Windows."
+  },
+  "localRepair": {
+    "status": "PASS",
+    "backupCreated": true,
+    "manifestEntriesRepaired": [
+      "View.xaml",
+      "directdpi/hosts.txt"
+    ],
+    "uiProcessTitle": "FreeNet Hub",
+    "uiMainWindowHandleObserved": 102045310
+  },
+  "change": {
+    "manifest": "All protected app-manifest entries are generated/verified against the exact raw app bytes packaged by the Windows installer; build fails closed on any hash/size mismatch.",
+    "ci": "Fresh-install CI launches the installed UI and fails on a missing child UI process or ui-error.txt.",
+    "nodeUi": "NodeList MinHeight=190, explicit DataGrid header/cell/text styles and row sizing; advanced node metadata is collapsed by default.",
+    "upgradeGuard": "Connected/unknown/live-parent runtimes remain fail-closed; only Free Net Hub-owned dead-parent listeners with an explicitly disconnected session may be cleaned before upgrade.",
+    "asset": "FreeNetHub_4.3.1_R44_Setup.exe",
+    "build": "PASS_RAW_BYTES_MATCH_APP_MANIFEST before ISCC."
+  },
+  "promotionGate": "HOSTED_EXACT_FRESH_INSTALL_PLUS_INSTALLED_UI_LAUNCH_AND_AGGREGATE_CI_REQUIRED",
+  "authenticode": "MISSING_EXTERNAL_NOTSIGNED",
+  "confidence": "HIGH",
+  "localValidation": {
+    "targetedRegression": "23/23 PASS",
+    "fullPytest": "195/195 PASS",
+    "exactBuild": {
+      "asset": "FreeNetHub_4.3.1_R44_Setup.exe",
+      "bytes": 24266713,
+      "sha256": "A2613A62AEE78664C43D451B262A79456D077B40EC53CD083DDEE783D4B76A19",
+      "authenticode": "MISSING_EXTERNAL_NOTSIGNED",
+      "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST"
+    },
+    "ownerMachineExactArtifactInstall": {
+      "status": "PASS",
+      "installerExit": 0,
+      "installedVersion": "4.3.1",
+      "installedRevision": "4.3.1-r44-final",
+      "manifestEntries": "17/17 PASS",
+      "routeUnchanged": true,
+      "route": "Ethernet 3 via 192.168.20.1",
+      "uiWindowTitle": "FreeNet Hub",
+      "uiWindowHandle": 40975030,
+      "uiErrorPresent": false
+    },
+    "nodeUiLive": {
+      "status": "PASS",
+      "automationId": "NodeList",
+      "isOffscreen": false,
+      "gridRect": {
+        "width": 1088.0,
+        "height": 473.0
+      },
+      "visibleDataItems": 15,
+      "textElementCount": 144,
+      "sample": [
+        "vmess-669789139",
+        "US",
+        "vmess",
+        "526.6 ms",
+        "AURX_HTTP_VERIFIED",
+        "vless",
+        "6.3 ms",
+        "N/A"
+      ],
+      "visualScreenshotObserved": true,
+      "controlType": "ControlType.DataGrid",
+      "textSample": [
+        "vless-1643511870",
+        "TW",
+        "vless",
+        "1735.3 ms",
+        "2.6 Mbps",
+        "1.2 Mbps",
+        "AURX_HTTP_VERIFIED",
+        "shadowsocks-812343868"
+      ],
+      "interpretation": "Backend rows were present; the defect was node-grid layout/readability, now closed by minimum grid height, explicit cell/header text styling, and collapsed advanced metadata."
+    },
+    "orphanUpgradeFailure": {
+      "firstAttempt": "FAIL_EXIT_7",
+      "installedMutationOnFailedAttempt": false,
+      "session": {
+        "connected": false,
+        "state": "CONNECT_FAILED"
+      },
+      "orphans": [
+        {
+          "pid": 73072,
+          "mode": "WARP",
+          "listen": "127.0.0.1:19410",
+          "parentAlive": false
+        },
+        {
+          "pid": 26696,
+          "mode": "CFON",
+          "listen": "127.0.0.1:19414",
+          "parentAlive": false
+        }
+      ],
+      "cleanup": "PASS_OWNED_ORPHANS_ONLY",
+      "listenersAfterCleanup": 0,
+      "routeUnchanged": true,
+      "regression": "PASS"
+    },
+    "gitDiffCheck": "PASS",
+    "securityScan": "PASS_ZERO_HITS",
+    "publicVerifier": "PASS_ALL_SECTIONS",
+    "publicManifestPreFinalRebuild": {
+      "status": "PASS",
+      "files": 439,
+      "sha256": "0BBF294DF97DC92392EE166D259822FDE879ACAECA9C04A3B6DB642F7AD68A0A"
+    }
+  },
+  "exactNextAction": "Rebuild/verify final public tree, commit/push exact candidate, then require hosted fresh-install + installed UI launch + aggregate CI before v4.3.1 publication.",
+  "reportedFailures": [
+    "Public v4.3.0 installed but did not open; ui-error.txt contained APP_FILE_CHANGED: View.xaml.",
+    "Nodes backend contained 2000 entries but NodeList was squeezed to a near-zero-height strip.",
+    "First v4.3.1 live upgrade exited 7 because disconnected orphan WARP/CFON listeners were treated as active."
+  ]
+}

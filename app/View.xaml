@@ -47,6 +47,19 @@
   </Style>
   <Style TargetType="TextBox"><Setter Property="Background" Value="{DynamicResource Bg}"/><Setter Property="Foreground" Value="{DynamicResource Ink}"/><Setter Property="BorderBrush" Value="{DynamicResource Line}"/><Setter Property="Padding" Value="10"/></Style>
   <Style TargetType="ComboBox"><Setter Property="Background" Value="#F4F7FA"/><Setter Property="Foreground" Value="#183147"/><Setter Property="Padding" Value="8"/></Style>
+  <Style x:Key="NodeGridText" TargetType="TextBlock">
+   <Setter Property="Foreground" Value="{DynamicResource Ink}"/><Setter Property="VerticalAlignment" Value="Center"/>
+   <Setter Property="TextTrimming" Value="CharacterEllipsis"/><Setter Property="Margin" Value="4,0"/>
+  </Style>
+  <Style TargetType="DataGridColumnHeader">
+   <Setter Property="Background" Value="{DynamicResource TableHeader}"/><Setter Property="Foreground" Value="{DynamicResource Ink}"/>
+   <Setter Property="BorderBrush" Value="{DynamicResource Line}"/><Setter Property="Padding" Value="8,6"/><Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+  <Style TargetType="DataGridCell">
+   <Setter Property="Foreground" Value="{DynamicResource Ink}"/><Setter Property="Background" Value="Transparent"/>
+   <Setter Property="BorderBrush" Value="{DynamicResource Line}"/><Setter Property="Padding" Value="2"/>
+   <Style.Triggers><Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="{DynamicResource SelectedFill}"/><Setter Property="Foreground" Value="White"/></Trigger></Style.Triggers>
+  </Style>
   <Style TargetType="CheckBox"><Setter Property="Foreground" Value="{DynamicResource Ink}"/><Setter Property="Margin" Value="0,5"/></Style>
   <Style x:Key="ScopeSwitch" TargetType="ToggleButton">
    <Setter Property="Width" Value="58"/><Setter Property="Height" Value="30"/><Setter Property="Cursor" Value="Hand"/>
@@ -379,7 +392,7 @@
 </TabItem>
   <TabItem Header="◉  نودها / سرورها">
      <Grid Margin="0,14">
-      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*" MinHeight="190"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
       <Border Style="{StaticResource Card}">
        <StackPanel>
         <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
@@ -411,19 +424,19 @@
        </StackPanel>
       </Border>
 
-      <DataGrid Grid.Row="1" Name="NodeList" Margin="0,12,0,0" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single"
+      <DataGrid Grid.Row="1" Name="NodeList" Margin="0,12,0,0" MinHeight="190" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single"
        CanUserSortColumns="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" Background="{DynamicResource Panel}"
-       Foreground="{DynamicResource Ink}" BorderBrush="{DynamicResource Line}" RowBackground="{DynamicResource Panel}" AlternatingRowBackground="{DynamicResource Soft}">
+       Foreground="{DynamicResource Ink}" BorderBrush="{DynamicResource Line}" RowBackground="{DynamicResource Panel}" AlternatingRowBackground="{DynamicResource Soft}" RowHeight="32" ColumnHeaderHeight="34" EnableRowVirtualization="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
        <DataGrid.Columns>
-        <DataGridTextColumn Header="وضعیت" Binding="{Binding Status}" Width="70"/>
-        <DataGridTextColumn Header="نام" Binding="{Binding Name}" Width="*"/>
-        <DataGridTextColumn Header="کشور" Binding="{Binding Country}" Width="70"/>
-        <DataGridTextColumn Header="Protocol" Binding="{Binding Protocol}" Width="90"/>
-        <DataGridTextColumn Header="Ping" Binding="{Binding Ping}" Width="82"/>
-        <DataGridTextColumn Header="Download" Binding="{Binding Download}" Width="95"/>
-        <DataGridTextColumn Header="Upload" Binding="{Binding Upload}" Width="90"/>
-        <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="130"/>
-        <DataGridTextColumn Header="Last Test" Binding="{Binding LastTest}" Width="125"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="وضعیت" Binding="{Binding Status}" Width="70"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="نام" Binding="{Binding Name}" Width="*"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="کشور" Binding="{Binding Country}" Width="70"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="Protocol" Binding="{Binding Protocol}" Width="90"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="Ping" Binding="{Binding Ping}" Width="82"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="Download" Binding="{Binding Download}" Width="95"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="Upload" Binding="{Binding Upload}" Width="90"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="Source" Binding="{Binding Source}" Width="130"/>
+        <DataGridTextColumn ElementStyle="{StaticResource NodeGridText}" Header="Last Test" Binding="{Binding LastTest}" Width="125"/>
        </DataGrid.Columns>
       </DataGrid>
 
@@ -434,6 +447,9 @@
          <Button Name="NodeTest" Content="تست واقعی"/><Button Name="NodeSpeed" Content="Ping + Download + Upload"/>
          <Button Name="NodeStop" Content="قطع Node"/><Button Name="NodeFavorite" Content="★"/><Button Name="NodePin" Content="📌"/>
         </WrapPanel>
+        <TextBlock Name="NodeDetail" Text="یک نود را انتخاب کن؛ نتیجهٔ Ping/Download/Upload همین‌جا ثبت می‌شود." Foreground="{DynamicResource Muted}" Margin="0,2,0,4"/>
+        <Expander Header="مشخصات پیشرفته نود" IsExpanded="False" Foreground="{DynamicResource Muted}" Margin="0,4,0,0">
+         <StackPanel Margin="0,8,0,0">
         <Grid Margin="0,8,0,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
          <TextBox Name="NodeNameEdit" ToolTip="نام دلخواه"/><ComboBox Grid.Column="1" Name="NodeRating" Margin="8,0,0,0" SelectedIndex="0">
           <ComboBoxItem Tag="0" Content="بدون امتیاز"/><ComboBoxItem Tag="1" Content="★"/><ComboBoxItem Tag="2" Content="★★"/><ComboBoxItem Tag="3" Content="★★★"/><ComboBoxItem Tag="4" Content="★★★★"/><ComboBoxItem Tag="5" Content="★★★★★"/>
@@ -442,7 +458,8 @@
         <TextBox Name="NodeTags" Margin="0,6,0,0" ToolTip="tags"/>
         <TextBox Name="NodeNote" Margin="0,6,0,0" AcceptsReturn="True" MaxHeight="65" ToolTip="note"/>
         <WrapPanel Margin="0,8,0,0"><Button Name="NodeSaveMeta" Content="ذخیره مشخصات"/><Button Name="NodeHistory" Content="تاریخچه"/><Button Name="NodeCopyLink" Content="کپی لینک"/></WrapPanel>
-        <TextBlock Name="NodeDetail" Text="یک نود را انتخاب کن؛ نتیجهٔ Ping/Download/Upload همین‌جا ثبت می‌شود." Foreground="{DynamicResource Muted}" Margin="0,5,0,0"/>
+         </StackPanel>
+        </Expander>
        </StackPanel>
       </Border>
      </Grid>

@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "status": "CURRENT_CANDIDATE",
+  "project": "FreeNet Hub 4.3.1 integrity hotfix",
+  "records": [
+    {
+      "context": "Owner reported that FreeNet Hub no longer opened after the public v4.3.0 upgrade.",
+      "claimDecision": "The launcher remained alive but WPF UI creation was blocked by the startup integrity guard; ui-error.txt recorded APP_FILE_CHANGED: View.xaml.",
+      "evidenceSource": [
+        "installed logs/ui-error.txt",
+        "FreeNetHub.exe had MainWindowHandle 0 before repair",
+        "no child pwsh existed before repair"
+      ],
+      "status": "CONFIRMED",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "support",
+        "release acceptance",
+        "failure prevention"
+      ]
+    },
+    {
+      "claimDecision": "The v4.3.0 manifest was correct for Git canonical/LF source bytes. The Windows build working tree contained CRLF bytes for View.xaml and directdpi/hosts.txt, and Inno Setup packaged those raw CRLF bytes.",
+      "evidenceSource": {
+        "attributes": "* text=auto eol=lf",
+        "View.xaml": {
+          "canonicalSha256": "E2CDE4A12279AB12B37AB76772D569AA117207A17357C3ECD043CCBB7BF41708",
+          "canonicalBytes": 68712,
+          "packagedV43Sha256": "834167DE0994D3C852848A7A310C077B9E791A2C09CBEB9E22B712A9EFDE5A66",
+          "packagedV43Bytes": 69275
+        },
+        "directdpi/hosts.txt": {
+          "canonicalSha256": "87C8824497FF242B0A6873C5127F7D9A884A665E0AD5183D4AA6F14E9A81470D",
+          "canonicalBytes": 92,
+          "packagedV43Sha256": "9C8DBCC6FCFA607BEE4AE16F2DFDEB8D025D66FFD94208A53ED480C2B6892D4B",
+          "packagedV43Bytes": 98
+        }
+      },
+      "status": "CONFIRMED_ROOT_CAUSE",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "installer pipeline",
+        "line-ending policy",
+        "manifest generation",
+        "regression design"
+      ]
+    },
+    {
+      "claimDecision": "v4.3.0 CI allowed the defect to escape because fresh-install validation checked install success/files/release metadata but did not launch the installed UI.",
+      "evidenceSource": ".github/workflows/ci.yml v4.3.0 windows-installer-fresh history; installed UI was not started.",
+      "status": "CONFIRMED_ESCAPE_CAUSE",
+      "confidence": "HIGH",
+      "reuseTargets": [
+        "CI design",
+        "failure prevention"
+      ]
+    },
+    {
+      "claimDecision": "Minimum sufficient prevention is three-layered: canonical LF packaging source, build-time raw-byte-to-app-manifest preflight, and hosted post-install UI launch smoke rejecting ui-error.txt.",
+      "evidenceSource": [
+        "tests/build_v431_installer.ps1",
+        "tests/test_v431_integrity_hotfix.py",
+        ".github/workflows/ci.yml"
+      ],
+      "status": "IMPLEMENTED_PENDING_HOSTED_PROMOTION",
+      "confidence": "HIGH",
+      "rejectedAlternative": "Disable or relax the integrity guard. Rejected because the guard correctly detected packaging byte drift.",
+      "reuseTargets": [
+        "CI",
+        "security",
+        "release governance"
+      ]
+    },
+    {
+      "claimDecision": "Owner machine was recovered without network/VPN mutation by backing up installed manifest and temporarily aligning the two entries to already-installed v4.3.0 bytes; the UI then created a real FreeNet Hub window.",
+      "evidenceSource": [
+        "repair backup manifest",
+        "post-repair child pwsh MainWindowHandle 102045310 / title FreeNet Hub",
+        "ui-error.txt timestamp unchanged after repair"
+      ],
+      "status": "CONFIRMED_LOCAL_RECOVERY",
+      "confidence": "HIGH",
+      "limitation": "This was a local recovery workaround for already-installed v4.3.0 CRLF bytes, not the public packaging design for v4.3.1.",
+      "reuseTargets": [
+        "support",
+        "local recovery"
+      ]
+    },
+    {
+      "claimDecision": "Current exact v4.3.1/R44 local candidate after canonical-line-ending correction.",
+      "evidenceSource": "evidence/V431_INSTALLER_BUILD_20261004.json + exact live install acceptance",
+      "status": "CONFIRMED_LOCAL_BUILD_AND_LIVE_INSTALL_PENDING_HOSTED_PROMOTION",
+      "confidence": "HIGH",
+      "provenance": {
+        "path": "delivery/github_v4.3.1/FreeNetHub_4.3.1_R44_Setup.exe",
+        "sha256": "A2613A62AEE78664C43D451B262A79456D077B40EC53CD083DDEE783D4B76A19",
+        "bytes": 24266713,
+        "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+        "ownerMachineInstall": "PASS_4.3.1_R44_17_OF_17_UI_WINDOW"
+      },
+      "reuseTargets": [
+        "GitHub release",
+        "post-publish verification"
+      ]
+    },
+    {
+      "context": "Owner screenshot showed 2000 nodes loaded but no usable node rows.",
+      "claimDecision": "Backend data was present; NodeList was visually collapsed by page layout and lacked explicit DataGrid text/header/cell styling.",
+      "evidenceSource": [
+        "owner screenshot",
+        "Paint-Nodes/Apply-NodeFilter row construction",
+        "live UI Automation"
+      ],
+      "status": "CONFIRMED_ROOT_CAUSE_CLOSED_PASS",
+      "confidence": "HIGH",
+      "prevention": "NodeList MinHeight=190; explicit grid styles; advanced metadata collapsed by default.",
+      "regression": "tests/test_v431_integrity_hotfix.py::test_node_grid_remains_visible_at_minimum_window_height",
+      "liveEvidence": {
+        "grid": "1088x473",
+        "visibleDataItems": 15,
+        "textElements": 144
+      },
+      "reuseTargets": [
+        "UI regression",
+        "support",
+        "release acceptance"
+      ]
+    },
+    {
+      "context": "First exact v4.3.1 live upgrade returned exit 7 while session was disconnected.",
+      "claimDecision": "Two Free Net Hub-owned WARP/CFON listeners were orphaned with dead parents; the old upgrade guard blocked every listener indiscriminately.",
+      "evidenceSource": [
+        "session.json connected=false / CONNECT_FAILED",
+        "runtime ownership/dead-parent audit",
+        "ports 19410/19414"
+      ],
+      "status": "CONFIRMED_ROOT_CAUSE_CLOSED_PASS",
+      "confidence": "HIGH",
+      "prevention": "Fail closed for connected/unknown/live-parent runtime; clean only owned dead-parent listeners when session is explicitly disconnected.",
+      "regression": [
+        "tests/test_lifecycle_safety.py::test_windows_upgrade_cleans_only_disconnected_owned_orphan_runtime",
+        "updated R36 lifecycle contract"
+      ],
+      "reuseTargets": [
+        "installer lifecycle",
+        "failure prevention",
+        "upgrade support"
+      ]
+    },
+    {
+      "claimDecision": "Exact v4.3.1/R44 artifact passed live installation, 17/17 integrity, real UI creation and node-list validation without changing the default route.",
+      "evidenceSource": "exact live install + UI Automation + screenshot",
+      "status": "CONFIRMED_LOCAL_ACCEPTANCE_PENDING_HOSTED_PROMOTION",
+      "confidence": "HIGH",
+      "provenance": {
+        "sha256": "A2613A62AEE78664C43D451B262A79456D077B40EC53CD083DDEE783D4B76A19",
+        "bytes": 24266713,
+        "version": "4.3.1-r44-final",
+        "uiWindowHandle": 40975030,
+        "nodeGrid": "1088x473 / 15 visible rows / 144 text elements",
+        "nodeSample": "vless-1643511870 / TW / vless / 1735.3 ms / AURX_HTTP_VERIFIED"
+      },
+      "reuseTargets": [
+        "GitHub release",
+        "post-publish verification",
+        "handoff"
+      ]
+    }
+  ],
+  "openGates": [
+    "Hosted exact fresh-install + installed UI launch smoke",
+    "Aggregate hosted CI",
+    "Post-merge hosted CI",
+    "Post-publish exact asset/hash/update verification",
+    "Trusted Authenticode remains external/missing"
+  ],
+  "exactNextAction": "Rebuild/verify final public tree, commit/push exact candidate, and promote only after hosted install-and-launch validation."
+}

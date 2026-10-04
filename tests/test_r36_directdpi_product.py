@@ -131,7 +131,13 @@ def test_installer_upgrade_guard_closes_only_idle_owned_ui_child():
     assert "Disconnect it before upgrading" in iss
     assert "AppMutex=Local\\FreeNetHub.Desktop.SingleInstance.v41" not in iss
     assert "$ports=19410,19413,19414,19450,19452,19453,19460,9909" in helper
-    assert "if(@($active).Count){ exit 42 }" in helper
+    assert "$active=Get-ActiveListeners" in helper
+    assert "if(!$sessionKnown){ exit 42 }" in helper
+    assert "if($sessionConnected){ exit 42 }" in helper
+    assert "if(!(Test-OwnedRuntimeProcess $proc)){ exit 42 }" in helper
+    assert "if($parent){ exit 42 }" in helper
+    assert "Stop-Process -Id ([int]$proc.ProcessId) -Force" in helper
+    assert "if((Get-ActiveListeners).Count){ exit 42 }" in helper
     assert "Get-CimInstance Win32_Process" in helper
     assert "$_.Name -ieq 'pwsh.exe'" in helper
     assert "FreeNetHub.ps1" in helper
