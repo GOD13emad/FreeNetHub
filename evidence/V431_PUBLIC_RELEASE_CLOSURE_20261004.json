@@ -48,6 +48,16 @@
       "runId": 37183317480,
       "conclusion": "SUCCESS",
       "ref": "v4.3.1"
+    },
+    "closureCI": {
+      "runNumber": 186,
+      "runId": 37185596527,
+      "commit": "44dd1b68e64c995ae6cc9594b1603e7d965c0c32",
+      "conclusion": "SUCCESS",
+      "windowsInstallerFresh": "SUCCESS",
+      "androidEmulatorRuntime": "SUCCESS",
+      "iosSimulatorRuntime": "SUCCESS",
+      "virtualAcceptance": "SUCCESS"
     }
   },
   "releaseCleanup": {
@@ -78,5 +88,6 @@
     "Physical console field E2E is a separate deferred hardware track.",
     "Android/iOS production forwarding/signing remain separate deferred tracks."
   ],
-  "exactNextAction": "No blocking action remains for the Windows/Linux public release. Optional future work: provision trusted Authenticode; handle deferred console/mobile production tracks separately."
+  "exactNextAction": "No blocking action remains for the Windows/Linux public release. Optional future work: provision trusted Authenticode; handle deferred console/mobile production tracks separately.",
+  "repositoryClosure": "PASS_CI_186"
 }
