@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "project": "FreeNet Hub",
+  "version": "4.3.2",
+  "status": "CURRENT_PUBLIC_FINAL",
+  "records": [
+    {
+      "context": "R46 promotion authority",
+      "claimDecision": "Promote main by fast-forward to the exact candidate SHA rather than creating a merge commit, so main/tag bytes remain identical to the SHA proven by hosted CI.",
+      "evidenceSource": [
+        "CI #187 candidate SUCCESS",
+        "main fast-forward to dd8bee89be71e39777152b6428c2ec0b1ba50809",
+        "CI #188 main SUCCESS",
+        "CI #189 tag SUCCESS"
+      ],
+      "confidence": "HIGH",
+      "status": "CONFIRMED",
+      "reuseTargets": [
+        "release governance",
+        "failure prevention",
+        "handoff"
+      ],
+      "provenance": {
+        "runtimeCommit": "dd8bee89be71e39777152b6428c2ec0b1ba50809",
+        "releaseTag": "v4.3.2"
+      }
+    },
+    {
+      "context": "Hosted release gates",
+      "claimDecision": "R46 promotion required fresh-install Windows, Linux/static, console virtual, Android API36 emulator, iOS Xcode26 simulator and aggregate virtual acceptance on the exact SHA; all passed on candidate, main and tag contexts.",
+      "evidenceSource": [
+        "GitHub Actions run 37207042859 / CI #187",
+        "GitHub Actions run 37208572220 / CI #188",
+        "GitHub Actions run 37209108871 / CI #189"
+      ],
+      "confidence": "HIGH",
+      "status": "CONFIRMED",
+      "reuseTargets": [
+        "CI policy",
+        "release acceptance",
+        "audit"
+      ]
+    },
+    {
+      "context": "Public asset integrity",
+      "claimDecision": "GitHub server-side digests and independent re-download SHA-256 values exactly match the accepted local Windows R46 and unchanged Linux R14 bytes.",
+      "evidenceSource": [
+        "GitHub release v4.3.2 API metadata",
+        "independent gh release download verification"
+      ],
+      "confidence": "HIGH",
+      "status": "CONFIRMED",
+      "reuseTargets": [
+        "release notes",
+        "support",
+        "supply-chain verification"
+      ],
+      "provenance": {
+        "windows": {
+          "bytes": 24254909,
+          "sha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F"
+        },
+        "linux": {
+          "bytes": 213124,
+          "sha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984"
+        }
+      }
+    },
+    {
+      "context": "Windows post-publish updater",
+      "claimDecision": "Installed R45 correctly detects public R46 as newer and selects the exact R46 asset/digest without changing the active CFON session, default-route state or DNS state.",
+      "evidenceSource": "evidence/V432_POSTPUBLISH_UPDATECHECK_20261004.json",
+      "confidence": "HIGH",
+      "status": "CONFIRMED",
+      "reuseTargets": [
+        "online updater",
+        "support",
+        "release acceptance"
+      ],
+      "provenance": {
+        "evidenceSha256": "D477A6BF848E3C6C8AB7F4B40CB4E023D70140D5237213D185C5EF32FE968410"
+      }
+    },
+    {
+      "context": "Linux post-publish updater",
+      "claimDecision": "Installed Linux 4.2.0-linux.14-r41 sees v4.3.2 Linux R14 as equal revision and correctly reports updateAvailable=false; route, DNS and session hashes remain unchanged.",
+      "evidenceSource": "Owner laptop read-only installed update_check on 2026-10-04",
+      "confidence": "HIGH",
+      "status": "CONFIRMED",
+      "reuseTargets": [
+        "Linux updater",
+        "support",
+        "release acceptance"
+      ],
+      "provenance": {
+        "localRevision": 14,
+        "remoteRevision": 14,
+        "routeSha256": "dea873052bf5aa18390c90280ecb4b180525a1ad98c22ab58c826e9a0236c375",
+        "dnsSha256": "1f5d70e099cc66b0943279e48afa674f08d2ee6399b0f6f95cb3f8d7d3161bee",
+        "sessionSha256": "05ffac97e27d6a7d4175e704dc1d139cfeceaad09d7f78eaded1df516e22bbe0"
+      }
+    },
+    {
+      "context": "Release-create command failure",
+      "claimDecision": "The first release-create attempt failed in the wrapper before applying any GitHub mutation. Remote reconciliation proved no release/assets existed; a direct gh invocation with notes stored under .git then succeeded. Blind retry was explicitly avoided.",
+      "evidenceSource": [
+        "terminal failure receipt",
+        "GitHub releases API reconciliation",
+        "successful direct gh release create exit 0"
+      ],
+      "confidence": "HIGH",
+      "status": "CONFIRMED_ROOT_CAUSE_CLOSED_PASS",
+      "reuseTargets": [
+        "release automation",
+        "failure prevention"
+      ],
+      "prevention": "Avoid nested PowerShell quoting for release mutation; use direct executable invocation and always reconcile remote state after uncertain/failed mutations."
+    },
+    {
+      "context": "External gates",
+      "claimDecision": "Trusted Authenticode, physical-console field E2E, and production mobile forwarding/signing/device validation remain separate external gates and do not invalidate the desktop/public v4.3.2 closure.",
+      "evidenceSource": [
+        "evidence/R46_PLATFORM_BENCHMARK_20261004.json",
+        "release metadata",
+        "existing console authority"
+      ],
+      "confidence": "HIGH",
+      "status": "CONFIRMED_SCOPE_BOUNDARY",
+      "reuseTargets": [
+        "roadmap",
+        "architecture",
+        "release notes"
+      ]
+    }
+  ]
+}

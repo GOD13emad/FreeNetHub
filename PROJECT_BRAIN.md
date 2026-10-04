@@ -288,3 +288,22 @@ Status: CURRENT / R46_LOCAL_GATES_PASS_HOSTED_OPEN
 
 ### Exact Next Action
 Rebuild `PUBLIC_MANIFEST.json` once from this candidate, run `verify_public_tree.py` and `security_scan_public.py`, and stop promotion on any mismatch.
+
+
+## V432 PUBLIC FINAL CLOSURE — 2026-10-04
+Status: CURRENT / PUBLIC_FINAL_CLOSED
+- Runtime/release authority is immutable tag `v4.3.2 -> dd8bee89be71e39777152b6428c2ec0b1ba50809`. Promotion used fast-forward only; no merge commit changed the tested SHA.
+- Hosted CI evidence is complete on the exact same SHA: branch CI #187 / run 37207042859 SUCCESS, main CI #188 / run 37208572220 SUCCESS, tag CI #189 / run 37209108871 SUCCESS. Required Windows fresh-install, Linux, console virtual, Android API36 emulator, iOS Xcode26 simulator and aggregate virtual-acceptance gates all PASS.
+- Public release `v4.3.2` / `FreeNet Hub 4.3.2 Final` is latest. Windows asset `FreeNetHub_4.3.2_R46_Setup.exe` = 24,254,909 bytes / SHA-256 `227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F`. Linux asset remains accepted R14 = 213,124 bytes / SHA-256 `B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984`. GitHub server digests and independent post-publish downloads match both hashes exactly.
+- Windows post-publish `UpdateCheck` PASS: installed R45 sees remote R46 as newer and selects the exact R46 name/size/digest. Active CFON session, default-route state and DNS state hashes are unchanged before/after.
+- Linux owner-laptop post-publish `update_check()` PASS: installed `4.2.0-linux.14-r41`, localRevision=14, remoteRevision=14, updateAvailable=false, and route/DNS/session hashes are unchanged.
+- First release-create wrapper attempt failed before applying any remote mutation because nested PowerShell quoting consumed variable markers. Remote reconciliation proved release/assets absent; retry was only then permitted. Direct `gh release create` with notes under `.git` succeeded. Prevention: avoid nested PowerShell quoting for release mutation and always reconcile remote state before retry.
+- `RELEASE.json` is intentionally not rewritten post-publication because it is one of the 25 frozen installer inputs; changing it would create source/runtime byte drift from the published R46 artifact. Post-release state is recorded in Brain/Evidence instead.
+- External/separate gates remain explicit and non-blocking for this desktop release: trusted Windows Authenticode identity (MISSING_EXTERNAL/NotSigned), physical-console field E2E, Android production forwarding/signing/real-device, and iOS production forwarding/signing/entitlement/real-device.
+- Authoritative closure evidence: `evidence/V432_PUBLIC_RELEASE_CLOSURE_20261004.json`; project knowledge: `evidence/V432_PROJECT_KNOWLEDGE_20261004.json`; Windows updater proof: `evidence/V432_POSTPUBLISH_UPDATECHECK_20261004.json`.
+
+### Roadmap ← CURRENT
+Desktop/public v4.3.2 objective: CLOSED_PASS. No desktop release blocker remains. Future runtime work must start as a new change set and must not mutate the v4.3.2 tag or published asset bytes.
+
+### Exact Next Action
+Commit the control-only Brain/Evidence/Public Manifest closure, verify the public tree/security scan, push it to main, and require one final repository-state CI PASS. Then record that CI result without changing runtime/release authority.

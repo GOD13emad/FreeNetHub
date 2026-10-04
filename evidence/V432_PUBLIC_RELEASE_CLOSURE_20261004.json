@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "project": "FreeNet Hub",
+  "version": "4.3.2",
+  "status": "PUBLIC_FINAL_CLOSED",
+  "previousAcceptedState": {
+    "release": "v4.3.1",
+    "windows": "R44",
+    "linux": "R14/R41"
+  },
+  "runtimeAuthority": {
+    "tag": "v4.3.2",
+    "commit": "dd8bee89be71e39777152b6428c2ec0b1ba50809",
+    "promotion": "FAST_FORWARD_EXACT_TESTED_SHA",
+    "mergeCommitAdded": false
+  },
+  "hostedValidation": {
+    "branch": {
+      "runNumber": 187,
+      "runId": 37207042859,
+      "status": "SUCCESS",
+      "sha": "dd8bee89be71e39777152b6428c2ec0b1ba50809"
+    },
+    "main": {
+      "runNumber": 188,
+      "runId": 37208572220,
+      "status": "SUCCESS",
+      "sha": "dd8bee89be71e39777152b6428c2ec0b1ba50809"
+    },
+    "tag": {
+      "runNumber": 189,
+      "runId": 37209108871,
+      "status": "SUCCESS",
+      "sha": "dd8bee89be71e39777152b6428c2ec0b1ba50809"
+    },
+    "requiredGates": [
+      "windows-unit",
+      "windows-installer-fresh",
+      "windows-virtual-signing",
+      "linux-static",
+      "console-virtual-e2e",
+      "android-build",
+      "android-emulator-runtime",
+      "ios-static",
+      "ios-simulator-runtime",
+      "virtual-acceptance"
+    ]
+  },
+  "publicRelease": {
+    "tag": "v4.3.2",
+    "name": "FreeNet Hub 4.3.2 Final",
+    "publishedAt": "2026-10-04T14:41:27Z",
+    "draft": false,
+    "prerelease": false,
+    "latestObserved": true,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.3.2_R46_Setup.exe",
+        "bytes": 24254909,
+        "sha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F",
+        "githubDigest": "sha256:227881038598cb77cd6f1eb03e4ee0884e11c054a6b1881219bf6b43a678199f",
+        "independentRedownloadSha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F",
+        "verification": "PASS"
+      },
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R14.zip",
+        "bytes": 213124,
+        "sha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+        "githubDigest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+        "independentRedownloadSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+        "verification": "PASS",
+        "note": "Unchanged accepted Linux R14/R41 baseline"
+      }
+    ]
+  },
+  "postPublish": {
+    "windows": {
+      "status": "PASS",
+      "action": "INSTALLED_WINDOWS_UPDATECHECK_READ_ONLY",
+      "installedRevision": "4.3.1-r45-preconnect-test-hotfix",
+      "localRevision": 45,
+      "remoteRevision": 46,
+      "updateAvailable": true,
+      "assetExact": true,
+      "sessionSha256Before": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+      "sessionSha256After": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+      "routeStateSha256Before": "D3B7EA3CBC4869A0CDF51CFA2A9C68706C18F69AB64DBF5CBD0374B19E5E4744",
+      "routeStateSha256After": "D3B7EA3CBC4869A0CDF51CFA2A9C68706C18F69AB64DBF5CBD0374B19E5E4744",
+      "dnsStateSha256Before": "AFBA73C85496820D2C6DC96370C65CEEE22DA87A3F13C7D31DD20C422A3BCA34",
+      "dnsStateSha256After": "AFBA73C85496820D2C6DC96370C65CEEE22DA87A3F13C7D31DD20C422A3BCA34",
+      "evidence": "evidence/V432_POSTPUBLISH_UPDATECHECK_20261004.json",
+      "evidenceSha256": "D477A6BF848E3C6C8AB7F4B40CB4E023D70140D5237213D185C5EF32FE968410"
+    },
+    "linux": {
+      "status": "PASS",
+      "action": "INSTALLED_LINUX_UPDATECHECK_READ_ONLY",
+      "installedVersion": "4.2.0-linux.14-r41",
+      "localRevision": 14,
+      "remoteRevision": 14,
+      "updateAvailable": false,
+      "releaseTag": "v4.3.2",
+      "assetName": "FreeNetHub_4.2.0_Linux_R14.zip",
+      "assetBytes": 213124,
+      "assetDigest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+      "routeStateSha256Before": "dea873052bf5aa18390c90280ecb4b180525a1ad98c22ab58c826e9a0236c375",
+      "routeStateSha256After": "dea873052bf5aa18390c90280ecb4b180525a1ad98c22ab58c826e9a0236c375",
+      "dnsStateSha256Before": "1f5d70e099cc66b0943279e48afa674f08d2ee6399b0f6f95cb3f8d7d3161bee",
+      "dnsStateSha256After": "1f5d70e099cc66b0943279e48afa674f08d2ee6399b0f6f95cb3f8d7d3161bee",
+      "sessionSha256Before": "05ffac97e27d6a7d4175e704dc1d139cfeceaad09d7f78eaded1df516e22bbe0",
+      "sessionSha256After": "05ffac97e27d6a7d4175e704dc1d139cfeceaad09d7f78eaded1df516e22bbe0"
+    }
+  },
+  "failurePrevention": {
+    "event": "FIRST_RELEASE_CREATE_WRAPPER_FAILED_BEFORE_APPLY",
+    "rootCause": "Nested PowerShell quoting expanded variable markers in the terminal wrapper before the intended command executed.",
+    "reconcile": "GitHub API and gh release view both proved v4.3.2 release absent and no assets existed.",
+    "prevention": "Use a temporary notes file under .git and invoke gh release create directly without nested PowerShell quoting; reconcile remote state before any retry.",
+    "finalOutcome": "PASS_RELEASE_CREATED_EXIT_0"
+  },
+  "externalNonBlocking": [
+    "Trusted Windows Authenticode signing identity is MISSING_EXTERNAL / NotSigned",
+    "Physical console field E2E remains external hardware validation",
+    "Android production packet forwarding/signing/real-device remains separate architecture/legal/device work",
+    "iOS production packet forwarding/signing/entitlement/real-device remains separate architecture/legal/device work"
+  ],
+  "authoritativeEvidence": [
+    "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json",
+    "evidence/R46_LINUX_R14_REVALIDATION_20261004.json",
+    "evidence/R46_PLATFORM_BENCHMARK_20261004.json",
+    "evidence/V432_R46_INSTALLER_BUILD_20261004.json",
+    "evidence/V432_R46_CANDIDATE_ACCEPTANCE_20261004.json",
+    "evidence/V432_POSTPUBLISH_UPDATECHECK_20261004.json"
+  ],
+  "finalObjectiveResult": "Desktop/public release objective CLOSED_PASS for v4.3.2 R46 with exact published bytes and post-publish updater semantics verified.",
+  "exactNextAction": "No desktop release blocker remains. Treat v4.3.2 tag/asset bytes as immutable; future work starts as a new change set. External signing, physical-console field validation, and production mobile forwarding remain explicitly separate."
+}

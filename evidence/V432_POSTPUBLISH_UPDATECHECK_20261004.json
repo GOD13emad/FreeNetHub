@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "utc": "2026-10-04T14:44:42.6839914+00:00",
+  "status": "PASS",
+  "action": "INSTALLED_WINDOWS_UPDATECHECK_READ_ONLY",
+  "installed": {
+    "version": "4.3.1",
+    "revision": "4.3.1-r45-preconnect-test-hotfix",
+    "revisionNumber": 45
+  },
+  "remote": {
+    "tag": "v4.3.2",
+    "name": "FreeNet Hub 4.3.2 Final",
+    "revisionNumber": 46,
+    "updateAvailable": true,
+    "asset": {
+      "name": "FreeNetHub_4.3.2_R46_Setup.exe",
+      "bytes": 24254909,
+      "digest": "sha256:227881038598cb77cd6f1eb03e4ee0884e11c054a6b1881219bf6b43a678199f"
+    }
+  },
+  "networkPreservation": {
+    "sessionSha256Before": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "sessionSha256After": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "sessionBefore": {
+      "healthy": true,
+      "connected": true,
+      "mode": "CFON",
+      "scope": "BROWSER_HTTPS",
+      "country": "AT",
+      "state": "CONNECTED_HEALTHY"
+    },
+    "sessionAfter": {
+      "healthy": true,
+      "connected": true,
+      "mode": "CFON",
+      "scope": "BROWSER_HTTPS",
+      "country": "AT",
+      "state": "CONNECTED_HEALTHY"
+    },
+    "routeStateSha256Before": "D3B7EA3CBC4869A0CDF51CFA2A9C68706C18F69AB64DBF5CBD0374B19E5E4744",
+    "routeStateSha256After": "D3B7EA3CBC4869A0CDF51CFA2A9C68706C18F69AB64DBF5CBD0374B19E5E4744",
+    "dnsStateSha256Before": "AFBA73C85496820D2C6DC96370C65CEEE22DA87A3F13C7D31DD20C422A3BCA34",
+    "dnsStateSha256After": "AFBA73C85496820D2C6DC96370C65CEEE22DA87A3F13C7D31DD20C422A3BCA34"
+  },
+  "processExit": 0,
+  "engineExit": 0,
+  "checks": {
+    "processExitZero": true,
+    "engineExitZero": true,
+    "tagV432": true,
+    "currentRevisionR45": true,
+    "remoteRevisionR46": true,
+    "updateAvailable": true,
+    "assetNameExact": true,
+    "assetBytesExact": true,
+    "assetDigestExact": true,
+    "sessionUnchanged": true,
+    "routeUnchanged": true,
+    "dnsUnchanged": true
+  }
+}
