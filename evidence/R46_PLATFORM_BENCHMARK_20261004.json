@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "project": "FreeNet Hub",
+  "changeSet": "R46_PLATFORM_REQUIREMENTS_AND_MOBILE_ARCHITECTURE_REVIEW",
+  "status": "DECISION_RECORDED_IMPLEMENTATION_PENDING_HOSTED_VALIDATION",
+  "evidenceHierarchy": "OFFICIAL_PLATFORM_REQUIREMENTS + OFFICIAL_TOOLCHAIN_DOCS + COMPARABLE_PRIMARY_PROJECTS",
+  "findings": [
+    {
+      "area": "Android distribution",
+      "claim": "Google Play requires new mobile apps and updates submitted from 2026-08-31 to target Android 16 / API 36 or higher.",
+      "status": "CONFIRMED",
+      "source": "https://support.google.com/googleplay/android-developer/answer/11926878"
+    },
+    {
+      "area": "Android build toolchain",
+      "claim": "Android's current tool matrix lists API 36 minimum AGP 8.9.1, while the AGP 8.9 release note still states max API 35. AGP 8.10 explicitly supports API 36 and requires Gradle 8.11.1.",
+      "status": "CONFIRMED_CONTRADICTORY_PRIMARY_DOCS_RESOLVED_CONSERVATIVELY",
+      "sources": [
+        "https://developer.android.com/build/releases/about-agp",
+        "https://developer.android.com/build/releases/agp-8-9-0-release-notes",
+        "https://developer.android.com/build/releases/agp-8-10-0-release-notes"
+      ]
+    },
+    {
+      "area": "Apple distribution",
+      "claim": "Since 2026-04-28 App Store Connect uploads must be built with Xcode 26 or later using an iOS 26-family SDK.",
+      "status": "CONFIRMED",
+      "source": "https://developer.apple.com/news/upcoming-requirements/"
+    },
+    {
+      "area": "Hosted Apple validation",
+      "claim": "GitHub Actions exposes macos-26 runners and the current macOS 26 runner toolset includes Xcode 26.x.",
+      "status": "CONFIRMED",
+      "sources": [
+        "https://github.com/actions/runner-images",
+        "https://github.com/actions/runner-images/blob/main/images/macos/toolsets/toolset-26.json"
+      ]
+    },
+    {
+      "area": "Comparable mobile forwarding architecture",
+      "claim": "The official sing-box Android client uses Android VpnService for unprivileged TUN; the sing-box Apple build produces a Libbox.xcframework for Apple targets.",
+      "status": "CONFIRMED_COMPARABLE_PROJECT",
+      "sources": [
+        "https://github.com/SagerNet/sing-box/blob/testing/docs/clients/android/features.md",
+        "https://github.com/SagerNet/sing-box/blob/testing/cmd/internal/build_libbox/main.go",
+        "https://github.com/SagerNet/sing-box-for-apple"
+      ]
+    },
+    {
+      "area": "Mobile lifecycle risk",
+      "claim": "Recent upstream Android reports include foreground-service startup failures on Android 16/Quick Settings flows, demonstrating device/lifecycle validation remains necessary beyond desktop or emulator core tests.",
+      "status": "CONFIRMED_UPSTREAM_RISK_SIGNAL",
+      "source": "https://github.com/SagerNet/sing-box/issues/4494"
+    }
+  ],
+  "decision": {
+    "androidToolchain": "compileSdk=36; targetSdk=36; AGP=8.10.1; Gradle=8.11.1; Build Tools=35.0.0",
+    "iosToolchain": "macos-26 hosted runner with explicit Xcode>=26 and iOS simulator SDK>=26 guard",
+    "mobileForwarding": "Do not add a new forwarding core or bind libbox in this change set.",
+    "rationale": [
+      "The accepted mobile DoD is fail-closed lifecycle/toolchain validation, not unproven production forwarding.",
+      "A mature comparable implementation uses a dedicated native core binding; reproducing that inside a finalization patch would substantially expand dependency, lifecycle, licensing and device-validation surface.",
+      "The project root has no general project license file, while comparable sing-box components are GPL-licensed; introducing them requires a separate explicit licensing/architecture decision.",
+      "Keeping TUN establishment disabled until a real core is linked prevents false VPN success and provides the same safety outcome with lower risk."
+    ],
+    "rejected": [
+      {
+        "option": "Stay on targetSdk 35",
+        "reason": "No longer submission-ready for normal Google Play mobile app updates as of current date."
+      },
+      {
+        "option": "Use AGP 8.9.1 minimum",
+        "reason": "Primary documentation is internally inconsistent around AGP 8.9 API-36 support; 8.10.x provides an explicit API-36 support statement."
+      },
+      {
+        "option": "Jump to AGP 9.x",
+        "reason": "Unnecessary major toolchain/API migration for the required API-36 outcome."
+      },
+      {
+        "option": "Integrate sing-box/libbox immediately",
+        "reason": "High-surface architecture/licensing/device-runtime change not required to close the current fail-closed mobile gate."
+      }
+    ]
+  },
+  "currentCandidate": {
+    "android": "API36 / AGP8.10.1 / Gradle8.11.1 / fail-closed core-not-linked",
+    "ios": "macos-26 + Xcode/iOS26 guards / NEPacketTunnelProvider fail-closed core-not-linked",
+    "hostedValidation": "OPEN"
+  },
+  "reuseTargets": [
+    "architecture rationale",
+    "release notes",
+    "mobile roadmap",
+    "CI policy",
+    "Project Brain"
+  ]
+}

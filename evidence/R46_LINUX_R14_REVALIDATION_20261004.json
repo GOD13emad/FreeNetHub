@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "project": "FreeNet Hub",
+  "changeSet": "R46_LINUX_R14_REVALIDATION",
+  "status": "PASS_CURRENT_INSTALLED_AUTHORITY_NONMUTATING_REVALIDATION",
+  "installed": {
+    "version": "4.2.0-linux.14-r41",
+    "release": "LINUX_4.2.0_R14_R41_UPDATE_REVISION_FIX",
+    "installRoot": "<LINUX_INSTALL_ROOT>",
+    "integrity": "9/9 PASS",
+    "runtimeProcessesBefore": "NONE_FREENETHUB_OWNED"
+  },
+  "exactSourceParity": {
+    "freenet_hub_linux.py": "EF135183AC3699856DBD7DFDC74B75A8033997B5F69CBDF32B2A50D06E0391BA",
+    "freenet_hub_linux_r37.py": "243DF56693C89C66057B22AF287FE40B5F7F9568A46FE66F72B7CCE4C3974685",
+    "freenet_hub_linux_gtk.py": "6AC3B00D22828EE90713F5E305C101A9670D829887E43B93AEFE71AAA041143C",
+    "nodehub_shared.py": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
+    "status": "PASS_INSTALLED_BYTES_EQUAL_CURRENT_SOURCE_BYTES"
+  },
+  "validation": {
+    "callableContract": "PASS_NO_MISSING_REQUIRED_R37_FUNCTIONS",
+    "configuredTestPath": "BASE",
+    "uiMarkers": "PASS_DASHBOARD_METHODS_NODES_TOOLS_SETTINGS_TESTS_CONSOLE_SORT_UPDATE",
+    "liveUpdateCheck": {
+      "status": "PASS",
+      "publicTag": "v4.3.1",
+      "localRevision": 14,
+      "remoteRevision": 14,
+      "updateAvailable": false,
+      "asset": "FreeNetHub_4.2.0_Linux_R14.zip",
+      "bytes": 213124,
+      "sha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984"
+    },
+    "routePreserved": true,
+    "dnsPreserved": true,
+    "networkMutation": false
+  },
+  "priorAcceptedEvidence": [
+    "evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
+    "evidence/R41_LINUX_UPDATE_REVISION_FIX_20260930.json",
+    "evidence/R41_FINAL_WORKSPACE_CLOSEOUT_20260930.json"
+  ],
+  "adjudication": "Linux runtime/UI bytes are unchanged from current source authority and the already accepted R14/R41 release. Today's integrity, contract, updater and route/DNS checks all pass. Re-running connection/tunnel mutation tests would add risk without new evidence of a Linux runtime change.",
+  "openExternal": [
+    "PHYSICAL_CONSOLE_GAME_COUNTRY_E2E",
+    "OPTIONAL_LINUX_NODE_FULL_SYSTEM_PRIVILEGED_HELPER"
+  ],
+  "exactNextAction": "Preserve Linux R14/R41 runtime bytes; validate the final repository candidate in hosted CI without mutating the installed Linux network state."
+}

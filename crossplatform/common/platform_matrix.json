@@ -1,21 +1,62 @@
 {
   "schema": 2,
   "product": "FreeNet Hub",
-  "version": "4.2.0",
+  "version": "4.3.2",
   "platforms": {
     "windows": {
-      "status": "ACCEPTED_WINDOWS_4.2_SOFTWARE_RELEASE",
+      "status": "PUBLIC_FINAL_4.3.1_R44_WITH_4.3.2_R46_CANDIDATE",
+      "publicVersion": "4.3.1",
+      "publicRevision": "R44",
+      "publicCommit": "3bfbb8f51881eb53579325f80bf4e370bba42c76",
+      "ownerLocalCandidate": {
+        "version": "4.3.2",
+        "revision": "R46",
+        "branch": "v4.3.2-preconnect-test-hotfix",
+        "baseCommit": "cdb251d44a41ba9f3970a7ee7cdc05b87a7b89cf",
+        "sourceState": "WORKTREE_LOCAL_GATES_PASS_PENDING_HOSTED",
+        "backendRegression": "PASS",
+        "installedBackendR45": "PASS",
+        "visualPostClick": "PASS_SOURCE_WPF_CONTROL_RENDER",
+        "connectionPreservation": "PASS_CFON_SESSION_ROUTE_DNS_UNCHANGED",
+        "releaseIdentity": "PASS_DISTINCT_4.3.2_R46",
+        "packagedValidation": "PASS_BUILD_RAW_MANIFEST__FRESH_INSTALL_HOSTED_OPEN",
+        "hostedValidation": "OPEN",
+        "public": false,
+        "evidence": [
+          "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json",
+          "evidence/V432_R46_CANDIDATE_ACCEPTANCE_20261004.json"
+        ],
+        "fullLocalRegression": "183/183 PASS",
+        "installer": {
+          "path": "delivery/github_v4.3.2/FreeNetHub_4.3.2_R46_Setup.exe",
+          "bytes": 24254909,
+          "sha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F",
+          "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+          "frozenBuildInputs": 25,
+          "authenticode": "NotSigned"
+        }
+      },
       "scope": [
         "BROWSER_PROXY",
         "PC_TUNNEL_WARP",
-        "CONSOLE_GATEWAY_SOFTWARE"
+        "PC_TUNNEL_NODE_STRICT",
+        "CONSOLE_GATEWAY_SOFTWARE",
+        "NODE_HUB",
+        "DIRECT_NETWORK",
+        "ONLINE_UPDATE"
       ],
+      "trustedAuthenticode": false,
       "physicalConsoleFieldValidation": false,
-      "evidence": "evidence/FINAL_420_PUBLIC_ACCEPTANCE.json"
+      "evidence": [
+        "evidence/V431_FINAL_RELEASE_CLOSURE_20261004.json",
+        "evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json",
+        "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json"
+      ]
     },
     "linux": {
-      "status": "CANDIDATE_NATIVE_LINUX_4.2_SOFTWARE_RELEASE_R12_R38_AUDIT_FIX",
-      "version": "4.2.0-linux.12-r38",
+      "status": "PUBLIC_FINAL_NATIVE_LINUX_4.2.0_R14_R41",
+      "version": "4.2.0-linux.14-r41",
+      "sourceCommit": "009151581bc5c3d7fe955b3000ac5fb45b843d2b",
       "environments": {
         "native": "Ubuntu 24.04"
       },
@@ -90,32 +131,40 @@
       },
       "privateBridgeFilesPublished": false,
       "evidence": [
-        "evidence/R37_LINUX_R11_UX_ACCEPTANCE_20260929.json"
+        "evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
+        "evidence/R41_LINUX_UPDATE_REVISION_FIX_20260930.json",
+        "evidence/R46_LINUX_R14_REVALIDATION_20261004.json"
       ],
       "scopePolicy": {
         "default": "BROWSER_ONLY",
         "fullSystem": "WARP_ONLY_ACCEPTED",
         "nodeFullSystem": "UNPROVEN_PRIVILEGED_HELPER_NOT_CLAIMED",
         "console": "INDEPENDENT_CONSOLE_GATEWAY"
-      }
+      },
+      "currentRevalidation": "PASS_2026-10-04_EXACT_SOURCE_PARITY_INTEGRITY_UPDATE_ROUTE_DNS"
     },
     "android": {
-      "status": "BUILD_ACCEPTED_CORE_NOT_LINKED",
+      "status": "API36_CONFIGURED_LOCAL_FAIL_CLOSED_PASS_HOSTED_OPEN_CORE_NOT_LINKED",
       "framework": "android.net.VpnService",
       "versionCode": 420,
       "versionName": "4.2.0",
-      "compileSdk": 35,
-      "targetSdk": 35,
+      "compileSdk": 36,
+      "targetSdk": 36,
       "buildTools": "35.0.0",
       "cleanAssembleDebug": "PASS",
-      "apkSha256": "196450EF7B14884B1D1436B12398D90BC1CE3AA61AC3BBBF176509CF9CC7C655",
-      "v2SignedDebug": true,
       "tunEstablishEnabled": false,
       "runtimeVpnAccepted": false,
-      "evidence": "evidence/ANDROID_420_BUILD_ACCEPTANCE.json"
+      "productionSigning": "EXTERNAL_MISSING",
+      "evidence": "evidence/ANDROID_420_BUILD_ACCEPTANCE.json",
+      "androidGradlePlugin": "8.10.1",
+      "ciGradle": "8.11.1",
+      "submissionToolchain": "API36_AGP8.10.1_GRADLE8.11.1_CONFIGURED_PENDING_HOSTED_VALIDATION",
+      "methodRationale": "AGP 8.10.x explicitly supports API 36; selected over the nominal 8.9.1 minimum because the AGP 8.9 release note still states max API 35.",
+      "hostedEmulatorLifecyclePrior": "PASS_FAIL_CLOSED_PRE_API36_TOOLCHAIN",
+      "hostedEmulatorLifecycleCurrent": "OPEN_API36"
     },
     "ios": {
-      "status": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN",
+      "status": "XCODE26_CONFIGURED_LOCAL_FAIL_CLOSED_PASS_HOSTED_OPEN_CORE_NOT_LINKED",
       "framework": "NetworkExtension/NEPacketTunnelProvider",
       "versionName": "4.2.0",
       "buildNumber": 420,
@@ -123,9 +172,13 @@
       "entitlement": "packet-tunnel-provider",
       "forwardingCoreLinked": false,
       "tunnelSettingsEnabled": false,
-      "macosBuildAccepted": false,
       "deviceRuntimeAccepted": false,
-      "evidence": "evidence/IOS_420_STATIC_ACCEPTANCE.json"
+      "productionSigningEntitlement": "EXTERNAL_MISSING",
+      "evidence": "evidence/IOS_420_STATIC_ACCEPTANCE.json",
+      "ciRunner": "macos-26",
+      "submissionToolchain": "XCODE26_IOS26_SDK_REQUIRED_AND_GUARDED_PENDING_HOSTED_VALIDATION",
+      "hostedSimulatorLifecyclePrior": "PASS_FAIL_CLOSED_PRIOR_RUNNER",
+      "hostedSimulatorLifecycleCurrent": "OPEN_MACOS26_XCODE26"
     }
   }
 }

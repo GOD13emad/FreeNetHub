@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "audit_date": "2026-10-04",
+  "context": "Continuation after chat stream failure; read-only-first audit of Windows owner machine and aliemad-Labtop Linux. No VPN/proxy/tunnel connection was started or stopped.",
+  "status": "PARTIAL_PASS_WITH_OPEN_GATES",
+  "authoritative_state": {
+    "windows_source": {
+      "branch": "v4.3.2-preconnect-test-hotfix",
+      "commit": "cdb251d44a41ba9f3970a7ee7cdc05b87a7b89cf",
+      "public_main": "009151581bc5c3d7fe955b3000ac5fb45b843d2b",
+      "release_metadata": "4.3.1 / 4.3.1-r45-preconnect-test-hotfix",
+      "promotion": "OWNER_LOCAL_NOT_PUBLIC"
+    },
+    "linux_source": {
+      "branch": "main",
+      "commit": "009151581bc5c3d7fe955b3000ac5fb45b843d2b",
+      "origin_match": true
+    },
+    "linux_installed": {
+      "version": "4.2.0-linux.14-r41",
+      "release": "LINUX_4.2.0_R14_R41_UPDATE_REVISION_FIX",
+      "install_json_sha256": "a5eacca3deeb34ee7d25b7d569c1012cadafe366c0644b5bace5a275a60cceb2",
+      "install_manifest_sha256": "d1c8f15c0a3ad3473f1cc3bc07e236d7c5ac9c58ce7800f478c2650474bfe0d4"
+    }
+  },
+  "verification": {
+    "linux_static_runtime_tests": [
+      "selftest PASS",
+      "browser profile PASS",
+      "console policy PASS",
+      "private-state permissions PASS",
+      "R37 parity static PASS"
+    ],
+    "windows_prior_r45_evidence": "Backend/source/installed live pre-connect test and 130 regressions recorded PASS in evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json.",
+    "windows_current_pytest": "INCOMPLETE_NOT_FAIL: current full pytest invocation exceeded 9s synchronous transport budget after 24 dots; no failing assertion observed before transport timeout; not promoted as PASS.",
+    "windows_visual": "UNPROVEN: FreeNet Hub launched and window was observed, but GUI focus/click was denied by Commander policy GUI_TAKEOVER_NOT_AUTHORIZED, so post-click metric painting was not independently validated.",
+    "cleanup": "FreeNet Hub process opened by this audit was terminated; pytest temporary directory tests/tmpsej_h9ct was removed and ENOENT verified."
+  },
+  "findings": [
+    {
+      "severity": "HIGH",
+      "status": "OPEN",
+      "claim": "Windows owner-local R45 hotfix is ahead of public main and not publicly promoted; source authority and public authority are intentionally different."
+    },
+    {
+      "severity": "MEDIUM",
+      "status": "OPEN",
+      "claim": "Windows visual post-click Ping/Download/Upload rendering remains the only direct R45 behavior gate not independently confirmed in this continuation."
+    },
+    {
+      "severity": "MEDIUM",
+      "status": "CONFIRMED",
+      "claim": "Linux source is clean at public main while installed runtime remains 4.2.0-linux.14-r41; this is version/authority separation, not evidence of failure by itself."
+    },
+    {
+      "severity": "LOW",
+      "status": "CONFIRMED",
+      "claim": "Linux audit tests passed and did not request network-on-import; WARP service/taskbar were already present before audit and were not altered."
+    }
+  ],
+  "blockers": [
+    "GUI takeover/click authority unavailable in this session for final Windows post-click visual validation.",
+    "Trusted Windows Authenticode remains external/missing per existing Project Brain.",
+    "Physical console E2E and mobile production signing/forwarding remain separate deferred tracks."
+  ],
+  "exact_next_action": "With GUI takeover authority available, click the installed Windows pre-connect Ping+Download+Upload test once and verify that all three table values replace dashes; if PASS, record screenshot/evidence, then decide whether to promote cdb251d/R45 into public main/release. Do not promote solely from backend evidence."
+}

@@ -577,6 +577,10 @@ Network Destination        Netmask          Gateway       Interface  Metric
   body=json.dumps({'tag_name':'v4.2.0-r29','name':'R29','published_at':'x','html_url':'https://example.invalid','assets':[{'name':'FreeNetHub_4.2.0_R29_Setup.exe','browser_download_url':'https://example.invalid/x.exe','size':1,'digest':'sha256:'+'a'*64}]})
   with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',return_value={'releaseRevision':'4.2.0-local-r28-final'}):
    r=E.update_release();self.assertTrue(r['updateAvailable']);self.assertEqual(r['currentRevisionNumber'],28);self.assertEqual(r['remoteRevisionNumber'],29)
+ def test_v432_r44_to_r46_update_transition(self):
+  body=json.dumps({'tag_name':'v4.3.2','name':'FreeNet Hub 4.3.2','published_at':'x','html_url':'https://example.invalid','assets':[{'name':'FreeNetHub_4.3.2_R46_Setup.exe','browser_download_url':'https://example.invalid/r46.exe','size':1,'digest':'sha256:'+'a'*64}]})
+  with patch.object(E,'curl',return_value={'exit':0,'code':'200','body':body}),patch.object(E,'read',return_value={'releaseRevision':'4.3.1-r44-final'}):
+   r=E.update_release();self.assertTrue(r['revisionComparable']);self.assertTrue(r['updateAvailable']);self.assertEqual(r['currentRevisionNumber'],44);self.assertEqual(r['remoteRevisionNumber'],46);self.assertEqual(r['asset']['name'],'FreeNetHub_4.3.2_R46_Setup.exe')
  def test_update_release_uses_manifest_revision_when_release_file_missing(self):
   body=json.dumps({'tag_name':'v4.2.0-r27','name':'R27','published_at':'x','html_url':'https://example.invalid','assets':[{'name':'FreeNetHub_4.2.0_R27_Setup.exe','browser_download_url':'https://example.invalid/x.exe','size':1,'digest':'sha256:'+'a'*64}]})
   def fake_read(path,default=None):

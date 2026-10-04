@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "project": "FreeNet Hub",
+  "changeSet": "R46_WINDOWS_PRECONNECT_UI_CLOSURE",
+  "status": "PASS_SOURCE_WPF_CONTROL_RENDER_AND_CONNECTION_PRESERVATION",
+  "previousAcceptedState": {
+    "public": "v4.3.1 / Windows R44 remains public authority",
+    "ownerLocal": "R45 backend direct-route hotfix PASS; visual post-click rendering UNPROVEN"
+  },
+  "mainBlocker": "Pre-connect Speed/DIRECT worker completed successfully but the WPF dashboard still showed a display error/dashes.",
+  "facts": [
+    {
+      "claim": "Speed/DIRECT backend itself was healthy after R45.",
+      "status": "CONFIRMED",
+      "evidence": {
+        "finalJob": "0474a5f708084e53bd036b68b5b76457",
+        "exit": 0,
+        "pingMs": 95,
+        "downloadMbps": 34.62,
+        "uploadMbps": 1.73,
+        "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER",
+        "trustedPhysical": true
+      }
+    },
+    {
+      "claim": "The UI failure occurred in Paint-Performance under Set-StrictMode because direct_speed() does not return an optional checked key and the UI read $p.checked unguarded.",
+      "status": "CONFIRMED_ROOT_CAUSE",
+      "evidence": [
+        "Independent pwsh StrictMode repro: a hashtable lacking checked raises PropertyNotFoundException.",
+        "app/engine.py direct_speed() result has no checked key.",
+        "Second smoke backend exit=0 while evidence/gui.json reported statusTitle=خطای نمایش نتیجه."
+      ]
+    }
+  ],
+  "decision": {
+    "selected": "Treat checked as optional in Paint-Performance: use ContainsKey('checked') before reading it, otherwise use current UTC for freshness.",
+    "rationale": "Minimum sufficient change: fixes the proven display exception without changing backend/network behavior.",
+    "rejected": [
+      {
+        "option": "Add a synthetic checked field to every backend speed result",
+        "reason": "Broader backend contract mutation was unnecessary for an optional UI freshness value."
+      },
+      {
+        "option": "Suppress StrictMode or wrap the entire success handler in a generic ignore",
+        "reason": "Would hide future contract errors instead of fixing the precise missing-key access."
+      }
+    ]
+  },
+  "failurePrevention": {
+    "rootCause": "STRICTMODE_MISSING_CHECKED_KEY_IN_DIRECT_SPEED_RESULT",
+    "prevention": "Optional result properties are feature-detected before access in WPF success painting.",
+    "guard": "tests/test_v432_preconnect_feedback.py::test_performance_freshness_tolerates_speed_result_without_checked",
+    "regression": {
+      "focusedTests": "11/11 PASS",
+      "failClosedMobileVerifier": "PASS"
+    }
+  },
+  "validation": {
+    "finalSmoke": {
+      "evidence": "evidence/R46_PRECONNECT_UI_SOURCE_20261004.json",
+      "evidenceSha256": "E32AAA837922B5BEEE05E639AE134F83AFA61F49B7E431DEDCB18A1E625A7CD6",
+      "rendered": {
+        "ping": "95 ms",
+        "download": "34.6 Mbps",
+        "upload": "1.7 Mbps"
+      },
+      "workerExit": 0,
+      "statusTitle": "تست سرعت مستقیم کامل شد"
+    },
+    "connectionPreservation": {
+      "installedSessionBeforeSha256": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+      "installedSessionAfterSha256": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+      "sessionMode": "CFON",
+      "sessionScope": "BROWSER_HTTPS",
+      "sessionState": "CONNECTED_HEALTHY",
+      "defaultRouteBefore": "0.0.0.0/0 via 192.168.20.1 on Ethernet 3 / 192.168.20.5 metric 25",
+      "defaultRouteAfter": "IDENTICAL",
+      "dnsBefore": "Ethernet 3 -> 192.168.20.1",
+      "dnsAfter": "IDENTICAL",
+      "networkMutation": false
+    }
+  },
+  "provenance": {
+    "uiSha256": "0811D7B0B920F0A8D1527DC471EE08DEB7168B50FB0E396530D02659E752874F",
+    "appManifestSha256": "0FC599AD7BC5D7C6B8967943B8ECCD10F2E20070A9AF95A359F64A645BA97320",
+    "testSha256": "82F012E2ECD46BB95295377CA145D72626E00C5516E90D3D8F59D5921A405F94",
+    "publicEvidenceUsesSymbolicRoots": true
+  },
+  "limitation": "This proves source-candidate WPF rendering and owner-network preservation. Exact packaged/fresh-installed R46 behavior still requires installer/hosted validation before public promotion.",
+  "exactNextAction": "Run Linux installed non-mutating acceptance and broad local Windows/package regression, then promote only to hosted CI."
+}

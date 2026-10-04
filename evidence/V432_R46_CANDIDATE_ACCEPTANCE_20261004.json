@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "project": "FreeNet Hub",
+  "version": "4.3.2",
+  "status": "V432_R46_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "releaseRevision": "4.3.2-r46-final",
+  "objective": "Promote the proven R45/R46 pre-connect test fixes under a distinct successor release identity without overwriting v4.3.1/R44.",
+  "acceptedSoFar": [
+    "R46 source WPF Ping/Download/Upload rendering PASS",
+    "Owner CFON session/default route/DNS preserved byte-for-byte",
+    "Windows full local regression 183/183 PASS",
+    "R46 installer rebuilt from current bytes with raw-manifest preflight PASS",
+    "Linux R14/R41 exact-current revalidation PASS with 9/9 installed integrity and route/DNS preservation",
+    "Android API36/AGP8.10.1/Gradle8.11.1 and iOS Xcode26/macOS26 toolchain configuration locally fail-closed PASS; hosted runtime validation open"
+  ],
+  "openGates": [
+    "Final public manifest/security verification",
+    "Hosted Windows fresh-install + Linux + Android API36 emulator + iOS Xcode26 simulator + console virtual acceptance",
+    "Public promotion/post-publish update and digest verification"
+  ],
+  "externalNonBlocking": [
+    "Trusted Windows Authenticode identity",
+    "Physical console field E2E",
+    "Android production forwarding/signing/real-device",
+    "iOS production forwarding/device signing/entitlement"
+  ],
+  "evidence": [
+    "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json",
+    "evidence/R46_LINUX_R14_REVALIDATION_20261004.json",
+    "evidence/R46_PLATFORM_BENCHMARK_20261004.json",
+    "evidence/V432_R46_INSTALLER_BUILD_20261004.json"
+  ],
+  "exactNextAction": "Rebuild and verify the final public manifest/security candidate once; if PASS, commit and push the R46 candidate for fresh hosted CI. Promote/publish only after hosted gates pass.",
+  "package": {
+    "path": "delivery/github_v4.3.2/FreeNetHub_4.3.2_R46_Setup.exe",
+    "bytes": 24254909,
+    "sha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F",
+    "authenticode": "NotSigned",
+    "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+    "freshInstall": "HOSTED_OPEN"
+  }
+}

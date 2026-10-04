@@ -1,4 +1,4 @@
-param([switch]$Smoke,[ValidateRange(0,4)][int]$SmokeTab=0)
+param([switch]$Smoke,[ValidateRange(0,4)][int]$SmokeTab=0,[switch]$SmokePreconnect,[string]$SmokeEvidencePath='')
 
 # FreeNet Hub 4.2. One UI; browser routes plus explicit elevated PC/console gateway. No network change on launch.
 
@@ -325,7 +325,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   $ping=Format-Metric $p.pingMs 'ms';$down=Format-Metric $p.downloadMbps 'Mbps';$up=Format-Metric $p.uploadMbps 'Mbps'
   $country=$(if($p.country){[string]$p.country}else{'—'})
   $script:C.MetricPing.Text=$ping;$script:C.MetricDownload.Text=$down;$script:C.MetricUpload.Text=$up;$script:C.MetricCountry.Text=$country
-  $script:C.MetricFreshness.Text='آخرین تست: '+$(if($p.checked){[string]$p.checked}else{[DateTimeOffset]::UtcNow.ToString('o')})
+  $script:C.MetricFreshness.Text='آخرین تست: '+$(if($p.ContainsKey('checked') -and $p.checked){[string]$p.checked}else{[DateTimeOffset]::UtcNow.ToString('o')})
   $line='Ping '+$ping+' · Down '+$down+' · Up '+$up
   switch($mode){
    'AUTO'{$script:C.SmartMetric.Text=$line;if($script:C.ContainsKey('CompareSmart')){$script:C.CompareSmart.Text=$line+' · '+$country}}
@@ -1144,6 +1144,10 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
 
       if($r.action -eq 'Speed'){
        Paint-Performance $r.result 'DIRECT'
+       if($SmokePreconnect){
+        $smokeOut=$(if($SmokeEvidencePath){$SmokeEvidencePath}else{Join-Path $script:Root 'evidence\r46_preconnect_ui.json'})
+        Write-Json $smokeOut @{schema=1;utc=[DateTime]::UtcNow.ToString('o');action='Speed';exit=[int]$r.exit;rendered=@{ping=[string]$script:C.MetricPing.Text;download=[string]$script:C.MetricDownload.Text;upload=[string]$script:C.MetricUpload.Text;freshness=[string]$script:C.MetricFreshness.Text};backend=@{pingMs=$r.result.pingMs;downloadMbps=$r.result.downloadMbps;uploadMbps=$r.result.uploadMbps;routeProof=[string]$r.result.defaultRoute.routeProof};networkMutation=$false}
+       }
        $script:C.StatusTitle.Text=$(if($r.result.ok){'تست سرعت مستقیم کامل شد'}else{'تست سرعت مستقیم ناقص بود'})
        $script:C.StatusDetail.Text='اینترنت مستقیم · دانلود '+[string]$r.result.downloadMbps+' Mbps · آپلود '+[string]$r.result.uploadMbps+' Mbps · Ping '+$(if($null -ne $r.result.pingMs){[string]$r.result.pingMs+' ms'}else{'نامشخص'})+' · مسیر '+[string]$r.result.defaultRoute.adapterName
        $script:C.SidebarState.Text='Speed · DIRECT'
@@ -1226,7 +1230,8 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
  $script:Window.Add_ContentRendered({
   [void]$script:Window.Activate()
   if($Smoke){
-   if($script:SmokeVerifyMode){Start-Work 'Verify' $script:SmokeVerifyMode}
+   if($SmokePreconnect){$script:Settings.testPathMode='BASE';Start-ConfiguredTest $false}
+   elseif($script:SmokeVerifyMode){Start-Work 'Verify' $script:SmokeVerifyMode}
   }else{
    [void](Gateway-Refresh);Start-Work 'Inventory'
   }

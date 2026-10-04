@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "action": "Speed",
+  "rendered": {
+    "download": "24.9 Mbps",
+    "ping": "87.7 ms",
+    "upload": "5.1 Mbps",
+    "freshness": "آخرین تست: 2026-10-04T13:29:42.7036725+00:00"
+  },
+  "networkMutation": false,
+  "exit": 0,
+  "utc": "2026-10-04T13:29:42.7111221Z",
+  "backend": {
+    "pingMs": 87.7,
+    "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER",
+    "uploadMbps": 5.11,
+    "downloadMbps": 24.92
+  }
+}

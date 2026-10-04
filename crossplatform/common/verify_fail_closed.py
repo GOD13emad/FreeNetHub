@@ -12,6 +12,7 @@ android_ui=(R/"android/app/src/main/java/com/freenethub/mobile/MainActivity.kt")
 if "providerCoreReady(): Boolean = false" not in android_code: issues.append("ANDROID_CORE_READY_NOT_FALSE")
 if re.search(r"\.establish\s*\(",android_code): issues.append("ANDROID_TUN_ESTABLISH_ENABLED")
 if 'versionCode=420' not in android_gradle or 'versionName="4.2.0"' not in android_gradle: issues.append("ANDROID_VERSION_DRIFT")
+if "compileSdk=36" not in android_gradle or "targetSdk=36" not in android_gradle: issues.append("ANDROID_API36_NOT_ENFORCED")
 if "FreeNet Hub 4.2.0" not in android_ui: issues.append("ANDROID_UI_VERSION_DRIFT")
 
 provider=(R/"ios/PacketTunnel/PacketTunnelProvider.swift").read_text(encoding="utf-8-sig")

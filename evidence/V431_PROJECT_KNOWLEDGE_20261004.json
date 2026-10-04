@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-10-04",
-  "status": "FINAL_PUBLIC_WITH_OWNER_LOCAL_R45_HOTFIX__VISUAL_POSTCLICK_OPEN",
+  "status": "R46_LOCAL_GATES_PASS_HOSTED_OPEN",
   "project": "FreeNet Hub 4.3.1 integrity hotfix",
   "records": [
     {
@@ -235,11 +235,138 @@
         "evidencePath": "evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json",
         "evidenceSha256": "79A15EBFFD877D5F5DEC63FC10B7443BD6C211B6646EE7946A2B187D311DB76F"
       }
+    },
+    {
+      "date": "2026-10-04",
+      "context": "R46 closure of the owner-reported pre-connect Ping/Download/Upload visual failure.",
+      "claimDecision": "The remaining visual failure was not the R45 direct-route backend. Paint-Performance accessed optional result key checked under PowerShell StrictMode, while direct_speed() does not emit checked. Guarding the optional key closed the WPF display failure with no network/backend mutation.",
+      "evidenceSource": [
+        "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json",
+        "evidence/R46_PRECONNECT_UI_SOURCE_20261004.json",
+        "independent PowerShell StrictMode missing-property reproduction",
+        "app/engine.py direct_speed() result contract"
+      ],
+      "status": "CONFIRMED_ROOT_CAUSE_CLOSED_PASS",
+      "confidence": "HIGH",
+      "rootCause": "STRICTMODE_MISSING_CHECKED_KEY_IN_DIRECT_SPEED_RESULT",
+      "prevention": "Feature-detect optional result properties before access; retain StrictMode.",
+      "rejectedAlternatives": [
+        "Broaden backend contract solely to add checked.",
+        "Disable/suppress StrictMode errors."
+      ],
+      "regression": "11 focused integrity/preconnect tests PASS.",
+      "validation": {
+        "rendered": "Ping 95 ms / Download 34.6 Mbps / Upload 1.7 Mbps",
+        "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER",
+        "sessionPreservedSha256": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+        "session": "CFON / BROWSER_HTTPS / CONNECTED_HEALTHY",
+        "routeDnsPreserved": true
+      },
+      "limitation": "Exact packaged/fresh-installed R46 remains pending hosted installer validation.",
+      "reuseTargets": [
+        "support",
+        "failure prevention",
+        "Windows UI regression",
+        "release notes",
+        "final report"
+      ],
+      "provenance": {
+        "evidencePath": "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json",
+        "evidenceSha256": "EA066217A8F2EB2DF4D80E03BD14D0A998EA10421E21DD8B8EEE2FD39ECF7887",
+        "uiSha256": "0811D7B0B920F0A8D1527DC471EE08DEB7168B50FB0E396530D02659E752874F"
+      }
+    },
+    {
+      "date": "2026-10-04",
+      "context": "Current-platform submission/toolchain benchmark for Android/iOS and proportional-rigor review of mobile forwarding architecture.",
+      "claimDecision": "Android candidate is moved to API36 with AGP 8.10.1/Gradle 8.11.1; iOS hosted CI is pinned to macos-26 with Xcode/iOS26 guards. Mobile forwarding remains fail-closed rather than binding a new core in this finalization change set.",
+      "evidenceSource": [
+        "evidence/R46_PLATFORM_BENCHMARK_20261004.json",
+        "Google Play target API requirements",
+        "Android Developers AGP compatibility pages",
+        "Apple Upcoming Requirements",
+        "GitHub actions/runner-images macOS 26 toolset",
+        "sing-box Android/Apple primary repositories"
+      ],
+      "status": "CONFIRMED_METHOD_DECISION__HOSTED_VALIDATION_OPEN",
+      "confidence": "HIGH",
+      "rationale": "Meets current store/toolchain requirements while avoiding a major unproven core/licensing/device-lifecycle expansion. Comparable sing-box clients use dedicated platform bindings and still require device-specific lifecycle validation.",
+      "rejectedAlternatives": [
+        "targetSdk 35",
+        "AGP 8.9.1 despite conflicting primary documentation",
+        "unnecessary AGP 9.x major migration",
+        "immediate sing-box/libbox integration"
+      ],
+      "reuseTargets": [
+        "mobile roadmap",
+        "CI policy",
+        "architecture rationale",
+        "release notes",
+        "final report"
+      ],
+      "provenance": {
+        "evidencePath": "evidence/R46_PLATFORM_BENCHMARK_20261004.json",
+        "evidenceSha256": "8FD30C68167FA43DD837188355DB6A10C528D6AB36326147B0F4DF371DFC6A3D"
+      }
+    },
+    {
+      "date": "2026-10-04",
+      "context": "Current installed Linux R14/R41 revalidation on owner Linux system.",
+      "claimDecision": "Installed Linux 4.2.0-linux.14-r41 remains exact source-parity for core/R37/GTK/nodehub bytes, passes 9/9 install integrity and live update-check, and preserves route/DNS. No Linux runtime mutation is justified.",
+      "evidenceSource": [
+        "evidence/R46_LINUX_R14_REVALIDATION_20261004.json",
+        "evidence/R41_PUBLIC_FINAL_ACCEPTANCE_20260930.json",
+        "evidence/R41_LINUX_UPDATE_REVISION_FIX_20260930.json"
+      ],
+      "status": "CONFIRMED_CURRENT_REVALIDATION_PASS",
+      "confidence": "HIGH",
+      "validation": "Exact source/install hashes match; public Linux R14 asset digest matches accepted B3FD52...; localRevision=remoteRevision=14; updateAvailable=false; route/DNS unchanged.",
+      "reuseTargets": [
+        "Linux handoff",
+        "release continuity",
+        "support",
+        "final report"
+      ],
+      "provenance": {
+        "evidencePath": "evidence/R46_LINUX_R14_REVALIDATION_20261004.json",
+        "evidenceSha256": "A2AD166733906CF52419AC23DCC1DBCFB299B517A99986797ACAE51759702357"
+      }
+    },
+    {
+      "date": "2026-10-04",
+      "context": "R46 local/package closure before hosted promotion",
+      "claimDecision": "R46 local functional/package gates are closed: full Windows regression 183/183 PASS; exact installer rebuilt from current bytes with raw-manifest preflight PASS; Linux R14/R41 exact installed revalidation PASS with route/DNS unchanged. Public promotion remains prohibited until final public-tree verification and hosted cross-platform/fresh-install CI pass.",
+      "evidenceSource": [
+        "full local pytest: 183/183 PASS",
+        "evidence/V432_R46_INSTALLER_BUILD_20261004.json",
+        "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json",
+        "evidence/R46_LINUX_R14_REVALIDATION_20261004.json"
+      ],
+      "status": "CONFIRMED_LOCAL_GATES_PASS_HOSTED_OPEN",
+      "confidence": "HIGH",
+      "provenance": {
+        "windowsInstaller": "delivery/github_v4.3.2/FreeNetHub_4.3.2_R46_Setup.exe",
+        "windowsInstallerBytes": 24254909,
+        "windowsInstallerSha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F",
+        "authenticode": "NotSigned",
+        "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+        "windowsRegression": "183/183 PASS",
+        "linuxVersion": "4.2.0-linux.14-r41",
+        "linuxSourceCommit": "009151581bc5c3d7fe955b3000ac5fb45b843d2b"
+      },
+      "reuseTargets": [
+        "release notes",
+        "hosted CI promotion",
+        "final report",
+        "future audit"
+      ]
     }
   ],
   "openGates": [
-    "Trusted Authenticode identity remains external/missing and is non-blocking for functional correctness/publication.",
-    "Physical console field E2E and Android/iOS production forwarding/signing are deferred separate tracks outside the Windows/Linux desktop final DoD."
+    "Final public-tree manifest/security verification before commit/push.",
+    "Hosted Windows fresh-install, Linux, Android API36 emulator, iOS Xcode26 simulator, console virtual and aggregate acceptance.",
+    "Public promotion/post-publish digest and updater verification.",
+    "External/non-blocking: trusted Windows Authenticode, physical-console field E2E, Android/iOS production forwarding/signing/device; mobile core integration additionally requires an explicit project licensing/core decision."
   ],
-  "exactNextAction": "Visually confirm one pre-connect test click on the owner Windows UI. Public v4.3.1 remains the release authority; R45 is owner-local until separately promoted."
+  "exactNextAction": "Synchronize candidate manifests after API36/toolchain edits, run broad local regression/package/virtual-console gates, then hosted cross-platform CI. Do not mutate accepted Linux runtime or owner Windows CFON connection."
 }

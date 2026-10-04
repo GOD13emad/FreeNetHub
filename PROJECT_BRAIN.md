@@ -248,3 +248,43 @@ On the already-running owner Windows UI, press the same pre-connect Ping + Downl
 - 2026-10-04 V431 PUBLIC FINAL: PR #24 merged as runtime commit 3bfbb8f51881eb53579325f80bf4e370bba42c76; PR CI #183, post-merge main CI #184 and tag CI #185 all SUCCESS, including windows-installer-fresh and aggregate virtual-acceptance. GitHub release v4.3.1 is Latest and sole public Release authority. Public Windows asset FreeNetHub_4.3.1_R44_Setup.exe is 24,266,713 bytes / SHA-256 A2613A62AEE78664C43D451B262A79456D077B40EC53CD083DDEE783D4B76A19; Linux remains accepted R14, 213,124 bytes / SHA-256 B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984. GitHub server-side digests and independent public downloads match both hashes. Broken v4.3.0 release object was removed after metadata archival, while tags/history v4.3.0 -> 5930326... and v4.3.1 -> 3bfbb8f... were preserved. Authenticode remains MISSING_EXTERNAL/NotSigned and is the only Windows distribution polish gap, not a functional correctness blocker. Evidence: evidence/V431_PUBLIC_RELEASE_CLOSURE_20261004.json; superseded release archive: evidence/V430_SUPERSEDED_RELEASE_ARCHIVE_20261004.json.
 
 - 2026-10-04 V431 REPOSITORY CLOSURE: evidence/control commit `44dd1b68e64c995ae6cc9594b1603e7d965c0c32` passed hosted CI #186 / run `37185596527`, including `windows-installer-fresh`, Android emulator runtime, iOS simulator runtime and aggregate `virtual-acceptance`. This validates the final repository control/evidence state; runtime release authority remains tag `v4.3.1 -> 3bfbb8f51881eb53579325f80bf4e370bba42c76`.
+
+
+## Audit continuation — 2026-10-04 (new chat after stream failure)
+Status: CURRENT / PARTIAL_PASS_WITH_OPEN_GATES
+- Windows owner source is still `v4.3.2-preconnect-test-hotfix` at `cdb251d44a41ba9f3970a7ee7cdc05b87a7b89cf`; public `main` remains `009151581bc5c3d7fe955b3000ac5fb45b843d2b`. R45 is therefore OWNER_LOCAL_NOT_PUBLIC.
+- Existing R45 backend evidence remains valid: installed/source pre-connect Ping+Download+Upload backend PASS and prior focused regression 130/130 PASS. In this continuation, a full pytest rerun was intentionally not auto-promoted: synchronous transport timed out after 24 passing dots, so result = INCOMPLETE_NOT_FAIL.
+- Windows visual post-click rendering remains OPEN/UNPROVEN. FreeNet Hub launched and its window was observed, but Commander rejected focus/click with `GUI_TAKEOVER_NOT_AUTHORIZED`; no visual PASS claim is permitted.
+- Linux source is clean at `main...origin/main` commit `0091515`. Installed runtime remains `4.2.0-linux.14-r41`. Current Linux selftest/browser-profile/console-policy/private-state/R37-parity checks all PASS.
+- No tunnel/proxy/VPN connection was started or stopped by this audit. The Windows UI process opened for observation was terminated afterward. Pytest temp directory created by the audit was removed and verified absent.
+- New evidence: `evidence/HOLISTIC_AUDIT_CONTINUATION_20261004.json`, SHA-256 `3fda63fa0ae32d64fdaf4c6ff8cedf2fb8c07b38069aa0e2c98b86b036fc2abe`.
+
+### Current critical path
+1. Close only the Windows R45 visual post-click gate with authorized GUI interaction: click the installed pre-connect Ping+Download+Upload test once and prove all three values replace dashes.
+2. If and only if that visual gate passes, record screenshot/evidence and decide whether to promote `cdb251d` into public `main`/release.
+3. Keep Authenticode, physical-console E2E and mobile production signing/forwarding as explicit external/separate gates; do not block desktop functional closure on them.
+
+### Exact Next Action
+Obtain an authorized GUI takeover lease for the owner Windows session, run the single pre-connect UI test without changing tunnel state, capture post-click evidence, and then update promotion authority.
+
+
+## R46 holistic finalization — local gates milestone (2026-10-04)
+Status: CURRENT / R46_LOCAL_GATES_PASS_HOSTED_OPEN
+- Previous public authority remains FreeNet Hub v4.3.1 / Windows R44. R46 is not public yet.
+- Windows R46 source WPF pre-connect rendering is CLOSED_PASS: Ping 95 ms, Download 34.6 Mbps, Upload 1.7 Mbps rendered from the successful Speed/DIRECT worker. Root cause was StrictMode access to optional `checked`; minimum fix uses `ContainsKey('checked')` and retains StrictMode.
+- Owner Windows CFON session was preserved byte-for-byte; default route and DNS were unchanged by the R46 BASE/DIRECT test.
+- Windows full local regression: 183/183 PASS.
+- Exact current R46 installer build: `delivery/github_v4.3.2/FreeNetHub_4.3.2_R46_Setup.exe`, 24,254,909 bytes, SHA-256 `227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F`; 25 build inputs frozen; raw-byte app-manifest preflight PASS; Authenticode NotSigned (external distribution identity gate).
+- Linux authority remains public R14/R41 at source commit `009151581bc5c3d7fe955b3000ac5fb45b843d2b`. Current owner-laptop revalidation PASS: all Linux tests PASS, installed integrity 9/9 PASS, route and DNS unchanged.
+- Android is configured for API 36 with AGP 8.10.1 / Gradle 8.11.1 / Build Tools 35.0.0 and remains fail-closed because packet forwarding core is not linked. iOS CI targets macOS 26 / Xcode 26 / iOS 26 SDK and remains fail-closed because packet forwarding core is not linked. Production mobile forwarding/signing/device validation is a separate external/legal architecture track; the repository currently has no project-wide license, so libbox/sing-box embedding is not auto-promoted.
+- Console software/virtual acceptance remains on the hosted critical path; physical console field E2E remains external hardware validation.
+- Evidence authority: `evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json`, `evidence/R46_LINUX_R14_REVALIDATION_20261004.json`, `evidence/R46_PLATFORM_BENCHMARK_20261004.json`, `evidence/V432_R46_INSTALLER_BUILD_20261004.json`, `evidence/V432_R46_CANDIDATE_ACCEPTANCE_20261004.json`.
+
+### ← CURRENT critical path
+1. Rebuild PUBLIC_MANIFEST once from the final local candidate and run public-tree + security verification.
+2. If PASS, commit/push R46 candidate and require hosted Windows fresh-install + Linux + Android API36 emulator + iOS Xcode26 simulator + console virtual + aggregate acceptance.
+3. Only after hosted PASS: merge/promote v4.3.2, publish exact Windows R46 + unchanged accepted Linux R14 assets, verify GitHub digests/download hashes and post-publish update equality.
+4. Keep trusted Authenticode, physical console field E2E and mobile production forwarding/signing/device explicitly external until independently proven.
+
+### Exact Next Action
+Rebuild `PUBLIC_MANIFEST.json` once from this candidate, run `verify_public_tree.py` and `security_scan_public.py`, and stop promotion on any mismatch.

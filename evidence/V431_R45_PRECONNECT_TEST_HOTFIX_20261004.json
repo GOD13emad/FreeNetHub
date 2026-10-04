@@ -81,7 +81,7 @@
       "status": "PASS",
       "job": "43204320432043204320432043204320",
       "exit": 0,
-      "pingMs": 96.0,
+      "pingMs": 96,
       "downloadMbps": 37.92,
       "uploadMbps": 5.36,
       "trustedPhysical": true,
@@ -103,7 +103,7 @@
       "job": "45104510451045104510451045104510",
       "exit": 0,
       "pingMs": 93.3,
-      "downloadMbps": 36.0,
+      "downloadMbps": 36,
       "uploadMbps": 4.82,
       "trustedPhysical": true,
       "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER",
@@ -130,8 +130,8 @@
     }
   },
   "provenance": {
-    "sourceRoot": "C:\\Users\\Aa.Emad\\source\\repos\\FreeNetHub",
-    "installedRoot": "C:\\Users\\Aa.Emad\\AppData\\Local\\Programs\\FreeNetHub",
+    "sourceRoot": "<PROJECT_ROOT>",
+    "installedRoot": "%LOCALAPPDATA%\\Programs\\FreeNetHub",
     "prestate": "evidence/V431_R45_PRECONNECT_HOTFIX_PRESTATE.json",
     "engineSha256": "70DE29328B9E2457F5CF0034E93C06EBFCBACCEF633191E51AFFB1713DD5EFC8",
     "uiSha256": "3A42607A81E614220503B11BC3EABAEB10298A67DD11C2A14DF692DEFEA3C485",
@@ -150,7 +150,19 @@
       "test_direct_route_rejects_virtual_default_adapter",
       "test_route_print_parser_is_header_locale_independent",
       "test_ui_marks_test_running_and_timeout_in_dashboard"
-    ]
+    ],
+    "publicEvidenceHygiene": {
+      "rootCause": "R45 evidence was assembled with absolute owner-machine paths even though the public-tree security guard already prohibited user-profile paths.",
+      "prevention": "All public evidence provenance uses symbolic roots (<PROJECT_ROOT>, %LOCALAPPDATA%) rather than owner-specific absolute paths.",
+      "guard": "tests/security_scan_public.py windows_user_path rule",
+      "regression": "security_scan_public.py must PASS before any promotion"
+    }
   },
-  "exactNextAction": "On the already-running owner UI, press the same pre-connect test once and visually confirm Ping/Download/Upload replace dashes. Backend hotfix is already active; no disconnect/restart is required for the successful-result path."
+  "exactNextAction": "On the already-running owner UI, press the same pre-connect test once and visually confirm Ping/Download/Upload replace dashes. Backend hotfix is already active; no disconnect/restart is required for the successful-result path.",
+  "followUpClosure": {
+    "status": "CLOSED_BY_R46_SOURCE_UI_PASS",
+    "evidence": "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json",
+    "evidenceSha256": "EA066217A8F2EB2DF4D80E03BD14D0A998EA10421E21DD8B8EEE2FD39ECF7887",
+    "note": "Historical R45 visualUiPostClick remains UNPROVEN for the R45 checkpoint; R46 separately proved the WPF rendered metrics and preserved the active CFON session."
+  }
 }

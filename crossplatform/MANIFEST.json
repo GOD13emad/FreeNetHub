@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "version": "4.2.0-crossplatform-r41-linux-r14",
+  "version": "4.3.2-crossplatform-r46-local-gates-pass",
   "files": [
     {
       "file": "android/app/build.gradle.kts",
       "bytes": 434,
-      "sha256": "88734089AC114EA96C9F723663BACD3DCEA60DE7D7E9E9C60DEED83D58193D75"
+      "sha256": "151031535EF6601C43B907DAD04AA2BD4401EBBC216CD27F88B823DCB8F5F66D"
     },
     {
       "file": "android/app/src/main/AndroidManifest.xml",
@@ -24,8 +24,8 @@
     },
     {
       "file": "android/build.gradle.kts",
-      "bytes": 125,
-      "sha256": "8E64C01C093A54369021C027F186A8E4C7365B2B2DABC8201BB3080925C4229D"
+      "bytes": 126,
+      "sha256": "E8C6210D98119AB5194D76C346EADDBD7A8FEF1227238304BC151AE709719809"
     },
     {
       "file": "android/gradle.properties",
@@ -49,13 +49,13 @@
     },
     {
       "file": "common/platform_matrix.json",
-      "bytes": 3993,
-      "sha256": "5378FA419E3F7F57C41411C23569DA68FACC26DB4D71768EE37E8B9A761402A4"
+      "bytes": 6706,
+      "sha256": "FCC58B6031CED87645F7BF714A1788A6A40200BF4541AB9E9502375512ECBCF4"
     },
     {
       "file": "common/verify_fail_closed.py",
-      "bytes": 2626,
-      "sha256": "5DA9E240E451719648F8EE8EE5E8F9FB7DF03311BA90310B8AFC2A035572B3FA"
+      "bytes": 2752,
+      "sha256": "AB2FEE4A1F5BA605093036846BC14A2CF4CD596C1D3228A72700FF161663F28B"
     },
     {
       "file": "ios/FreeNetHub/ContentView.swift",

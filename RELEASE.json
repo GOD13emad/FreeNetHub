@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
-  "version": "4.3.1",
-  "releaseRevision": "4.3.1-r45-preconnect-test-hotfix",
-  "status": "V431_LOCAL_PRECONNECT_TEST_HOTFIX_ACCEPTED_SOURCE",
+  "version": "4.3.2",
+  "releaseRevision": "4.3.2-r46-final",
+  "status": "V432_R46_LOCAL_GATES_PASS_HOSTED_OPEN",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -17,13 +17,13 @@
     "NOADMIN_NORMAL_LAUNCH"
   ],
   "engineSha256": "70DE29328B9E2457F5CF0034E93C06EBFCBACCEF633191E51AFFB1713DD5EFC8",
-  "uiSha256": "3A42607A81E614220503B11BC3EABAEB10298A67DD11C2A14DF692DEFEA3C485",
+  "uiSha256": "0811D7B0B920F0A8D1527DC471EE08DEB7168B50FB0E396530D02659E752874F",
   "viewSha256": "8E59E0DAB66DC85B174DAE39993E4CF61E30A0F5B4BEF13803AC0E68E7E1CE3F",
   "desktopShellSha256": "42399C7A30ECC88588AAA0F68782629ADB4A049F2576F978C5EAC1F35E2D6435",
   "gatewayManifestSha256": "DA4C24B3C3611138AE80788966961C5F33C73917983F39B522852C40EACB9247",
-  "crossPlatformManifestSha256": "6C74E8DFB3A7F0F487559511BF4262199C5409F9334301E4B625FD7A7FA013C7",
-  "installerSha256": null,
-  "acceptanceEvidence": "evidence/V431_INTEGRITY_HOTFIX_ACCEPTANCE_20261004.json",
+  "crossPlatformManifestSha256": "2AFCD9D52352FA812505811F5FE9A80D21F254DE4516B7025CA3683D3C567A65",
+  "installerSha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F",
+  "acceptanceEvidence": "evidence/V432_R46_CANDIDATE_ACCEPTANCE_20261004.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "PUBLIC_FINAL_NATIVE_LINUX_4.2.0_R14_R41",
@@ -180,7 +180,7 @@
       "fix": "route.exe IPv4 table + Windows IP Helper adapter identity; explicit RUNNING/FAIL/TIMEOUT dashboard feedback.",
       "sourceLive": {
         "exit": 0,
-        "pingMs": 96.0,
+        "pingMs": 96,
         "downloadMbps": 37.92,
         "uploadMbps": 5.36,
         "trustedPhysical": true,
@@ -191,7 +191,7 @@
       "installedLive": {
         "exit": 0,
         "pingMs": 93.3,
-        "downloadMbps": 36.0,
+        "downloadMbps": 36,
         "uploadMbps": 4.82,
         "routeProof": "ROUTE_EXE+WINDOWS_IPHELPER"
       },
@@ -206,7 +206,7 @@
       "evidence": "evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json"
     }
   },
-  "appManifestSha256": "588BCE10A77F23B853C162DF90C9A760200A1823D5B9620C94CA5FC28C75CD6C",
+  "appManifestSha256": "A66EDF43ED38E2951B9D12EA0561DA09AB0200AF1A059CDDC218C6D9D1EB6D1E",
   "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
   "previousAcceptedInstallerSha256": "151444A7694D4BB9F3774B0767029F6F4AC8F8ECC2E0A858BED0C2A83D238996",
   "installerStatus": "DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE",
@@ -782,5 +782,52 @@
     "supersedes": "v4.3.0",
     "linuxRuntime": "UNCHANGED_R14_R41",
     "nodeUi": "NODE_GRID_MIN_190_METADATA_COLLAPSED_EXPLICIT_CELL_STYLE"
+  },
+  "r46AuthoritySync": {
+    "status": "R46_LOCAL_GATES_PASS_HOSTED_OPEN",
+    "platformMatrixSha256": "FCC58B6031CED87645F7BF714A1788A6A40200BF4541AB9E9502375512ECBCF4",
+    "crossPlatformManifestSha256": "2AFCD9D52352FA812505811F5FE9A80D21F254DE4516B7025CA3683D3C567A65",
+    "runtimeChanged": false,
+    "networkChanged": false,
+    "currentPlatformToolchain": {
+      "android": "API36_AGP8.10.1_GRADLE8.11.1_BUILD_TOOLS35_PENDING_HOSTED",
+      "ios": "MACOS26_XCODE26_IOS26SDK_GUARDED_PENDING_HOSTED"
+    },
+    "localFailClosedVerifierSha256": "AB2FEE4A1F5BA605093036846BC14A2CF4CD596C1D3228A72700FF161663F28B"
+  },
+  "r46WindowsUiEvidence": {
+    "status": "PASS_SOURCE_WPF_CONTROL_RENDER_AND_CONNECTION_PRESERVATION",
+    "rootCause": "STRICTMODE_MISSING_CHECKED_KEY_IN_DIRECT_SPEED_RESULT",
+    "prevention": "Paint-Performance checks ContainsKey('checked') before optional freshness access.",
+    "guard": "tests/test_v432_preconnect_feedback.py::test_performance_freshness_tolerates_speed_result_without_checked",
+    "focusedRegression": "11/11 PASS",
+    "evidence": "evidence/R46_WINDOWS_PRECONNECT_UI_CLOSURE_20261004.json",
+    "evidenceSha256": "EA066217A8F2EB2DF4D80E03BD14D0A998EA10421E21DD8B8EEE2FD39ECF7887",
+    "rendered": {
+      "ping": "95 ms",
+      "download": "34.6 Mbps",
+      "upload": "1.7 Mbps"
+    },
+    "sessionPreservedSha256": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "routeDnsPreserved": true,
+    "uiSha256": "0811D7B0B920F0A8D1527DC471EE08DEB7168B50FB0E396530D02659E752874F",
+    "appManifestSha256": "A66EDF43ED38E2951B9D12EA0561DA09AB0200AF1A059CDDC218C6D9D1EB6D1E",
+    "networkMutation": false,
+    "packagedValidation": "PASS_BUILD_RAW_MANIFEST__FRESH_INSTALL_HOSTED_OPEN",
+    "fullRegression": "183/183 PASS",
+    "installerSha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F"
+  },
+  "r46ReleaseIdentity": {
+    "version": "4.3.2",
+    "releaseRevision": "4.3.2-r46-final",
+    "windowsAsset": "FreeNetHub_4.3.2_R46_Setup.exe",
+    "windowsAssetPath": "delivery/github_v4.3.2/FreeNetHub_4.3.2_R46_Setup.exe",
+    "predecessorPublic": "v4.3.1 / R44",
+    "predecessorImmutable": true,
+    "linuxContinuity": "FreeNetHub_4.2.0_Linux_R14.zip / unchanged accepted R14",
+    "updaterRevisionTransition": "R44_TO_R46",
+    "status": "LOCAL_GATES_PASS_HOSTED_OPEN",
+    "installerBytes": 24254909,
+    "installerSha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F"
   }
 }

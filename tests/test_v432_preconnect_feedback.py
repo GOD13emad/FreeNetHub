@@ -28,3 +28,16 @@ def test_direct_speed_exposes_stage_progress():
     block=ENG.split('def direct_speed():',1)[1].split('def direct_adapter_snapshot',1)[0]
     for stage in ('verifying physical default route','verifying HTTPS exit','measuring Ping','measuring Download','measuring Upload'):
         assert stage in block
+
+
+def test_smoke_preconnect_evidence_uses_real_route_proof_field():
+    assert "$r.result.defaultRoute.routeProof" in PS
+    assert "$r.result.defaultRoute.proof" not in PS
+    assert "SmokePreconnect" in PS and "SmokeEvidencePath" in PS
+    assert "rendered=@{ping=" in PS
+
+
+def test_performance_freshness_tolerates_speed_result_without_checked():
+    block=PS.split('function Paint-Performance',1)[1].split('function Paint-ConsoleCapability',1)[0]
+    assert "ContainsKey('checked')" in block
+    assert "if($p.checked)" not in block
