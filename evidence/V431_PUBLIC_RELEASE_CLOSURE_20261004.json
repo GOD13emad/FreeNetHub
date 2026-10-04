@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "status": "FINAL_PUBLIC",
+  "release": {
+    "tag": "v4.3.1",
+    "name": "FreeNet Hub 4.3.1 Final",
+    "targetCommit": "3bfbb8f51881eb53579325f80bf4e370bba42c76",
+    "publishedAt": "2026-10-04T06:36:53Z",
+    "latest": true,
+    "draft": false,
+    "prerelease": false
+  },
+  "windows": {
+    "asset": "FreeNetHub_4.3.1_R44_Setup.exe",
+    "bytes": 24266713,
+    "sha256": "A2613A62AEE78664C43D451B262A79456D077B40EC53CD083DDEE783D4B76A19",
+    "githubAssetDigest": "sha256:a2613a62aee78664c43d451b262a79456d077b40ec53cd083ddee783d4b76a19",
+    "independentPublicDownloadSha256": "A2613A62AEE78664C43D451B262A79456D077B40EC53CD083DDEE783D4B76A19",
+    "ownerInstall": "PASS_4.3.1-r44-final_17_OF_17_INTEGRITY_UI_OPEN_ROUTE_UNCHANGED",
+    "nodeUi": "PASS_NODELIST_1088x473_15_VISIBLE_ROWS_144_TEXT_ELEMENTS",
+    "authenticode": "MISSING_EXTERNAL_NOTSIGNED"
+  },
+  "linux": {
+    "asset": "FreeNetHub_4.2.0_Linux_R14.zip",
+    "bytes": 213124,
+    "sha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+    "githubAssetDigest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+    "independentPublicDownloadSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+    "runtime": "UNCHANGED_ACCEPTED_R14_R41"
+  },
+  "hostedValidation": {
+    "prCI": {
+      "runNumber": 183,
+      "runId": 37182420602,
+      "conclusion": "SUCCESS",
+      "windowsInstallerFresh": "SUCCESS",
+      "virtualAcceptance": "SUCCESS"
+    },
+    "postMergeCI": {
+      "runNumber": 184,
+      "runId": 37182912838,
+      "conclusion": "SUCCESS",
+      "branch": "main"
+    },
+    "tagCI": {
+      "runNumber": 185,
+      "runId": 37183317480,
+      "conclusion": "SUCCESS",
+      "ref": "v4.3.1"
+    }
+  },
+  "releaseCleanup": {
+    "publicReleaseObjects": [
+      "v4.3.1"
+    ],
+    "removedReleaseObject": "v4.3.0",
+    "preservedTags": {
+      "v4.3.0": "5930326185bbeb1118a1fb4381d56e79d0af78bd",
+      "v4.3.1": "3bfbb8f51881eb53579325f80bf4e370bba42c76"
+    },
+    "archivePath": "evidence/V430_SUPERSEDED_RELEASE_ARCHIVE_20261004.json",
+    "archiveSha256": "DE20D6FB7231573825C98E98425307D55B2169CF21B0336FED1DC89BB1009E8D"
+  },
+  "rootCausesClosed": [
+    "v4.3.0 packaged bytes and protected app manifest diverged, causing fail-closed startup before WPF window creation.",
+    "Node backend held about 2000 entries but NodeList was squeezed/readability-broken by layout/style.",
+    "Disconnected owned dead-parent WARP/CFON listeners could unnecessarily block safe upgrades."
+  ],
+  "prevention": [
+    "Fail installer build unless every protected app file hash/size matches exact packaged raw bytes.",
+    "Hosted fresh-install CI launches installed UI and rejects ui-error.txt.",
+    "NodeList has minimum height plus explicit DataGrid text/header/cell styles and collapsed advanced metadata.",
+    "Upgrade cleanup is narrowly limited to owned dead-parent listeners when session is explicitly disconnected."
+  ],
+  "remainingNonBlockingExternal": [
+    "Trusted production Authenticode identity is not provisioned.",
+    "Physical console field E2E is a separate deferred hardware track.",
+    "Android/iOS production forwarding/signing remain separate deferred tracks."
+  ],
+  "exactNextAction": "No blocking action remains for the Windows/Linux public release. Optional future work: provision trusted Authenticode; handle deferred console/mobile production tracks separately."
+}

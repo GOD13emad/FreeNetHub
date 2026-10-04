@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-10-04",
-  "status": "CURRENT_CANDIDATE",
+  "status": "FINAL_PUBLIC",
   "project": "FreeNet Hub 4.3.1 integrity hotfix",
   "records": [
     {
@@ -166,14 +166,37 @@
         "post-publish verification",
         "handoff"
       ]
+    },
+    {
+      "date": "2026-10-04",
+      "context": "Public promotion and post-publish closure",
+      "claimDecision": "FreeNet Hub v4.3.1 is the sole public Release authority; exact Windows/Linux assets match accepted hashes; PR, post-merge and tag CI all passed; broken v4.3.0 release object was removed while its tag/history were preserved.",
+      "evidenceSource": [
+        "GitHub release v4.3.1 metadata and server-side asset digests",
+        "independent public asset download hashes",
+        "CI #183 / #184 / #185",
+        "evidence/V431_PUBLIC_RELEASE_CLOSURE_20261004.json",
+        "evidence/V430_SUPERSEDED_RELEASE_ARCHIVE_20261004.json"
+      ],
+      "status": "CONFIRMED_FINAL_PUBLIC",
+      "confidence": "HIGH",
+      "provenance": {
+        "runtimeCommit": "3bfbb8f51881eb53579325f80bf4e370bba42c76",
+        "windowsSha256": "A2613A62AEE78664C43D451B262A79456D077B40EC53CD083DDEE783D4B76A19",
+        "linuxSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+        "v430ArchiveSha256": "DE20D6FB7231573825C98E98425307D55B2169CF21B0336FED1DC89BB1009E8D"
+      },
+      "reuseTargets": [
+        "support",
+        "release handoff",
+        "future updater validation",
+        "project final report"
+      ]
     }
   ],
   "openGates": [
-    "Hosted exact fresh-install + installed UI launch smoke",
-    "Aggregate hosted CI",
-    "Post-merge hosted CI",
-    "Post-publish exact asset/hash/update verification",
-    "Trusted Authenticode remains external/missing"
+    "Trusted Authenticode identity remains external/missing and is non-blocking for functional correctness/publication.",
+    "Physical console field E2E and Android/iOS production forwarding/signing are deferred separate tracks outside the Windows/Linux desktop final DoD."
   ],
-  "exactNextAction": "Rebuild/verify final public tree, commit/push exact candidate, and promote only after hosted install-and-launch validation."
+  "exactNextAction": "No blocking action remains for the Windows/Linux public release; optional Authenticode and deferred console/mobile production tracks are separate future work."
 }
