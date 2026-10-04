@@ -314,3 +314,42 @@ Commit the control-only Brain/Evidence/Public Manifest closure, verify the publi
 - Runtime/installer diff versus tag `v4.3.2` is empty. Runtime release authority therefore remains `v4.3.2 -> dd8bee89be71e39777152b6428c2ec0b1ba50809`; the repository closure commit is control/evidence only.
 - Status: FINAL / PUBLIC_FINAL_CLOSED. No desktop/public-release blocker remains.
 - Exact Next Action: none for v4.3.2. Preserve tag/assets immutably; begin any future runtime change under a new change set. External Authenticode, physical-console field E2E, and production mobile forwarding/signing/device gates remain separate.
+
+## V433 R47 Smart / Node / Sort candidate — 2026-10-05
+Status: CURRENT / LOCAL_GATES_PASS_HOSTED_OPEN
+- Previous public authority remains immutable v4.3.2 -> dd8bee89be71e39777152b6428c2ec0b1ba50809. R47 is not public.
+- Smart now benchmarks all seven real browser methods and paints terminal per-method results. Smart remains selector-only; DIRECT/CUSTOM are comparison-only for automatic selection.
+- Live Smart PASS: Best=WARP; rank=['WARP', 'CFON', 'TOR', 'GOOL']; installed session, route and DNS unchanged.
+- Node live PASS: 2000 nodes, 1297 reachable endpoints; current-run best node=shadowsocks-812343868 / ss / AURX_HTTP_VERIFIED, country=BG, Ping=268.9 ms, Down=10.45 Mbps, Up=8.16 Mbps.
+- Node table sorting is typed; missing values remain last; numeric dropdown default is ascending and header click toggles direction.
+- Harness-only failures were isolated and guarded: bad stage destination naming, omitted local_gateway sing-box authority, and StrictMode optional-property access.
+- Full local regression PASS 196/196; fail-closed PASS; security PASS after local-path redaction; git diff --check PASS.
+- Exact local installer: FreeNetHub_4.3.3_R47_Setup.exe, 24276785 bytes, SHA-256 A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63, raw app-manifest preflight PASS. Authenticode remains NotSigned/external.
+- Evidence: evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json; knowledge: evidence/V433_PROJECT_KNOWLEDGE_20261005.json.
+
+### Roadmap ← CURRENT
+1. Rebuild PUBLIC_MANIFEST.json and run verify_public_tree.py + security scan.
+2. Record public-tree closure, rebuild/verify once more so closure evidence is included.
+3. Commit/push R47 and require hosted Windows fresh-install + Linux + console virtual + Android emulator + iOS simulator + aggregate acceptance.
+4. Promote/publish v4.3.3 only after hosted PASS; Authenticode remains external.
+
+### Exact Next Action
+Rebuild and verify the public manifest/tree on the exact R47 candidate; stop promotion on any mismatch.
+
+### V433 R47 local promotion gate closure — 2026-10-05
+Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_OPEN
+- Exact R47 candidate behavior is locally CLOSED_PASS: Smart tests all seven real browser methods with per-method terminal results while remaining selector-only; Node Pool returns the current-run best successful node identity/performance; Node numeric sorting uses raw numeric values ascending by default with missing values last, while text sorting is A-Z.
+- Live Smart and Node stage validations preserved installed session, route and DNS. Current-run Node proof selected the tested BG node with Ping 268.9 ms / Download 10.45 Mbps / Upload 8.16 Mbps.
+- Full frozen-candidate regression: 196/196 PASS. Mobile fail-closed PASS. Public security PASS. git diff --check PASS.
+- Exact local installer: delivery/github_v4.3.3/FreeNetHub_4.3.3_R47_Setup.exe, 24,276,785 bytes, SHA-256 A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63; 25 frozen inputs and raw app-manifest preflight PASS. Authenticode remains NotSigned / external.
+- Public-tree local gate PASS: PUBLIC_MANIFEST covered 466 files; public/app/gateway/cross-platform/windows manifests, release hashes and forbidden-runtime-artifact checks all PASS with zero mismatches.
+- Public authority remains immutable v4.3.2 -> dd8bee89be71e39777152b6428c2ec0b1ba50809. R47 is not public until hosted CI passes.
+
+#### Roadmap ← CURRENT
+1. Rebuild PUBLIC_MANIFEST once more so this closure record is included, then verify public tree/security.
+2. Commit/push exact R47 branch and require hosted Windows fresh-install + Linux + console virtual + Android emulator + iOS simulator + aggregate acceptance.
+3. Only after hosted PASS: promote exact tested SHA to main/tag v4.3.3 and publish the exact R47 Windows installer plus unchanged accepted Linux R14.
+4. Trusted Authenticode remains an explicit external distribution gate.
+
+#### Exact Next Action
+Final PUBLIC_MANIFEST rebuild/verification, then commit and push the exact R47 candidate for hosted CI.

@@ -400,17 +400,23 @@ Network Destination        Netmask          Gateway       Interface  Metric
  def test_connect_provider_rejects_country_capable_modes(self):
   with self.assertRaisesRegex(ValueError,'PROVIDER_CONNECT_MODE_UNSUPPORTED'):
    E.dispatch('ConnectProvider','NODE','')
- def test_provider_benchmark_auto_uses_smart_candidate_and_cleans_temporary(self):
-  health={'healthy':True,'mode':'NODE','country':'SG','error':''};perf={'ok':True,'mode':'NODE','country':'SG'}
-  with patch.object(E,'connect_candidates',return_value=['NODE','CFON']),patch.object(E,'country_target',return_value='SG'),patch.object(E,'owned',return_value=None),patch.object(E,'ensure_node',return_value=health) as en,patch.object(E,'path_speed',return_value=perf) as ps,patch.object(E,'stop') as st:
-   r=E.dispatch('ProviderBenchmark','AUTO','');self.assertEqual(r['provider'],'NODE');self.assertTrue(r['temporary']);self.assertEqual(r['attempts'],[]);en.assert_called_once_with('SG');ps.assert_called_once_with('NODE');st.assert_called_once_with('NODE')
- def test_provider_benchmark_auto_falls_through_failed_candidate(self):
-  health={'healthy':True,'mode':'TOR','country':'','error':''};perf={'ok':True,'mode':'TOR'}
+ def test_provider_benchmark_auto_tests_all_smart_candidates_and_cleans_temporary(self):
+  node_h={'healthy':True,'mode':'NODE','country':'SG','error':''};cfon_h={'healthy':True,'mode':'CFON','country':'SG','error':''}
+  speeds={'NODE':{'ok':True,'mode':'NODE','country':'SG','pingMs':20,'downloadMbps':10,'uploadMbps':1},'CFON':{'ok':True,'mode':'CFON','country':'SG','pingMs':40,'downloadMbps':20,'uploadMbps':2}}
+  with patch.object(E,'connect_candidates',return_value=['NODE','CFON']),patch.object(E,'smart_benchmark_candidates',return_value=['NODE','CFON']),patch.object(E,'country_target',return_value='SG'),patch.object(E,'owned',return_value=None),patch.object(E,'ensure_node',return_value=node_h) as en,patch.object(E,'ensure',return_value=cfon_h) as ens,patch.object(E,'path_speed',side_effect=lambda m:speeds[m]) as ps,patch.object(E,'node_selected',return_value=None),patch.object(E,'write'),patch.object(E,'stop') as st:
+   r=E.dispatch('ProviderBenchmark','AUTO','')
+  self.assertEqual(r['provider'],'NODE');self.assertTrue(r['temporary']);self.assertEqual(r['attempts'],[])
+  self.assertEqual([x['provider'] for x in r['results']],['NODE','CFON']);en.assert_called_once_with('SG');ens.assert_called_once_with('CFON');self.assertEqual(ps.call_count,2)
+  self.assertEqual(st.call_count,2);st.assert_any_call('NODE');st.assert_any_call('CFON')
+ def test_provider_benchmark_auto_records_failure_and_still_tests_later_candidate(self):
+  health={'healthy':True,'mode':'TOR','country':'','error':''};perf={'ok':True,'mode':'TOR','pingMs':30,'downloadMbps':5,'uploadMbps':1}
   def ensure(mode):
    if mode=='WARP':raise RuntimeError('WARP_FAIL')
    return health
-  with patch.object(E,'connect_candidates',return_value=['WARP','TOR']),patch.object(E,'owned',return_value=None),patch.object(E,'ensure',side_effect=ensure),patch.object(E,'path_speed',return_value=perf),patch.object(E,'stop') as st:
-   r=E.dispatch('ProviderBenchmark','AUTO','');self.assertEqual(r['provider'],'TOR');self.assertEqual(r['attempts'][0]['mode'],'WARP');self.assertEqual(st.call_count,2)
+  with patch.object(E,'connect_candidates',return_value=['WARP','TOR']),patch.object(E,'smart_benchmark_candidates',return_value=['WARP','TOR']),patch.object(E,'owned',return_value=None),patch.object(E,'ensure',side_effect=ensure),patch.object(E,'path_speed',return_value=perf),patch.object(E,'write'),patch.object(E,'stop') as st:
+   r=E.dispatch('ProviderBenchmark','AUTO','')
+  self.assertEqual(r['provider'],'TOR');self.assertEqual(r['attempts'][0]['mode'],'WARP')
+  self.assertEqual([x['provider'] for x in r['results']],['WARP','TOR']);self.assertEqual(st.call_count,2)
  def test_console_speed_dispatch_uses_console_path(self):
   with patch.object(E,'console_speed',return_value={'ok':True,'mode':'CONSOLE'}) as cs:
    r=E.dispatch('ConsoleSpeed','CONSOLE','');self.assertTrue(r['ok']);cs.assert_called_once_with()

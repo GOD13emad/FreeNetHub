@@ -1,0 +1,327 @@
+{
+  "schema": 1,
+  "utc": "2026-10-04T20:48:20.5045578+00:00",
+  "status": "PASS",
+  "objective": "R47 live Node Pool best-node validation on isolated stage",
+  "singboxAuthority": {
+    "schema": 1,
+    "singbox": {
+      "path": "<OWNER_INSTALL_ROOT>\\gateway\\runtime\\bin\\sing-box-1.14.0\\sing-box.exe",
+      "sha256": "AAD0EDE010EAFA7B277E520464F3A66FDE820103D737EFF739F40F3CC9451DCC",
+      "version": "1.14.0",
+      "archiveSha256": "3FFB56267DA14E287BE48BD10CF7E6505260125BAD940B75101FBB4D5D58E5D6"
+    }
+  },
+  "fastEndpointTest": {
+    "job": "70f30fd82d164ce59b53ceecbef5fb29",
+    "processExit": 0,
+    "exit": 0,
+    "total": 2000,
+    "reachable": 1297
+  },
+  "batches": [
+    {
+      "job": "834f7aaf617e424a813b05e37d87c5c4",
+      "processExit": 0,
+      "exit": 0,
+      "benchmarked": 4,
+      "passed": 0,
+      "failed": 4,
+      "eligible": 1463,
+      "remainingUnbenchmarked": 1459,
+      "results": [
+        {
+          "id": "948728a90822da403f48",
+          "status": "FAIL",
+          "ok": false,
+          "pingMs": 7.2,
+          "downloadMbps": null,
+          "uploadMbps": null,
+          "country": "",
+          "error": "PATH_NOT_VERIFIED_NODE"
+        },
+        {
+          "id": "e6ffd25d119eb2a88248",
+          "status": "FAIL",
+          "ok": false,
+          "pingMs": 8.0,
+          "downloadMbps": null,
+          "uploadMbps": null,
+          "country": "",
+          "error": "PATH_NOT_VERIFIED_NODE"
+        },
+        {
+          "id": "dbb8a2f15161e112d8b3",
+          "status": "FAIL",
+          "ok": false,
+          "pingMs": 26.6,
+          "downloadMbps": null,
+          "uploadMbps": null,
+          "country": "",
+          "error": "PATH_NOT_VERIFIED_NODE"
+        },
+        {
+          "id": "77e8f4510250959c8bb6",
+          "status": "FAIL",
+          "ok": false,
+          "pingMs": 1602.6,
+          "downloadMbps": null,
+          "uploadMbps": null,
+          "country": "DE",
+          "error": "THROUGHPUT_SAMPLE_INCOMPLETE"
+        }
+      ]
+    },
+    {
+      "job": "9ac50b8ab48948e980de97eef6fc6abc",
+      "processExit": 0,
+      "exit": 0,
+      "benchmarked": 4,
+      "passed": 1,
+      "failed": 3,
+      "eligible": 1463,
+      "remainingUnbenchmarked": 1455,
+      "results": [
+        {
+          "id": "c3fba28e2cf59271e205",
+          "status": "FAIL",
+          "ok": false,
+          "pingMs": null,
+          "downloadMbps": null,
+          "uploadMbps": null,
+          "country": "",
+          "error": "PATH_NOT_VERIFIED_NODE"
+        },
+        {
+          "id": "f86d4155178033969df2",
+          "status": "FAIL",
+          "ok": false,
+          "pingMs": 13.0,
+          "downloadMbps": null,
+          "uploadMbps": null,
+          "country": "",
+          "error": "PATH_NOT_VERIFIED_NODE"
+        },
+        {
+          "id": "ba47c23e24ed328ada05",
+          "status": "PASS",
+          "ok": true,
+          "pingMs": 265.7,
+          "downloadMbps": 6.98,
+          "uploadMbps": 3.98,
+          "country": "BG",
+          "error": ""
+        },
+        {
+          "id": "4fe049f885bcebef1645",
+          "status": "FAIL",
+          "ok": false,
+          "pingMs": 72.9,
+          "downloadMbps": null,
+          "uploadMbps": null,
+          "country": "",
+          "error": "PATH_NOT_VERIFIED_NODE"
+        }
+      ]
+    }
+  ],
+  "freshPassIds": [
+    "ba47c23e24ed328ada05"
+  ],
+  "providerBenchmark": {
+    "processExit": 0,
+    "job": "d2146b5c70774408b4605cd221818a49",
+    "record": {
+      "schema": 1,
+      "version": "4.0",
+      "job": "d2146b5c70774408b4605cd221818a49",
+      "action": "ProviderBenchmark",
+      "mode": "NODE",
+      "exit": 0,
+      "utc": "2026-10-05T00:18:19.094281+03:30",
+      "result": {
+        "provider": "NODE",
+        "health": {
+          "healthy": true,
+          "mode": "NODE",
+          "scope": "BROWSER_HTTPS",
+          "ip": "213.183.63.60",
+          "country": "BG",
+          "warp": "off",
+          "seconds": 0.251804,
+          "checked": "2026-10-05T00:18:14.86885+03:30",
+          "checks": [
+            {
+              "name": "Cloudflare HTTPS trace",
+              "code": "200",
+              "exit": 0
+            },
+            {
+              "name": "YouTube HTTPS",
+              "code": "204",
+              "exit": 0
+            }
+          ],
+          "countryPolicy": "AUTO",
+          "error": "",
+          "applicationAcceptance": "NOT_TESTED",
+          "connected": true,
+          "state": "CONNECTED_HEALTHY"
+        },
+        "performance": {
+          "mode": "NODE",
+          "path": "PROXY_PATH",
+          "ok": true,
+          "pingMs": 268.9,
+          "pingType": "HTTPS_RTT",
+          "downloadMbps": 10.45,
+          "uploadMbps": 8.16,
+          "downloadSampleBytes": 2000000,
+          "uploadSampleBytes": 500000,
+          "country": "BG",
+          "exitIp": "213.183.63.60",
+          "checked": "2026-10-05T00:18:18.106967+03:30",
+          "proxyUsed": true,
+          "error": ""
+        },
+        "temporary": true,
+        "node": {
+          "id": "ba47c23e24ed328ada05",
+          "name": "shadowsocks-812343868",
+          "protocol": "ss",
+          "server": "213.183.63.60",
+          "port": 9061,
+          "favorite": false,
+          "pinned": false,
+          "rating": 0,
+          "tags": [],
+          "note": "",
+          "source": "AURX_HTTP_VERIFIED",
+          "last_test": {
+            "healthy": true,
+            "country": "BG",
+            "ip": "213.183.63.60",
+            "seconds": 0.251804,
+            "error": "",
+            "checked": "2026-10-05T00:18:14.86885+03:30"
+          },
+          "endpoint_test": {
+            "reachable": true,
+            "latency_ms": 56.6,
+            "checked": "2026-10-05T00:15:26.359367+03:30",
+            "type": "TCP_ENDPOINT_ONLY"
+          },
+          "performance_test": {
+            "ok": true,
+            "pingMs": 268.9,
+            "pingType": "HTTPS_RTT",
+            "downloadMbps": 10.45,
+            "uploadMbps": 8.16,
+            "country": "BG",
+            "checked": "2026-10-05T00:18:18.106967+03:30",
+            "error": ""
+          },
+          "history": [
+            {
+              "healthy": true,
+              "country": "BG",
+              "seconds": 0.343349,
+              "error": "",
+              "checked": "2026-10-04T09:13:18.485972+03:30"
+            },
+            {
+              "healthy": false,
+              "country": "",
+              "seconds": null,
+              "error": "DEPENDENCY_NOT_CONFIGURED_SINGBOX",
+              "checked": "2026-10-05T00:04:39.75223+03:30"
+            },
+            {
+              "healthy": true,
+              "country": "BG",
+              "seconds": 0.269205,
+              "error": "",
+              "checked": "2026-10-05T00:17:50.091796+03:30"
+            },
+            {
+              "healthy": true,
+              "country": "BG",
+              "seconds": 0.251804,
+              "error": "",
+              "checked": "2026-10-05T00:18:14.86885+03:30"
+            }
+          ],
+          "performance_history": [
+            {
+              "ok": true,
+              "pingMs": 336.9,
+              "pingType": "HTTPS_RTT",
+              "downloadMbps": 13.82,
+              "uploadMbps": 4.22,
+              "country": "BG",
+              "checked": "2026-10-04T09:13:20.489214+03:30",
+              "error": ""
+            },
+            {
+              "ok": true,
+              "pingMs": 265.7,
+              "pingType": "HTTPS_RTT",
+              "downloadMbps": 6.98,
+              "uploadMbps": 3.98,
+              "country": "BG",
+              "checked": "2026-10-05T00:17:53.153748+03:30",
+              "error": ""
+            },
+            {
+              "ok": true,
+              "pingMs": 268.9,
+              "pingType": "HTTPS_RTT",
+              "downloadMbps": 10.45,
+              "uploadMbps": 8.16,
+              "country": "BG",
+              "checked": "2026-10-05T00:18:18.106967+03:30",
+              "error": ""
+            }
+          ]
+        }
+      }
+    }
+  },
+  "bestStageNode": {
+    "id": "ba47c23e24ed328ada05",
+    "name": "shadowsocks-812343868",
+    "protocol": "ss",
+    "source": "AURX_HTTP_VERIFIED",
+    "performance": {
+      "ok": true,
+      "pingMs": 268.9,
+      "pingType": "HTTPS_RTT",
+      "downloadMbps": 10.45,
+      "uploadMbps": 8.16,
+      "country": "BG",
+      "checked": "2026-10-05T00:18:18.106967+03:30",
+      "error": ""
+    }
+  },
+  "checks": {
+    "fastEndpointTestCompleted": true,
+    "boundedBatchFoundLivePerformance": true,
+    "freshPerformanceIdsPresent": true,
+    "providerBenchmarkNodeSucceeded": true,
+    "providerReturnedNodeIdentity": true,
+    "providerNodeWasCurrentRunPerformance": true,
+    "stageHasBestPerformance": true,
+    "installedSessionUnchanged": true,
+    "routeUnchanged": true,
+    "dnsUnchanged": true
+  },
+  "preservation": {
+    "installedSessionSha256Before": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "installedSessionSha256After": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "routeSha256Before": "968D29D0FE6ACF24C5252E42B45BE0EF8EECAFAFC144F99E1DD82C37566307D0",
+    "routeSha256After": "968D29D0FE6ACF24C5252E42B45BE0EF8EECAFAFC144F99E1DD82C37566307D0",
+    "dnsSha256Before": "D40931AC865E65EFCAAA350634C528F77A5DC9D72CCD542CC0AC02C4F22FBE99",
+    "dnsSha256After": "D40931AC865E65EFCAAA350634C528F77A5DC9D72CCD542CC0AC02C4F22FBE99"
+  },
+  "note": "Stage-only current-run node proof. Historical performance cleared in stage only. Max three 4-node performance batches."
+}

@@ -1,0 +1,344 @@
+{
+  "schema": 1,
+  "utc": "2026-10-04T20:38:00.6602772+00:00",
+  "status": "PASS",
+  "changeSet": "R47_SMART_ALL_METHOD_RESULTS",
+  "stage": "<PROJECT_ROOT>\\.git\\r47_live_stage",
+  "processExit": 0,
+  "engineRecord": {
+    "schema": 1,
+    "version": "4.0",
+    "job": "66af221d06994710987adf693ea0a04b",
+    "action": "ProviderBenchmark",
+    "mode": "AUTO",
+    "exit": 0,
+    "utc": "2026-10-05T00:07:50.272596+03:30",
+    "result": {
+      "provider": "WARP",
+      "health": {
+        "healthy": true,
+        "mode": "WARP",
+        "scope": "BROWSER_HTTPS",
+        "ip": "2a09:bac5:41df:1282::1d8:6c",
+        "country": "IR",
+        "warp": "on",
+        "seconds": 0.409825,
+        "checked": "2026-10-05T00:06:39.6736+03:30",
+        "checks": [
+          {
+            "name": "Cloudflare HTTPS trace",
+            "code": "200",
+            "exit": 0
+          },
+          {
+            "name": "YouTube HTTPS",
+            "code": "204",
+            "exit": 0
+          }
+        ],
+        "countryPolicy": "",
+        "error": "",
+        "applicationAcceptance": "NOT_TESTED",
+        "connected": true,
+        "state": "CONNECTED_HEALTHY"
+      },
+      "performance": {
+        "mode": "WARP",
+        "path": "PROXY_PATH",
+        "ok": true,
+        "pingMs": 525.1,
+        "pingType": "HTTPS_RTT",
+        "downloadMbps": 8.94,
+        "uploadMbps": 3.43,
+        "downloadSampleBytes": 2000000,
+        "uploadSampleBytes": 500000,
+        "country": "IR",
+        "exitIp": "2a09:bac5:41df:1282::1d8:6c",
+        "checked": "2026-10-05T00:06:44.824802+03:30",
+        "proxyUsed": true,
+        "error": ""
+      },
+      "temporary": true,
+      "results": [
+        {
+          "provider": "NODE",
+          "ok": false,
+          "performance": null,
+          "error": "NODE_POOL_NO_HEALTHY_NODE",
+          "temporary": true
+        },
+        {
+          "provider": "TOR",
+          "ok": true,
+          "health": {
+            "healthy": true,
+            "mode": "TOR",
+            "scope": "BROWSER_HTTPS",
+            "ip": "192.42.116.16",
+            "country": "T1",
+            "warp": "off",
+            "seconds": 1.414476,
+            "checked": "2026-10-05T00:06:15.67981+03:30",
+            "checks": [
+              {
+                "name": "Cloudflare HTTPS trace",
+                "code": "200",
+                "exit": 0
+              },
+              {
+                "name": "YouTube HTTPS",
+                "code": "204",
+                "exit": 0
+              }
+            ],
+            "countryPolicy": "",
+            "error": "",
+            "applicationAcceptance": "NOT_TESTED",
+            "connected": true,
+            "state": "CONNECTED_HEALTHY"
+          },
+          "performance": {
+            "mode": "TOR",
+            "path": "PROXY_PATH",
+            "ok": true,
+            "pingMs": 828.2,
+            "pingType": "HTTPS_RTT",
+            "downloadMbps": 1.97,
+            "uploadMbps": 1.62,
+            "downloadSampleBytes": 2000000,
+            "uploadSampleBytes": 500000,
+            "country": "T1",
+            "exitIp": "192.42.116.16",
+            "checked": "2026-10-05T00:06:29.035896+03:30",
+            "proxyUsed": true,
+            "error": ""
+          },
+          "temporary": true
+        },
+        {
+          "provider": "WARP",
+          "ok": true,
+          "health": {
+            "healthy": true,
+            "mode": "WARP",
+            "scope": "BROWSER_HTTPS",
+            "ip": "2a09:bac5:41df:1282::1d8:6c",
+            "country": "IR",
+            "warp": "on",
+            "seconds": 0.409825,
+            "checked": "2026-10-05T00:06:39.6736+03:30",
+            "checks": [
+              {
+                "name": "Cloudflare HTTPS trace",
+                "code": "200",
+                "exit": 0
+              },
+              {
+                "name": "YouTube HTTPS",
+                "code": "204",
+                "exit": 0
+              }
+            ],
+            "countryPolicy": "",
+            "error": "",
+            "applicationAcceptance": "NOT_TESTED",
+            "connected": true,
+            "state": "CONNECTED_HEALTHY"
+          },
+          "performance": {
+            "mode": "WARP",
+            "path": "PROXY_PATH",
+            "ok": true,
+            "pingMs": 525.1,
+            "pingType": "HTTPS_RTT",
+            "downloadMbps": 8.94,
+            "uploadMbps": 3.43,
+            "downloadSampleBytes": 2000000,
+            "uploadSampleBytes": 500000,
+            "country": "IR",
+            "exitIp": "2a09:bac5:41df:1282::1d8:6c",
+            "checked": "2026-10-05T00:06:44.824802+03:30",
+            "proxyUsed": true,
+            "error": ""
+          },
+          "temporary": true
+        },
+        {
+          "provider": "GOOL",
+          "ok": true,
+          "health": {
+            "healthy": true,
+            "mode": "GOOL",
+            "scope": "BROWSER_HTTPS",
+            "ip": "2a09:bac5:41da:18f0::27c:a",
+            "country": "IR",
+            "warp": "on",
+            "seconds": 1.936636,
+            "checked": "2026-10-05T00:06:59.712944+03:30",
+            "checks": [
+              {
+                "name": "Cloudflare HTTPS trace",
+                "code": "200",
+                "exit": 0
+              },
+              {
+                "name": "YouTube HTTPS",
+                "code": "204",
+                "exit": 0
+              }
+            ],
+            "countryPolicy": "",
+            "error": "",
+            "applicationAcceptance": "NOT_TESTED",
+            "connected": true,
+            "state": "CONNECTED_HEALTHY"
+          },
+          "performance": {
+            "mode": "GOOL",
+            "path": "PROXY_PATH",
+            "ok": true,
+            "pingMs": 865.7,
+            "pingType": "HTTPS_RTT",
+            "downloadMbps": 1.93,
+            "uploadMbps": 2.3,
+            "downloadSampleBytes": 2000000,
+            "uploadSampleBytes": 500000,
+            "country": "IR",
+            "exitIp": "2a09:bac5:41da:18f0::27c:a",
+            "checked": "2026-10-05T00:07:13.844031+03:30",
+            "proxyUsed": true,
+            "error": ""
+          },
+          "temporary": true
+        },
+        {
+          "provider": "CFON",
+          "ok": true,
+          "health": {
+            "healthy": true,
+            "mode": "CFON",
+            "scope": "BROWSER_HTTPS",
+            "ip": "130.195.249.26",
+            "country": "AT",
+            "warp": "off",
+            "seconds": 0.429067,
+            "checked": "2026-10-05T00:07:15.800743+03:30",
+            "checks": [
+              {
+                "name": "Cloudflare HTTPS trace",
+                "code": "200",
+                "exit": 0
+              },
+              {
+                "name": "YouTube HTTPS",
+                "code": "204",
+                "exit": 0
+              }
+            ],
+            "countryPolicy": "AUTO",
+            "error": "",
+            "applicationAcceptance": "NOT_TESTED",
+            "connected": true,
+            "state": "CONNECTED_HEALTHY"
+          },
+          "performance": {
+            "mode": "CFON",
+            "path": "PROXY_PATH",
+            "ok": true,
+            "pingMs": 529.9,
+            "pingType": "HTTPS_RTT",
+            "downloadMbps": 4.55,
+            "uploadMbps": 1.07,
+            "downloadSampleBytes": 2000000,
+            "uploadSampleBytes": 500000,
+            "country": "AT",
+            "exitIp": "130.195.249.26",
+            "checked": "2026-10-05T00:07:24.844736+03:30",
+            "proxyUsed": true,
+            "error": ""
+          },
+          "temporary": false
+        },
+        {
+          "provider": "CUSTOM",
+          "ok": false,
+          "performance": null,
+          "error": "LOCAL_PROXY_UNREACHABLE",
+          "temporary": false
+        },
+        {
+          "provider": "DIRECT",
+          "ok": false,
+          "performance": null,
+          "error": "CHILD_DEADLINE",
+          "temporary": false
+        }
+      ],
+      "rank": [
+        "WARP",
+        "CFON",
+        "TOR",
+        "GOOL"
+      ],
+      "attempts": [
+        {
+          "mode": "NODE",
+          "reason": "NODE_POOL_NO_HEALTHY_NODE"
+        },
+        {
+          "mode": "CUSTOM",
+          "reason": "LOCAL_PROXY_UNREACHABLE"
+        },
+        {
+          "mode": "DIRECT",
+          "reason": "CHILD_DEADLINE"
+        }
+      ],
+      "selectionPolicy": "LOWEST_PING_THEN_DOWNLOAD_UPLOAD"
+    }
+  },
+  "providers": [
+    "NODE",
+    "TOR",
+    "WARP",
+    "GOOL",
+    "CFON",
+    "CUSTOM",
+    "DIRECT"
+  ],
+  "bestProvider": "WARP",
+  "rank": [
+    "WARP",
+    "CFON",
+    "TOR",
+    "GOOL"
+  ],
+  "nodeResult": {
+    "provider": "NODE",
+    "ok": false,
+    "performance": null,
+    "error": "NODE_POOL_NO_HEALTHY_NODE",
+    "temporary": true
+  },
+  "checks": {
+    "processExitZero": true,
+    "engineExitZero": true,
+    "allSevenMethodsPresent": true,
+    "allRowsTerminal": true,
+    "smartBestPolicyEligible": true,
+    "nodeRowPresent": true,
+    "nodeIdentityReturnedWhenSuccessful": true,
+    "installedSessionUnchanged": true,
+    "routeUnchanged": true,
+    "dnsUnchanged": true
+  },
+  "preservation": {
+    "installedSessionSha256Before": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "installedSessionSha256After": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "routeSha256Before": "968D29D0FE6ACF24C5252E42B45BE0EF8EECAFAFC144F99E1DD82C37566307D0",
+    "routeSha256After": "968D29D0FE6ACF24C5252E42B45BE0EF8EECAFAFC144F99E1DD82C37566307D0",
+    "dnsSha256Before": "D40931AC865E65EFCAAA350634C528F77A5DC9D72CCD542CC0AC02C4F22FBE99",
+    "dnsSha256After": "D40931AC865E65EFCAAA350634C528F77A5DC9D72CCD542CC0AC02C4F22FBE99"
+  },
+  "note": "Stage-only live benchmark; installed app bytes were not modified. Temporary stage provider processes are cleaned by engine ownership guards."
+}

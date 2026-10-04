@@ -9,7 +9,7 @@ $ErrorActionPreference='Stop'
 $script:Root=Split-Path $PSScriptRoot -Parent
 New-Item -ItemType Directory -Path (Join-Path $script:Root 'logs'),(Join-Path $script:Root 'jobs'),(Join-Path $script:Root 'evidence') -Force|Out-Null
 
-$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:ConnectionScope='BROWSER';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:NodeRows=@();$script:NodeSelected='';$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''});$script:StartupUpdateChecked=$false;$script:StartupUpdateDue=[DateTime]::UtcNow.AddSeconds(12)
+$script:Task=$null;$script:GatewayTask=$null;$script:GatewayJob='';$script:GatewayAction='';$script:Lease=$null;$script:Timer=$null;$script:Tray=$null;$script:AppIcon=$null;$script:CurrentMode='';$script:DesiredMode='';$script:ConnectionScope='BROWSER';$script:FullSystemActive=$false;$script:Health=$null;$script:Last=$null;$script:C=@{};$script:Tick=0;$script:Failures=0;$script:Repairs=0;$script:NodeConnectAfterSelect=$false;$script:NodeRows=@();$script:NodeSelected='';$script:NodeGridSortKey='';$script:NodeGridSortDescending=$false;$script:AllowClose=$false;$script:ShellHosted=($env:FREENETHUB_SHELL_HOST -eq '1');$script:SmokeVerifyMode=$(if($Smoke){[string]$env:FREENETHUB_SMOKE_VERIFY_MODE}else{''});$script:StartupUpdateChecked=$false;$script:StartupUpdateDue=[DateTime]::UtcNow.AddSeconds(12)
 
 function Read-Json([string]$p){if(!(Test-Path -LiteralPath $p)){return $null};if((Get-Item $p).Length -gt 4194304){throw 'RESULT_TOO_LARGE'};Get-Content -LiteralPath $p -Raw -Encoding utf8|ConvertFrom-Json -AsHashtable}
 
@@ -305,48 +305,58 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   try{return ([math]::Round([double]$v,1)).ToString()+' '+$unit}catch{return '—'}
  }
 
- function Paint-TestState([string]$mode,[string]$state,[string]$detail=''){
-  $dashPrefix=$(switch($mode){'AUTO'{'DashSmart'};'NODE'{'DashNode'};'WARP'{'DashWarp'};'DIRECT'{'DashDirect'};default{''}})
+ function Get-MethodMetricControl([string]$mode){
+  return $(switch($mode){'NODE'{'NodeMetric'};'WARP'{'WarpMetric'};'CFON'{'CfonMetric'};'GOOL'{'GoolMetric'};'TOR'{'TorMetric'};'CUSTOM'{'CustomMetric'};'DIRECT'{'DirectMetric'};default{''}})
+ }
+
+ function Get-DashPrefix([string]$mode){
+  return $(switch($mode){'NODE'{'DashNode'};'WARP'{'DashWarp'};'CFON'{'DashCfon'};'GOOL'{'DashGool'};'TOR'{'DashTor'};'CUSTOM'{'DashCustom'};'DIRECT'{'DashDirect'};default{''}})
+ }
+
+ function Paint-TestState([string]$mode,[string]$state,[string]$detail='',[bool]$Primary=$true){
+  $dashPrefix=Get-DashPrefix $mode
   if($dashPrefix){
-   foreach($k in @('Ping','Down','Up')){$n=$dashPrefix+$k;if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'…'}else{'N/A'})}}
-   $n=$dashPrefix+'State';if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'در حال تست…'}elseif($state -eq 'TIMEOUT'){'TIMEOUT'}else{'FAIL'})}
+   foreach($k in @('Ping','Down','Up')){$n=$dashPrefix+$k;if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'...'}else{'N/A'})}}
+   $n=$dashPrefix+'State';if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'در حال تست...'}elseif($state -eq 'TIMEOUT'){'TIMEOUT'}else{'FAIL'})}
   }
+  $metric=Get-MethodMetricControl $mode
+  if($metric -and $script:C.ContainsKey($metric)){$script:C[$metric].Text=$(if($state -eq 'RUNNING'){'در حال تست...'}else{'N/A'+$(if($detail){' • '+$detail}else{''})})}
+  if(!$Primary){return}
   if($state -eq 'RUNNING'){
-   if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text='در حال تست…'}
+   if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text='در حال تست...'}
   }else{
-   $script:C.MetricPing.Text='N/A';$script:C.MetricDownload.Text='N/A';$script:C.MetricUpload.Text='N/A';$script:C.MetricCountry.Text='—'
+   $script:C.MetricPing.Text='N/A';$script:C.MetricDownload.Text='N/A';$script:C.MetricUpload.Text='N/A';$script:C.MetricCountry.Text='?'
    $script:C.MetricFreshness.Text='آخرین تست ناموفق: '+[DateTimeOffset]::UtcNow.ToString('o')
-   if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text=$state+' · '+$detail}
+   if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text=$state+' • '+$detail}
   }
  }
 
- function Paint-Performance($p,[string]$mode=''){
+ function Paint-Performance($p,[string]$mode='',[bool]$Primary=$true){
   if(!$p){return}
   $ping=Format-Metric $p.pingMs 'ms';$down=Format-Metric $p.downloadMbps 'Mbps';$up=Format-Metric $p.uploadMbps 'Mbps'
-  $country=$(if($p.country){[string]$p.country}else{'—'})
-  $script:C.MetricPing.Text=$ping;$script:C.MetricDownload.Text=$down;$script:C.MetricUpload.Text=$up;$script:C.MetricCountry.Text=$country
-  $script:C.MetricFreshness.Text='آخرین تست: '+$(if($p.ContainsKey('checked') -and $p.checked){[string]$p.checked}else{[DateTimeOffset]::UtcNow.ToString('o')})
-  $line='Ping '+$ping+' · Down '+$down+' · Up '+$up
+  $country=$(if($p.country){[string]$p.country}else{'?'})
+  $line='Ping '+$ping+' • Down '+$down+' • Up '+$up
   switch($mode){
-   'AUTO'{$script:C.SmartMetric.Text=$line;if($script:C.ContainsKey('CompareSmart')){$script:C.CompareSmart.Text=$line+' · '+$country}}
-   'NODE'{$script:C.NodeMetric.Text=$line;if($script:C.ContainsKey('CompareNode')){$script:C.CompareNode.Text=$line+' · '+$country}}
-   'WARP'{$script:C.WarpMetric.Text=$line;if($script:C.ContainsKey('CompareWarp')){$script:C.CompareWarp.Text=$line+' · '+$country}}
+   'NODE'{$script:C.NodeMetric.Text=$line;if($script:C.ContainsKey('CompareNode')){$script:C.CompareNode.Text=$line+' • '+$country}}
+   'WARP'{$script:C.WarpMetric.Text=$line;if($script:C.ContainsKey('CompareWarp')){$script:C.CompareWarp.Text=$line+' • '+$country}}
    'CFON'{$script:C.CfonMetric.Text=$line}
    'GOOL'{if($script:C.ContainsKey('GoolMetric')){$script:C.GoolMetric.Text=$line}}
    'TOR'{$script:C.TorMetric.Text=$line}
    'CUSTOM'{$script:C.CustomMetric.Text=$line}
-   'DIRECT'{if($script:C.ContainsKey('DirectMetric')){$script:C.DirectMetric.Text=$line};if($script:C.ContainsKey('CompareDirect')){$script:C.CompareDirect.Text=$line+' · '+$country}}
-   'CONSOLE'{$script:C.ConsoleMetric.Text=$line}
+   'DIRECT'{if($script:C.ContainsKey('DirectMetric')){$script:C.DirectMetric.Text=$line};if($script:C.ContainsKey('CompareDirect')){$script:C.CompareDirect.Text=$line+' • '+$country}}
   }
-  $dashPrefix=$(switch($mode){'AUTO'{'DashSmart'};'NODE'{'DashNode'};'WARP'{'DashWarp'};'DIRECT'{'DashDirect'};default{''}})
+  $dashPrefix=Get-DashPrefix $mode
   if($dashPrefix){
    foreach($pair in @(@('Ping',$ping),@('Down',$down),@('Up',$up),@('State',$(if($p.ok){'PASS'}else{'FAIL / N/A'})))){
     $n=$dashPrefix+$pair[0];if($script:C.ContainsKey($n)){$script:C[$n].Text=[string]$pair[1]}
    }
   }
-  $script:C.StatusTitle.Text=$(if($p.ok){'تست مسیر کامل شد'}else{'تست مسیر کامل نشد'})
-  if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text=$(if($p.ok){'PASS · مسیر واقعی تأیید شد'}else{'FAIL / N/A'})}
-  $script:C.StatusDetail.Text=$mode+' · '+$line+' · Country '+$country
+  if(!$Primary){return}
+  $script:C.MetricPing.Text=$ping;$script:C.MetricDownload.Text=$down;$script:C.MetricUpload.Text=$up;$script:C.MetricCountry.Text=$country
+  $script:C.MetricFreshness.Text='آخرین تست: '+$(if($p.ContainsKey('checked') -and $p.checked){[string]$p.checked}else{[DateTimeOffset]::UtcNow.ToString('o')})
+  $script:C.StatusTitle.Text=$(if($p.ok){'تست مسیر موفق بود'}else{'تست مسیر کامل نبود'})
+  if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text=$(if($p.ok){'PASS • مسیر واقعی بررسی شد'}else{'FAIL / N/A'})}
+  $script:C.StatusDetail.Text=$mode+' • '+$line+' • Country '+$country
  }
 
  function Select-ModeTag([string]$tag){
@@ -476,30 +486,34 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  function Start-ConfiguredTest([bool]$PingOnly=$false){
   if($script:ConnectionScope -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE';return}
-  if([string]$script:Settings.testPathMode -eq 'BASE'){
-    Paint-TestState 'DIRECT' 'RUNNING'
-   if($PingOnly){Start-Work 'ProviderPing' 'DIRECT'}else{Start-Work 'Speed' 'DIRECT'}
-   return
-  }
-  if($PingOnly){Start-ProviderPing (Selected)}else{Start-ProviderBenchmark (Selected)}
+  $mode=Selected
+  # BASE means the selected method is exercised over the host/base transport.
+  # It must never silently replace Smart/Node/WARP/etc. with Direct.
+  if($PingOnly){Start-ProviderPing $mode}else{Start-ProviderBenchmark $mode}
  }
 
  function Start-ProviderBenchmark([string]$mode){
   Select-ModeTag $mode
   if($script:ConnectionScope -eq 'CONSOLE'){Start-Work 'ConsolePreflight' 'CONSOLE';return}
-   Paint-TestState $mode 'RUNNING'
   if($script:ConnectionScope -eq 'SYSTEM'){
+   Paint-TestState $mode 'RUNNING'
    $provider=Resolve-SystemProvider $mode
-   if(!$provider){$script:C.StatusTitle.Text='روش Full System پشتیبانی نمی‌شود';return}
+   if(!$provider){$script:C.StatusTitle.Text='این روش برای Full System پشتیبانی نمی‌شود';return}
    if($script:FullSystemActive){$active=$(if($script:DesiredMode -in @('NODE','WARP')){$script:DesiredMode}else{$provider});Start-Work 'SystemSpeed' $active;return}
    if($provider -eq 'NODE'){
     if($mode -eq 'AUTO'){Start-Work 'NodeSystemPreflightAuto' 'NODE';return}
-    if(!(Persistent-SelectedNodeId)){$script:C.StatusTitle.Text='ابتدا یک Node انتخاب کنید';$script:C.StatusDetail.Text='تست Full System باید دقیقاً همان Node انتخاب‌شده را بسنجد.';$script:C.Tabs.SelectedIndex=2;return}
+    if(!(Persistent-SelectedNodeId)){$script:C.StatusTitle.Text='برای Node یک نود انتخاب کنید';$script:C.StatusDetail.Text='برای Full System در حالت Node باید نود انتخاب‌شده داشته باشید.';$script:C.Tabs.SelectedIndex=2;return}
     Start-Work 'NodeSystemPreflight' 'NODE';return
    }
    Start-Work 'ProviderBenchmark' $provider
    return
   }
+  if($mode -eq 'AUTO'){
+   foreach($m in @('NODE','WARP','CFON','GOOL','TOR','CUSTOM','DIRECT')){Paint-TestState $m 'RUNNING' '' $false}
+   if($script:C.ContainsKey('SmartMetric')){$script:C.SmartMetric.Text='در حال تست همه روش‌ها...'}
+   if($script:C.ContainsKey('CompareSmart')){$script:C.CompareSmart.Text='Smart فقط انتخاب‌گر است؛ نتایج روی روش‌های واقعی ثبت می‌شوند.'}
+   if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text='Smart: در حال تست همه روش‌های واقعی...'}
+  }else{Paint-TestState $mode 'RUNNING'}
   Start-Work 'ProviderBenchmark' $mode
  }
 
@@ -520,11 +534,33 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   }catch{$script:C.UpdateStatus.Text='شروع installer ناموفق: '+$_.Exception.Message}
  }
 
+ function Get-NodeRowValue($row,[string]$property){
+  $p=$row.PSObject.Properties[$property];if(!$p){return $null};return $p.Value
+ }
+
+ function Sort-NodeRowsNumeric($rows,[string]$property,[bool]$descending=$false){
+  $present=@($rows|Where-Object{$null -ne (Get-NodeRowValue $_ $property)})
+  $missing=@($rows|Where-Object{$null -eq (Get-NodeRowValue $_ $property)}|Sort-Object NameSort)
+  if($descending){$present=@($present|Sort-Object @{Expression={[double](Get-NodeRowValue $_ $property)};Descending=$true},NameSort)}
+  else{$present=@($present|Sort-Object @{Expression={[double](Get-NodeRowValue $_ $property)}},NameSort)}
+  return @($present)+@($missing)
+ }
+
+ function Sort-NodeRowsText($rows,[string]$property,[bool]$descending=$false){
+  $present=@();$missing=@()
+  foreach($row in @($rows)){
+   $v=[string](Get-NodeRowValue $row $property)
+   if([string]::IsNullOrWhiteSpace($v) -or $v -in @('?','N/A','—')){$missing+=,$row}else{$present+=,$row}
+  }
+  if($descending){$present=@($present|Sort-Object @{Expression={([string](Get-NodeRowValue $_ $property)).ToLowerInvariant()};Descending=$true},NameSort)}
+  else{$present=@($present|Sort-Object @{Expression={([string](Get-NodeRowValue $_ $property)).ToLowerInvariant()}},NameSort)}
+  return @($present)+@($missing|Sort-Object NameSort)
+ }
+
  function Apply-NodeFilter{
   if(!$script:C.ContainsKey('NodeList')){return}
   $keep=Selected-NodeId;$script:C.NodeList.Items.Clear()
   $q=$(if($script:C.NodeFilter){$script:C.NodeFilter.Text.Trim().ToLowerInvariant()}else{''})
-  $sort=$(if($script:C.NodeSort.SelectedItem){[string]$script:C.NodeSort.SelectedItem.Tag}else{'SMART'})
   $rows=@($script:NodeRows)
   if($q){
    $rows=@($rows|Where-Object{
@@ -532,15 +568,25 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
     $blob.Contains($q)
    })
   }
-  switch($sort){
-   'LATENCY'{$rows=@($rows|Sort-Object @{Expression={if($_.Node.performance_test -and $null -ne $_.Node.performance_test.pingMs){[double]$_.Node.performance_test.pingMs}elseif($_.Node.last_test -and $null -ne $_.Node.last_test.seconds){[double]$_.Node.last_test.seconds*1000}else{999999}}},Name)}
-   'SPEED'{$rows=@($rows|Sort-Object @{Expression={if($_.Node.performance_test){-[double]$_.Node.performance_test.downloadMbps}else{0}}},Name)}
-   'UPLOAD'{$rows=@($rows|Sort-Object @{Expression={if($_.Node.performance_test){-[double]$_.Node.performance_test.uploadMbps}else{0}}},Name)}
-   'NAME'{$rows=@($rows|Sort-Object Name)}
-   'COUNTRY'{$rows=@($rows|Sort-Object Country,Name)}
-   'PROTOCOL'{$rows=@($rows|Sort-Object Protocol,Name)}
+  if($script:NodeGridSortKey){
+   switch($script:NodeGridSortKey){
+    'PingValue'{$rows=Sort-NodeRowsNumeric $rows 'PingValue' $script:NodeGridSortDescending}
+    'DownloadValue'{$rows=Sort-NodeRowsNumeric $rows 'DownloadValue' $script:NodeGridSortDescending}
+    'UploadValue'{$rows=Sort-NodeRowsNumeric $rows 'UploadValue' $script:NodeGridSortDescending}
+    default{$rows=Sort-NodeRowsText $rows $script:NodeGridSortKey $script:NodeGridSortDescending}
+   }
+  }else{
+   $sort=$(if($script:C.NodeSort.SelectedItem){[string]$script:C.NodeSort.SelectedItem.Tag}else{'SMART'})
+   switch($sort){
+    'LATENCY'{$rows=Sort-NodeRowsNumeric $rows 'PingValue' $false}
+    'SPEED'{$rows=Sort-NodeRowsNumeric $rows 'DownloadValue' $false}
+    'UPLOAD'{$rows=Sort-NodeRowsNumeric $rows 'UploadValue' $false}
+    'NAME'{$rows=Sort-NodeRowsText $rows 'NameSort' $false}
+    'COUNTRY'{$rows=Sort-NodeRowsText $rows 'CountrySort' $false}
+    'PROTOCOL'{$rows=Sort-NodeRowsText $rows 'ProtocolSort' $false}
+   }
   }
-  foreach($o in $rows){[void]$script:C.NodeList.Items.Add($o);if($keep -and [string]$o.Id -eq $keep){$script:C.NodeList.SelectedItem=$o}}
+  foreach($o in @($rows)){[void]$script:C.NodeList.Items.Add($o);if($keep -and [string]$o.Id -eq $keep){$script:C.NodeList.SelectedItem=$o}}
  }
 
  function Paint-Nodes($h){
@@ -553,12 +599,20 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
     $rating=$(if([int]$n.rating -gt 0){' '+('★'*[int]$n.rating)}else{''})
     $display=$marks+$state+'  ['+[string]$n.protocol+'] '+[string]$n.name+$rating+'  ·  '+[string]$n.server+':'+[string]$n.port
     $perf=$(if($n.performance_test){$n.performance_test}else{$null});$lt=$(if($n.last_test){$n.last_test}else{$null})
-    $ping=$(if($perf -and $null -ne $perf.pingMs){Format-Metric $perf.pingMs 'ms'}elseif($lt -and $null -ne $lt.seconds){Format-Metric ([double]$lt.seconds*1000) 'ms'}elseif($n.endpoint_test -and $n.endpoint_test.reachable -and $null -ne $n.endpoint_test.latency_ms){Format-Metric $n.endpoint_test.latency_ms 'ms'}else{'—'})
-    $down=$(if($perf -and $perf.ok){Format-Metric $perf.downloadMbps 'Mbps'}elseif($perf){'N/A'}else{'—'});$up=$(if($perf -and $perf.ok){Format-Metric $perf.uploadMbps 'Mbps'}elseif($perf){'N/A'}else{'—'})
-    $country=$(if($perf -and $perf.country){[string]$perf.country}elseif($lt -and $lt.country){[string]$lt.country}else{'—'})
-    $last=$(if($perf -and $perf.checked){[string]$perf.checked}elseif($lt -and $lt.checked){[string]$lt.checked}else{'—'})
-    $status=$(if($perf -and $perf.ok){'✓'}elseif($lt -and $lt.healthy){'✓'}elseif($n.endpoint_test -and $n.endpoint_test.reachable){'•'}else{'×'})
-    $script:NodeRows+=,[pscustomobject]@{Id=[string]$n.id;Display=$display;Status=$status;Name=($marks+[string]$n.name+$rating);Country=$country;Protocol=[string]$n.protocol;Ping=$ping;Download=$down;Upload=$up;Source=[string]$n.source;LastTest=$last;Node=$n}
+    $pingValue=$null
+    if($perf -and $null -ne $perf.pingMs){$pingValue=[double]$perf.pingMs}
+    elseif($lt -and $null -ne $lt.seconds){$pingValue=[double]$lt.seconds*1000}
+    elseif($n.endpoint_test -and $n.endpoint_test.reachable -and $null -ne $n.endpoint_test.latency_ms){$pingValue=[double]$n.endpoint_test.latency_ms}
+    $downloadValue=$(if($perf -and $perf.ok -and $null -ne $perf.downloadMbps){[double]$perf.downloadMbps}else{$null})
+    $uploadValue=$(if($perf -and $perf.ok -and $null -ne $perf.uploadMbps){[double]$perf.uploadMbps}else{$null})
+    $ping=$(if($null -ne $pingValue){Format-Metric $pingValue 'ms'}else{'?'})
+    $down=$(if($null -ne $downloadValue){Format-Metric $downloadValue 'Mbps'}elseif($perf){'N/A'}else{'?'})
+    $up=$(if($null -ne $uploadValue){Format-Metric $uploadValue 'Mbps'}elseif($perf){'N/A'}else{'?'})
+    $country=$(if($perf -and $perf.country){[string]$perf.country}elseif($lt -and $lt.country){[string]$lt.country}else{'?'})
+    $last=$(if($perf -and $perf.checked){[string]$perf.checked}elseif($lt -and $lt.checked){[string]$lt.checked}else{'?'})
+    $status=$(if($perf -and $perf.ok){'?'}elseif($lt -and $lt.healthy){'?'}elseif($n.endpoint_test -and $n.endpoint_test.reachable){'?'}else{'?'})
+    $nameText=($marks+[string]$n.name+$rating);$protocolText=[string]$n.protocol;$sourceText=[string]$n.source
+    $script:NodeRows+=,[pscustomobject]@{Id=[string]$n.id;Display=$display;Status=$status;StatusSort=$status;Name=$nameText;NameSort=([string]$n.name).ToLowerInvariant();Country=$country;CountrySort=$country.ToLowerInvariant();Protocol=$protocolText;ProtocolSort=$protocolText.ToLowerInvariant();Ping=$ping;PingValue=$pingValue;Download=$down;DownloadValue=$downloadValue;Upload=$up;UploadValue=$uploadValue;Source=$sourceText;SourceSort=$sourceText.ToLowerInvariant();LastTest=$last;LastTestSort=$last.ToLowerInvariant();Node=$n}
    }
    Apply-NodeFilter
    $script:C.NodeSummary.Text='نودها: '+[string]$h.total+$(if($h.ContainsKey('reachable')){' · TCP قابل‌دسترسی: '+[string]$h.reachable}else{''})+' · انتخاب‌شده: '+$(if($selected){$selected}else{'ندارد'})
@@ -605,7 +659,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   if(!$script:Pythonw){throw 'PYTHON_RUNTIME_NOT_AVAILABLE'};$p=[Diagnostics.ProcessStartInfo]::new();$p.FileName=$script:Pythonw;$p.UseShellExecute=$false;$p.CreateNoWindow=$true;$p.WorkingDirectory=$script:Root
 
-  $budget=$(if($action -in @('Scan','NodeBenchmarkBatch','UpdateDownload')){'600'}elseif($action -in @('ProviderBenchmark','PathSpeed','SystemSpeed','ConsoleSpeed','NodeSpeed','NodeSystemPreflight')){'360'}else{'240'})
+  $budget=$(if($action -eq 'ProviderBenchmark' -and $mode -eq 'AUTO'){'600'}elseif($action -in @('Scan','NodeBenchmarkBatch','UpdateDownload')){'600'}elseif($action -in @('ProviderBenchmark','PathSpeed','SystemSpeed','ConsoleSpeed','NodeSpeed','NodeSystemPreflight')){'360'}else{'240'})
   foreach($a in @((Join-Path $PSScriptRoot 'engine.py'),'--action',$action,'--mode',$mode,'--job',$script:Job,'--budget',$budget)){[void]$p.ArgumentList.Add($a)}
 
   if($payload){[void]$p.ArgumentList.Add('--payload');[void]$p.ArgumentList.Add($payload)}
@@ -778,8 +832,19 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
  $script:C.NodeFavorite.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return};Start-Work 'NodeFavorite' 'NODE' $id})
  $script:C.NodePin.Add_Click({$id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return};Start-Work 'NodePin' 'NODE' $id})
  $script:C.NodeList.Add_SelectionChanged({Fill-NodeEditor})
+ $script:C.NodeList.Add_Sorting({
+  param($sender,$e)
+  $e.Handled=$true
+  $key=[string]$e.Column.SortMemberPath
+  if(!$key){return}
+  $descending=($e.Column.SortDirection -eq [ComponentModel.ListSortDirection]::Ascending)
+  foreach($col in $script:C.NodeList.Columns){$col.SortDirection=$null}
+  $e.Column.SortDirection=$(if($descending){[ComponentModel.ListSortDirection]::Descending}else{[ComponentModel.ListSortDirection]::Ascending})
+  $script:NodeGridSortKey=$key;$script:NodeGridSortDescending=$descending
+  Apply-NodeFilter
+ })
  $script:C.NodeFilter.Add_TextChanged({Apply-NodeFilter})
- $script:C.NodeSort.Add_SelectionChanged({Apply-NodeFilter})
+ $script:C.NodeSort.Add_SelectionChanged({$script:NodeGridSortKey='';$script:NodeGridSortDescending=$false;foreach($col in $script:C.NodeList.Columns){$col.SortDirection=$null};Apply-NodeFilter})
  $script:C.NodeSaveMeta.Add_Click({
   $id=Selected-NodeId;if(!$id){$script:C.NodeDetail.Text='ابتدا یک نود را انتخاب کنید.';return}
   $rating=$(if($script:C.NodeRating.SelectedItem){[int]$script:C.NodeRating.SelectedItem.Tag}else{0})
@@ -1069,18 +1134,57 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
       }
 
       if($r.action -eq 'ProviderBenchmark'){
-       $pm=$(if($r.mode -eq 'AUTO'){'AUTO'}elseif($r.result.provider){[string]$r.result.provider}else{'AUTO'})
-       Paint-Performance $r.result.performance $pm
-       if($r.mode -eq 'AUTO' -and $r.result.provider){$script:C.StatusDetail.Text='Smart انتخاب کرد: '+[string]$r.result.provider+' · '+$script:C.StatusDetail.Text}
+       if($r.mode -eq 'AUTO'){
+        foreach($row in @($r.result.results)){
+         $m=[string]$row.provider
+         if($row.performance){
+          Paint-Performance $row.performance $m $false
+          if($m -eq 'NODE' -and $row.node -and $script:C.ContainsKey('NodeMetric')){$script:C.NodeMetric.Text=$script:C.NodeMetric.Text+' • Best node: '+[string]$row.node.name}
+         }else{Paint-TestState $m 'FAIL' ([string]$row.error) $false}
+        }
+        $best=[string]$r.result.provider
+        if($best -and $r.result.performance){
+         Paint-Performance $r.result.performance $best $true
+         $script:C.SmartMetric.Text='Best → '+$best
+         if($script:C.ContainsKey('CompareSmart')){$script:C.CompareSmart.Text='Selector only • Best → '+$best+' • '+[string]::Join(' → ',@($r.result.rank))}
+         if($script:C.ContainsKey('TestMethodValue')){$script:C.TestMethodValue.Text='Smart → '+$best}
+         $script:C.StatusTitle.Text='Smart بهترین روش را انتخاب کرد: '+$best
+        }else{
+         $script:C.SmartMetric.Text='هیچ روش موفقی پیدا نشد'
+         if($script:C.ContainsKey('CompareSmart')){$script:C.CompareSmart.Text='Selector only • no successful provider'}
+         Paint-TestState 'AUTO' 'FAIL' 'ALL_SMART_PATHS_FAILED'
+        }
+       }else{
+        $pm=$(if($r.result.provider){[string]$r.result.provider}else{[string]$r.mode})
+        Paint-Performance $r.result.performance $pm
+        if($pm -eq 'NODE' -and $r.result.node -and $script:C.ContainsKey('NodeMetric')){$script:C.NodeMetric.Text=$script:C.NodeMetric.Text+' • Best node: '+[string]$r.result.node.name}
+       }
       }
       if($r.action -eq 'ProviderPing'){
-       $pm=$(if($r.mode -eq 'AUTO'){'AUTO'}elseif($r.result.provider){[string]$r.result.provider}else{[string]$r.mode})
-       $perf=$r.result.performance;$ping=Format-Metric $perf.pingMs 'ms';$country=$(if($perf.country){[string]$perf.country}else{'—'})
-       $script:C.MetricPing.Text=$ping;$script:C.MetricCountry.Text=$country;$script:C.MetricFreshness.Text='آخرین Ping: '+[DateTimeOffset]::UtcNow.ToString('o')
-       $script:C.StatusTitle.Text=$(if($perf.ok){'Ping مسیر تأیید شد'}else{'Ping مسیر ناموفق بود'})
-       $script:C.StatusDetail.Text=$pm+' · Ping '+$ping+' · Country '+$country
-       $dashPrefix=$(switch($pm){'AUTO'{'DashSmart'};'NODE'{'DashNode'};'WARP'{'DashWarp'};'DIRECT'{'DashDirect'};default{''}})
-       if($dashPrefix){$n=$dashPrefix+'Ping';if($script:C.ContainsKey($n)){$script:C[$n].Text=$ping}}
+       if($r.mode -eq 'AUTO'){
+        foreach($row in @($r.result.results)){
+         $m=[string]$row.provider
+         if($row.performance){
+          $perf=$row.performance;$ping=Format-Metric $perf.pingMs 'ms';$dashPrefix=Get-DashPrefix $m
+          if($dashPrefix){$n=$dashPrefix+'Ping';if($script:C.ContainsKey($n)){$script:C[$n].Text=$ping};$n=$dashPrefix+'State';if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($perf.ok){'PASS'}else{'FAIL'})}}
+         }else{Paint-TestState $m 'FAIL' ([string]$row.error) $false}
+        }
+        $best=[string]$r.result.provider;$perf=$r.result.performance
+        if($best -and $perf){
+         $ping=Format-Metric $perf.pingMs 'ms';$country=$(if($perf.country){[string]$perf.country}else{'?'})
+         $script:C.MetricPing.Text=$ping;$script:C.MetricCountry.Text=$country;$script:C.MetricFreshness.Text='آخرین Ping: '+[DateTimeOffset]::UtcNow.ToString('o')
+         $script:C.SmartMetric.Text='Best Ping → '+$best+' • '+$ping
+         $script:C.StatusTitle.Text='Smart کم‌تاخیرترین روش موفق را پیدا کرد: '+$best;$script:C.StatusDetail.Text='Ping '+$ping+' • Country '+$country
+        }else{Paint-TestState 'AUTO' 'FAIL' 'ALL_SMART_PATHS_FAILED'}
+       }else{
+        $pm=$(if($r.result.provider){[string]$r.result.provider}else{[string]$r.mode})
+        $perf=$r.result.performance;$ping=Format-Metric $perf.pingMs 'ms';$country=$(if($perf.country){[string]$perf.country}else{'?'})
+        $script:C.MetricPing.Text=$ping;$script:C.MetricCountry.Text=$country;$script:C.MetricFreshness.Text='آخرین Ping: '+[DateTimeOffset]::UtcNow.ToString('o')
+        $script:C.StatusTitle.Text=$(if($perf.ok){'Ping مسیر موفق بود'}else{'Ping مسیر ناموفق بود'})
+        $script:C.StatusDetail.Text=$pm+' • Ping '+$ping+' • Country '+$country
+        $dashPrefix=Get-DashPrefix $pm
+        if($dashPrefix){$n=$dashPrefix+'Ping';if($script:C.ContainsKey($n)){$script:C[$n].Text=$ping}}
+       }
       }
       if($r.action -eq 'PathSpeed'){
        Paint-Performance $r.result $(if($r.result.mode){[string]$r.result.mode}else{$script:CurrentMode})
@@ -1230,7 +1334,7 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
  $script:Window.Add_ContentRendered({
   [void]$script:Window.Activate()
   if($Smoke){
-   if($SmokePreconnect){$script:Settings.testPathMode='BASE';Start-ConfiguredTest $false}
+   if($SmokePreconnect){$script:Settings.testPathMode='BASE';Select-ModeTag 'DIRECT';Paint-TestState 'DIRECT' 'RUNNING';Start-Work 'Speed' 'DIRECT'}
    elseif($script:SmokeVerifyMode){Start-Work 'Verify' $script:SmokeVerifyMode}
   }else{
    [void](Gateway-Refresh);Start-Work 'Inventory'

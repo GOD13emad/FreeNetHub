@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "android": {
+    "version": "4.2.0",
+    "providerCoreReady": false,
+    "tunEstablishEnabled": false
+  },
+  "ios": {
+    "version": "4.2.0",
+    "packetTunnelCoreLinked": false,
+    "tunnelSettingsEnabled": false,
+    "extensionPoint": "com.apple.networkextension.packet-tunnel",
+    "entitlement": "packet-tunnel-provider"
+  },
+  "issues": [],
+  "status": "PASS"
+}

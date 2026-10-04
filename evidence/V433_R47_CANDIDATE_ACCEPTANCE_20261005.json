@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "version": "4.3.3",
+  "releaseRevision": "4.3.3-r47-smart-node-sort",
+  "status": "V433_R47_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "publicRelease": false,
+  "previousPublicAuthority": {
+    "tag": "v4.3.2",
+    "commit": "dd8bee89be71e39777152b6428c2ec0b1ba50809"
+  },
+  "workingBaseCommit": "82e9d2973ffda3a02c12cf49f889275d0d9123a2",
+  "objective": "Smart all-method per-provider results; selector-only Smart; current-run best-node propagation; typed Node sorting.",
+  "rootCauses": [
+    {
+      "id": "RC1",
+      "claim": "BASE pre-connect replaced selected method with DIRECT.",
+      "status": "CONFIRMED_SOURCE"
+    },
+    {
+      "id": "RC2",
+      "claim": "AUTO ProviderBenchmark/ProviderPing returned after first successful provider.",
+      "status": "CONFIRMED_SOURCE"
+    },
+    {
+      "id": "RC3",
+      "claim": "Node DataGrid sorted decorated metric strings lexicographically and dropdown throughput direction was wrong.",
+      "status": "CONFIRMED_SOURCE"
+    },
+    {
+      "id": "RC4",
+      "claim": "Node performance existed but best-node identity/result propagation was not explicit.",
+      "status": "CONFIRMED_SOURCE"
+    }
+  ],
+  "verification": {
+    "fullRegression": {
+      "result": "196/196 PASS",
+      "evidence": "evidence/V433_R47_FULL_REGRESSION_20261005.txt"
+    },
+    "failClosed": {
+      "result": "PASS",
+      "evidence": "evidence/V433_R47_FAIL_CLOSED_20261005.json"
+    },
+    "security": {
+      "result": "PASS",
+      "evidence": "evidence/V433_R47_SECURITY_20261005.json"
+    },
+    "diffCheck": {
+      "result": "PASS",
+      "evidence": "evidence/V433_R47_DIFFCHECK_20261005.txt"
+    },
+    "smartLive": {
+      "status": "PASS",
+      "bestProvider": "WARP",
+      "rank": [
+        "WARP",
+        "CFON",
+        "TOR",
+        "GOOL"
+      ],
+      "providers": [
+        "NODE",
+        "TOR",
+        "WARP",
+        "GOOL",
+        "CFON",
+        "CUSTOM",
+        "DIRECT"
+      ],
+      "checks": {
+        "processExitZero": true,
+        "engineExitZero": true,
+        "allSevenMethodsPresent": true,
+        "allRowsTerminal": true,
+        "smartBestPolicyEligible": true,
+        "nodeRowPresent": true,
+        "nodeIdentityReturnedWhenSuccessful": true,
+        "installedSessionUnchanged": true,
+        "routeUnchanged": true,
+        "dnsUnchanged": true
+      },
+      "evidence": "evidence/R47_SMART_LIVE_20261004.json"
+    },
+    "nodeLive": {
+      "status": "PASS",
+      "fastEndpointTest": {
+        "job": "70f30fd82d164ce59b53ceecbef5fb29",
+        "processExit": 0,
+        "exit": 0,
+        "total": 2000,
+        "reachable": 1297
+      },
+      "bestStageNode": {
+        "id": "ba47c23e24ed328ada05",
+        "name": "shadowsocks-812343868",
+        "protocol": "ss",
+        "source": "AURX_HTTP_VERIFIED",
+        "performance": {
+          "ok": true,
+          "pingMs": 268.9,
+          "pingType": "HTTPS_RTT",
+          "downloadMbps": 10.45,
+          "uploadMbps": 8.16,
+          "country": "BG",
+          "checked": "2026-10-05T00:18:18.106967+03:30",
+          "error": ""
+        }
+      },
+      "checks": {
+        "fastEndpointTestCompleted": true,
+        "boundedBatchFoundLivePerformance": true,
+        "freshPerformanceIdsPresent": true,
+        "providerBenchmarkNodeSucceeded": true,
+        "providerReturnedNodeIdentity": true,
+        "providerNodeWasCurrentRunPerformance": true,
+        "stageHasBestPerformance": true,
+        "installedSessionUnchanged": true,
+        "routeUnchanged": true,
+        "dnsUnchanged": true
+      },
+      "evidence": "evidence/R47_NODE_LIVE_20261005.json"
+    },
+    "installer": {
+      "status": "PASS",
+      "path": "delivery/github_v4.3.3/FreeNetHub_4.3.3_R47_Setup.exe",
+      "bytes": 24276785,
+      "sha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
+      "authenticode": "NotSigned",
+      "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+      "evidence": "evidence/V433_R47_INSTALLER_BUILD_20261005.json"
+    },
+    "publicTree": {
+      "status": "PASS",
+      "manifestFiles": 466,
+      "checks": {
+        "publicManifest": "PASS",
+        "appManifest": "PASS",
+        "gatewayManifest": "PASS",
+        "crossPlatformManifest": "PASS",
+        "windowsPackageManifest": "PASS",
+        "releaseHashes": "PASS",
+        "forbiddenRuntimeArtifacts": "PASS"
+      },
+      "mismatchCount": 0
+    }
+  },
+  "preservation": {
+    "installedAppBytesModified": false,
+    "installedSessionUnchanged": true,
+    "routeUnchanged": true,
+    "dnsUnchanged": true
+  },
+  "harnessFailuresConvertedToGuards": [
+    {
+      "failure": "Stage destination expression produced +nodes.json.",
+      "rootCause": "Harness path construction.",
+      "prevention": "Explicit nested Join-Path.",
+      "productFailure": false
+    },
+    {
+      "failure": "Node batches returned DEPENDENCY_NOT_CONFIGURED_SINGBOX.",
+      "rootCause": "Stage omitted gateway/runtime/local_gateway.json.",
+      "prevention": "Copy hash-pinned sing-box authority into isolated stage.",
+      "productFailure": false
+    },
+    {
+      "failure": "StrictMode collector accessed absent performance_test.",
+      "rootCause": "Harness optional-property assumption.",
+      "prevention": "Check PSObject.Properties before access.",
+      "productFailure": false
+    }
+  ],
+  "openGates": [
+    "Hosted CI exact-candidate acceptance",
+    "Trusted Authenticode signing remains external"
+  ],
+  "exactNextAction": "Finalize PUBLIC_MANIFEST including closure records, verify again, commit/push exact R47 candidate, and require hosted CI before any public promotion.",
+  "hashes": {
+    "engine": "BABB395E503251AFA966AA25A304FC7A1C391ABBCFE76456B5345D2EEFDB6B28",
+    "ui": "8FAF0F9DD986FC08ECB78D2291EC267F05C4942059DA0D6F187DA9D1D82F867A",
+    "view": "E1498846B08ECFEBC84957257060DE7F985CD22470186C16BEBB48784494ABD0",
+    "appManifest": "648E77EE0C84B5BB32D00249A95E68542E80D935E71184E22D109A84AB4635A5",
+    "release": "1B7A157FBEAC069C73BDD7A443376C19235329C50E92BAF4A008CC3F1C32A57D",
+    "smartLive": "DCC896CD23E53F0E6FA1B4FF22B42722169038640073D5A50F88D81255B50F58",
+    "nodeLive": "A02F206B455DB7024CA68412EDC99A3E7177D7CC2D8E2FB6E85B9A2D38595BC1",
+    "installerBuildEvidence": "FDF07FB6D1F643879B3A0382D43954A86C146617CB728121C989F1EB0C341174",
+    "installer": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63"
+  }
+}

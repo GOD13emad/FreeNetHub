@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "version": "4.3.3",
+  "changeSet": "R47",
+  "status": "CURRENT_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "previousAcceptedState": {
+    "version": "4.3.2",
+    "tag": "v4.3.2",
+    "commit": "dd8bee89be71e39777152b6428c2ec0b1ba50809"
+  },
+  "records": [
+    {
+      "Date_Context": "2026-10-05 / Smart correction",
+      "Claim_Decision": "Smart is selector-only; benchmark every real browser method; DIRECT/CUSTOM remain comparison-only for auto selection.",
+      "Evidence_Source": [
+        "app/engine.py",
+        "app/FreeNetHub.ps1",
+        "tests/test_r47_smart_node_sort.py",
+        "evidence/R47_SMART_LIVE_20261004.json"
+      ],
+      "Confidence_Status": "CONFIRMED / LOCAL_LIVE_PASS",
+      "Reuse_Targets": [
+        "UI semantics",
+        "release notes",
+        "architecture rationale"
+      ],
+      "Provenance": {
+        "engineSha256": "BABB395E503251AFA966AA25A304FC7A1C391ABBCFE76456B5345D2EEFDB6B28",
+        "uiSha256": "8FAF0F9DD986FC08ECB78D2291EC267F05C4942059DA0D6F187DA9D1D82F867A"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Node best-node",
+      "Claim_Decision": "Use current successful performance for best-node ranking and return node identity with ProviderBenchmark NODE.",
+      "Evidence_Source": [
+        "evidence/R47_NODE_LIVE_20261005.json",
+        "tests/test_r47_smart_node_sort.py"
+      ],
+      "Confidence_Status": "CONFIRMED / LIVE_PASS",
+      "Reuse_Targets": [
+        "Node Pool UX",
+        "benchmark methodology"
+      ],
+      "Provenance": {
+        "path": "evidence/R47_NODE_LIVE_20261005.json",
+        "sha256": "A02F206B455DB7024CA68412EDC99A3E7177D7CC2D8E2FB6E85B9A2D38595BC1"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Node sorting",
+      "Claim_Decision": "Sort raw typed values; numeric dropdown default ascending; header toggles; missing always last.",
+      "Evidence_Source": [
+        "app/FreeNetHub.ps1",
+        "app/View.xaml",
+        "tests/test_r47_smart_node_sort.py"
+      ],
+      "Confidence_Status": "CONFIRMED / REGRESSION_PASS",
+      "Reuse_Targets": [
+        "UI rules",
+        "QA"
+      ],
+      "Provenance": {
+        "uiSha256": "8FAF0F9DD986FC08ECB78D2291EC267F05C4942059DA0D6F187DA9D1D82F867A",
+        "viewSha256": "E1498846B08ECFEBC84957257060DE7F985CD22470186C16BEBB48784494ABD0"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Harness failures",
+      "Claim_Decision": "Three false negatives were harness-only and converted to staging/collector guards, not product defects.",
+      "Evidence_Source": [
+        "evidence/R47_NODE_LIVE_20261005.json",
+        "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / PREVENTION_RECORDED",
+      "Reuse_Targets": [
+        "test harness design",
+        "failure prevention"
+      ],
+      "Provenance": {
+        "acceptance": "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Installer",
+      "Claim_Decision": "4.3.3/R47 local installer is accepted locally; digest stays external evidence; v4.3.2 remains public authority until hosted PASS.",
+      "Evidence_Source": [
+        "evidence/V433_R47_INSTALLER_BUILD_20261005.json",
+        "RELEASE.json",
+        "windows/installer/FreeNetHub.iss"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_OPEN",
+      "Reuse_Targets": [
+        "release promotion",
+        "handoff"
+      ],
+      "Provenance": {
+        "installerSha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
+        "releaseSha256": "1B7A157FBEAC069C73BDD7A443376C19235329C50E92BAF4A008CC3F1C32A57D"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Public tree local closure",
+      "Claim_Decision": "The R47 candidate public tree and nested integrity manifests/release hashes pass exact verification; local promotion gates are closed except hosted CI and external Authenticode.",
+      "Evidence_Source": [
+        "PUBLIC_MANIFEST.json",
+        "tests/verify_public_tree.py",
+        "tests/security_scan_public.py",
+        "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / LOCAL_GATE_PASS",
+      "Reuse_Targets": [
+        "release promotion",
+        "supply-chain audit",
+        "handoff"
+      ],
+      "Provenance": {
+        "manifestFileCount": 466,
+        "verification": "ALL_PUBLIC_TREE_CHECKS_PASS"
+      }
+    }
+  ],
+  "authoritativeEvidence": [
+    "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/R47_SMART_LIVE_20261004.json",
+    "evidence/R47_NODE_LIVE_20261005.json",
+    "evidence/V433_R47_INSTALLER_BUILD_20261005.json",
+    "evidence/V433_R47_FULL_REGRESSION_20261005.txt",
+    "evidence/V433_R47_FAIL_CLOSED_20261005.json",
+    "evidence/V433_R47_SECURITY_20261005.json"
+  ],
+  "openGates": [
+    "Hosted CI exact-candidate acceptance",
+    "Trusted Authenticode signing remains external"
+  ],
+  "exactNextAction": "Finalize PUBLIC_MANIFEST including closure records, verify again, commit/push exact R47 candidate, and require hosted CI before public promotion."
+}

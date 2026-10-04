@@ -273,12 +273,21 @@ def ensure_node(target='AUTO',limit=12):
   lt=n.get('last_test') if isinstance(n.get('last_test'),dict) else {}
   exact=target!='AUTO' and lt.get('healthy') and str(lt.get('country','')).upper()==target
   shard=target!='AUTO' and str(n.get('source') or '')=='AURX_COUNTRY_'+target
-  aliases={'AT':('austria','österreich','autriche'),'DE':('germany','deutschland','allemagne'),'NL':('netherlands','niederlande','pays-bas','holland'),'US':('united states','usa','états unis','estados unidos'),'CA':('canada','kanada'),'GB':('united kingdom','uk','royaume-uni','vereinigtes königreich'),'FR':('france','frankreich','francia'),'SG':('singapore','singapour','singapur'),'JP':('japan','japon','japan')}
+  aliases={'AT':('austria','?sterreich','autriche'),'DE':('germany','deutschland','allemagne'),'NL':('netherlands','niederlande','pays-bas','holland'),'US':('united states','usa','�tats unis','estados unidos'),'CA':('canada','kanada'),'GB':('united kingdom','uk','royaume-uni','vereinigtes k?nigreich'),'FR':('france','frankreich','francia'),'SG':('singapore','singapour','singapur'),'JP':('japan','japon','japan')}
   name=str(n.get('name','')).lower()
   hint=target!='AUTO' and (target.lower() in name or any(x in name for x in aliases.get(target,())))
   ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
+  perf=n.get('performance_test') if isinstance(n.get('performance_test'),dict) else {}
+  perf_ok=bool(perf.get('ok'))
+  try:perf_ping=float(perf.get('pingMs')) if perf.get('pingMs') is not None else 999999.0
+  except (TypeError,ValueError):perf_ping=999999.0
+  try:perf_down=float(perf.get('downloadMbps') or 0)
+  except (TypeError,ValueError):perf_down=0.0
+  try:perf_up=float(perf.get('uploadMbps') or 0)
+  except (TypeError,ValueError):perf_up=0.0
   healthy=bool(lt.get('healthy'));lat=lt.get('seconds')
-  return (0 if exact else 1,0 if shard else 1,0 if hint else 1,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if healthy else 1,node_source_quality(n),0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),float(lat) if isinstance(lat,(int,float)) else 9999)
+  return (0 if exact else 1,0 if shard else 1,0 if hint else 1,0 if perf_ok else 1,perf_ping,-perf_down,-perf_up,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if healthy else 1,node_source_quality(n),0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),float(lat) if isinstance(lat,(int,float)) else 9999)
+
  nodes=sorted(s['nodes'],key=score)
  last=[]
  for n in nodes[:max(1,min(int(limit),24))]:
@@ -309,6 +318,27 @@ def connect_candidates(mode):
  if mode=='AUTO':return ['NODE','CFON']
  if mode not in ('NODE','CFON','CUSTOM'):raise ValueError('COUNTRY_MODE_UNSUPPORTED')
  return [mode]
+
+def smart_benchmark_candidates():
+ # Smart is a selector, never a synthetic benchmark row. Benchmark every real
+ # browser method so the UI gets a terminal result for every row. Country policy
+ # still controls which successful providers are eligible to become Smart's best.
+ out=[]
+ preferred=[x for x in settings().get('order',[]) if x in PORTS]
+ for m in preferred+list(DEFAULT['order'])+['CUSTOM','DIRECT']:
+  if m not in out:out.append(m)
+ return out
+
+def performance_rank_key(perf):
+ if not isinstance(perf,dict) or not perf.get('ok'):return (1,float('inf'),0.0,0.0)
+ def num(k,default=0.0):
+  try:
+   v=perf.get(k)
+   return float(v) if v is not None else default
+  except (TypeError,ValueError):return default
+ # Deterministic Smart policy: lowest measured latency first, then higher
+ # download and upload as tie-breakers. Missing metrics never outrank measured.
+ return (0,num('pingMs',float('inf')),-num('downloadMbps'),-num('uploadMbps'))
 
 def check():
  if JOB and (ROOT/'jobs'/f'{JOB}.cancel').exists():raise InterruptedError('CANCELLED')
@@ -1459,25 +1489,56 @@ def dispatch(action,mode,payload):
   if mode=='DIRECT':return {'provider':'DIRECT','health':probe('DIRECT'),'performance':direct_speed(),'temporary':False}
   if mode=='CUSTOM':return {'provider':'CUSTOM','health':probe('CUSTOM'),'performance':path_speed('CUSTOM'),'temporary':False}
   if mode=='AUTO':
-   attempts=[]
-   for m in connect_candidates('AUTO'):
-    was=bool(owned(m))
+   attempts=[];rows=[];eligible=list(connect_candidates('AUTO'))
+   for m in smart_benchmark_candidates():
+    check();progress('Smart benchmark: '+m,m)
+    was=bool(owned(m)) if m in PORTS else False
     try:
-     h=ensure_node(country_target()) if m=='NODE' else ensure(m)
-     perf=path_speed(m)
-     return {'provider':m,'health':h,'performance':perf,'temporary':not was,'attempts':attempts}
+     if m=='DIRECT':
+      h=probe('DIRECT');perf=direct_speed()
+     elif m=='CUSTOM':
+      h=probe('CUSTOM')
+      if not h.get('healthy'):raise RuntimeError(h.get('error') or 'CUSTOM_PATH_NOT_VERIFIED')
+      perf=path_speed('CUSTOM')
+     elif m=='NODE':
+      h=ensure_node(country_target());perf=path_speed('NODE')
+      n=node_selected()
+      if n:node_record_performance(n['id'],perf)
+     else:
+      h=ensure(m);perf=path_speed(m)
+     row={'provider':m,'ok':bool(perf.get('ok')),'health':h,'performance':perf,'temporary':bool(m in PORTS and not was)}
+     if m=='NODE':
+      n=node_selected()
+      if n:row['node']=NH.public_node(n)
+     rows.append(row)
     except (ValueError,RuntimeError,TimeoutError) as ex:
      attempts.append({'mode':m,'reason':str(ex)})
+     rows.append({'provider':m,'ok':False,'performance':None,'error':str(ex),'temporary':bool(m in PORTS and not was)})
     finally:
-     if not was:
+     if m in PORTS and not was:
       with contextlib.suppress(Exception):stop(m)
-   raise RuntimeError('ALL_PATHS_FAILED')
+   good=[x for x in rows if x.get('provider') in eligible and isinstance(x.get('performance'),dict) and x['performance'].get('ok')]
+   ranked=sorted(good,key=lambda x:performance_rank_key(x.get('performance')))
+   rank=[x['provider'] for x in ranked]
+   if rank:
+    s=settings();old=[x for x in s.get('order',[]) if x in PORTS]
+    s['order']=rank+[x for x in old if x not in rank]+[x for x in DEFAULT['order'] if x not in rank and x not in old]
+    write(ROOT/'settings.json',s)
+    best=ranked[0]
+    return {'provider':best['provider'],'health':best.get('health') or {},'performance':best['performance'],'temporary':bool(best.get('temporary')),'results':rows,'rank':rank,'attempts':attempts,'selectionPolicy':'LOWEST_PING_THEN_DOWNLOAD_UPLOAD'}
+   return {'provider':'','health':{},'performance':None,'temporary':False,'results':rows,'rank':[],'attempts':attempts,'error':'ALL_SMART_PATHS_FAILED','selectionPolicy':'LOWEST_PING_THEN_DOWNLOAD_UPLOAD'}
   if mode not in PORTS:raise ValueError('SPEED_MODE_UNSUPPORTED')
   was=bool(owned(mode))
   try:
    h=ensure_node(country_target()) if mode=='NODE' else ensure(mode)
    perf=path_speed(mode)
-   return {'provider':mode,'health':h,'performance':perf,'temporary':not was}
+   out={'provider':mode,'health':h,'performance':perf,'temporary':not was}
+   if mode=='NODE':
+    n=node_selected()
+    if n:
+     node_record_performance(n['id'],perf)
+     out['node']=NH.public_node(node_selected() or n)
+   return out
   finally:
    if not was:
     with contextlib.suppress(Exception):stop(mode)
@@ -1504,11 +1565,19 @@ def dispatch(action,mode,payload):
     if m in PORTS and not was:
      with contextlib.suppress(Exception):stop(m)
   if mode=='AUTO':
-   attempts=[]
-   for m in connect_candidates('AUTO'):
-    try:return _provider_ping_one(m)
-    except (ValueError,RuntimeError,TimeoutError) as ex:attempts.append({'mode':m,'reason':str(ex)})
-   raise RuntimeError('ALL_PATHS_FAILED')
+   attempts=[];rows=[];eligible=list(connect_candidates('AUTO'))
+   for m in smart_benchmark_candidates():
+    check();progress('Smart ping: '+m,m)
+    try:
+     row=_provider_ping_one(m);rows.append(row)
+    except (ValueError,RuntimeError,TimeoutError) as ex:
+     attempts.append({'mode':m,'reason':str(ex)});rows.append({'provider':m,'performance':None,'error':str(ex)})
+   good=[x for x in rows if x.get('provider') in eligible and isinstance(x.get('performance'),dict) and x['performance'].get('ok')]
+   ranked=sorted(good,key=lambda x:performance_rank_key(x.get('performance')))
+   if ranked:
+    best=ranked[0]
+    return {'provider':best['provider'],'performance':best['performance'],'results':rows,'rank':[x['provider'] for x in ranked],'attempts':attempts}
+   return {'provider':'','performance':None,'results':rows,'rank':[],'attempts':attempts,'error':'ALL_SMART_PATHS_FAILED'}
   if mode not in tuple(PORTS)+('CUSTOM','DIRECT'):raise ValueError('PING_MODE_UNSUPPORTED')
   return _provider_ping_one(mode)
  if action=='SystemSpeed':
