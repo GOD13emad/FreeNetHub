@@ -4,7 +4,7 @@
   "project": "FreeNet Hub",
   "version": "4.3.7",
   "revision": "R51",
-  "status": "PUBLIC_FINAL_SOFTWARE_GATES_CLOSED",
+  "status": "PUBLIC_FINAL_REPOSITORY_CLOSED",
   "runtimeAuthority": {
     "candidateSha": "e80d406d89bb9539689a5209d86ddb714f1a8539",
     "mergeCommit": "07424a87a0dfa2047afcfefeb62a71feb38a906d",
@@ -133,8 +133,12 @@
     "Authorized live endpoint validation for protocols without supplied endpoints"
   ],
   "repositoryClosure": {
-    "status": "CONTROL_ONLY_CLOSURE_PENDING_FINAL_MAIN_CI",
-    "runtimeDiffVsTagExpected": "NONE"
+    "status": "CLOSED",
+    "runtimeDiffVsTag": "NONE",
+    "validatedCommit": "4d2ab2270904b76b261d5c2f75a0f01b50342a57",
+    "finalMainCiRunId": 37359029522,
+    "finalMainCiStatus": "SUCCESS",
+    "finalMainCiJobs": "10/10 SUCCESS"
   },
-  "exactNextAction": "Commit only Brain/Knowledge/release/post-publish evidence/PUBLIC_MANIFEST closure, prove zero runtime diff versus immutable v4.3.7, then require final main CI."
+  "exactNextAction": "No open v4.3.7 software gates. Preserve immutable v4.3.7/R51. Any R52 refinement or new runtime research starts as a separate change set."
 }

@@ -658,7 +658,7 @@ Generate PUBLIC_MANIFEST last; pass security/public-tree/fail-closed; freeze com
 No open v4.3.6 software gates. Final main CI run 37343449317 is SUCCESS on control-only closure commit 3cdbd19fc62eaccdef9c0ae7f16cf2073f1c6392; runtime diff versus immutable v4.3.6 is NONE. Preserve the frozen release. Any broader connection-method research starts as a new change set.
 
 ## V437 R51 PROTOCOL EXPANSION 2 — 2026-10-05
-**Status: CURRENT / PUBLIC_FINAL_SOFTWARE_GATES_CLOSED / REPOSITORY_CLOSURE_PENDING_FINAL_MAIN_CI**
+**Status: CURRENT / PUBLIC_FINAL_REPOSITORY_CLOSED**
 
 ### Previous Accepted State
 - v4.3.6 R50 / Linux R16 remains immutable and publicly finalized.
@@ -701,7 +701,7 @@ No open v4.3.6 software gates. Final main CI run 37343449317 is SUCCESS on contr
 6. After R51 is closed, perform a second research pass for additional authoritative connection families and runtime-upgrade candidates.
 
 ### Exact Next Action
-R51 public software gates are closed. Commit only Brain/Knowledge/post-publish/release evidence plus PUBLIC_MANIFEST closure, prove app/crossplatform/windows runtime diff versus immutable v4.3.7 is NONE, and require final main CI. Start any R52 research only after this control-plane closure.
+No open v4.3.7 software gates. Final repository-closure CI run 37359029522 is 10/10 SUCCESS on commit 4d2ab2270904b76b261d5c2f75a0f01b50342a57; runtime diff versus immutable v4.3.7 is NONE. Preserve the frozen release. Any R52 work starts as a new change set.
 
 
 ### R51 Public Promotion / Post-Publish Evidence
@@ -714,3 +714,4 @@ R51 public software gates are closed. Commit only Brain/Knowledge/post-publish/r
 - Windows installed R45 updater discovery: PASS for R51; session/route/DNS unchanged; owner Windows was not forcibly upgraded.
 - Linux public updater: PASS R16->R17; installed 4.2.0-linux.17-r44; integrity 9/9 PASS; updateAvailable=false; route/DNS/domain/disconnected-session semantics preserved.
 - Stable sing-box 1.14 outbound-family coverage is now exhausted for accepted node families, subject to product exclusions. A narrower R52 refinement remains for Shadowsocks SIP002/SIP003 plugin query preservation (obfs-local/v2ray-plugin). Mieru requires a separate runtime/server-authority evaluation. sing-box 1.15 MASQUE/Tailcat are alpha/pre-release and not accepted into this stable release line.
+- Final repository closure commit 4d2ab2270904b76b261d5c2f75a0f01b50342a57: main CI run 37359029522 = 10/10 SUCCESS; app/crossplatform/windows runtime diff versus v4.3.7 = NONE.

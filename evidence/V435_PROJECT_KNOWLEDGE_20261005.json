@@ -3,7 +3,7 @@
   "date": "2026-10-05",
   "project": "FreeNet Hub",
   "version": "4.3.7",
-  "status": "V437_PUBLIC_FINAL_REPOSITORY_CLOSURE_PENDING",
+  "status": "V437_PUBLIC_FINAL_REPOSITORY_CLOSED",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -464,7 +464,7 @@
         "evidence/V437_R17_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
         "GitHub Actions runs 37353807006, 37353842830, 37354810434, 37356646618"
       ],
-      "Confidence_Status": "CONFIRMED / PUBLIC_FINAL_SOFTWARE_GATES_CLOSED",
+      "Confidence_Status": "CONFIRMED / PUBLIC_FINAL_REPOSITORY_CLOSED",
       "Reuse_Targets": [
         "release promotion",
         "updater",
@@ -475,7 +475,10 @@
         "candidateSha": "e80d406d89bb9539689a5209d86ddb714f1a8539",
         "mergeSha": "07424a87a0dfa2047afcfefeb62a71feb38a906d",
         "windowsSha256": "4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3",
-        "linuxSha256": "1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6"
+        "linuxSha256": "1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6",
+        "finalClosureCommit": "4d2ab2270904b76b261d5c2f75a0f01b50342a57",
+        "finalMainCiRunId": 37359029522,
+        "finalMainCiStatus": "SUCCESS"
       }
     }
   ],
@@ -505,12 +508,11 @@
     "evidence/V437_R17_PUBLIC_UPDATE_ACCEPTANCE_20261005.json"
   ],
   "openGates": [
-    "Repository control-only closure final main CI",
     "Trusted Windows Authenticode external",
     "Physical console field E2E external",
     "Production mobile forwarding/signing external",
-    "R52 candidate: SS SIP002/SIP003 plugin refinement",
-    "Separate research: Mieru runtime; sing-box 1.15 alpha MASQUE/Tailcat not stable"
+    "Future R52 refinement: Shadowsocks SIP002/SIP003 plugin query preservation",
+    "Separate research: Mieru runtime/server authority; sing-box 1.15 MASQUE/Tailcat only after stable runtime qualification"
   ],
-  "exactNextAction": "Close R51 repository control-plane with zero runtime diff and final main CI. Any R52 work must start from immutable v4.3.7 as a new change set."
+  "exactNextAction": "No open v4.3.7 software gates. Preserve the frozen release; any R52 work starts from immutable v4.3.7 as a new change set."
 }
