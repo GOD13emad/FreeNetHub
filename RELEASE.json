@@ -2,7 +2,7 @@
   "product": "FreeNet Hub",
   "version": "4.3.5",
   "releaseRevision": "4.3.5-r49-node-protocol-expansion",
-  "status": "V435_R49_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "status": "V435_R49_LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -24,12 +24,12 @@
   "viewSha256": "DCFA0D26C04EC5CC5DA955F76643321C0AA096A7F0B5CBD700C712FAD46D4305",
   "desktopShellSha256": "42399C7A30ECC88588AAA0F68782629ADB4A049F2576F978C5EAC1F35E2D6435",
   "gatewayManifestSha256": "DA4C24B3C3611138AE80788966961C5F33C73917983F39B522852C40EACB9247",
-  "crossPlatformManifestSha256": "2AFCD9D52352FA812505811F5FE9A80D21F254DE4516B7025CA3683D3C567A65",
+  "crossPlatformManifestSha256": "DE4F27B50EFF88E3A5E1F85D8B06D8F74E8F72391009773DC240445B39158D89",
   "installerSha256": null,
   "acceptanceEvidence": "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "PUBLIC_FINAL_NATIVE_LINUX_4.2.0_R14_R41",
+    "linux": "CANDIDATE_NATIVE_LINUX_4.2.0_R15_R42_HOSTED_OPEN",
     "android": "BUILD_ACCEPTED_CORE_NOT_LINKED",
     "ios": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN"
   },
@@ -81,12 +81,12 @@
     "nativeLinuxAcceptanceEvidence": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
     "v4.2.0PublishedReleaseAuthority": true,
     "githubReleaseImmutableObserved": false,
-    "nativeLinuxVersion": "4.2.0-linux.14-r41",
+    "nativeLinuxVersion": "4.2.0-linux.15-r42",
     "nativeLinuxLegacyProfileMigration": "PASS_EXACT_FINGERPRINT_ONLY",
     "nativeLinuxUninstaller": "PASS_OWNED_UUID_SCOPE_PRIVATE_STATE_PRESERVED",
     "nativeLinuxDirectCurrentProbe": "NETWORK_TRANSIENT_BOOTSTRAP_55_PERCENT_AT_90S",
     "nativeLinuxWarpInstaller": "OFFICIAL_REPO_VERSION_CODENAME",
-    "platformMatrixLinuxAligned": true,
+    "platformMatrixLinuxAligned": false,
     "nativeLinuxConsoleWifiPolicy": "WPA2_PSK_RSN_PMF_DISABLED",
     "nativeLinuxConsoleCredentialStability": "PASS_REPEATED_PREPARE_PRESERVES_OWNED_PSK",
     "nativeLinuxConsoleStartPolicy": "PASS_REENFORCES_CURRENT_WIFI_POLICY",
@@ -892,7 +892,7 @@
     "finalLocalBuildEvidence": "evidence/V434_R48_INSTALLER_BUILD_20261005.json"
   },
   "r49NodeProtocolExpansion": {
-    "status": "LOCAL_GATES_PASS_HOSTED_OPEN",
+    "status": "LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
     "tuic": "PARSER+SINGBOX_CONFIG_CHECK_PASS_LIVE_ENDPOINT_UNPROVEN",
     "anytls": "PARSER+SINGBOX_CONFIG_CHECK_PASS_LIVE_ENDPOINT_UNPROVEN",
     "shadowtls": "JSON_IMPORT+SINGBOX_CONFIG_CHECK_PASS_LIVE_ENDPOINT_UNPROVEN",
@@ -913,6 +913,33 @@
     "installerBuild": "PASS_EXTERNAL_ACCEPTANCE_EVIDENCE",
     "installerAsset": "FreeNetHub_4.3.5_R49_Setup.exe",
     "hostedCi": "OPEN_REQUIRED_BEFORE_PUBLIC_PROMOTION",
-    "publicTreeAuthority": "NODEHUB_HASH_SYNCED"
+    "publicTreeAuthority": "NODEHUB_HASH_SYNCED",
+    "linuxParity": "SYNCED_APP_NODEHUB_TO_LINUX_SHARED_AFTER_HOSTED_CI_FAILURE",
+    "hostedCiFirstAttempt": "FAIL_LINUX_STATIC_NODEHUB_PARITY",
+    "hostedCiRetry": "OPEN",
+    "linuxRuntime": "R15_R42_CANDIDATE_NODEHUB_PARITY",
+    "linuxVersion": "4.2.0-linux.15-r42",
+    "linuxPackageBuilder": "tests/build_linux_r15_package.py",
+    "linuxArtifact": "FreeNetHub_4.2.0_Linux_R15.zip",
+    "linuxHostedValidation": "OPEN",
+    "linuxInstalledValidation": "OPEN",
+    "linuxPackageBytes": 221657,
+    "linuxPackageSha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01",
+    "linuxParityRootCause": "APP_NODEHUB_CHANGED_WITHOUT_SYNCING_CROSSPLATFORM_LINUX_NODEHUB_SHARED",
+    "linuxParityPrevention": "CI_SHA_PARITY_GUARD_PLUS_VERSIONED_LINUX_PACKAGE_REVISION",
+    "linuxLocalValidation": "SELFTEST_CONSOLE_BROWSER_SCOPE_PARITY_UPDATE_PACKAGE_PASS; POSIX_PERMISSION_TEST_REQUIRES_LINUX_HOST",
+    "crossPlatformManifestRawSha256": "060A9D8E907E424F00DE45C2C5BE0A67EA6C2BE02D54456F4FD9D774E21FE570",
+    "crossPlatformManifestCanonicalSha256": "DE4F27B50EFF88E3A5E1F85D8B06D8F74E8F72391009773DC240445B39158D89",
+    "crossPlatformHashPolicy": "RELEASE_USES_GIT_CANONICAL_BYTES",
+    "currentWindowsInstaller": {
+      "name": "FreeNetHub_4.3.5_R49_Setup.exe",
+      "bytes": 24260411,
+      "sha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
+      "evidence": "evidence/V435_R49_INSTALLER_BUILD_20261005.json"
+    },
+    "supersededWindowsInstallerSha256": [
+      "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E",
+      "29227FA8E8A8FE388396204D4FEAE75FF24CE110ABE1CBA5BC45BEF9FF8231DF"
+    ]
   }
 }

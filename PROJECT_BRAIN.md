@@ -466,3 +466,44 @@ Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_OPEN
 
 ### Exact Next Action
 Update only the changed control-file entries in PUBLIC_MANIFEST, verify complete public tree/security, commit/push exact R49 and require hosted CI.
+
+### V435 R49 hosted Linux parity root-cause — 2026-10-05
+Status: CURRENT / FIX_LOCAL_PASS_HOSTED_RETRY_OPEN
+- Hosted CI run 37302766809 failed only linux-static. Windows unit/fresh-install/virtual-signing, console virtual, Android build/emulator and iOS static/simulator all passed; aggregate was skipped only because Linux failed.
+- Root cause: R49 changed app/nodehub.py for TUIC/AnyTLS/ShadowTLS imports but crossplatform/linux/nodehub_shared.py remained at R48 bytes. The existing SHA parity guard correctly blocked promotion.
+- Prevention: keep byte-parity guard; Linux shared nodehub is synchronized from app authority in the same change set. Because Linux package bytes changed, do not reuse R14 identity. Linux candidate is bumped to 4.2.0-linux.15-r42 / FreeNetHub_4.2.0_Linux_R15.zip.
+- Local Linux logic gates PASS: selftest, console policy, browser profile, scope policy, R37 parity and updater revision. POSIX permission test is not authoritative on NTFS and remains a Linux-host/CI gate.
+- R15 package candidate: 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01.
+- Exact Next Action: rebuild Windows R49 installer because RELEASE/cross-platform authority changed, rerun full/public gates, commit/push parity fix and require hosted retry PASS before promotion.
+
+### V435 R49 post-parity frozen installer — 2026-10-05
+Status: CURRENT / LOCAL_FROZEN_CANDIDATE_HOSTED_RETRY_OPEN
+- Linux parity fix changes RELEASE/cross-platform authority, so the earlier R49 Windows installer digest 7BC7BCED... is superseded.
+- Current exact Windows R49 installer: 24,271,706 bytes / SHA-256 29227FA8E8A8FE388396204D4FEAE75FF24CE110ABE1CBA5BC45BEF9FF8231DF. Frozen inputs=25; raw app-manifest preflight PASS; Authenticode NotSigned/external.
+- Current Linux candidate: 4.2.0-linux.15-r42 / FreeNetHub_4.2.0_Linux_R15.zip = 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01.
+- Previous R49 Windows installer hash is historical/superseded and must not be promoted.
+- Exact Next Action: full regression + public-tree/security on this frozen state, then commit/push parity fix and require hosted retry PASS.
+
+### V435 R49 canonical cross-platform hash correction — 2026-10-05
+- Public-tree verification found only releaseHashes/crossPlatformManifestSha256 mismatched after Linux R15 sync.
+- Root cause: cross-platform manifest generator reported raw working-tree SHA (CRLF on Windows), while release verifier correctly hashes Git-canonical bytes. RELEASE must use canonical SHA.
+- Raw SHA: 060A9D8E907E424F00DE45C2C5BE0A67EA6C2BE02D54456F4FD9D774E21FE570. Canonical release SHA: DE4F27B50EFF88E3A5E1F85D8B06D8F74E8F72391009773DC240445B39158D89.
+- Prevention: release authorities use the same canonicalization policy as verify_public_tree; generator receipts may retain raw hashes only as secondary evidence.
+- Because RELEASE is a frozen Windows installer input, rebuild the installer after this correction before promotion.
+
+### V435 R49 canonical-authority frozen installer — 2026-10-05
+Status: CURRENT / FINAL_LOCAL_FREEZE_PENDING_HOSTED_RETRY
+- Correcting RELEASE to the Git-canonical cross-platform manifest hash required one final Windows installer rebuild.
+- Current exact R49 Windows installer: 24,260,411 bytes / SHA-256 1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E; 25 frozen inputs; raw app-manifest preflight PASS; Authenticode NotSigned/external.
+- Earlier R49 installer hashes 7BC7... and 29227... are superseded and must not be promoted.
+- Linux candidate remains 4.2.0-linux.15-r42 / R15, 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01.
+- Exact Next Action: one final regression/public verification, then commit/push exact state and require hosted retry PASS.
+
+### V435 R49 parity-fixed local closure — 2026-10-05
+Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_RETRY_OPEN
+- Hosted CI first attempt failed only Linux nodehub byte parity; root cause was app/nodehub.py changing without synchronizing crossplatform/linux/nodehub_shared.py.
+- Linux is now versioned as a new candidate, not silently mutated R14: 4.2.0-linux.15-r42 / FreeNetHub_4.2.0_Linux_R15.zip = 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01.
+- Current Windows R49 installer authority: 24,260,411 bytes / SHA-256 1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E.
+- Final local regression: 221/221 PASS. Fail-closed PASS. Public security PASS. diff-check PASS. Public tree PASS over 490 files with nested manifests/release hashes/forbidden-runtime checks all PASS.
+- RELEASE cross-platform manifest authority uses Git-canonical bytes; raw Windows CRLF hash is evidence-only.
+- Exact Next Action: rebuild PUBLIC_MANIFEST including this closure record, verify once more, commit/push exact R49 parity fix and require hosted retry CI PASS before any v4.3.5 promotion.

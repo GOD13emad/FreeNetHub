@@ -4,7 +4,7 @@
   "project": "FreeNet Hub",
   "version": "4.3.5",
   "revision": "R49",
-  "status": "V435_R49_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "status": "V435_R49_LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
   "objective": "Evidence-gated TUIC/AnyTLS/ShadowTLS node import/runtime expansion plus fail-closed bridge clipboard import.",
   "baseline": {
     "tag": "v4.3.4",
@@ -32,11 +32,15 @@
     "installer": {
       "status": "PASS",
       "path": "delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe",
-      "bytes": 24278071,
-      "sha256": "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E",
+      "bytes": 24260411,
+      "sha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
       "frozenFiles": 25,
       "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
-      "authenticode": "NotSigned"
+      "authenticode": "NotSigned",
+      "supersededSha256": [
+        "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E",
+        "29227FA8E8A8FE388396204D4FEAE75FF24CE110ABE1CBA5BC45BEF9FF8231DF"
+      ]
     },
     "networkPreservation": {
       "installedSessionUnchanged": true,
@@ -44,8 +48,32 @@
       "dnsUnchanged": true,
       "evidence": "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
     },
-    "publicTree": "PASS_489_FILES",
-    "releaseHashes": "PASS"
+    "publicTree": {
+      "status": "PASS",
+      "files": 490,
+      "publicManifestSha256": "756C25348D6695A110BD30C360417AF0B00469F6F7FF5D5A52B4BDE2726EA74C",
+      "nestedManifests": "PASS",
+      "releaseHashes": "PASS",
+      "forbiddenRuntimeArtifacts": "PASS"
+    },
+    "releaseHashes": "PASS",
+    "linuxParityFix": {
+      "status": "PASS_LOCAL_LOGIC_HOSTED_RETRY_OPEN",
+      "version": "4.2.0-linux.15-r42",
+      "rootCause": "app/nodehub.py changed in R49 while crossplatform/linux/nodehub_shared.py remained R48 bytes",
+      "parity": "PASS_BYTE_IDENTICAL",
+      "selftest": "PASS",
+      "consolePolicy": "PASS",
+      "browserProfile": "PASS",
+      "scopePolicy": "PASS",
+      "updateRevision": "PASS",
+      "package": {
+        "name": "FreeNetHub_4.2.0_Linux_R15.zip",
+        "bytes": 221657,
+        "sha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01"
+      },
+      "posixPermissionTest": "HOSTED_LINUX_REQUIRED_NTFS_NOT_AUTHORITATIVE"
+    }
   },
   "liveExternal": {
     "tuic": "UNPROVEN_NO_AUTHORIZED_ENDPOINT",
@@ -59,7 +87,15 @@
   },
   "networkMutationByR49": false,
   "openGates": [
-    "hosted exact-candidate CI"
+    "hosted exact-candidate retry CI",
+    "public promotion"
   ],
-  "exactNextAction": "Commit/push exact R49 candidate and require hosted CI; no public promotion before exact-SHA PASS."
+  "exactNextAction": "Rebuild PUBLIC_MANIFEST including this local closure record, verify once more, then commit/push exact parity-fixed R49 and require hosted retry PASS.",
+  "hostedFirstAttempt": {
+    "runId": 37302766809,
+    "status": "FAIL",
+    "failedJob": "linux-static",
+    "failedGuard": "crossplatform/linux/test_r37_parity.py SHA equality",
+    "otherJobs": "WINDOWS_FRESH_SIGNING_CONSOLE_ANDROID_IOS_PASS"
+  }
 }

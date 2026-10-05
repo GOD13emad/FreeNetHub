@@ -3,7 +3,7 @@
   "date": "2026-10-05",
   "project": "FreeNet Hub",
   "version": "4.3.5",
-  "status": "LOCAL_GATES_PASS_HOSTED_OPEN",
+  "status": "LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -129,6 +129,111 @@
         "publicManifestSha256": "378F8DD3C86920A6F8A9A3D37D36E45055E5061E3A43F0959889E1CC9ADA2A3A",
         "files": 489
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 hosted Linux parity failure",
+      "Claim_Decision": "Hosted CI first attempt failed only because R49 updated app/nodehub.py without synchronizing the Linux shared mirror. Preserve the byte-parity guard; synchronize the mirror and bump Linux to a new R15/r42 package instead of silently changing R14 bytes.",
+      "Evidence_Source": [
+        "GitHub Actions run 37302766809 / linux-static",
+        "crossplatform/linux/test_r37_parity.py",
+        "app/nodehub.py",
+        "crossplatform/linux/nodehub_shared.py",
+        "tests/build_linux_r15_package.py"
+      ],
+      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / FIX_LOCAL_PASS / HOSTED_RETRY_OPEN",
+      "Reuse_Targets": [
+        "failure prevention",
+        "Linux packaging",
+        "release governance"
+      ],
+      "Provenance": {
+        "linuxVersion": "4.2.0-linux.15-r42",
+        "linuxPackage": "FreeNetHub_4.2.0_Linux_R15.zip",
+        "bytes": 221657,
+        "sha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 post-Linux-parity installer rebuild",
+      "Claim_Decision": "The pre-parity Windows R49 installer hash 7BC7... is superseded because RELEASE/cross-platform authority changed. Rebuild the exact frozen Windows installer after Linux R15 authority sync and use only the new 29227... digest for promotion.",
+      "Evidence_Source": [
+        "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+        "delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe"
+      ],
+      "Confidence_Status": "CONFIRMED / CURRENT_INSTALLER_AUTHORITY",
+      "Reuse_Targets": [
+        "release promotion",
+        "supply-chain audit",
+        "failure prevention"
+      ],
+      "Provenance": {
+        "bytes": 24271706,
+        "sha256": "29227FA8E8A8FE388396204D4FEAE75FF24CE110ABE1CBA5BC45BEF9FF8231DF",
+        "supersededSha256": "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 cross-platform canonical hash policy",
+      "Claim_Decision": "RELEASE.crossPlatformManifestSha256 must use Git-canonical bytes because verify_public_tree canonicalizes tracked text files; raw Windows working-tree CRLF SHA is evidence-only and cannot be used as release authority.",
+      "Evidence_Source": [
+        "tests/verify_public_tree.py",
+        "tests/rebuild_crossplatform_manifest.py",
+        "crossplatform/MANIFEST.json"
+      ],
+      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / CLOSED",
+      "Reuse_Targets": [
+        "release hashing",
+        "cross-platform manifest generation",
+        "failure prevention"
+      ],
+      "Provenance": {
+        "rawSha256": "060A9D8E907E424F00DE45C2C5BE0A67EA6C2BE02D54456F4FD9D774E21FE570",
+        "canonicalSha256": "DE4F27B50EFF88E3A5E1F85D8B06D8F74E8F72391009773DC240445B39158D89"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 final canonical-authority installer rebuild",
+      "Claim_Decision": "After correcting RELEASE to the Git-canonical cross-platform manifest hash, rebuild the frozen Windows installer again. Only the resulting 1EE176... digest is current promotion authority; earlier R49 installer digests are superseded.",
+      "Evidence_Source": [
+        "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+        "tests/verify_public_tree.py"
+      ],
+      "Confidence_Status": "CONFIRMED / CURRENT_FROZEN_INSTALLER",
+      "Reuse_Targets": [
+        "release promotion",
+        "supply-chain audit"
+      ],
+      "Provenance": {
+        "bytes": 24260411,
+        "sha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
+        "superseded": [
+          "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E",
+          "29227FA8E8A8FE388396204D4FEAE75FF24CE110ABE1CBA5BC45BEF9FF8231DF"
+        ]
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 parity-fixed local closure",
+      "Claim_Decision": "After Linux R15 parity repair and canonical cross-platform hash correction, the frozen R49 candidate passes 221/221 full regression, fail-closed, public security, diff-check and complete public-tree verification. Hosted retry is the only promotion gate.",
+      "Evidence_Source": [
+        "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json",
+        "PUBLIC_MANIFEST.json",
+        "tests/verify_public_tree.py",
+        "crossplatform/linux/test_r37_parity.py",
+        "tests/build_linux_r15_package.py"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_RETRY_OPEN",
+      "Reuse_Targets": [
+        "release promotion",
+        "failure prevention",
+        "handoff"
+      ],
+      "Provenance": {
+        "windowsInstallerSha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
+        "linuxR15Sha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01",
+        "fullRegression": "221/221 PASS",
+        "publicTreeFiles": 490
+      }
     }
   ],
   "authoritativeEvidence": [
@@ -139,8 +244,8 @@
     "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
   ],
   "openGates": [
-    "hosted exact-candidate CI",
+    "hosted exact-candidate retry CI",
     "public promotion"
   ],
-  "exactNextAction": "Commit/push exact R49 candidate and require hosted CI before v4.3.5 promotion."
+  "exactNextAction": "Rebuild final PUBLIC_MANIFEST, verify, commit/push exact parity-fixed R49 and require hosted retry PASS."
 }

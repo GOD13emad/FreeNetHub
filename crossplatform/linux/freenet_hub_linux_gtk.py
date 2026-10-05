@@ -293,7 +293,7 @@ class FreeNetHub(Adw.Application):
         status.append(iprow)
         root.append(status)
 
-        scopes=card();scopes.append(label("۱ · محدوده اتصال (Scope)","section-title"));scopes.append(label("مرورگر امن‌ترین حالت پیش‌فرض است. «کل سیستم» در Linux R14 فقط WARP رسمی است.","muted"))
+        scopes=card();scopes.append(label("۱ · محدوده اتصال (Scope)","section-title"));scopes.append(label("مرورگر امن‌ترین حالت پیش‌فرض است. «کل سیستم» در Linux R15 فقط WARP رسمی است.","muted"))
         scope_widgets=[]
         for key,text,sub in [
             ("BROWSER","◎ مرورگر","فقط مرورگر/پروفایل FreeNet Hub"),
@@ -544,7 +544,7 @@ class FreeNetHub(Adw.Application):
             title=next((x[1] for x in METHODS if x[0]==self.method),self.method)
             self.methods_current.set_text(f"{title} · {names.get(scope,scope)}")
         if scope=="CONSOLE":self.status_detail.set_text("Console Gateway مستقل انتخاب شد.")
-        elif scope=="SYSTEM":self.status_detail.set_text("Full System در Linux R14 فقط WARP رسمی است.")
+        elif scope=="SYSTEM":self.status_detail.set_text("Full System در Linux R15 فقط WARP رسمی است.")
         else:self.status_detail.set_text("Browser scope پیش‌فرض امن است.")
         return False
 
