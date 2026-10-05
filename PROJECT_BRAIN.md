@@ -615,7 +615,7 @@ Generate PUBLIC_MANIFEST last; pass security/public-tree/fail-closed; freeze com
 - Exact Next Action: rebuild PUBLIC_MANIFEST last, verify public/security/fail-closed, commit/push corrected exact SHA, require hosted retry PASS before merge/promotion.
 
 ## V436 PUBLIC FINAL — 2026-10-05
-**Status: CURRENT / PUBLIC_FINAL_SOFTWARE_GATES_CLOSED / REPOSITORY_CLOSURE_PENDING_FINAL_MAIN_CI**
+**Status: CURRENT / PUBLIC_FINAL_REPOSITORY_CLOSED**
 
 ### Accepted Authority
 - Exact candidate: 4c2658a53dce4aed0c8b6f84b563d60c3b52bbd5; PR #26 hosted run 37336539430: 10/10 SUCCESS.
@@ -651,9 +651,8 @@ Generate PUBLIC_MANIFEST last; pass security/public-tree/fail-closed; freeze com
 ### Roadmap ← CURRENT
 1. v4.3.6 R50/R16 exact-SHA release — Completed/PASS.
 2. Post-publish Windows/Linux updater acceptance — Completed/PASS.
-3. Control-only repository closure with zero runtime diff — CURRENT.
+3. Control-only repository closure with zero runtime diff — Completed/PASS; final main CI run 37343449317 SUCCESS on 3cdbd19fc62eaccdef9c0ae7f16cf2073f1c6392.
 4. External hardware/signing/mobile-production/live-endpoint tracks — Deferred/External.
 
 ### Exact Next Action
-Commit only Project Brain / Knowledge / release evidence / PUBLIC_MANIFEST closure, prove app/, crossplatform/, and windows/ have no diff versus immutable v4.3.6, and require final main CI. After that, do not mutate v4.3.6 runtime.
-
+No open v4.3.6 software gates. Final main CI run 37343449317 is SUCCESS on control-only closure commit 3cdbd19fc62eaccdef9c0ae7f16cf2073f1c6392; runtime diff versus immutable v4.3.6 is NONE. Preserve the frozen release. Any broader connection-method research starts as a new change set.

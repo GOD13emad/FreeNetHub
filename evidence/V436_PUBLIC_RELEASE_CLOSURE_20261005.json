@@ -4,7 +4,7 @@
   "project": "FreeNet Hub",
   "version": "4.3.6",
   "revision": "R50",
-  "status": "PUBLIC_FINAL_SOFTWARE_GATES_CLOSED",
+  "status": "PUBLIC_FINAL_REPOSITORY_CLOSED",
   "previousAcceptedState": {
     "release": "v4.3.5",
     "mergeCommit": "93fea59d696b69eb5b723e2d6b2033d4fdb879dd"
@@ -105,8 +105,11 @@
   ],
   "finalObjectiveResult": "FreeNet Hub v4.3.6 R50 / Linux R16 is publicly released from exact tested bytes with candidate/main/tag hosted CI, exact release digests, independent re-download verification, Windows non-disruptive updater verification, and Linux real updater/install acceptance.",
   "repositoryClosure": {
-    "status": "CONTROL_ONLY_CLOSURE_PENDING_FINAL_MAIN_CI",
-    "runtimeDiffVsTagExpected": "NONE"
+    "status": "CLOSED",
+    "runtimeDiffVsTag": "NONE",
+    "validatedCommit": "3cdbd19fc62eaccdef9c0ae7f16cf2073f1c6392",
+    "finalMainCiRunId": 37343449317,
+    "finalMainCiStatus": "SUCCESS"
   },
-  "exactNextAction": "Commit only Brain/Knowledge/evidence/PUBLIC_MANIFEST closure, prove no app/crossplatform/windows runtime diff versus v4.3.6, then require final main CI."
+  "exactNextAction": "No open v4.3.6 software gates. Do not mutate the frozen v4.3.6 runtime; future connection-method research is a new change set."
 }

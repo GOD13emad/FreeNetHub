@@ -3,7 +3,7 @@
   "date": "2026-10-05",
   "project": "FreeNet Hub",
   "version": "4.3.6",
-  "status": "V436_PUBLIC_FINAL_REPOSITORY_CLOSURE_PENDING",
+  "status": "V436_PUBLIC_FINAL_REPOSITORY_CLOSED",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -412,7 +412,7 @@
         "GitHub Actions main run 37337997914",
         "GitHub Actions tag run 37339712561"
       ],
-      "Confidence_Status": "CONFIRMED / PUBLIC_FINAL_SOFTWARE_GATES_CLOSED",
+      "Confidence_Status": "CONFIRMED / PUBLIC_FINAL_REPOSITORY_CLOSED",
       "Reuse_Targets": [
         "release promotion",
         "updater",
@@ -424,7 +424,10 @@
         "candidateSha": "4c2658a53dce4aed0c8b6f84b563d60c3b52bbd5",
         "mergeSha": "915b9574aac107c333c298ca35391be097df1200",
         "windowsSha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
-        "linuxSha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503"
+        "linuxSha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503",
+        "finalClosureCommit": "3cdbd19fc62eaccdef9c0ae7f16cf2073f1c6392",
+        "finalMainCiRunId": 37343449317,
+        "finalMainCiStatus": "SUCCESS"
       }
     }
   ],
@@ -454,5 +457,5 @@
     "Production Android/iOS packet forwarding/signing/real-device remains external",
     "Live TUIC/AnyTLS/ShadowTLS external endpoint validation remains unavailable without authorized endpoints"
   ],
-  "exactNextAction": "Repository control-only closure and final main CI; no further product/runtime mutation for v4.3.6."
+  "exactNextAction": "No open v4.3.6 software gates. Preserve the frozen release; future method research starts as a new change set."
 }
