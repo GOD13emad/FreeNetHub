@@ -141,7 +141,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
   $cap=Paint-ConsoleCapability
@@ -306,18 +306,18 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
  }
 
  function Get-MethodMetricControl([string]$mode){
-  return $(switch($mode){'NODE'{'NodeMetric'};'WARP'{'WarpMetric'};'CFON'{'CfonMetric'};'GOOL'{'GoolMetric'};'TOR'{'TorMetric'};'CUSTOM'{'CustomMetric'};'DIRECT'{'DirectMetric'};default{''}})
+  return $(switch($mode){'NODE'{'NodeMetric'};'WARP'{'WarpMetric'};'CFON'{'CfonMetric'};'GOOL'{'GoolMetric'};'TOR'{'TorMetric'};'WEBTUNNEL'{'WebTunnelMetric'};'OBFS4'{'Obfs4Metric'};'CUSTOM'{'CustomMetric'};'DIRECT'{'DirectMetric'};default{''}})
  }
 
  function Get-DashPrefix([string]$mode){
-  return $(switch($mode){'NODE'{'DashNode'};'WARP'{'DashWarp'};'CFON'{'DashCfon'};'GOOL'{'DashGool'};'TOR'{'DashTor'};'CUSTOM'{'DashCustom'};'DIRECT'{'DashDirect'};default{''}})
+  return $(switch($mode){'NODE'{'DashNode'};'WARP'{'DashWarp'};'CFON'{'DashCfon'};'GOOL'{'DashGool'};'TOR'{'DashTor'};'WEBTUNNEL'{'DashWebTunnel'};'OBFS4'{'DashObfs4'};'CUSTOM'{'DashCustom'};'DIRECT'{'DashDirect'};default{''}})
  }
 
  function Paint-TestState([string]$mode,[string]$state,[string]$detail='',[bool]$Primary=$true){
   $dashPrefix=Get-DashPrefix $mode
   if($dashPrefix){
    foreach($k in @('Ping','Down','Up')){$n=$dashPrefix+$k;if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'...'}else{'N/A'})}}
-   $n=$dashPrefix+'State';if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'در حال تست...'}elseif($state -eq 'TIMEOUT'){'TIMEOUT'}else{'FAIL'})}
+   $n=$dashPrefix+'State';if($script:C.ContainsKey($n)){$script:C[$n].Text=$(if($state -eq 'RUNNING'){'در حال تست...'}elseif($state -eq 'TIMEOUT'){'TIMEOUT'}elseif($state -eq 'SKIP'){'N/A'}else{'FAIL'})}
   }
   $metric=Get-MethodMetricControl $mode
   if($metric -and $script:C.ContainsKey($metric)){$script:C[$metric].Text=$(if($state -eq 'RUNNING'){'در حال تست...'}else{'N/A'+$(if($detail){' • '+$detail}else{''})})}
@@ -342,6 +342,8 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
    'CFON'{$script:C.CfonMetric.Text=$line}
    'GOOL'{if($script:C.ContainsKey('GoolMetric')){$script:C.GoolMetric.Text=$line}}
    'TOR'{$script:C.TorMetric.Text=$line}
+   'WEBTUNNEL'{if($script:C.ContainsKey('WebTunnelMetric')){$script:C.WebTunnelMetric.Text=$line}}
+   'OBFS4'{if($script:C.ContainsKey('Obfs4Metric')){$script:C.Obfs4Metric.Text=$line}}
    'CUSTOM'{$script:C.CustomMetric.Text=$line}
    'DIRECT'{if($script:C.ContainsKey('DirectMetric')){$script:C.DirectMetric.Text=$line};if($script:C.ContainsKey('CompareDirect')){$script:C.CompareDirect.Text=$line+' • '+$country}}
   }
@@ -510,6 +512,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
   }
   if($mode -eq 'AUTO'){
    foreach($m in @('NODE','WARP','CFON','GOOL','TOR','CUSTOM','DIRECT')){Paint-TestState $m 'RUNNING' '' $false}
+   foreach($m in @('WEBTUNNEL','OBFS4')){Paint-TestState $m 'SKIP' 'NOT_CONFIGURED_OR_NOT_TESTED' $false}
    if($script:C.ContainsKey('SmartMetric')){$script:C.SmartMetric.Text='در حال تست همه روش‌ها...'}
    if($script:C.ContainsKey('CompareSmart')){$script:C.CompareSmart.Text='Smart فقط انتخاب‌گر است؛ نتایج روی روش‌های واقعی ثبت می‌شوند.'}
    if($script:C.ContainsKey('TestStateValue')){$script:C.TestStateValue.Text='Smart: در حال تست همه روش‌های واقعی...'}
@@ -989,6 +992,8 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
  $script:C.ConnectCustom.Add_Click({Connect-MethodCard 'CUSTOM'});$script:C.TestCustomPath.Add_Click({Start-ProviderBenchmark 'CUSTOM'})
  $script:C.ConnectGool.Add_Click({Connect-MethodCard 'GOOL'});$script:C.TestGoolPath.Add_Click({Start-ProviderBenchmark 'GOOL'})
  $script:C.ConnectDirect.Add_Click({Connect-MethodCard 'DIRECT'});$script:C.TestDirectPath.Add_Click({Start-ProviderBenchmark 'DIRECT'})
+$script:C.BridgeWebTest.Add_Click({Start-ProviderBenchmark 'WEBTUNNEL'});$script:C.BridgeWebConnect.Add_Click({Start-ProviderConnect 'WEBTUNNEL'})
+$script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.BridgeObfsConnect.Add_Click({Start-ProviderConnect 'OBFS4'})
  $script:C.ToolsNodeRefresh.Add_Click({Start-Work 'NodeRefreshSmart' 'NODE'})
 
  $script:C.Browser.Add_Click({if($script:FullSystemActive){Start-Work 'Browser' 'DIRECT';return};if(!$script:CurrentMode){$script:C.StatusTitle.Text='مرورگر باز نشد';$script:C.StatusDetail.Text=Friendly-Error 'CONNECT_FIRST';return};Start-Work 'Browser' $script:CurrentMode})

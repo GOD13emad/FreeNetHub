@@ -9,6 +9,7 @@ NH=importlib.util.module_from_spec(_nhspec);_nhspec.loader.exec_module(NH)
 _dnspec=importlib.util.spec_from_file_location("freenethub_directnet",APP/"directnet.py")
 DN=importlib.util.module_from_spec(_dnspec);_dnspec.loader.exec_module(DN)
 PORTS={'NODE':19460,'WARP':19410,'GOOL':19413,'CFON':19414,'TOR':19450,'WEBTUNNEL':19452,'OBFS4':19453}
+BRIDGE_MODES=('WEBTUNNEL','OBFS4')
 DEFAULT={'theme':'dark','country':'AUTO','home':'https://www.youtube.com/','monitor':False,'autoRepair':False,'showIp':False,'minimizeToTray':True,'order':['NODE','WARP','TOR','GOOL','CFON'],'localProxy':'socks5h://127.0.0.1:9909','includeDirect':False,'testPathMode':'BASE','pingTimeoutSec':10,'downloadTimeoutSec':30,'uploadTimeoutSec':30}
 ALLOWED_COUNTRIES={'AT','DE','NL','US','CA','GB','FR','SG','JP','AUTO'}
 PUBLIC_REFRESH_TTL_SECONDS=1800
@@ -312,20 +313,39 @@ def ensure_node(target='AUTO',limit=12):
 def country_target():
  return str(settings().get('country','AUTO')).upper()
 
+def bridge_configured(mode):
+ mode=str(mode or '').upper()
+ if mode not in BRIDGE_MODES:return False
+ f=ROOT/'data'/('bridges_'+mode.lower()+'.txt')
+ try:
+  if not f.is_file() or f.stat().st_size<=0 or f.stat().st_size>65536:return False
+  return bool(bridge_lines(f.read_text(encoding='utf-8-sig'),mode.lower()))
+ except (OSError,UnicodeError,ValueError):
+  return False
+
+def configured_bridge_modes():
+ return [m for m in BRIDGE_MODES if bridge_configured(m)]
+
 def connect_candidates(mode):
  c=country_target()
- if c=='AUTO':return list(settings()['order']) if mode=='AUTO' else [mode]
+ if c=='AUTO':
+  if mode!='AUTO':return [mode]
+  out=[]
+  for m in list(settings().get('order',DEFAULT['order']))+configured_bridge_modes():
+   if m in PORTS and (m not in BRIDGE_MODES or bridge_configured(m)) and m not in out:out.append(m)
+  return out
  if mode=='AUTO':return ['NODE','CFON']
  if mode not in ('NODE','CFON','CUSTOM'):raise ValueError('COUNTRY_MODE_UNSUPPORTED')
  return [mode]
 
 def smart_benchmark_candidates():
  # Smart is a selector, never a synthetic benchmark row. Benchmark every real
- # browser method so the UI gets a terminal result for every row. Country policy
- # still controls which successful providers are eligible to become Smart's best.
+ # browser method so the UI gets a terminal result for every row. Optional
+ # bridge transports are included only when their private config validates.
  out=[]
  preferred=[x for x in settings().get('order',[]) if x in PORTS]
- for m in preferred+list(DEFAULT['order'])+['CUSTOM','DIRECT']:
+ for m in preferred+list(DEFAULT['order'])+configured_bridge_modes()+['CUSTOM','DIRECT']:
+  if m in BRIDGE_MODES and not bridge_configured(m):continue
   if m not in out:out.append(m)
  return out
 
@@ -1058,13 +1078,24 @@ def recover_owned(mode,not_before=0):
  return r
 
 def kill_identity(r):
+ expected={k:r[k] for k in ('pid','path','created')}
  cur=identity(r['pid'])
- if not cur or cur!={k:r[k] for k in ('pid','path','created')}:return False
+ if not cur or cur!=expected:return False
  k=C.WinDLL('kernel32',use_last_error=True);k.OpenProcess.argtypes=[W.DWORD,W.BOOL,W.DWORD];k.OpenProcess.restype=W.HANDLE;k.TerminateProcess.argtypes=[W.HANDLE,W.UINT];k.WaitForSingleObject.argtypes=[W.HANDLE,W.DWORD];k.CloseHandle.argtypes=[W.HANDLE]
  h=k.OpenProcess(0x1|0x100000,False,r['pid'])
- if not h:raise OSError('OWNED_PROCESS_ACCESS_DENIED')
+ if not h:
+  # Benign lifecycle race: the exact owned process may have exited after the
+  # identity check. Never reinterpret a reused PID as our process.
+  if identity(r['pid'])!=expected:return False
+  raise OSError('OWNED_PROCESS_ACCESS_DENIED')
  try:
-  if not k.TerminateProcess(h,0):raise OSError('OWNED_PROCESS_STOP_FAILED')
+  # WAIT_TIMEOUT (258) means still running. A signalled handle is already dead.
+  if k.WaitForSingleObject(h,0)!=258:return False
+  if not k.TerminateProcess(h,0):
+   # TerminateProcess can lose a race with a process already entering shutdown.
+   # Give that exact handle a bounded grace period; never act on a reused PID.
+   if k.WaitForSingleObject(h,2000)!=258 or identity(r['pid'])!=expected:return False
+   raise OSError('OWNED_PROCESS_STOP_FAILED')
   k.WaitForSingleObject(h,3000)
  finally:k.CloseHandle(h)
  return True
@@ -1273,10 +1304,7 @@ def chatgpt_probe(mode):
  return {'healthy':good,'connected':True,'state':'CHATGPT_EDGE_REACHABLE' if good else 'CHATGPT_EDGE_UNREACHABLE','mode':mode,'scope':'CHATGPT_WEB_EDGE','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':checks,'countryPolicy':'','error':'' if good else 'CHATGPT_UNREACHABLE','applicationAcceptance':'EDGE_REACHABILITY_ONLY_NOT_LOGIN'}
 
 def emergency_candidates():
- out=[]
- for m in ('WEBTUNNEL','OBFS4'):
-  f=ROOT/'data'/('bridges_'+m.lower()+'.txt')
-  if f.exists() and f.stat().st_size>0:out.append(m)
+ out=list(configured_bridge_modes())
  for m in ('TOR',)+tuple(settings()['order']):
   if m in PORTS and m not in out:out.append(m)
  return out
@@ -1385,7 +1413,9 @@ def inventory():
   f=ROOT/'data'/('bridges_'+mode.lower()+'.txt');o=owned(mode);opened=port_open(PORTS[mode])
   installed=bool(singbox_path()) if mode=='NODE' else bool(dep_path(name) and pathlib.Path(dep_path(name)).is_file())
   state='CONNECTED_NOT_VERIFIED' if o and opened else 'STARTING_OR_UNREADY' if o else 'LISTENER_PRESENT_NOT_OWNED' if opened else 'AVAILABLE_NOT_CONNECTED' if installed else 'DEPENDENCY_NOT_CONFIGURED'
-  if mode in ('WEBTUNNEL','OBFS4') and not f.exists() and not o and installed:state='MISSING_PRIVATE_BRIDGES'
+  if mode in BRIDGE_MODES and not o and installed:
+   if not f.exists():state='MISSING_PRIVATE_BRIDGES'
+   elif not bridge_configured(mode):state='INVALID_PRIVATE_BRIDGES'
   r.append({'mode':mode,'state':state,'port':PORTS[mode],'installed':installed})
  return {'providers':r,'settings':settings(),'fullSystem':'NOT_VALIDATED_DISABLED','systemMutation':False,'utc':now()}
 
@@ -1467,7 +1497,7 @@ def dispatch(action,mode,payload):
  if action=='Scan':
   old=[m for m in PORTS if owned(m)];rows=[]
   try:
-   for m in ('NODE','WARP','GOOL','CFON','TOR'):
+   for m in tuple(('NODE','WARP','GOOL','CFON','TOR'))+tuple(configured_bridge_modes()):
     try:rows.append(ensure(m))
     except (RuntimeError,ValueError) as e:rows.append({'mode':m,'healthy':False,'error':str(e)})
     finally:
@@ -1598,6 +1628,8 @@ def dispatch(action,mode,payload):
    {'id':'WARP','label':'WARP','country':False,'list':False,'browser':True,'system':True,'console':False,'speed':True},
    {'id':'GOOL','label':'GOOL','country':False,'list':False,'browser':True,'system':False,'console':False,'speed':True},
    {'id':'TOR','label':'Tor / Snowflake','country':False,'list':False,'browser':True,'system':False,'console':False,'speed':True},
+   {'id':'WEBTUNNEL','label':'WebTunnel','country':False,'list':False,'browser':True,'system':False,'console':False,'speed':True,'configured':bridge_configured('WEBTUNNEL')},
+   {'id':'OBFS4','label':'obfs4','country':False,'list':False,'browser':True,'system':False,'console':False,'speed':True,'configured':bridge_configured('OBFS4')},
    {'id':'CUSTOM','label':'Custom Proxy','country':'verify','list':False,'browser':True,'system':False,'console':False,'speed':True},
    {'id':'DIRECT','label':'Direct','country':'observed','list':False,'browser':True,'system':False,'console':False,'speed':True}
   ]}

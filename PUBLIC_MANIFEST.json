@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.3.3-r47-smart-node-sort",
+  "version": "4.3.4-r48-resilience-expansion",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 24087,
-      "sha256": "1D1C3251D3A1EFE1A4B56B215E82445692CC055EE7782B81AEADE4511D0A4492"
+      "bytes": 24092,
+      "sha256": "F058E3C5A099C11BF7EC45FF48BC3DE011A3F0A8DE249C37E6C8F79B1A330385"
     },
     {
       "file": ".gitignore",
@@ -95,18 +95,18 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 111660,
-      "sha256": "BABB395E503251AFA966AA25A304FC7A1C391ABBCFE76456B5345D2EEFDB6B28"
+      "bytes": 113341,
+      "sha256": "0FD97CC5582E11A98C3D3F54AD5D953E71EFB07EE3B6766C76B8B21BF568A83D"
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 103557,
-      "sha256": "8FAF0F9DD986FC08ECB78D2291EC267F05C4942059DA0D6F187DA9D1D82F867A"
+      "bytes": 104345,
+      "sha256": "96F839382128135B578C345B59029A60569AAB45DE714DEE43FB413A81DB4EF7"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 4609,
-      "sha256": "648E77EE0C84B5BB32D00249A95E68542E80D935E71184E22D109A84AB4635A5"
+      "bytes": 4659,
+      "sha256": "1BF61B35EF39EFBB3BF3557FFDA64FC2021452A6EB23C2EAFA290DDE1D554580"
     },
     {
       "file": "app/nodehub.py",
@@ -115,8 +115,8 @@
     },
     {
       "file": "app/View.xaml",
-      "bytes": 72325,
-      "sha256": "E1498846B08ECFEBC84957257060DE7F985CD22470186C16BEBB48784494ABD0"
+      "bytes": 73716,
+      "sha256": "6A2C4F35A7F0917C708109F54F4140FCBFF577A1DE5675EA2CBA8505C6840261"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -1129,6 +1129,16 @@
       "sha256": "DCC896CD23E53F0E6FA1B4FF22B42722169038640073D5A50F88D81255B50F58"
     },
     {
+      "file": "evidence/R48_BRIDGE_LIVE_20261005.json",
+      "bytes": 2677,
+      "sha256": "93DA79E05C6941154E7605ECEC2307E5C77CBDBEB06F79F55C8DD3C0E30D2272"
+    },
+    {
+      "file": "evidence/R48_RESILIENCE_AUDIT_20261005.json",
+      "bytes": 6549,
+      "sha256": "004F675F0B11B200D3A03797ABF0A369A8F892047BCB17175207BA0C4810D934"
+    },
+    {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
       "bytes": 2126,
       "sha256": "FE39F0868C138A3A3CDB57548BCD7AEB562B0BCB72328590D91ACDC0EB6B2D41"
@@ -1252,6 +1262,21 @@
       "file": "evidence/V433_R47_SECURITY_20261005.json",
       "bytes": 84,
       "sha256": "06D7213D0937AE5E95DBEC5375E6E369DD40EC27046B41C41B9B20E266CD4F92"
+    },
+    {
+      "file": "evidence/V434_PROJECT_KNOWLEDGE_20261005.json",
+      "bytes": 12264,
+      "sha256": "00A3A77A8C4911FEB7B000DFFC542322352163568FD3BE8DF5B554387A1F4531"
+    },
+    {
+      "file": "evidence/V434_R48_CANDIDATE_ACCEPTANCE_20261005.json",
+      "bytes": 4787,
+      "sha256": "A85A816CD213706BB114A241DE5FF466DCEF073A135F3241506C8E69A26901F1"
+    },
+    {
+      "file": "evidence/V434_R48_INSTALLER_BUILD_20261005.json",
+      "bytes": 389,
+      "sha256": "99038FF09499B391A71CFD78F7960E2BA1950CF84B380A1FD30D0ADD9195504F"
     },
     {
       "file": "evidence/V43_INSTALLER_ACCEPTANCE_20261003.json",
@@ -1450,8 +1475,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 60421,
-      "sha256": "FC5574248AF9A17823D04DAB4773CF01664FCCDD8C5B94D61DC6DF7C29E84F49"
+      "bytes": 65672,
+      "sha256": "A58E6DBDDA33A699F1F493E9B7F103CB29DAE72C37B7848271797B79D80153C4"
     },
     {
       "file": "pytest.ini",
@@ -1470,8 +1495,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 32301,
-      "sha256": "1B7A157FBEAC069C73BDD7A443376C19235329C50E92BAF4A008CC3F1C32A57D"
+      "bytes": 33854,
+      "sha256": "402D1738E106E6DCC355BC1BF1BEA481AEB59826642FAAAED5BE4188009A6DCF"
     },
     {
       "file": "SECURITY.md",
@@ -1672,6 +1697,11 @@
       "file": "tests/build_v433_installer.ps1",
       "bytes": 3522,
       "sha256": "CED0151A29441B2097654515F9C623606DA29C6883EA1EB848B4533EB9A9C648"
+    },
+    {
+      "file": "tests/build_v434_installer.ps1",
+      "bytes": 3522,
+      "sha256": "67E4C265A0148CB000527370FBF8355C0FEE06EB75F26FEBF1D1B810887BA627"
     },
     {
       "file": "tests/build_v43_installer.ps1",
@@ -2070,8 +2100,8 @@
     },
     {
       "file": "tests/test_engine.py",
-      "bytes": 70302,
-      "sha256": "60EDD28FF277B448CFD541446ED829904DE76459D527187E38E2F1FD8DF1E02C"
+      "bytes": 70374,
+      "sha256": "C7EB4B1E8CE3E053C99BAA15FF1A660D68B89DAF9B032BBB3F55F3AAA7E24E5E"
     },
     {
       "file": "tests/test_lifecycle_safety.py",
@@ -2144,9 +2174,14 @@
       "sha256": "C02C5FDF28556A148E72F025C6B842B885D865741B6561C78BF8FB7F60D46098"
     },
     {
+      "file": "tests/test_r48_bridge_resilience.py",
+      "bytes": 5674,
+      "sha256": "9A9688C2D28D1B705883001D9D00C5E1D598CE6D195FB6C4AF1016C894955834"
+    },
+    {
       "file": "tests/test_v431_integrity_hotfix.py",
       "bytes": 2355,
-      "sha256": "F2E2452BFC2C3092F7AEED290BBEDFC15D10BEEABFD6A163AB58FC3AA7CCF11A"
+      "sha256": "8A307D1552499884529E9F125B4CF0FD63A8B6DCC67BCF2566237DE4BC6BF059"
     },
     {
       "file": "tests/test_v432_preconnect_feedback.py",
@@ -2156,7 +2191,7 @@
     {
       "file": "tests/test_v43_installer_fresh_install.py",
       "bytes": 2286,
-      "sha256": "32E751E90B76D3494444BC53388E960D35B5F4FD755ED8E83C69BF354F71AA29"
+      "sha256": "6D7F17FFBA22469C6560A3C0F8507B008EB475E51B6AA40FA5FF77753B018939"
     },
     {
       "file": "tests/verify_public_tree.py",
@@ -2205,8 +2240,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 12499,
-      "sha256": "B8D727FD5A397F34410FB24ED41518FB1C580372417AF550723ED68792080D4F"
+      "bytes": 12485,
+      "sha256": "720549390B8180DCBB3CB83257B8530BA6933632CDE27937FC43D6357E89B9F9"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",

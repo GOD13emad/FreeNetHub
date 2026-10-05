@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "version": "4.3.4",
+  "revision": "R48",
+  "path": "delivery/github_v4.3.4/FreeNetHub_4.3.4_R48_Setup.exe",
+  "bytes": 24271225,
+  "sha256": "5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA",
+  "authenticode": "NotSigned",
+  "frozenFiles": 25,
+  "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+  "built": "2026-10-05T07:31:20.6215372Z"
+}

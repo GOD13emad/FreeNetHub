@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "status": "PASS_WITH_OBFS4_LIVE_WEBTUNNEL_FAIL_CLOSED",
+  "objective": "R48 isolated live configured-bridge validation",
+  "configuredModes": [
+    "WEBTUNNEL",
+    "OBFS4"
+  ],
+  "results": {
+    "WEBTUNNEL": {
+      "status": "FAIL_CLOSED",
+      "engineExit": 1,
+      "error": "PATH_NOT_VERIFIED_WEBTUNNEL",
+      "interpretation": "Configured bridge parsed and integration path executed, but current bridge/path did not verify healthy."
+    },
+    "OBFS4": {
+      "status": "PASS",
+      "engineExit": 0,
+      "healthy": true,
+      "performance": {
+        "ok": true,
+        "pingMs": 1213.9,
+        "downloadMbps": 1.2,
+        "uploadMbps": 1.34,
+        "country": "T1",
+        "proxyUsed": true
+      },
+      "temporary": true
+    }
+  },
+  "checks": {
+    "configuredModesRecognized": true,
+    "atLeastOneLiveConfiguredBridgePass": true,
+    "webTunnelFailsClosed": true,
+    "installedSessionUnchanged": true,
+    "routeUnchanged": true,
+    "dnsUnchanged": true,
+    "webTunnelPortRestored": true,
+    "obfs4PortRestored": true
+  },
+  "preservation": {
+    "installedSessionSha256Before": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "installedSessionSha256After": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "routeSha256Before": "968D29D0FE6ACF24C5252E42B45BE0EF8EECAFAFC144F99E1DD82C37566307D0",
+    "routeSha256After": "968D29D0FE6ACF24C5252E42B45BE0EF8EECAFAFC144F99E1DD82C37566307D0",
+    "dnsSha256Before": "D40931AC865E65EFCAAA350634C528F77A5DC9D72CCD542CC0AC02C4F22FBE99",
+    "dnsSha256After": "D40931AC865E65EFCAAA350634C528F77A5DC9D72CCD542CC0AC02C4F22FBE99",
+    "portsBefore": {
+      "WEBTUNNEL": {
+        "listening": false,
+        "pid": null
+      },
+      "OBFS4": {
+        "listening": false,
+        "pid": null
+      }
+    },
+    "portsAfter": {
+      "WEBTUNNEL": {
+        "listening": false,
+        "pid": null
+      },
+      "OBFS4": {
+        "listening": false,
+        "pid": null
+      }
+    }
+  },
+  "privacy": "Bridge contents, endpoints, credentials and fingerprints are intentionally excluded from evidence.",
+  "failurePrevention": {
+    "harnessIssue": "First summary accessed optional result properties under PowerShell StrictMode and misclassified authoritative jobs.",
+    "rootCause": "Harness optional-property access, not product/runtime.",
+    "prevention": "Judge ProviderBenchmark result files first; normalize optional result schemas explicitly; do not rerun expensive network tests when authoritative job files already exist."
+  },
+  "mutation": "STAGE_ONLY; installed app/session/routes/DNS not modified."
+}

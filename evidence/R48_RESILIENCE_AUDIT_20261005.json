@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "changeSet": "R48",
+  "objective": "Increase censorship-resilience using already-shipped and already-validated transport runtimes before adding new dependencies.",
+  "baseline": {
+    "releaseAuthority": "v4.3.3 -> af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93",
+    "repositoryClosure": "e1a766b584a2e2130dabe55b5dbff82f0e86b60c",
+    "branch": "v4.3.4-r48-resilience-expansion",
+    "runtimeMutationAtAudit": false
+  },
+  "projectTruth": {
+    "ports": [
+      "NODE",
+      "WARP",
+      "GOOL",
+      "CFON",
+      "TOR",
+      "WEBTUNNEL",
+      "OBFS4"
+    ],
+    "currentVisibleSmartRows": [
+      "NODE",
+      "WARP",
+      "CFON",
+      "GOOL",
+      "TOR",
+      "WEBTUNNEL",
+      "OBFS4",
+      "CUSTOM",
+      "DIRECT"
+    ],
+    "webtunnelBackend": "CONFIRMED_EXISTING",
+    "obfs4Backend": "CONFIRMED_EXISTING",
+    "bridgeImport": "CONFIRMED_PRIVATE_FAIL_CLOSED",
+    "lyrebirdTransportPlugin": [
+      "meek_lite",
+      "obfs4",
+      "snowflake",
+      "webtunnel"
+    ],
+    "emergencyChatGPTPriority": [
+      "configured WEBTUNNEL",
+      "configured OBFS4",
+      "TOR",
+      "normal ordered providers"
+    ],
+    "singBoxInstalled": {
+      "version": "1.14.0",
+      "revision": "0b8995879f29a9b98ee027bc17b75e101445b238",
+      "tags": [
+        "with_quic",
+        "with_wireguard",
+        "with_utls",
+        "with_cloudflared",
+        "with_naive_outbound",
+        "with_openvpn",
+        "with_openconnect"
+      ]
+    },
+    "liveConfiguredBridgeValidation": {
+      "OBFS4": "PASS",
+      "WEBTUNNEL": "FAIL_CLOSED_PATH_NOT_VERIFIED_CURRENT_PRIVATE_BRIDGE"
+    }
+  },
+  "externalMethodEvidence": [
+    {
+      "source": "Tor Project official bridge documentation",
+      "conclusion": "obfs4, Snowflake and WebTunnel are supported bridge transports; obfs4/WebTunnel require bridge acquisition.",
+      "status": "CONFIRMED_METHOD_EVIDENCE"
+    },
+    {
+      "source": "sing-box official 1.14 documentation/changelog",
+      "conclusion": "Installed core family supports additional protocols/features including advanced Hysteria2, OpenVPN/OpenConnect and other outbounds/endpoints, but usable product paths still require compatible server/config/dependencies.",
+      "status": "CONFIRMED_METHOD_EVIDENCE"
+    },
+    {
+      "source": "Psiphon official tunnel-core repositories",
+      "conclusion": "Psiphon has a reusable tunnel core/ConsoleClient, but production integration needs propagation/sponsor/server-list configuration plus licensing/package authority.",
+      "status": "DEFER_SEPARATE_CHANGE_SET"
+    }
+  ],
+  "decision": {
+    "implementNow": [
+      "Detect only valid configured WebTunnel/obfs4 bridge files without exposing their contents.",
+      "Include configured WebTunnel/obfs4 in Smart benchmark and AUTO failover for country=AUTO.",
+      "Include configured WebTunnel/obfs4 in Scan.",
+      "Expose dashboard metrics plus explicit Test/Connect controls.",
+      "Keep explicit target-country AUTO policy restricted to NODE/CFON."
+    ],
+    "deferred": [
+      "Psiphon core integration: separate dependency/config/licensing change set.",
+      "OpenVPN/OpenConnect: core supports them but a real server/config authority is required.",
+      "TUIC/AnyTLS/ShadowTLS/Naive: parser/dependency/server readiness not yet product-validated; Naive may require libcronet.dll.",
+      "AmneziaWG-like transports: require compatible remote server/config."
+    ],
+    "rejectedAsUnproven": "Claiming software can guarantee global Internet when all upstream connectivity paths are physically unavailable.",
+    "implemented": [
+      "Valid configured WebTunnel/obfs4 detection with fail-closed parser and 64 KiB cap.",
+      "Configured WebTunnel/obfs4 enter Smart benchmark, AUTO failover for country=AUTO, and Scan.",
+      "Explicit dashboard metrics plus Test/Connect controls for WebTunnel/obfs4.",
+      "Emergency ChatGPT only prioritizes bridge transports that pass configured-bridge validation.",
+      "Strict target-country AUTO eligibility remains NODE/CFON only."
+    ]
+  },
+  "riskControls": [
+    "No bridge contents or credentials in repository/evidence.",
+    "Missing/invalid private bridge files do not enter Smart/Scan and add no delay.",
+    "Temporary benchmark processes are stopped unless already owned.",
+    "No Windows route/DNS mutation for browser-only bridge paths.",
+    "v4.3.3 tag/assets remain immutable."
+  ],
+  "status": "LOCAL_GATES_PASS_HOSTED_OPEN",
+  "exactNextAction": "Rebuild and verify PUBLIC_MANIFEST from final R48 control state, commit/push exact candidate, and require hosted CI before v4.3.4 promotion.",
+  "verification": {
+    "focusedRegression": "23/23 PASS",
+    "fullRegression": "206/206 PASS",
+    "pythonPowerShellXamlParse": "PASS",
+    "liveBridge": "evidence/R48_BRIDGE_LIVE_20261005.json",
+    "obfs4Live": {
+      "status": "PASS",
+      "pingMs": 1213.9,
+      "downloadMbps": 1.2,
+      "uploadMbps": 1.34
+    },
+    "webTunnelCurrentPrivateBridge": "FAIL_CLOSED_PATH_NOT_VERIFIED",
+    "installedSessionRouteDnsPreserved": true,
+    "mobileFailClosed": "PASS",
+    "publicSecurity": "PASS",
+    "gitDiffCheck": "PASS",
+    "finalInstaller": {
+      "path": "delivery/github_v4.3.4/FreeNetHub_4.3.4_R48_Setup.exe",
+      "bytes": 24271225,
+      "sha256": "5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA",
+      "authenticode": "NotSigned",
+      "frozenFiles": 25,
+      "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST"
+    }
+  },
+  "failurePrevention": [
+    {
+      "failure": "Stale app manifest after engine delta",
+      "rootCause": "Runtime bytes changed after previous manifest sync",
+      "guard": "Full integrity test failed on engine.py byte count",
+      "prevention": "Resync app manifest from raw bytes before final full suite/build",
+      "result": "CLOSED_PASS"
+    },
+    {
+      "failure": "Live bridge harness optional-property StrictMode misclassification",
+      "rootCause": "Harness assumed success/failure result schemas shared optional fields",
+      "guard": "Authoritative engine job JSON inspected directly",
+      "prevention": "Normalize result schemas without blind rerun",
+      "result": "CLOSED_PASS"
+    },
+    {
+      "failure": "Emergency invalid bridge delay",
+      "rootCause": "Emergency candidates used file existence rather than bridge parser validation",
+      "guard": "New R48 regression test",
+      "prevention": "Use configured_bridge_modes()",
+      "result": "CLOSED_PASS"
+    }
+  ]
+}

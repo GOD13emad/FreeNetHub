@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
-  "version": "4.3.3",
-  "releaseRevision": "4.3.3-r47-smart-node-sort",
-  "status": "V433_R47_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "version": "4.3.4",
+  "releaseRevision": "4.3.4-r48-resilience-expansion",
+  "status": "V434_R48_LOCAL_GATES_PASS_HOSTED_OPEN",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -14,16 +14,17 @@
     "DIRECT_NETWORK",
     "DIRECT_DPI_CANDIDATE",
     "ONLINE_UPDATE",
-    "NOADMIN_NORMAL_LAUNCH"
+    "NOADMIN_NORMAL_LAUNCH",
+    "CONFIGURED_TOR_BRIDGE_TRANSPORTS"
   ],
-  "engineSha256": "BABB395E503251AFA966AA25A304FC7A1C391ABBCFE76456B5345D2EEFDB6B28",
-  "uiSha256": "8FAF0F9DD986FC08ECB78D2291EC267F05C4942059DA0D6F187DA9D1D82F867A",
-  "viewSha256": "E1498846B08ECFEBC84957257060DE7F985CD22470186C16BEBB48784494ABD0",
+  "engineSha256": "0FD97CC5582E11A98C3D3F54AD5D953E71EFB07EE3B6766C76B8B21BF568A83D",
+  "uiSha256": "96F839382128135B578C345B59029A60569AAB45DE714DEE43FB413A81DB4EF7",
+  "viewSha256": "6A2C4F35A7F0917C708109F54F4140FCBFF577A1DE5675EA2CBA8505C6840261",
   "desktopShellSha256": "42399C7A30ECC88588AAA0F68782629ADB4A049F2576F978C5EAC1F35E2D6435",
   "gatewayManifestSha256": "DA4C24B3C3611138AE80788966961C5F33C73917983F39B522852C40EACB9247",
   "crossPlatformManifestSha256": "2AFCD9D52352FA812505811F5FE9A80D21F254DE4516B7025CA3683D3C567A65",
   "installerSha256": null,
-  "acceptanceEvidence": "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json",
+  "acceptanceEvidence": "evidence/V434_R48_CANDIDATE_ACCEPTANCE_20261005.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "PUBLIC_FINAL_NATIVE_LINUX_4.2.0_R14_R41",
@@ -206,9 +207,9 @@
       "evidence": "evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json"
     }
   },
-  "appManifestSha256": "648E77EE0C84B5BB32D00249A95E68542E80D935E71184E22D109A84AB4635A5",
+  "appManifestSha256": "1BF61B35EF39EFBB3BF3557FFDA64FC2021452A6EB23C2EAFA290DDE1D554580",
   "nodeHubSha256": "A5C5A1D62B63EA3806D3B2C8BF53A31D7AD491F057DD353EE666A38791320A07",
-  "previousAcceptedInstallerSha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F",
+  "previousAcceptedInstallerSha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
   "installerStatus": "DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE",
   "r21": {
     "countryPolicy": "STRICT_ACTUAL_EXIT_MATCH",
@@ -857,5 +858,35 @@
     "nodeLiveEvidence": "evidence/R47_NODE_LIVE_20261005.json",
     "installedSessionPreserved": true,
     "routeDnsPreserved": true
+  },
+  "r48ResilienceExpansion": {
+    "status": "LOCAL_GATES_PASS_HOSTED_OPEN",
+    "baseline": "v4.3.3 / af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93",
+    "objective": "Promote already-shipped valid WebTunnel/obfs4 bridge transports into Smart/AUTO/Scan/UI without exposing private bridge material.",
+    "behavior": {
+      "configuredBridgeValidation": "PARSE_FAIL_CLOSED_MAX_64K",
+      "smart": "VALID_CONFIGURED_BRIDGES_BENCHMARKED_AND_AUTO_ELIGIBLE_ONLY_WHEN_COUNTRY_AUTO",
+      "strictCountry": "AUTO_CONNECT_ELIGIBILITY_REMAINS_NODE_CFON_ONLY",
+      "scan": "VALID_CONFIGURED_BRIDGES_INCLUDED",
+      "ui": "DASHBOARD_METRICS_PLUS_EXPLICIT_TEST_CONNECT",
+      "privateBridgeMaterial": "RUNTIME_ONLY_NOT_REPOSITORY"
+    },
+    "runtimeMutationDuringPatch": false,
+    "publicRelease": false,
+    "installerBuild": "DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE",
+    "manifestGuard": "FULL_SUITE_CAUGHT_STALE_ENGINE_BYTES_THEN_RESYNC_PASS",
+    "liveBridgeEvidence": "evidence/R48_BRIDGE_LIVE_20261005.json",
+    "obfs4Live": "PASS",
+    "webTunnelCurrentPrivateBridge": "FAIL_CLOSED_PATH_NOT_VERIFIED",
+    "emergencyInvalidBridgeGuard": "PASS",
+    "fullRegression": "PASS_206",
+    "focusedRegression": "PASS_23",
+    "failClosed": "PASS",
+    "publicSecurity": "PASS",
+    "diffCheck": "PASS",
+    "installedSessionPreserved": true,
+    "routeDnsPreserved": true,
+    "hostedCi": "OPEN_REQUIRED_BEFORE_PUBLIC_PROMOTION",
+    "finalLocalBuildEvidence": "evidence/V434_R48_INSTALLER_BUILD_20261005.json"
   }
 }

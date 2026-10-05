@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.4",
+  "revision": "R48",
+  "changeSet": "CONFIGURED_BRIDGE_RESILIENCE_EXPANSION",
+  "status": "V434_R48_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "baseline": {
+    "release": "v4.3.3",
+    "runtimeCommit": "af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93",
+    "repositoryClosure": "e1a766b584a2e2130dabe55b5dbff82f0e86b60c"
+  },
+  "implemented": [
+    "WebTunnel and obfs4 are first-class browser methods only when private bridge configuration parses validly.",
+    "Valid configured bridge methods participate in Smart benchmarking and country=AUTO automatic failover.",
+    "Scan includes only configured valid bridge transports.",
+    "Dashboard exposes bridge metrics and explicit Test/Connect controls.",
+    "Emergency ChatGPT prioritizes only valid configured bridge transports before Tor/normal providers.",
+    "Strict-country automatic selection remains NODE/CFON only."
+  ],
+  "verification": {
+    "focusedRegression": {
+      "status": "PASS",
+      "tests": 23
+    },
+    "fullRegression": {
+      "status": "PASS",
+      "tests": 206
+    },
+    "parse": {
+      "python": "PASS",
+      "powershell": "PASS",
+      "xaml": "PASS"
+    },
+    "liveConfiguredBridge": {
+      "status": "PASS_WITH_OBFS4_LIVE_WEBTUNNEL_FAIL_CLOSED",
+      "evidence": "evidence/R48_BRIDGE_LIVE_20261005.json",
+      "obfs4": {
+        "status": "PASS",
+        "pingMs": 1213.9,
+        "downloadMbps": 1.2,
+        "uploadMbps": 1.34,
+        "proxyUsed": true
+      },
+      "webTunnel": {
+        "status": "FAIL_CLOSED",
+        "error": "PATH_NOT_VERIFIED_WEBTUNNEL"
+      },
+      "installedSessionUnchanged": true,
+      "routeUnchanged": true,
+      "dnsUnchanged": true,
+      "temporaryPortsRestored": true
+    },
+    "mobileFailClosed": "PASS",
+    "publicSecurity": "PASS",
+    "gitDiffCheck": "PASS",
+    "privateBridgeMaterialInRepository": "NONE",
+    "appManifestGuard": {
+      "status": "PASS_AFTER_GUARD_CAUGHT_STALE_ENGINE_BYTES",
+      "appManifestSha256": "1BF61B35EF39EFBB3BF3557FFDA64FC2021452A6EB23C2EAFA290DDE1D554580"
+    },
+    "publicTree": {
+      "status": "PASS",
+      "manifestFiles": 476,
+      "manifestSha256": "47D0DF960DB70BD75830D92E468E0D0AB4CC32B68110E5AC991842053C41A01B",
+      "publicManifest": "PASS",
+      "appManifest": "PASS",
+      "gatewayManifest": "PASS",
+      "crossPlatformManifest": "PASS",
+      "windowsPackageManifest": "PASS",
+      "releaseHashes": "PASS",
+      "forbiddenRuntimeArtifacts": "PASS",
+      "mismatches": 0
+    }
+  },
+  "installer": {
+    "status": "PASS",
+    "path": "delivery/github_v4.3.4/FreeNetHub_4.3.4_R48_Setup.exe",
+    "bytes": 24271225,
+    "sha256": "5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA",
+    "authenticode": "NotSigned",
+    "frozenFiles": 25,
+    "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+    "evidence": "evidence/V434_R48_INSTALLER_BUILD_20261005.json"
+  },
+  "methodEvidence": [
+    {
+      "source": "Tor Project official bridge documentation",
+      "finding": "obfs4, Snowflake and WebTunnel are supported censorship-resistance bridge transports; obfs4/WebTunnel require bridge acquisition.",
+      "decision": "Use already-shipped Tor/lyrebird bridge paths before adding new dependencies."
+    },
+    {
+      "source": "sing-box official 1.14 documentation/changelog",
+      "finding": "Installed core family exposes additional protocol capabilities, but usable product paths require compatible server/config authority.",
+      "decision": "Do not add UI-only methods without reproducible server/config evidence."
+    },
+    {
+      "source": "Psiphon official tunnel-core repositories",
+      "finding": "Reusable tunnel core exists but production integration requires propagation/sponsor/server-list configuration and package/license authority.",
+      "decision": "Separate future change set; not bundled blindly into R48."
+    }
+  ],
+  "openGates": [
+    "Hosted CI exact-candidate validation before public promotion",
+    "Trusted Windows Authenticode signing identity remains external",
+    "Current private WebTunnel bridge is not healthy in this network; integration remains fail-closed",
+    "Physical console field E2E remains external hardware validation",
+    "Production Android/iOS packet forwarding/signing/real-device remains separate architecture/device/legal work"
+  ],
+  "limitations": "No software can guarantee global Internet access if every upstream path is physically unavailable or blocked. R48 increases path diversity and automatic failover without making that unproven guarantee.",
+  "exactNextAction": "Record public-tree closure in Knowledge/Brain, rebuild/verify manifest once more, then commit/push exact R48 candidate and require hosted CI."
+}

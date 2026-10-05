@@ -406,32 +406,32 @@ jobs:
           }
           if(-not $iscc){ throw 'ISCC_NOT_FOUND_AFTER_INSTALL' }
           Write-Host "ISCC=$iscc"
-      - name: Build exact FreeNet Hub 4.3.3 R47 installer
+      - name: Build exact FreeNet Hub 4.3.4 R48 installer
         shell: pwsh
-        run: ./tests/build_v433_installer.ps1
+        run: ./tests/build_v434_installer.ps1
       - name: Fresh install exact artifact into absent app directory
         shell: pwsh
         run: |
-          $installer=(Resolve-Path 'delivery\github_v4.3.3\FreeNetHub_4.3.3_R47_Setup.exe').Path
-          $probe=Join-Path $env:RUNNER_TEMP 'fnh-v433-r47-fresh'
+          $installer=(Resolve-Path 'delivery\github_v4.3.4\FreeNetHub_4.3.4_R48_Setup.exe').Path
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-v434-r48-fresh'
           Remove-Item -LiteralPath $probe -Recurse -Force -ErrorAction SilentlyContinue
           if(Test-Path -LiteralPath $probe){ throw 'FRESH_PROBE_DIR_PREEXISTS' }
           $p=Start-Process -FilePath $installer -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
-          if($p.ExitCode -ne 0){ throw ('V433_FRESH_INSTALL_EXIT_'+$p.ExitCode) }
+          if($p.ExitCode -ne 0){ throw ('V434_FRESH_INSTALL_EXIT_'+$p.ExitCode) }
           foreach($rel in @('FreeNetHub.exe','RELEASE.json','app\FreeNetHub.ps1','app\dependencies.json','INSTALL_RUNTIME_STATUS.json','PWSH_PATH.txt')){
-            if(!(Test-Path -LiteralPath (Join-Path $probe $rel))){ throw ('V433_FRESH_INSTALL_MISSING_'+$rel) }
+            if(!(Test-Path -LiteralPath (Join-Path $probe $rel))){ throw ('V434_FRESH_INSTALL_MISSING_'+$rel) }
           }
           $release=Get-Content -LiteralPath (Join-Path $probe 'RELEASE.json') -Raw -Encoding UTF8|ConvertFrom-Json
-          if([string]$release.version -ne '4.3.3'){ throw 'V433_FRESH_INSTALL_VERSION_MISMATCH' }
-          if([string]$release.releaseRevision -ne '4.3.3-r47-smart-node-sort'){ throw 'V433_FRESH_INSTALL_REVISION_MISMATCH' }
+          if([string]$release.version -ne '4.3.4'){ throw 'V434_FRESH_INSTALL_VERSION_MISMATCH' }
+          if([string]$release.releaseRevision -ne '4.3.4-r48-resilience-expansion'){ throw 'V434_FRESH_INSTALL_REVISION_MISMATCH' }
           $uiError=Join-Path $probe 'logs\ui-error.txt'
           Remove-Item -LiteralPath $uiError -Force -ErrorAction SilentlyContinue
           $launcher=Start-Process -FilePath (Join-Path $probe 'FreeNetHub.exe') -ArgumentList @((Join-Path $probe 'app\FreeNetHub.ps1')) -PassThru
           Start-Sleep -Seconds 6
-          if($launcher.HasExited){ throw ('V433_UI_LAUNCHER_EXITED_'+$launcher.ExitCode) }
+          if($launcher.HasExited){ throw ('V434_UI_LAUNCHER_EXITED_'+$launcher.ExitCode) }
           $child=@(Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $launcher.Id -and $_.Name -eq 'pwsh.exe' })
-          if($child.Count -lt 1){ throw 'V433_UI_CHILD_PWSH_MISSING' }
-          if(Test-Path -LiteralPath $uiError){ throw ('V433_UI_ERROR_'+(Get-Content -Raw -LiteralPath $uiError)) }
+          if($child.Count -lt 1){ throw 'V434_UI_CHILD_PWSH_MISSING' }
+          if(Test-Path -LiteralPath $uiError){ throw ('V434_UI_ERROR_'+(Get-Content -Raw -LiteralPath $uiError)) }
           Stop-Process -Id $child.ProcessId -Force -ErrorAction SilentlyContinue
           Stop-Process -Id $launcher.Id -Force -ErrorAction SilentlyContinue
 

@@ -378,3 +378,44 @@ Rebuild PUBLIC_MANIFEST.json from this control-only closure state, verify public
 - Final control-only closure commit `d13ef406eadd04c626a9d1e6c65e8219fd55d6a3` passed hosted CI run `37259927516`.
 - Runtime diff versus immutable authority tag `v4.3.3` is NONE; runtime authority remains `v4.3.3 -> af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93`.
 - Status: PUBLIC_FINAL_CLOSED. New resilience work must start as a new change set; do not mutate v4.3.3 tag or asset bytes.
+
+## V434 R48 RESILIENCE — LOCAL GATES
+Status: CURRENT / LOCAL_GATES_PASS_HOSTED_OPEN
+- Baseline authority remains immutable v4.3.3 / af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93. R48 is not public yet.
+- R48 promotes the already-shipped Tor WebTunnel and obfs4 backends into Smart/AUTO/Scan/UI only when private bridge files parse validly. Invalid/missing bridge files do not enter Smart or Emergency priority.
+- Country=AUTO can automatically fail over through configured valid bridges; strict country selection remains NODE/CFON only.
+- Live isolated bridge validation preserved installed CFON session, route and DNS. Current obfs4 bridge PASS: Ping 1213.9 ms / Download 1.2 Mbps / Upload 1.34 Mbps. Current WebTunnel private bridge FAIL_CLOSED with PATH_NOT_VERIFIED_WEBTUNNEL; no false PASS claim.
+- R48 focused regression 23/23 PASS; exact final full regression 206/206 PASS; Python/PowerShell/XAML parse PASS; mobile fail-closed PASS; public security PASS; git diff check PASS.
+- Integrity guard caught a stale engine.py manifest entry after a runtime delta; manifest was resynced from raw bytes and the full suite then passed. Emergency invalid-bridge ordering was also corrected to use configured_bridge_modes().
+- Exact final local installer: delivery/github_v4.3.4/FreeNetHub_4.3.4_R48_Setup.exe, 24,271,225 bytes, SHA-256 5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA; 25 frozen inputs; raw app-manifest preflight PASS; Authenticode NotSigned/external.
+- Evidence: evidence/R48_RESILIENCE_AUDIT_20261005.json; evidence/R48_BRIDGE_LIVE_20261005.json; evidence/V434_R48_CANDIDATE_ACCEPTANCE_20261005.json; knowledge: evidence/V434_PROJECT_KNOWLEDGE_20261005.json.
+- Further protocols are not added as decorative UI: Psiphon, OpenVPN/OpenConnect, TUIC/AnyTLS/ShadowTLS/Naive and AmneziaWG-like transports remain separate evidence-gated change sets because compatible server/config/dependency/license authority is not yet proven.
+- Guaranteeing connectivity when every physical/upstream path is unavailable remains UNPROVEN and is not claimed.
+
+### Roadmap ← CURRENT
+1. Rebuild PUBLIC_MANIFEST from exact R48 candidate including new evidence/Brain records and verify public tree/security.
+2. Commit/push exact R48 candidate and require hosted Windows fresh-install + Linux + console virtual + Android emulator + iOS simulator + aggregate acceptance.
+3. Only after hosted PASS: tag/publish v4.3.4 exact R48 Windows installer plus unchanged accepted Linux R14, then verify public digests/download hashes and Windows/Linux updater semantics.
+4. Keep Authenticode, physical-console field E2E and production mobile forwarding/signing/device as explicit external gates.
+
+### Exact Next Action
+Rebuild/verify PUBLIC_MANIFEST and stop promotion on any mismatch; otherwise commit/push exact R48 candidate for hosted CI.
+
+### V434 R48 local promotion gate closure — 2026-10-05
+Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_OPEN
+- Exact R48 runtime candidate remains based on immutable public authority v4.3.3 / af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93; v4.3.3 tag/assets are untouched.
+- Smart/AUTO/Scan/Emergency now admit WebTunnel/obfs4 only when private bridge configuration passes strict parser validation. Country=AUTO may auto-failover through valid configured bridges; strict-country automatic selection remains NODE/CFON only.
+- Live isolated evidence: obfs4 PASS (Ping 1213.9 ms / Download 1.2 Mbps / Upload 1.34 Mbps); current private WebTunnel bridge fails closed with PATH_NOT_VERIFIED_WEBTUNNEL. Installed session, route, DNS and temporary-port ownership were preserved.
+- Focused regression 23/23 PASS; full regression 206/206 PASS; Python/PowerShell/XAML parse PASS; mobile fail-closed PASS; public security PASS; git diff --check PASS.
+- Exact installer candidate: FreeNetHub_4.3.4_R48_Setup.exe = 24,271,225 bytes / SHA-256 5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA; 25 frozen inputs; raw app-manifest preflight PASS; Authenticode remains external/NotSigned.
+- Public-tree verification PASS after correcting a control-plane acceptance-status mismatch: 476 public files, app/gateway/cross-platform/windows manifests and RELEASE hashes all PASS with zero mismatches; forbidden runtime/private bridge artifacts are absent.
+- Root cause/prevention: acceptance evidence status must exactly equal RELEASE.status; future final public-tree gate must enforce this before promotion.
+
+#### Roadmap ← CURRENT
+1. Rebuild PUBLIC_MANIFEST once more so this local-closure record is included, then verify public tree/security.
+2. Commit/push exact R48 candidate and require hosted Windows fresh-install, Linux, console virtual, Android emulator, iOS simulator and aggregate virtual acceptance on the exact SHA.
+3. Only after hosted PASS: tag/publish v4.3.4 exact Windows R48 asset plus unchanged accepted Linux R14; verify server digests, independent re-download hashes and Windows/Linux updater semantics.
+4. Trusted Authenticode, physical-console field E2E and production mobile packet-forwarding/signing/real-device remain explicit external gates.
+
+#### Exact Next Action
+Final PUBLIC_MANIFEST rebuild/verification, then commit/push exact R48 candidate for hosted CI. No public promotion before that PASS.

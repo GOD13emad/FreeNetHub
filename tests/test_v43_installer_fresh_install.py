@@ -6,11 +6,11 @@ ISS=(ROOT/"windows/installer/FreeNetHub.iss").read_text(encoding="utf-8-sig")
 def _prepare_block():
     return ISS.split("function PrepareToInstall(var NeedsRestart: Boolean): String;",1)[1].split("procedure CurStepChanged",1)[0]
 
-def test_v433_successor_has_distinct_r47_installer_identity():
-    assert '#define MyAppVersion "4.3.3"' in ISS
-    assert r"OutputDir=..\..\delivery\github_v4.3.3" in ISS
-    assert "OutputBaseFilename=FreeNetHub_4.3.3_R47_Setup" in ISS
-    assert "VersionInfoVersion=4.3.3.0" in ISS
+def test_v434_successor_has_distinct_r48_installer_identity():
+    assert '#define MyAppVersion "4.3.4"' in ISS
+    assert r"OutputDir=..\..\delivery\github_v4.3.4" in ISS
+    assert "OutputBaseFilename=FreeNetHub_4.3.4_R48_Setup" in ISS
+    assert "VersionInfoVersion=4.3.4.0" in ISS
 
 def test_fresh_install_skips_upgrade_guard_before_extracting_helper():
     block=_prepare_block()
@@ -41,9 +41,9 @@ def test_hosted_ci_requires_exact_fresh_install_gate():
     assert "- windows-installer-fresh" in needs
 
 
-def test_r46_public_artifact_identity_is_not_reused_by_r47_builder():
-    old=(ROOT/"tests/build_v432_installer.ps1").read_text(encoding="utf-8-sig")
-    new=(ROOT/"tests/build_v433_installer.ps1").read_text(encoding="utf-8-sig")
-    assert "FreeNetHub_4.3.2_R46_Setup.exe" in old
-    assert "FreeNetHub_4.3.3_R47_Setup.exe" in new
-    assert "github_v4.3.2" not in new
+def test_r47_public_artifact_identity_is_not_reused_by_r48_builder():
+    old=(ROOT/"tests/build_v433_installer.ps1").read_text(encoding="utf-8-sig")
+    new=(ROOT/"tests/build_v434_installer.ps1").read_text(encoding="utf-8-sig")
+    assert "FreeNetHub_4.3.3_R47_Setup.exe" in old
+    assert "FreeNetHub_4.3.4_R48_Setup.exe" in new
+    assert "github_v4.3.3" not in new

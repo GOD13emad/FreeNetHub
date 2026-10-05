@@ -1,0 +1,291 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "version": "4.3.4",
+  "changeSet": "R47",
+  "status": "R48_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "previousAcceptedState": {
+    "version": "4.3.2",
+    "tag": "v4.3.2",
+    "commit": "dd8bee89be71e39777152b6428c2ec0b1ba50809"
+  },
+  "records": [
+    {
+      "Date_Context": "2026-10-05 / Smart correction",
+      "Claim_Decision": "Smart is selector-only; benchmark every real browser method; DIRECT/CUSTOM remain comparison-only for auto selection.",
+      "Evidence_Source": [
+        "app/engine.py",
+        "app/FreeNetHub.ps1",
+        "tests/test_r47_smart_node_sort.py",
+        "evidence/R47_SMART_LIVE_20261004.json"
+      ],
+      "Confidence_Status": "CONFIRMED / LOCAL_LIVE_PASS",
+      "Reuse_Targets": [
+        "UI semantics",
+        "release notes",
+        "architecture rationale"
+      ],
+      "Provenance": {
+        "engineSha256": "BABB395E503251AFA966AA25A304FC7A1C391ABBCFE76456B5345D2EEFDB6B28",
+        "uiSha256": "8FAF0F9DD986FC08ECB78D2291EC267F05C4942059DA0D6F187DA9D1D82F867A"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Node best-node",
+      "Claim_Decision": "Use current successful performance for best-node ranking and return node identity with ProviderBenchmark NODE.",
+      "Evidence_Source": [
+        "evidence/R47_NODE_LIVE_20261005.json",
+        "tests/test_r47_smart_node_sort.py"
+      ],
+      "Confidence_Status": "CONFIRMED / LIVE_PASS",
+      "Reuse_Targets": [
+        "Node Pool UX",
+        "benchmark methodology"
+      ],
+      "Provenance": {
+        "path": "evidence/R47_NODE_LIVE_20261005.json",
+        "sha256": "A02F206B455DB7024CA68412EDC99A3E7177D7CC2D8E2FB6E85B9A2D38595BC1"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Node sorting",
+      "Claim_Decision": "Sort raw typed values; numeric dropdown default ascending; header toggles; missing always last.",
+      "Evidence_Source": [
+        "app/FreeNetHub.ps1",
+        "app/View.xaml",
+        "tests/test_r47_smart_node_sort.py"
+      ],
+      "Confidence_Status": "CONFIRMED / REGRESSION_PASS",
+      "Reuse_Targets": [
+        "UI rules",
+        "QA"
+      ],
+      "Provenance": {
+        "uiSha256": "8FAF0F9DD986FC08ECB78D2291EC267F05C4942059DA0D6F187DA9D1D82F867A",
+        "viewSha256": "E1498846B08ECFEBC84957257060DE7F985CD22470186C16BEBB48784494ABD0"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Harness failures",
+      "Claim_Decision": "Three false negatives were harness-only and converted to staging/collector guards, not product defects.",
+      "Evidence_Source": [
+        "evidence/R47_NODE_LIVE_20261005.json",
+        "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / PREVENTION_RECORDED",
+      "Reuse_Targets": [
+        "test harness design",
+        "failure prevention"
+      ],
+      "Provenance": {
+        "acceptance": "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Installer",
+      "Claim_Decision": "4.3.3/R47 local installer is accepted locally; digest stays external evidence; v4.3.2 remains public authority until hosted PASS.",
+      "Evidence_Source": [
+        "evidence/V433_R47_INSTALLER_BUILD_20261005.json",
+        "RELEASE.json",
+        "windows/installer/FreeNetHub.iss"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_OPEN",
+      "Reuse_Targets": [
+        "release promotion",
+        "handoff"
+      ],
+      "Provenance": {
+        "installerSha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
+        "releaseSha256": "1B7A157FBEAC069C73BDD7A443376C19235329C50E92BAF4A008CC3F1C32A57D"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Public tree local closure",
+      "Claim_Decision": "The R47 candidate public tree and nested integrity manifests/release hashes pass exact verification; local promotion gates are closed except hosted CI and external Authenticode.",
+      "Evidence_Source": [
+        "PUBLIC_MANIFEST.json",
+        "tests/verify_public_tree.py",
+        "tests/security_scan_public.py",
+        "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / LOCAL_GATE_PASS",
+      "Reuse_Targets": [
+        "release promotion",
+        "supply-chain audit",
+        "handoff"
+      ],
+      "Provenance": {
+        "manifestFileCount": 466,
+        "verification": "ALL_PUBLIC_TREE_CHECKS_PASS"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Public v4.3.3 release closure",
+      "Claim_Decision": "Promote exact tested SHA af1983f to immutable project authority tag v4.3.3 only after branch/main/tag hosted validation; publish exact R47 Windows bytes plus unchanged accepted Linux R14.",
+      "Evidence_Source": [
+        "evidence/V433_PUBLIC_RELEASE_CLOSURE_20261005.json",
+        "evidence/V433_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "evidence/V433_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "GitHub CI runs 37237796960, 37238257289, 37257248862"
+      ],
+      "Confidence_Status": "CONFIRMED / PUBLIC_RELEASED / REPOSITORY_CONTROL_CLOSURE_PENDING",
+      "Reuse_Targets": [
+        "release authority",
+        "updater semantics",
+        "handoff",
+        "future regression baseline"
+      ],
+      "Provenance": {
+        "tag": "v4.3.3",
+        "commit": "af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93",
+        "windowsSha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
+        "linuxSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Repository closure CI",
+      "Claim_Decision": "Final control-only repository closure commit passed hosted CI with zero runtime diff versus v4.3.3.",
+      "Evidence_Source": [
+        "GitHub CI run 37259927516",
+        "commit d13ef406eadd04c626a9d1e6c65e8219fd55d6a3",
+        "evidence/V433_PUBLIC_RELEASE_CLOSURE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / CLOSED_PASS",
+      "Reuse_Targets": [
+        "release authority",
+        "handoff",
+        "next-change baseline"
+      ],
+      "Provenance": {
+        "runtimeAuthority": "v4.3.3 -> af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93",
+        "runtimeDiffVsTag": "NONE"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R48 method choice",
+      "Claim_Decision": "Promote already-shipped Tor WebTunnel/obfs4 bridge paths before introducing new tunnel dependencies. Valid private bridge configuration is a prerequisite; invalid/missing files must add no Smart/Emergency delay.",
+      "Evidence_Source": [
+        "Tor Project official bridge documentation",
+        "evidence/R48_RESILIENCE_AUDIT_20261005.json",
+        "tests/test_r48_bridge_resilience.py"
+      ],
+      "Confidence_Status": "CONFIRMED / ACCEPTED",
+      "Reuse_Targets": [
+        "architecture",
+        "Smart failover",
+        "Emergency ChatGPT",
+        "release notes"
+      ],
+      "Provenance": {
+        "changeSet": "R48",
+        "privateBridgeMaterial": "EXCLUDED"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R48 live bridge validation",
+      "Claim_Decision": "obfs4 is live-functional through the current private bridge configuration; the current WebTunnel private bridge fails path verification and is correctly excluded from successful selection.",
+      "Evidence_Source": [
+        "evidence/R48_BRIDGE_LIVE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / MIXED_LIVE_RESULT",
+      "Reuse_Targets": [
+        "support",
+        "diagnostics",
+        "future bridge refresh"
+      ],
+      "Provenance": {
+        "obfs4": "PASS",
+        "webTunnel": "FAIL_CLOSED",
+        "installedNetworkStatePreserved": true
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R48 failure prevention",
+      "Claim_Decision": "Emergency bridge ordering must depend on parser validation, not file existence. App manifest must be resynced after every runtime delta before packaging. Network-test summaries must normalize optional result schemas rather than blindly rerun.",
+      "Evidence_Source": [
+        "tests/test_r48_bridge_resilience.py",
+        "tests/test_v431_integrity_hotfix.py",
+        "evidence/R48_BRIDGE_LIVE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / GUARDS_ADDED",
+      "Reuse_Targets": [
+        "regression policy",
+        "packaging",
+        "live validation"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R48 deferred methods",
+      "Claim_Decision": "Psiphon, OpenVPN/OpenConnect, TUIC/AnyTLS/ShadowTLS/Naive and AmneziaWG-like methods are not auto-bundled merely because a library can support them; each needs reproducible compatible server/config/dependency/license authority and separate validation.",
+      "Evidence_Source": [
+        "evidence/R48_RESILIENCE_AUDIT_20261005.json",
+        "sing-box official documentation",
+        "Psiphon official tunnel-core repositories"
+      ],
+      "Confidence_Status": "CONFIRMED / DEFERRED_BY_EVIDENCE",
+      "Reuse_Targets": [
+        "future roadmap",
+        "architecture trade-offs"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R48 local acceptance",
+      "Claim_Decision": "R48 local candidate passes 206/206 full regression and exact installer build with 25 frozen inputs; hosted CI remains the promotion gate.",
+      "Evidence_Source": [
+        "evidence/V434_R48_CANDIDATE_ACCEPTANCE_20261005.json",
+        "evidence/V434_R48_INSTALLER_BUILD_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / LOCAL_GATE_PASS",
+      "Reuse_Targets": [
+        "release promotion",
+        "handoff"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R48 public-tree local closure",
+      "Claim_Decision": "The exact R48 candidate public manifest and all nested app/gateway/cross-platform/windows integrity manifests plus RELEASE hash authority pass with zero mismatches after synchronizing acceptance status to RELEASE status.",
+      "Evidence_Source": [
+        "PUBLIC_MANIFEST.json",
+        "tests/verify_public_tree.py",
+        "evidence/V434_R48_CANDIDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / LOCAL_PROMOTION_GATE_PASS",
+      "Reuse_Targets": [
+        "release promotion",
+        "supply-chain audit",
+        "handoff"
+      ],
+      "Provenance": {
+        "manifestFiles": 476,
+        "manifestSha256": "47D0DF960DB70BD75830D92E468E0D0AB4CC32B68110E5AC991842053C41A01B",
+        "firstFailure": "acceptanceEvidenceContent status mismatch",
+        "rootCause": "Acceptance status omitted the V434_R48 prefix required to match RELEASE.status",
+        "prevention": "Keep acceptanceEvidence status byte-for-byte aligned with RELEASE.status before final public-tree verification."
+      }
+    }
+  ],
+  "authoritativeEvidence": [
+    "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/R47_SMART_LIVE_20261004.json",
+    "evidence/R47_NODE_LIVE_20261005.json",
+    "evidence/V433_R47_INSTALLER_BUILD_20261005.json",
+    "evidence/V433_R47_FULL_REGRESSION_20261005.txt",
+    "evidence/V433_R47_FAIL_CLOSED_20261005.json",
+    "evidence/V433_R47_SECURITY_20261005.json",
+    "evidence/V433_PUBLIC_RELEASE_CLOSURE_20261005.json",
+    "evidence/V433_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V433_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/R48_RESILIENCE_AUDIT_20261005.json",
+    "evidence/R48_BRIDGE_LIVE_20261005.json",
+    "evidence/V434_R48_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/V434_R48_INSTALLER_BUILD_20261005.json"
+  ],
+  "openGates": [
+    "Hosted CI exact-candidate validation before public promotion",
+    "Trusted Windows Authenticode signing identity remains external",
+    "Current private WebTunnel bridge is not healthy in this network; integration remains fail-closed",
+    "Physical console field E2E remains external hardware validation",
+    "Production Android/iOS packet forwarding/signing/real-device remains separate architecture/device/legal work"
+  ],
+  "exactNextAction": "Rebuild/verify PUBLIC_MANIFEST after this closure record, then commit/push exact R48 candidate and require hosted CI before public promotion."
+}

@@ -259,7 +259,7 @@ Network Destination        Netmask          Gateway       Interface  Metric
   with tempfile.TemporaryDirectory(dir=R/'tests') as d:
    rr=pathlib.Path(d)
    with patch.object(E,'ROOT',rr),patch.object(E,'settings',return_value=E.DEFAULT|{'order':['WARP','TOR']}):
-    (rr/'data').mkdir();(rr/'data'/'bridges_webtunnel.txt').write_text('x')
+    (rr/'data').mkdir();(rr/'data'/'bridges_webtunnel.txt').write_text('webtunnel 192.0.2.10:443 '+('A'*40)+' url=https://example.com/x ver=0.0.1')
     self.assertEqual(E.emergency_candidates()[0],'WEBTUNNEL');self.assertIn('TOR',E.emergency_candidates());self.assertEqual(len(E.emergency_candidates()),len(set(E.emergency_candidates())))
  def test_chatgpt_probe_requires_primary_and_supporting_edge(self):
   ok={'exit':0,'code':'200','seconds':.1};bad={'exit':7,'code':'000','seconds':.1}
