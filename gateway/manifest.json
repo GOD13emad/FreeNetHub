@@ -16,13 +16,13 @@
     },
     {
       "file": "Setup-GatewayCore.ps1",
-      "bytes": 4226,
-      "sha256": "9554D1356C4DAD9F92E1DEF8379EB0B938DFED77E643C2C6090594813E857E40"
+      "bytes": 6016,
+      "sha256": "2385F64DF00716780C8F53A4FADCDEA3DBBB06207BE37F66AF3895CAA1521EF0"
     },
     {
       "file": "Setup-ConsoleGateway.ps1",
-      "bytes": 12277,
-      "sha256": "1F642B9479DD6EF00D9F5296ACE6311602C12E55798D48C5F6CFDD76AFFBD6D9"
+      "bytes": 12850,
+      "sha256": "59DC66B5CF8D2B38EB1FC44A47E33AE9F0A8E64340884FE9D455104141FD31A9"
     },
     {
       "file": "gateway_defaults.json",

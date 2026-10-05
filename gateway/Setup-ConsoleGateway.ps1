@@ -12,6 +12,7 @@ $Runtime=Join-Path $Gateway 'runtime'
 $Local=Join-Path $Runtime 'local_gateway.json'
 $SbVersion='1.14.0'
 $WinArchiveSha='3FFB56267DA14E287BE48BD10CF7E6505260125BAD940B75101FBB4D5D58E5D6'
+$CronetSha='EEE741046F0A3975124BAE349AEAC237AA306F3CC4DE59FF5DE070E74DBFDAEB'
 $LinuxArchiveSha='2375DE6999F4F56AB46B4FC5DDF26A6ABA1D3E61A0F4E7DDEC2F4690457D5F63'
 $LinuxBinarySha='57B3DA14E264B6E05E8F46AEE027C02D7DD7F1594D19AA39E2F4D2B9459BBD04'
 $UsbMsiSha='1C984914AEC944DE19B64EFF232421439629699F8138E3DDC29301175BC6D938'
@@ -67,7 +68,9 @@ try{
  $needWin=$true
  if(Test-Path $winSb -PathType Leaf){
   $v=Run $winSb @('version') 15000
-  if($v.exit -eq 0 -and $v.stdout -match ('sing-box version '+[regex]::Escape($SbVersion))){$needWin=$false}
+  $cronet=Join-Path $winDir 'libcronet.dll'
+  $cronetOk=(Test-Path $cronet -PathType Leaf) -and ((Get-FileHash $cronet -Algorithm SHA256).Hash -eq $CronetSha)
+  if($v.exit -eq 0 -and $v.stdout -match ('sing-box version '+[regex]::Escape($SbVersion)) -and $cronetOk){$needWin=$false}
  }
  if($needWin){
   $tmp=Join-Path $env:TEMP ('FreeNetHub-'+[guid]::NewGuid().ToString('N'));New-Item -ItemType Directory -Path $tmp -Force|Out-Null
@@ -76,8 +79,11 @@ try{
    [void](Download-Pinned ('https://github.com/SagerNet/sing-box/releases/download/v'+$SbVersion+'/sing-box-'+$SbVersion+'-windows-amd64.zip') $zip $WinArchiveSha)
    Expand-Archive -LiteralPath $zip -DestinationPath $tmp -Force
    $src=Get-ChildItem $tmp -Recurse -File -Filter sing-box.exe|Select-Object -First 1
+   $dll=Get-ChildItem $tmp -Recurse -File -Filter libcronet.dll|Select-Object -First 1
    Assert ($null -ne $src) 'WINDOWS_SINGBOX_BINARY_NOT_FOUND'
-   New-Item -ItemType Directory -Path $winDir -Force|Out-Null;Copy-Item $src.FullName $winSb -Force
+   Assert ($null -ne $dll) 'WINDOWS_CRONET_BINARY_NOT_FOUND'
+   Assert ((Get-FileHash $dll.FullName -Algorithm SHA256).Hash -eq $CronetSha) 'WINDOWS_CRONET_HASH_FAIL'
+   New-Item -ItemType Directory -Path $winDir -Force|Out-Null;Copy-Item $src.FullName $winSb -Force;Copy-Item $dll.FullName (Join-Path $winDir 'libcronet.dll') -Force
   }finally{Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue}
  }
  $winSha=(Get-FileHash $winSb -Algorithm SHA256).Hash;$wv=Run $winSb @('version') 15000

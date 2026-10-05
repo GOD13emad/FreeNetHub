@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.3.6-crossplatform-r50-linux-r16",
+  "version": "4.3.7-crossplatform-r51-linux-r17",
   "files": [
     {
       "file": "android/app/build.gradle.kts",
@@ -110,7 +110,7 @@
     {
       "file": "linux/freenet_hub_linux.py",
       "bytes": 42640,
-      "sha256": "DB4C64C98FC8032787CE7C6A53C3FA3091B0C7EF028D8E5927DAF376B3857628"
+      "sha256": "9194D84A7CCEE3A481825101182B470161B050A8E178B4657D5B654E92ED621D"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
@@ -119,8 +119,8 @@
     },
     {
       "file": "linux/freenet_hub_linux_r37.py",
-      "bytes": 53246,
-      "sha256": "4C5797D0C59C416E4A48FB78A88F1101C46133825A5902BCC6FD16D126E5A6EB"
+      "bytes": 53297,
+      "sha256": "542A0FCD2CEA2765521D5F18502755924AA17D1AD81293BCB0B02E2302777D4D"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -134,8 +134,8 @@
     },
     {
       "file": "linux/install.sh",
-      "bytes": 5638,
-      "sha256": "6737A2373E9DE4E567D623F426E5F12861AFB48A41135EAF365D57F50F1AF0D1"
+      "bytes": 5636,
+      "sha256": "380CA32FF1CBD7844E6B07E60DD4D4234ADBC62175D6EEC718AEBC3CB2FFCD31"
     },
     {
       "file": "linux/install_singbox_pinned.sh",
@@ -154,13 +154,13 @@
     },
     {
       "file": "linux/nodehub_shared.py",
-      "bytes": 23134,
-      "sha256": "9B6BE6E4EA748A1559C011A326B75045702819B2A221ABC2E773B29A0968E2B0"
+      "bytes": 32028,
+      "sha256": "12E6790E933C91AFACCE0A82CCFFEF19DBBB1FC31D7308D75AA902EAF69B4F5C"
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 3449,
-      "sha256": "BE29C7CDC34E1555BD224F9176F1DD17257967908CC6229CDFD971E7BDE19988"
+      "bytes": 3535,
+      "sha256": "6A4F992E207170A4CCC6D77AC3770397B736AD380CABB23CD68D146723277CAF"
     },
     {
       "file": "linux/recover_warp_remote.sh",
@@ -170,7 +170,7 @@
     {
       "file": "linux/selftest.py",
       "bytes": 1829,
-      "sha256": "7F92DCC15EF034D9B7009E21278A8DE3B5F678F998A18E83004BA980961120D6"
+      "sha256": "A75A927051ADD15E3F1CBB59E2CAB643A0465236B1BF7F0609AC2A1A112420C7"
     },
     {
       "file": "linux/test_browser_profile.py",
@@ -190,7 +190,7 @@
     {
       "file": "linux/test_r37_parity.py",
       "bytes": 8293,
-      "sha256": "CC286397734094604F8743902EABAECE6956CD2516402B5ECE7BA3BC232B3DB2"
+      "sha256": "CA44620F111882D25F1CE4EAC465B97595E7315BC05A93AC3D596AB93D1803D7"
     },
     {
       "file": "linux/test_scope_policy.py",
@@ -199,8 +199,8 @@
     },
     {
       "file": "linux/test_update_revision.py",
-      "bytes": 2160,
-      "sha256": "094DB78EC319308A5D59A1CDD753EEA1483A51A93A74B12B23196B367145610F"
+      "bytes": 2233,
+      "sha256": "AE4576EF1AA9D7319EF75AC7B41A7758EE33AF277E62593A73B82EE445918FC2"
     },
     {
       "file": "linux/uninstall.sh",

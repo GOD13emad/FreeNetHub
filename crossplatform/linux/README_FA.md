@@ -1,4 +1,4 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.16-r43
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.17-r44
 
 نسخهٔ Linux R15 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
 
@@ -26,7 +26,7 @@
 
 ## Node Pool
 
-Parser/config generator همان contract نود R37 را reuse می‌کند و پروتکل‌های VLESS، VMess، Shadowsocks، Trojan و Hysteria2 را می‌شناسد.
+Parser/config generator همان contract نود مشترک را reuse می‌کند و SS/VMess/VLESS/Trojan/Hysteria v1/Hysteria2/TUIC/AnyTLS را از share-link و ShadowTLS/SSH/Snell/SOCKS/HTTP CONNECT/Naive را از sing-box JSON امن می‌شناسد.
 
 «دریافت نودهای جدید» فقط fetch/parse/merge می‌کند. Test All جداست و endpoint reachability را می‌سنجد. HTTPS proxy-health و throughput جداگانه سنجیده می‌شوند؛ endpoint باز هرگز به معنی proxy سالم اعلام نمی‌شود.
 

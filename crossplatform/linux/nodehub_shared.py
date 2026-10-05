@@ -2,9 +2,9 @@ from __future__ import annotations
 import base64, hashlib, html, json, re
 from urllib.parse import parse_qs, parse_qsl, urlencode, unquote, urlsplit
 
-SUPPORTED_PROTOCOLS = ("ss", "vmess", "vless", "trojan", "hysteria2", "hy2", "tuic", "anytls")
-JSON_ONLY_PROTOCOLS = ("shadowtls",)
-UDP_PREFLIGHT_PROTOCOLS = ("hysteria2", "tuic")
+SUPPORTED_PROTOCOLS = ("ss", "vmess", "vless", "trojan", "hysteria", "hysteria2", "hy2", "tuic", "anytls")
+JSON_ONLY_PROTOCOLS = ("shadowtls", "ssh", "snell", "socks", "http", "naive")
+UDP_PREFLIGHT_PROTOCOLS = ("hysteria", "hysteria2", "tuic")
 MAX_NODE_TEXT = 2 * 1024 * 1024
 MAX_NODES = 2000
 
@@ -249,6 +249,40 @@ def parse_uri(uri: str) -> dict:
             "server": server, "port": port, "password": password,
             "tls": _required_tls(q, server), "transport": None,
         }
+    elif scheme == "hysteria":
+        parts = urlsplit(raw)
+        server, port = _host_port(parts)
+        q = _q(parts)
+        protocol = str(q.get("protocol") or "udp").lower()
+        if protocol != "udp":
+            raise ValueError("HYSTERIA_V1_PROTOCOL_UNSUPPORTED")
+        try:
+            up_mbps = int(q.get("upmbps") or q.get("up_mbps"))
+            down_mbps = int(q.get("downmbps") or q.get("down_mbps"))
+        except Exception as e:
+            raise ValueError("HYSTERIA_V1_BANDWIDTH_REQUIRED") from e
+        if not 1 <= up_mbps <= 100000 or not 1 <= down_mbps <= 100000:
+            raise ValueError("HYSTERIA_V1_BANDWIDTH_INVALID")
+        tls = {"enabled": True, "server_name": str(q.get("peer") or q.get("sni") or server)}
+        if _truthy(q.get("insecure")):
+            tls["insecure"] = True
+        alpn = str(q.get("alpn") or "").strip()
+        if alpn:
+            tls["alpn"] = [alpn[:64]]
+        node = {
+            "protocol": "hysteria", "name": _name(parts.fragment, f"Hysteria {server}"),
+            "server": server, "port": port, "up_mbps": up_mbps, "down_mbps": down_mbps,
+            "tls": tls, "transport": None,
+        }
+        auth = str(q.get("auth") or "").strip()
+        if auth:
+            node["auth_str"] = auth[:2048]
+        obfs_mode = str(q.get("obfs") or "").strip().lower()
+        obfs_password = str(q.get("obfsParam") or q.get("obfsparam") or "").strip()
+        if obfs_mode:
+            if obfs_mode != "xplus" or not obfs_password:
+                raise ValueError("HYSTERIA_V1_OBFS_UNSUPPORTED")
+            node["obfs"] = obfs_password[:2048]
     else:
         parts = urlsplit(raw)
         server, port = _host_port(parts)
@@ -298,7 +332,7 @@ def parse_uri(uri: str) -> dict:
     node["source"] = "import"
     return node
 
-_URI_RE = re.compile(r"(?i)(?:vmess|vless|trojan|ss|hysteria2|hy2|tuic|anytls)://[^\s<>\"']+")
+_URI_RE = re.compile(r"(?i)(?:vmess|vless|trojan|ss|hysteria|hysteria2|hy2|tuic|anytls)://[^\s<>\"']+")
 
 def extract_uris(text: str) -> list[str]:
     s = html.unescape(str(text))
@@ -318,13 +352,17 @@ def _singbox_json_node(outbound: dict) -> dict:
     if not isinstance(outbound, dict):
         raise ValueError("NODE_JSON_OUTBOUND_INVALID")
     typ = str(outbound.get("type") or "").lower()
-    if typ not in ("tuic", "anytls", "shadowtls"):
+    allowed = ("tuic", "anytls", "shadowtls", "hysteria", "ssh", "snell", "socks", "http", "naive")
+    if typ not in allowed:
         raise ValueError("NODE_JSON_PROTOCOL_UNSUPPORTED")
     if outbound.get("detour") or outbound.get("dialer_proxy"):
         raise ValueError("NODE_JSON_DETOUR_UNSUPPORTED")
+    if outbound.get("private_key_path") or outbound.get("certificate_path") or outbound.get("client_certificate_path") or outbound.get("client_key_path"):
+        raise ValueError("NODE_JSON_LOCAL_PATH_UNSUPPORTED")
     server = str(outbound.get("server") or "").strip()
     try:
-        port = int(outbound.get("server_port"))
+        default_port = 22 if typ == "ssh" else 0
+        port = int(outbound.get("server_port") or default_port)
     except Exception as e:
         raise ValueError("NODE_PORT_INVALID") from e
     if not server or not 1 <= port <= 65535:
@@ -334,9 +372,12 @@ def _singbox_json_node(outbound: dict) -> dict:
         "name": str(outbound.get("tag") or f"{typ.upper()} {server}")[:120],
         "server": server,
         "port": port,
-        "tls": _json_tls(outbound.get("tls"), server),
         "transport": None,
     }
+    if typ in ("tuic", "anytls", "shadowtls", "hysteria", "naive"):
+        node["tls"] = _json_tls(outbound.get("tls"), server)
+    elif isinstance(outbound.get("tls"), dict):
+        node["tls"] = _json_tls(outbound.get("tls"), server)
     if typ == "tuic":
         uid = str(outbound.get("uuid") or "").strip()
         password = str(outbound.get("password") or "").strip()
@@ -363,7 +404,7 @@ def _singbox_json_node(outbound: dict) -> dict:
                 node["min_idle_session"] = max(0, min(64, int(outbound["min_idle_session"])))
             except Exception as e:
                 raise ValueError("ANYTLS_MIN_IDLE_SESSION_INVALID") from e
-    else:
+    elif typ == "shadowtls":
         try:
             version = int(outbound.get("version") or 1)
         except Exception as e:
@@ -376,6 +417,100 @@ def _singbox_json_node(outbound: dict) -> dict:
         node["version"] = version
         if password:
             node["password"] = password
+    elif typ == "hysteria":
+        try:
+            up = int(outbound.get("up_mbps"))
+            down = int(outbound.get("down_mbps"))
+        except Exception as e:
+            raise ValueError("HYSTERIA_V1_BANDWIDTH_REQUIRED") from e
+        if not 1 <= up <= 100000 or not 1 <= down <= 100000:
+            raise ValueError("HYSTERIA_V1_BANDWIDTH_INVALID")
+        node["up_mbps"], node["down_mbps"] = up, down
+        if outbound.get("auth_str") not in (None, ""):
+            node["auth_str"] = str(outbound["auth_str"])[:2048]
+        elif outbound.get("auth") not in (None, ""):
+            node["auth"] = str(outbound["auth"])[:4096]
+        if outbound.get("obfs") not in (None, ""):
+            node["obfs"] = str(outbound["obfs"])[:2048]
+        network = str(outbound.get("network") or "").lower()
+        if network and network not in ("tcp", "udp"):
+            raise ValueError("HYSTERIA_V1_NETWORK_INVALID")
+        if network:
+            node["network"] = network
+    elif typ == "ssh":
+        if outbound.get("private_key_path"):
+            raise ValueError("NODE_JSON_LOCAL_PATH_UNSUPPORTED")
+        node["user"] = str(outbound.get("user") or "root")[:256]
+        for key in ("password", "private_key", "private_key_passphrase", "client_version"):
+            if outbound.get(key) not in (None, ""):
+                node[key] = str(outbound[key])[:32768 if key == "private_key" else 2048]
+        for key in ("host_key", "host_key_algorithms", "cipher", "mac", "kex_algorithm"):
+            if isinstance(outbound.get(key), list):
+                node[key] = [str(x)[:1024] for x in outbound[key][:32] if str(x).strip()]
+        if not node.get("password") and not node.get("private_key"):
+            raise ValueError("SSH_CREDENTIAL_REQUIRED")
+    elif typ == "snell":
+        try:
+            version = int(outbound.get("version") or 4)
+        except Exception as e:
+            raise ValueError("SNELL_VERSION_INVALID") from e
+        if version not in (4, 6):
+            raise ValueError("SNELL_VERSION_INVALID")
+        psk = str(outbound.get("psk") or "")
+        if not psk or (version == 6 and not 12 <= len(psk.encode("utf-8")) <= 255):
+            raise ValueError("SNELL_PSK_INVALID")
+        node.update(version=version, psk=psk[:2048], reuse=bool(outbound.get("reuse", False)))
+        if outbound.get("userkey") not in (None, ""):
+            node["userkey"] = str(outbound["userkey"])[:2048]
+        network = str(outbound.get("network") or "").lower()
+        if network and network not in ("tcp", "udp"):
+            raise ValueError("SNELL_NETWORK_INVALID")
+        if network:
+            node["network"] = network
+        if version == 4:
+            obfs = str(outbound.get("obfs_mode") or "none").lower()
+            if obfs not in ("none", "http"):
+                raise ValueError("SNELL_OBFS_INVALID")
+            node["obfs_mode"] = obfs
+            if outbound.get("obfs_host") not in (None, ""):
+                node["obfs_host"] = str(outbound["obfs_host"])[:512]
+        else:
+            mode = str(outbound.get("mode") or "default").lower()
+            if mode not in ("default", "unshaped", "unsafe-raw"):
+                raise ValueError("SNELL_MODE_INVALID")
+            node["mode"] = mode
+    elif typ == "socks":
+        version = str(outbound.get("version") or "5").lower()
+        if version not in ("4", "4a", "5"):
+            raise ValueError("SOCKS_VERSION_INVALID")
+        node["version"] = version
+        for key in ("username", "password"):
+            if outbound.get(key) not in (None, ""):
+                node[key] = str(outbound[key])[:2048]
+        network = str(outbound.get("network") or "").lower()
+        if network and network not in ("tcp", "udp"):
+            raise ValueError("SOCKS_NETWORK_INVALID")
+        if network:
+            node["network"] = network
+        if isinstance(outbound.get("udp_over_tcp"), (bool, dict)):
+            node["udp_over_tcp"] = outbound["udp_over_tcp"]
+    elif typ == "http":
+        for key in ("username", "password", "path"):
+            if outbound.get(key) not in (None, ""):
+                node[key] = str(outbound[key])[:2048]
+        if isinstance(outbound.get("headers"), dict):
+            node["headers"] = {str(k)[:128]: str(v)[:2048] for k, v in list(outbound["headers"].items())[:32]}
+    elif typ == "naive":
+        for key in ("username", "password"):
+            if outbound.get(key) not in (None, ""):
+                node[key] = str(outbound[key])[:2048]
+        try:
+            node["insecure_concurrency"] = max(0, min(64, int(outbound.get("insecure_concurrency") or 0)))
+        except Exception as e:
+            raise ValueError("NAIVE_CONCURRENCY_INVALID") from e
+        node["quic"] = bool(outbound.get("quic", False))
+        if outbound.get("quic_congestion_control") not in (None, ""):
+            node["quic_congestion_control"] = str(outbound["quic_congestion_control"])[:64]
     node["id"] = _id(node)
     node["raw"] = json.dumps(outbound, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     node["favorite"] = False
@@ -410,7 +545,7 @@ def _singbox_json_nodes(text: str) -> tuple[list[dict], list[str]]:
             return [], []
         nodes, errors = [], []
         for row in rows:
-            if not isinstance(row, dict) or str(row.get("type") or "").lower() not in ("tuic", "anytls", "shadowtls"):
+            if not isinstance(row, dict) or str(row.get("type") or "").lower() not in ("tuic", "anytls", "shadowtls", "hysteria", "ssh", "snell", "socks", "http", "naive"):
                 continue
             try:
                 nodes.append(_singbox_json_node(row))
@@ -515,6 +650,39 @@ def _outbound(node: dict) -> dict:
         base["version"] = int(node.get("version", 1))
         if node.get("password"):
             base["password"] = node["password"]
+    elif proto == "hysteria":
+        base["up_mbps"] = int(node["up_mbps"]); base["down_mbps"] = int(node["down_mbps"])
+        for key in ("auth_str", "auth", "obfs", "network"):
+            if node.get(key) not in (None, ""):
+                base[key] = node[key]
+    elif proto == "ssh":
+        base["user"] = node.get("user") or "root"
+        for key in ("password", "private_key", "private_key_passphrase", "client_version"):
+            if node.get(key) not in (None, ""):
+                base[key] = node[key]
+        for key in ("host_key", "host_key_algorithms", "cipher", "mac", "kex_algorithm"):
+            if node.get(key):
+                base[key] = node[key]
+    elif proto == "snell":
+        base["version"] = int(node.get("version") or 4); base["psk"] = node["psk"]
+        for key in ("userkey", "network", "obfs_mode", "obfs_host", "mode"):
+            if node.get(key) not in (None, ""):
+                base[key] = node[key]
+        if node.get("reuse"):
+            base["reuse"] = True
+    elif proto == "socks":
+        base["version"] = str(node.get("version") or "5")
+        for key in ("username", "password", "network", "udp_over_tcp"):
+            if node.get(key) not in (None, ""):
+                base[key] = node[key]
+    elif proto == "http":
+        for key in ("username", "password", "path", "headers"):
+            if node.get(key) not in (None, ""):
+                base[key] = node[key]
+    elif proto == "naive":
+        for key in ("username", "password", "insecure_concurrency", "quic", "quic_congestion_control"):
+            if node.get(key) not in (None, ""):
+                base[key] = node[key]
     else:
         raise ValueError("NODE_PROTOCOL_UNSUPPORTED")
     if node.get("tls"):

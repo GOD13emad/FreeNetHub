@@ -2,8 +2,8 @@
   "schema": 1,
   "date": "2026-10-05",
   "project": "FreeNet Hub",
-  "version": "4.3.6",
-  "status": "V436_PUBLIC_FINAL_REPOSITORY_CLOSED",
+  "version": "4.3.7",
+  "status": "V437_R51_LOCAL_FROZEN_HOSTED_OPEN",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -429,6 +429,31 @@
         "finalMainCiRunId": 37343449317,
         "finalMainCiStatus": "SUCCESS"
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / v4.3.7 R51 protocol expansion 2 local acceptance",
+      "Claim_Decision": "Using the already-pinned sing-box family, FreeNet Hub adds Hysteria v1 share URI plus fail-closed sing-box JSON import/config support for SSH, Snell, upstream SOCKS, HTTP CONNECT and Naive. Windows Naive is enabled only when the exact libcronet.dll from the same pinned official sing-box v1.14.0 archive is present. Real repair preserved route/DNS/session. Generated configs passed sing-box check 6/6 on Windows 1.14.0 and Linux 1.14.2. Local regression 252/252 PASS and security PASS.",
+      "Evidence_Source": [
+        "evidence/V437_R51_CANDIDATE_ACCEPTANCE_20261005.json",
+        "evidence/V437_R51_INSTALLER_BUILD_20261005.json",
+        "sing-box official outbound documentation",
+        "Hysteria v1 official URI scheme documentation"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_OPEN",
+      "Reuse_Targets": [
+        "node import",
+        "protocol expansion",
+        "dependency repair",
+        "packaging",
+        "future runtime upgrades"
+      ],
+      "Provenance": {
+        "base": "b3e58a659c566422d5548546ae4de1bd46b16bfa",
+        "windowsInstallerSha256": "4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3",
+        "linuxR17Sha256": "1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6",
+        "crossPlatformManifestSha256": "78651558F85B42FBA051D33BB80AD4CA522B9395E0026E40BF6646277F6851BE",
+        "cronetSha256": "EEE741046F0A3975124BAE349AEAC237AA306F3CC4DE59FF5DE070E74DBFDAEB"
+      }
     }
   ],
   "authoritativeEvidence": [
@@ -449,13 +474,15 @@
     "evidence/V436_R50_TOR_DIRECT90_SOURCE_20261005.json",
     "evidence/V436_PUBLIC_RELEASE_CLOSURE_20261005.json",
     "evidence/V436_POSTPUBLISH_UPDATECHECK_20261005.json",
-    "evidence/V436_R16_PUBLIC_UPDATE_ACCEPTANCE_20261005.json"
+    "evidence/V436_R16_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
+    "evidence/V437_R51_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/V437_R51_INSTALLER_BUILD_20261005.json"
   ],
   "openGates": [
-    "Trusted Windows Authenticode signing remains external",
-    "Physical console field/game/country E2E remains external",
-    "Production Android/iOS packet forwarding/signing/real-device remains external",
-    "Live TUIC/AnyTLS/ShadowTLS external endpoint validation remains unavailable without authorized endpoints"
+    "Exact-SHA hosted CI for R51",
+    "Merge/main/tag/release and post-publish Windows/Linux update acceptance",
+    "MASQUE/Tailcat require a separately validated sing-box 1.15+ runtime change set",
+    "Trusted Authenticode, physical console, and production mobile remain external"
   ],
-  "exactNextAction": "No open v4.3.6 software gates. Preserve the frozen release; future method research starts as a new change set."
+  "exactNextAction": "Commit the frozen R51 snapshot, push the exact SHA, and require the full hosted matrix before promotion."
 }

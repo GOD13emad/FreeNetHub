@@ -11,9 +11,9 @@ def load(name,path):
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 
 legacy=load("legacy",LIN/"freenet_hub_linux.py")
-assert legacy.VERSION=="4.2.0-linux.16-r43"
+assert legacy.VERSION=="4.2.0-linux.17-r44"
 r37=load("r37",LIN/"freenet_hub_linux_r37.py")
-assert r37.VERSION=="4.2.0-linux.16-r43"
+assert r37.VERSION=="4.2.0-linux.17-r44"
 assert r37.NODE_PORT==19460
 assert r37.settings()["testPathMode"] in ("BASE","SELECTED")
 for fn in ("node_store","node_refresh_public","node_test_all","node_connect","node_connect_auto","node_stop","node_raw","node_history","node_export","node_update_meta","node_benchmark_batch","node_benchmark_best","node_best","benchmark_method","benchmark_configured","benchmark_all_methods","connect_method","warpplus_status","warpplus_start","update_check","update_install","open_browser"):
@@ -32,7 +32,7 @@ assert "self._syncing_sort" in ui
 assert "elif int(idx)==int(self.node_sort_idx)" in ui
 assert "بیشترین Upload" in ui
 installer=(LIN/"install.sh").read_text(encoding="utf-8")
-for marker in ("freenet_hub_linux_r37.py","nodehub_shared.py","runtime/usr/bin/sing-box","runtime/usr/bin/warp-plus","4.2.0-linux.16-r43","install_singbox_pinned.sh","install_warpplus_pinned.sh"):
+for marker in ("freenet_hub_linux_r37.py","nodehub_shared.py","runtime/usr/bin/sing-box","runtime/usr/bin/warp-plus","4.2.0-linux.17-r44","install_singbox_pinned.sh","install_warpplus_pinned.sh"):
     assert marker in installer, marker
 pin=(LIN/"install_singbox_pinned.sh").read_text(encoding="utf-8")
 assert "v1.14.2" in pin
