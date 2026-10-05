@@ -438,3 +438,8 @@ Status: CURRENT / PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING
 
 ### Exact Next Action
 Rebuild/verify PUBLIC_MANIFEST, prove runtime diff versus v4.3.4 is zero, commit/push control-only closure, and require final CI.
+
+### V434 Repository Closure CI
+- Final control-only closure commit 161619b9ab3c931d171f9d80082a4b1dc7fa0d71 passed hosted CI run 37292728318.
+- Runtime diff versus immutable authority tag v4.3.4 is NONE; runtime authority remains v4.3.4 -> 4a3a24351ac892563d2c01e7d40cd5a001fe13e5.
+- Status: PUBLIC_FINAL_CLOSED. Any further resilience work must start as a new evidence-gated change set.

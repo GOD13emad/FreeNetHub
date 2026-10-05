@@ -3,7 +3,7 @@
   "date": "2026-10-05",
   "project": "FreeNet Hub",
   "version": "4.3.4",
-  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
+  "status": "PUBLIC_FINAL_CLOSED",
   "previousAcceptedState": {
     "release": "v4.3.3",
     "windows": "R47",
@@ -131,9 +131,14 @@
     "evidence/V434_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
     "evidence/V434_POSTRELEASE_EXPANSION_AUDIT_20261005.json"
   ],
-  "finalObjectiveResult": "Desktop/public v4.3.4 R48 CLOSED_PASS. Resilience expanded with evidence-backed configured bridge transports; no unsupported global-connectivity guarantee is claimed.",
-  "exactNextAction": "Commit/push control-only closure with zero runtime diff versus v4.3.4, require final repository-state CI PASS, then record the CI without changing tag/assets.",
+  "finalObjectiveResult": "Desktop/public v4.3.4 R48 CLOSED_PASS including final repository-state CI; resilience expansion is public and runtime/tag/assets are immutable.",
+  "exactNextAction": "Start future resilience/protocol work as a new evidence-gated change set; do not mutate v4.3.4 tag or published assets.",
   "repositoryClosure": {
-    "status": "PENDING_CONTROL_ONLY_COMMIT_AND_CI"
+    "status": "SUCCESS",
+    "commit": "161619b9ab3c931d171f9d80082a4b1dc7fa0d71",
+    "runId": 37292728318,
+    "conclusion": "success",
+    "runtimeDiffVsTag": "NONE",
+    "runtimeAuthorityRemains": "v4.3.4 -> 4a3a24351ac892563d2c01e7d40cd5a001fe13e5"
   }
 }

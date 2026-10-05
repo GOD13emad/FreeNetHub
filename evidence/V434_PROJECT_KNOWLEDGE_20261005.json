@@ -318,6 +318,25 @@
           "naive"
         ]
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / R48 repository closure CI",
+      "Claim_Decision": "Final control-only repository closure commit 161619b passed hosted CI run 37292728318 with zero runtime diff versus immutable tag v4.3.4.",
+      "Evidence_Source": [
+        "GitHub CI run 37292728318",
+        "commit 161619b9ab3c931d171f9d80082a4b1dc7fa0d71",
+        "evidence/V434_PUBLIC_RELEASE_CLOSURE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / CLOSED_PASS",
+      "Reuse_Targets": [
+        "release authority",
+        "handoff",
+        "R49 baseline"
+      ],
+      "Provenance": {
+        "runtimeAuthority": "v4.3.4 -> 4a3a24351ac892563d2c01e7d40cd5a001fe13e5",
+        "runtimeDiffVsTag": "NONE"
+      }
     }
   ],
   "authoritativeEvidence": [
@@ -341,11 +360,10 @@
     "evidence/V434_POSTRELEASE_EXPANSION_AUDIT_20261005.json"
   ],
   "openGates": [
-    "Final repository-state control-only commit and hosted CI",
     "Trusted Windows Authenticode signing remains external",
     "Current private WebTunnel bridge health remains network/config dependent and currently fail-closed",
     "Physical console field E2E remains external",
     "Production Android/iOS packet forwarding/signing/real-device remains external"
   ],
-  "exactNextAction": "Commit/push control-only v4.3.4 closure with zero runtime diff versus tag, require final repository-state CI PASS, then record that result without mutating v4.3.4."
+  "exactNextAction": "Start any further resilience/protocol expansion as a new evidence-gated change set from immutable v4.3.4."
 }
