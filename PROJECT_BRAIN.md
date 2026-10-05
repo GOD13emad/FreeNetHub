@@ -373,3 +373,8 @@ Status: CURRENT / PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING
 
 ### Exact Next Action
 Rebuild PUBLIC_MANIFEST.json from this control-only closure state, verify public tree/security/diff and zero runtime diff versus v4.3.3, then commit/push for final repository-state CI.
+
+### V433 Repository Closure CI
+- Final control-only closure commit `d13ef406eadd04c626a9d1e6c65e8219fd55d6a3` passed hosted CI run `37259927516`.
+- Runtime diff versus immutable authority tag `v4.3.3` is NONE; runtime authority remains `v4.3.3 -> af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93`.
+- Status: PUBLIC_FINAL_CLOSED. New resilience work must start as a new change set; do not mutate v4.3.3 tag or asset bytes.

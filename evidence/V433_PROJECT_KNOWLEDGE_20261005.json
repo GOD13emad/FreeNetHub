@@ -3,7 +3,7 @@
   "project": "FreeNet Hub",
   "version": "4.3.3",
   "changeSet": "R47",
-  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
+  "status": "PUBLIC_FINAL_CLOSED",
   "previousAcceptedState": {
     "version": "4.3.2",
     "tag": "v4.3.2",
@@ -141,6 +141,25 @@
         "windowsSha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
         "linuxSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984"
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / Repository closure CI",
+      "Claim_Decision": "Final control-only repository closure commit passed hosted CI with zero runtime diff versus v4.3.3.",
+      "Evidence_Source": [
+        "GitHub CI run 37259927516",
+        "commit d13ef406eadd04c626a9d1e6c65e8219fd55d6a3",
+        "evidence/V433_PUBLIC_RELEASE_CLOSURE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / CLOSED_PASS",
+      "Reuse_Targets": [
+        "release authority",
+        "handoff",
+        "next-change baseline"
+      ],
+      "Provenance": {
+        "runtimeAuthority": "v4.3.3 -> af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93",
+        "runtimeDiffVsTag": "NONE"
+      }
     }
   ],
   "authoritativeEvidence": [
@@ -156,10 +175,9 @@
     "evidence/V433_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json"
   ],
   "openGates": [
-    "Final repository-state control-only commit and hosted CI",
     "Trusted Authenticode signing remains external",
     "Physical console field E2E remains external",
     "Production Android/iOS packet forwarding, signing and real-device validation remain external"
   ],
-  "exactNextAction": "Commit/push control-only public closure with zero runtime diff versus v4.3.3, require repository-state CI PASS, then record that result without changing v4.3.3 runtime/tag/assets."
+  "exactNextAction": "Start any new resilience expansion as a new change set from closed v4.3.3 baseline; do not mutate v4.3.3 tag/assets."
 }

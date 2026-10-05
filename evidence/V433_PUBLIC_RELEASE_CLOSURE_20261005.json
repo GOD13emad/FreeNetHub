@@ -3,7 +3,7 @@
   "date": "2026-10-05",
   "project": "FreeNet Hub",
   "version": "4.3.3",
-  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
+  "status": "PUBLIC_FINAL_CLOSED",
   "previousAcceptedState": {
     "release": "v4.3.2",
     "windows": "R46",
@@ -133,9 +133,14 @@
     "evidence/V433_POSTPUBLISH_UPDATECHECK_20261005.json",
     "evidence/V433_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json"
   ],
-  "finalObjectiveResult": "Desktop/public v4.3.3 runtime release CLOSED_PASS; repository control-state closure CI still pending. Production mobile forwarding, trusted signing, and physical-console field validation remain explicitly external.",
-  "exactNextAction": "Commit and push control-only Brain/Evidence/Public Manifest closure with zero runtime diff versus v4.3.3, require final repository-state CI PASS, then record that CI without changing runtime/tag/assets.",
+  "finalObjectiveResult": "Desktop/public v4.3.3 runtime release CLOSED_PASS and final repository control/evidence state CI SUCCESS; v4.3.3 runtime/tag authority remains immutable. Production mobile forwarding, trusted signing, and physical-console field validation remain explicit external tracks.",
+  "exactNextAction": "No v4.3.3 release blocker remains. Treat v4.3.3 tag/asset bytes as immutable. Future resilience expansion starts as a new change set from this closed baseline.",
   "repositoryClosure": {
-    "status": "PENDING_CONTROL_ONLY_COMMIT_AND_CI"
+    "status": "SUCCESS",
+    "commit": "d13ef406eadd04c626a9d1e6c65e8219fd55d6a3",
+    "runId": 37259927516,
+    "scope": "CONTROL_ONLY_BRAIN_EVIDENCE_PUBLIC_MANIFEST",
+    "runtimeDiffVsTag": "NONE",
+    "runtimeAuthorityRemains": "v4.3.3 -> af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93"
   }
 }
