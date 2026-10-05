@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
-  "version": "4.3.6",
-  "releaseRevision": "4.3.6-r50-node-selection-quality",
-  "status": "V436_R50_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "version": "4.3.7",
+  "releaseRevision": "4.3.7-r51-protocol-expansion-2",
+  "status": "V437_R51_LOCAL_GATES_PASS_HOSTED_OPEN",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -19,19 +19,26 @@
     "NODE_PROTOCOL_TUIC_ANYTLS_SHADOWTLS_IMPORT",
     "BRIDGE_CLIPBOARD_IMPORT_FAILCLOSED",
     "NODE_FULLHEALTH_SMART_RANKING",
-    "NODE_ADAPTIVE_BEST_SEARCH"
+    "NODE_ADAPTIVE_BEST_SEARCH",
+    "NODE_HYSTERIA_V1",
+    "NODE_SSH",
+    "NODE_SNELL",
+    "NODE_SOCKS_UPSTREAM",
+    "NODE_HTTP_CONNECT_UPSTREAM",
+    "NODE_NAIVE",
+    "PINNED_CRONET_REPAIR"
   ],
-  "engineSha256": "181B3B7B3EB9B806368F4C6A07869240A2DBFBB8C30B7E4AEE3A3054735B447E",
+  "engineSha256": "139E15A669158F7ED515682E0F1254F587582E4D0ACAC52B094D0BBB12E3F27B",
   "uiSha256": "5DE95C036351287E96DE0D0F1861C4D4C808EF28FD225AB793A95BF27CB6E631",
-  "viewSha256": "DCFA0D26C04EC5CC5DA955F76643321C0AA096A7F0B5CBD700C712FAD46D4305",
+  "viewSha256": "8297EC1381CE796F36BBF5AEEF6C43C7B070BED54FDEEF018E15D82E1222E063",
   "desktopShellSha256": "42399C7A30ECC88588AAA0F68782629ADB4A049F2576F978C5EAC1F35E2D6435",
-  "gatewayManifestSha256": "DA4C24B3C3611138AE80788966961C5F33C73917983F39B522852C40EACB9247",
-  "crossPlatformManifestSha256": "2C39E72AC80A76DE1A597A870412F26070977AB57D82E9E396596E23576250C9",
+  "gatewayManifestSha256": "3239178AFC96B4E17A9320B31712E76E3A0096791D5BD3D6462AB8FEA5904AE2",
+  "crossPlatformManifestSha256": "78651558F85B42FBA051D33BB80AD4CA522B9395E0026E40BF6646277F6851BE",
   "installerSha256": null,
-  "acceptanceEvidence": "evidence/V436_R50_CANDIDATE_ACCEPTANCE_20261005.json",
+  "acceptanceEvidence": "evidence/V437_R51_CANDIDATE_ACCEPTANCE_20261005.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "CANDIDATE_NATIVE_LINUX_4.2.0_R16_R43_LOCAL_GATES",
+    "linux": "CANDIDATE_NATIVE_LINUX_4.2.0_R17_R44_LOCAL_GATES",
     "android": "BUILD_ACCEPTED_CORE_NOT_LINKED",
     "ios": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN"
   },
@@ -83,7 +90,7 @@
     "nativeLinuxAcceptanceEvidence": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
     "v4.2.0PublishedReleaseAuthority": true,
     "githubReleaseImmutableObserved": false,
-    "nativeLinuxVersion": "4.2.0-linux.16-r43",
+    "nativeLinuxVersion": "4.2.0-linux.17-r44",
     "nativeLinuxLegacyProfileMigration": "PASS_EXACT_FINGERPRINT_ONLY",
     "nativeLinuxUninstaller": "PASS_OWNED_UUID_SCOPE_PRIVATE_STATE_PRESERVED",
     "nativeLinuxDirectCurrentProbe": "NETWORK_TRANSIENT_BOOTSTRAP_67_PERCENT_AT_90S_ROUTE_DNS_SESSION_PRESERVED",
@@ -211,8 +218,8 @@
       "evidence": "evidence/V431_R45_PRECONNECT_TEST_HOTFIX_20261004.json"
     }
   },
-  "appManifestSha256": "B225FC96FD7ADFF6E9C77C78D027CD4FF80C5E6847FC90F8FBDCD8AD2D2D3C72",
-  "nodeHubSha256": "9B6BE6E4EA748A1559C011A326B75045702819B2A221ABC2E773B29A0968E2B0",
+  "appManifestSha256": "EA101F13B307A40F2070888F16BC0D6469B47A6E002BA723B304CB6010FB06D9",
+  "nodeHubSha256": "12E6790E933C91AFACCE0A82CCFFEF19DBBB1FC31D7308D75AA902EAF69B4F5C",
   "previousAcceptedInstallerSha256": null,
   "installerStatus": "DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE",
   "r21": {
@@ -981,5 +988,54 @@
     "publicTree": "PENDING_FINAL_FREEZE_VERIFY",
     "installerEvidence": "evidence/V436_R50_INSTALLER_BUILD_20261005.json",
     "canonicalizationPolicy": "CROSSPLATFORM_MANIFEST_AND_PUBLIC_VERIFIER_USE_GIT_CANONICAL_BYTES"
+  },
+  "r51ProtocolExpansion2": {
+    "status": "LOCAL_GATES_PASS_HOSTED_OPEN",
+    "protocols": [
+      "hysteria",
+      "ssh",
+      "snell",
+      "socks",
+      "http",
+      "naive"
+    ],
+    "hysteriaShareUri": "OFFICIAL_V1_URI_UDP_ONLY_FAIL_CLOSED_FOR_FAKETCP_WECHAT_VIDEO",
+    "jsonOnly": [
+      "ssh",
+      "snell",
+      "socks",
+      "http",
+      "naive"
+    ],
+    "naiveWindows": {
+      "cronetSha256": "EEE741046F0A3975124BAE349AEAC237AA306F3CC4DE59FF5DE070E74DBFDAEB",
+      "archiveSha256": "3FFB56267DA14E287BE48BD10CF7E6505260125BAD940B75101FBB4D5D58E5D6",
+      "repair": "PASS_ROUTE_DNS_SESSION_PRESERVED"
+    },
+    "runtimeSchema": {
+      "windowsSingBox": "1.14.0_6_OF_6_PASS",
+      "linuxSingBox": "1.14.2_6_OF_6_PASS"
+    },
+    "security": {
+      "jsonLocalPaths": "FAIL_CLOSED",
+      "publicNodeSecrets": "REDACTED"
+    },
+    "linux": {
+      "version": "4.2.0-linux.17-r44",
+      "artifact": "FreeNetHub_4.2.0_Linux_R17.zip"
+    },
+    "hostedCi": "OPEN_REQUIRED_BEFORE_PUBLIC_PROMOTION",
+    "publicRelease": false,
+    "focusedTests": "19/19 PASS",
+    "fullRegression": "252/252 PASS",
+    "publicSecurity": "PASS",
+    "linuxStatic": "SELFTEST+PARITY+UPDATE_REVISION PASS",
+    "linuxPackageBytes": 234341,
+    "linuxPackageSha256": "1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6",
+    "crossPlatformManifestSha256": "78651558F85B42FBA051D33BB80AD4CA522B9395E0026E40BF6646277F6851BE",
+    "installer": "BUILT_DIGEST_IN_EXTERNAL_ACCEPTANCE_EVIDENCE",
+    "installerAsset": "FreeNetHub_4.3.7_R51_Setup.exe",
+    "installerEvidence": "evidence/V437_R51_INSTALLER_BUILD_20261005.json",
+    "authenticode": "NotSigned"
   }
 }

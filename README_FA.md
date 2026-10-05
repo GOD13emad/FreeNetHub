@@ -18,7 +18,7 @@ Windows R37 با رابط پنج‌بخشی Dashboard / Methods / Nodes / Tools 
 
 - Browser: AUTO، Node Pool، WARP، GOOL، CFON، Tor/obfs4/Snowflake، Custom و Direct.
 - Node Pool: import URL/File/Clipboard، public refresh، Test All مستقل، benchmark محدود، sort/filter، Favorite/Pin، metadata، History و Export Raw/Base64.
-- Node import اکنون SS/VMess/VLESS/Trojan/Hysteria2/TUIC/AnyTLS و JSON رسمی standalone برای TUIC/AnyTLS/ShadowTLS را با اعتبارسنجی fail-closed می‌پذیرد.
+- Node import اکنون SS/VMess/VLESS/Trojan/Hysteria v1/Hysteria2/TUIC/AnyTLS و JSON رسمی standalone برای TUIC/AnyTLS/ShadowTLS/SSH/Snell/SOCKS/HTTP CONNECT/Naive را با اعتبارسنجی fail-closed می‌پذیرد. Naive روی Windows فقط با Cronet رسمی hash-pinned فعال می‌شود.
 - sing-box 1.14.2 و warp-plus 1.2.6 به‌صورت app-local و hash-pinned از release رسمی upstream provision می‌شوند.
 - Full-System در Linux R12 فقط WARP رسمی است؛ Full-System Node بدون helper privileged و acceptance مستقل ادعا نمی‌شود.
 - Console Gateway software policy و rollback حفظ شده‌اند؛ تست فیزیکی game/country همچنان external gate است.

@@ -7,7 +7,7 @@ FreeNet Hub is a multi-method connectivity control center with explicit Browser,
 - R37 five-tab UI (Dashboard / Methods / Nodes / Tools / Settings): accepted from the installed product.
 - Browser, Full System, and Console capability boundaries are explicit; unsupported paths remain fail-closed.
 - Method-card Connect and pre-connect measurement actions invoke real backend operations.
-- Node refresh fetch/parse/merge is separated from explicit endpoint Test All. Node imports accept SS/VMess/VLESS/Trojan/Hysteria2 plus TUIC and AnyTLS share links; standalone TUIC/AnyTLS/ShadowTLS sing-box JSON outbounds are also accepted with fail-closed validation.
+- Node refresh fetch/parse/merge is separated from explicit endpoint Test All. Node imports accept SS/VMess/VLESS/Trojan/Hysteria v1/Hysteria2/TUIC/AnyTLS share links; standalone sing-box JSON imports additionally support ShadowTLS, SSH, Snell, SOCKS, HTTP CONNECT and Naive with fail-closed validation. Naive on Windows is runtime-gated on the hash-pinned Cronet DLL from the same official sing-box archive.
 - Direct base-path speed measurement and browser WARP benchmark: accepted.
 - Full-System WARP through the official gateway path: accepted; update/node retrieval during TUN is proven bound to the pre-TUN base route.
 - Stop/rollback removes FreeNet Hub TUN/session state and restores the accepted route.

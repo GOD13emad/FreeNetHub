@@ -22,7 +22,7 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 
-VERSION = "4.2.0-linux.16-r43"
+VERSION = "4.2.0-linux.17-r44"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -514,7 +514,7 @@ def node_refresh_public():
     return {"ok":True,"refreshed":True,**rec}
 
 def _endpoint_probe(n, timeout=1.5):
-    if str(n.get("protocol") or "").lower()=="hysteria2":
+    if str(n.get("protocol") or "").lower() in NH.UDP_PREFLIGHT_PROTOCOLS:
         return {"reachable":None,"latency_ms":None,"checked":_now(),"type":"UDP_QUIC_PREFLIGHT"}
     started=time.monotonic()
     try:
@@ -592,7 +592,7 @@ def node_benchmark_batch(limit=4):
     for n in s["nodes"]:
         ep=n.get("endpoint_test") if isinstance(n.get("endpoint_test"),dict) else {}
         proto=str(n.get("protocol") or "").lower()
-        if ep.get("reachable") is True or proto=="hysteria2":
+        if ep.get("reachable") is True or proto in NH.UDP_PREFLIGHT_PROTOCOLS:
             ranked.append((0 if not isinstance(n.get("performance_test"),dict) else 1,source_rank(n),float(ep.get("latency_ms") or 999999),n))
     ordered=sorted(ranked,key=lambda x:x[:3]);picked=[];ids=set();protos=set();sources=set()
     for row in ordered:
@@ -635,7 +635,7 @@ def node_benchmark_batch(limit=4):
     finally:
         node_stop()
         if original and any(x.get("id")==original for x in node_store()["nodes"]):node_select(original)
-    eligible=len(ordered);remaining=sum(1 for n in node_store()["nodes"] if ((n.get("endpoint_test") or {}).get("reachable") is True or str(n.get("protocol") or "").lower()=="hysteria2") and not isinstance(n.get("performance_test"),dict))
+    eligible=len(ordered);remaining=sum(1 for n in node_store()["nodes"] if ((n.get("endpoint_test") or {}).get("reachable") is True or str(n.get("protocol") or "").lower() in NH.UDP_PREFLIGHT_PROTOCOLS) and not isinstance(n.get("performance_test"),dict))
     return {"ok":True,"benchmarked":len(rows),"passed":sum(1 for x in rows if x.get("ok")),"failed":sum(1 for x in rows if not x.get("ok")),"eligible":eligible,"remainingUnbenchmarked":remaining,"results":rows}
 
 def node_best():

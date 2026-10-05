@@ -207,12 +207,21 @@ def node_import_text(text,source='import'):
  save_node_store(s)
  return {'imported':len(parsed['nodes']),'total':len(s['nodes']),'errors':parsed['errors'],'selected':s.get('selected'),'nodes':node_public_rows(s)}
 
+SINGBOX_CRONET_SHA256='EEE741046F0A3975124BAE349AEAC237AA306F3CC4DE59FF5DE070E74DBFDAEB'
+
 def singbox_path():
  g=read(ROOT/'gateway'/'runtime'/'local_gateway.json',{}) or {};sb=g.get('singbox') if isinstance(g,dict) else None
  if not isinstance(sb,dict) or not sb.get('path') or not sb.get('sha256'):return ''
  p=pathlib.Path(sb['path'])
  if not p.is_file() or digest(p)!=str(sb['sha256']).upper():return ''
  return str(p)
+
+def singbox_naive_ready(exe=''):
+ p=pathlib.Path(exe or singbox_path())
+ if not p.is_file():return False
+ if os.name!='nt':return True
+ cronet=p.with_name('libcronet.dll')
+ return cronet.is_file() and digest(cronet)==SINGBOX_CRONET_SHA256
 
 def node_record_test(node_id,h):
  s=node_store()
@@ -1209,6 +1218,8 @@ def service_config(mode,scan=False):
   if not exe:raise ValueError('DEPENDENCY_NOT_CONFIGURED_SINGBOX')
   n=node_selected()
   if not n:raise ValueError('NODE_NOT_SELECTED')
+  if str(n.get('protocol') or '').lower()=='naive' and not singbox_naive_ready(exe):
+   raise ValueError('DEPENDENCY_NOT_CONFIGURED_CRONET')
   cfg=data/'config.json';write(cfg,NH.sing_box_config(n,PORTS['NODE']))
   (data/'node-id.txt').write_text(n['id'],encoding='utf-8')
   args=[exe,'run','-c',str(cfg)]

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "version": "4.3.7",
+  "revision": "R51",
+  "path": "delivery/github_v4.3.7/FreeNetHub_4.3.7_R51_Setup.exe",
+  "bytes": 24269473,
+  "sha256": "4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3",
+  "authenticode": "NotSigned",
+  "frozenFiles": 25,
+  "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+  "built": "2026-10-05T17:55:54.0701715Z"
+}

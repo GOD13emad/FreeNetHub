@@ -46,7 +46,7 @@ WARP IP را تغییر می‌دهد ولی برای انتخاب کشور طر
 - WARP و Tor به‌تنهایی کشور مشخص را تضمین نمی‌کنند؛ انتخاب کشور روی آن‌ها نادیده گرفته نمی‌شود و در حالت ناسازگار fail-closed می‌شود.
 
 Node Hub:
-- پروتکل‌های فعلی: Shadowsocks (SS)، VMess، VLESS و Trojan.
+- پروتکل‌های فعلی Node Hub: SS، VMess، VLESS، Trojan، Hysteria v1/v2، TUIC، AnyTLS، ShadowTLS، SSH، Snell، SOCKS، HTTP CONNECT و Naive (JSON برای پروتکل‌های بدون share-link استاندارد).
 - ورودی: فایل متن، متن/Base64 از Clipboard، Subscription HTTPS و منبع عمومی V2CROSS.
 - «تست همه سریع» فقط TCP endpoint/latency را می‌سنجد؛ این تست سلامت پروکسی یا کشور خروجی را ثابت نمی‌کند.
 - «تست نود انتخابی» sing-box را موقتاً اجرا می‌کند و HTTPS + exit country واقعی را می‌سنجد؛ اگر برای تست روشن شده باشد بعد از تست خاموش می‌شود.

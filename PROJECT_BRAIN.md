@@ -656,3 +656,49 @@ Generate PUBLIC_MANIFEST last; pass security/public-tree/fail-closed; freeze com
 
 ### Exact Next Action
 No open v4.3.6 software gates. Final main CI run 37343449317 is SUCCESS on control-only closure commit 3cdbd19fc62eaccdef9c0ae7f16cf2073f1c6392; runtime diff versus immutable v4.3.6 is NONE. Preserve the frozen release. Any broader connection-method research starts as a new change set.
+
+## V437 R51 PROTOCOL EXPANSION 2 — 2026-10-05
+**Status: CURRENT / LOCAL_FROZEN_HOSTED_OPEN**
+
+### Previous Accepted State
+- v4.3.6 R50 / Linux R16 remains immutable and publicly finalized.
+- Frozen base for this new change set: b3e58a659c566422d5548546ae4de1bd46b16bfa.
+- No v4.3.6 runtime bytes were mutated; R51 lives on branch v4.3.7-r51-protocol-expansion-2.
+
+### Current Delta
+- Added Hysteria v1 official share-URI support, restricted to safely representable UDP mode; unsupported legacy transport modes fail closed.
+- Added fail-closed sing-box JSON import/config support for SSH, Snell, upstream SOCKS, HTTP CONNECT and Naive.
+- Local-path credential/certificate references in imported JSON are rejected to prevent arbitrary local-file reads.
+- Public node views continue to redact credentials.
+- Hysteria v1 joins Hysteria2/TUIC in the UDP/QUIC preflight class; no false TCP-only rejection.
+- Windows Naive prerequisite is repaired from the exact same already-pinned sing-box v1.14.0 official archive. libcronet.dll SHA-256: EEE741046F0A3975124BAE349AEAC237AA306F3CC4DE59FF5DE070E74DBFDAEB.
+- Real Cronet repair acceptance: PASS; route, DNS and session hashes preserved; networkMutation=false.
+
+### Runtime Evidence
+- Focused node/protocol regression: 19/19 PASS.
+- Windows sing-box 1.14.0 generated configs: Hysteria/SSH/Snell/SOCKS/HTTP/Naive = 6/6 check PASS.
+- Linux sing-box 1.14.2 same generated configs = 6/6 check PASS.
+- Full local regression: 252/252 PASS.
+- Public security scan: PASS.
+- Linux selftest/parity/update-revision: PASS.
+- Linux R17 artifact: FreeNetHub_4.2.0_Linux_R17.zip, 234,341 bytes, SHA-256 1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6.
+- Cross-platform manifest canonical SHA-256: 78651558F85B42FBA051D33BB80AD4CA522B9395E0026E40BF6646277F6851BE.
+- Final local Windows installer: FreeNetHub_4.3.7_R51_Setup.exe, 24,269,473 bytes, SHA-256 4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3; manifest preflight PASS; Authenticode NotSigned/external.
+
+### Research Boundary / Exhaustion So Far
+- MASQUE and Tailcat are not mixed into R51 because official sing-box support requires 1.15+, while accepted runtimes are Windows 1.14.0 and Linux 1.14.2. They require a separate runtime-upgrade trial.
+- OpenVPN/OpenConnect are available in modern sing-box builds but remain outside the locked FreeNet Hub product boundary and belong to OpenInternetGateway.
+- WireGuard remains explicitly excluded from this FreeNet Hub line.
+- sing-box Tor outbound was not duplicated because FreeNet Hub already has dedicated native Tor/Snowflake/WebTunnel/obfs4 methods.
+- Naive is no longer deferred: the missing Windows Cronet dependency was found inside the already-pinned official archive and validated.
+
+### Roadmap ← CURRENT
+1. Freeze/verify PUBLIC_MANIFEST on this exact R51 snapshot — Completed/PASS.
+2. Commit/push exact candidate and require hosted PR matrix — CURRENT.
+3. Merge only after exact-SHA PASS; require main CI — OPEN.
+4. Tag/release v4.3.7 + Linux R17 only after promotion gates — OPEN.
+5. Post-publish Windows read-only updater + Linux real updater/install acceptance — OPEN.
+6. After R51 is closed, perform a second research pass for additional authoritative connection families and runtime-upgrade candidates.
+
+### Exact Next Action
+Local frozen gates are PASS. Commit the exact R51 candidate, push the immutable SHA, and require the full hosted CI matrix before any merge or public promotion.

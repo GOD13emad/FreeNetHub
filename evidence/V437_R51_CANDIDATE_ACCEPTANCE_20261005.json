@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.7",
+  "revision": "R51",
+  "status": "V437_R51_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "objective": "Expand already-pinned sing-box node compatibility without hidden direct fallback.",
+  "baseline": {
+    "release": "v4.3.6",
+    "repositoryHead": "b3e58a659c566422d5548546ae4de1bd46b16bfa"
+  },
+  "addedProtocols": [
+    "Hysteria v1 official URI",
+    "SSH sing-box JSON",
+    "Snell sing-box JSON",
+    "SOCKS upstream sing-box JSON",
+    "HTTP CONNECT upstream sing-box JSON",
+    "Naive sing-box JSON"
+  ],
+  "runtimeValidation": {
+    "windows": "sing-box 1.14.0 generated configs 6/6 PASS",
+    "linux": "sing-box 1.14.2 same generated configs 6/6 PASS",
+    "focusedTests": "19/19 PASS"
+  },
+  "cronetRepair": {
+    "status": "PASS",
+    "source": "same official sing-box v1.14.0 Windows archive",
+    "archiveSha256": "3FFB56267DA14E287BE48BD10CF7E6505260125BAD940B75101FBB4D5D58E5D6",
+    "libcronetSha256": "EEE741046F0A3975124BAE349AEAC237AA306F3CC4DE59FF5DE070E74DBFDAEB",
+    "routePreserved": true,
+    "dnsPreserved": true,
+    "sessionPreserved": true
+  },
+  "researchBoundaries": {
+    "masque": "requires sing-box >=1.15; deferred",
+    "tailcat": "requires sing-box >=1.15; deferred",
+    "openvpnOpenconnect": "existing product boundary assigns to OpenInternetGateway",
+    "wireguard": "explicitly excluded from this FreeNet Hub line",
+    "tor": "already separate native FreeNet Hub method"
+  },
+  "sources": [
+    "https://sing-box.sagernet.org/configuration/outbound/",
+    "https://sing-box.sagernet.org/configuration/outbound/naive/",
+    "https://sing-box.sagernet.org/configuration/outbound/ssh/",
+    "https://sing-box.sagernet.org/configuration/outbound/snell/",
+    "https://sing-box.sagernet.org/configuration/outbound/socks/",
+    "https://sing-box.sagernet.org/configuration/outbound/http/",
+    "https://v1.hysteria.network/docs/uri-scheme/"
+  ],
+  "openGates": [
+    "freeze exact candidate SHA",
+    "hosted PR CI",
+    "merge/main CI",
+    "tag/release",
+    "post-publish update"
+  ],
+  "verified": {
+    "focusedProtocolTests": "19/19 PASS",
+    "fullRegression": "252/252 PASS",
+    "publicSecurity": "PASS",
+    "linuxSelftest": "PASS",
+    "linuxParity": "PASS",
+    "linuxUpdateRevision": "PASS",
+    "linuxR17Package": "PASS_234341_BYTES_SHA256_1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6",
+    "crossPlatformManifest": "PASS_78651558F85B42FBA051D33BB80AD4CA522B9395E0026E40BF6646277F6851BE",
+    "windowsGeneratedConfigCheck": "6/6 PASS sing-box 1.14.0",
+    "linuxGeneratedConfigCheck": "6/6 PASS sing-box 1.14.2",
+    "cronetRepair": "PASS_ROUTE_DNS_SESSION_PRESERVED",
+    "finalWindowsInstaller": {
+      "status": "PASS",
+      "name": "FreeNetHub_4.3.7_R51_Setup.exe",
+      "bytes": 24269473,
+      "sha256": "4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3",
+      "authenticode": "NotSigned",
+      "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+      "frozenFiles": 25
+    },
+    "publicTree": "PASS_ALL_MANIFESTS_RELEASE_HASHES_AND_FORBIDDEN_ARTIFACT_GATES",
+    "publicManifestBuild": "PASS_510_FILES_PRECOMMIT_SHA256_207EE78DFD3B07194BA84230648FFBC094254D4267EF9A748F7DBCD9BB83CC57",
+    "finalRegression": "252/252 PASS",
+    "finalSecurity": "PASS"
+  }
+}

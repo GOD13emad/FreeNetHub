@@ -94,9 +94,10 @@ class R49NodeProtocolExpansion(unittest.TestCase):
         self.assertGreaterEqual(src.count("NH.UDP_PREFLIGHT_PROTOCOLS"),4)
         self.assertNotIn("proto=='hysteria2'",src)
 
-    def test_naive_not_false_advertised_without_runtime_prerequisite(self):
+    def test_naive_remains_runtime_gated(self):
         self.assertNotIn("naive",NH.SUPPORTED_PROTOCOLS)
-        self.assertNotIn("naive",NH.JSON_ONLY_PROTOCOLS)
+        self.assertIn("naive",NH.JSON_ONLY_PROTOCOLS)
+        self.assertIn("DEPENDENCY_NOT_CONFIGURED_CRONET",(ROOT/"app"/"engine.py").read_text(encoding="utf-8-sig"))
 
 if __name__=="__main__":
     unittest.main()
