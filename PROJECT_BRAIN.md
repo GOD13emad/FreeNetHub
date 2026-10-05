@@ -538,3 +538,31 @@ Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_RETRY_OPEN
 
 ### Exact Next Action
 Rebuild/verify PUBLIC_MANIFEST.json; prove runtime diff versus immutable v4.3.5 is NONE; commit/push only Brain/Knowledge/evidence/manifest closure records and require final main CI.
+
+## V436 R50 NODE SELECTION QUALITY — 2026-10-05
+**Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_OPEN**
+
+### Root Cause / Fix
+- Live Linux R15 evidence disproved the earlier best-node-none conclusion: a 12-candidate full benchmark found 3 full-health nodes, while the prior fixed 4-candidate sample found none.
+- Linux best-node action is now bounded/adaptive: batches of 4, maximum 24 candidates, stopping after 3 full-health PASS results.
+- Windows and Linux smart node ordering now prioritize measured full-health HTTPS/throughput results before TCP-only reachability hints.
+- Windows batch result exposes deterministic best; UI reports explicit PASS/FAIL/HTTPS/TCP state instead of ambiguous placeholders.
+
+### Local Acceptance
+- Full regression: 244/244 PASS.
+- Linux: selftest PASS at 4.2.0-linux.16-r43; parity PASS; updater revision PASS.
+- Windows exact fresh install/UI smoke PASS; default route remained 192.168.20.1.
+- Windows R50 installer: 24,258,557 bytes / SHA-256 8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4; 25 frozen inputs; manifest preflight PASS; Authenticode NotSigned/external.
+- Linux R16 package: 225,314 bytes / SHA-256 01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503.
+- Earlier R50 installer FB317C... is superseded because it preceded final frozen RELEASE authority.
+- TOR direct on the current Linux network reached 67% at 90s and timed out; route/DNS/session semantics were preserved. This remains dynamic network health, not a product PASS claim.
+
+### Roadmap ← CURRENT
+1. Final public-manifest/security/fail-closed verification — CURRENT.
+2. Commit/push exact R50 candidate and require exact-SHA hosted matrix — OPEN.
+3. Merge only after hosted PASS; publish v4.3.6 exact R50 + Linux R16 bytes; verify release digests — OPEN.
+4. Post-publish Windows read-only updater and Linux updater/install acceptance — OPEN.
+5. Broader new-connection-method research starts only after this product release is closed.
+
+### Exact Next Action
+Generate PUBLIC_MANIFEST last; pass security/public-tree/fail-closed; freeze commit SHA and require hosted CI before any v4.3.6 promotion.

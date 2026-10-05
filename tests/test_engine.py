@@ -483,6 +483,11 @@ Network Destination        Netmask          Gateway       Interface  Metric
    with patch.object(E,'ROOT',root),patch.object(E,'dep_path',return_value=sys.executable),patch.object(E,'native',side_effect=fake_native),patch.object(E,'curl',side_effect=[tr,yt,down]),patch.object(E,'cloudflare_upload',return_value=up),patch.object(E,'progress'):
     r=E.console_preflight_speed()
    self.assertTrue(r['ok']);self.assertTrue(r['temporary']);self.assertEqual(r['country'],'DE');self.assertEqual(calls,['Start','Stop']);self.assertFalse((runtime/'console-provider-owner.json').exists())
+ def test_node_public_rows_smart_prefers_full_health_over_tcp_only(self):
+  healthy={'id':'healthy','name':'healthy','protocol':'vless','endpoint_test':{'reachable':True,'latency_ms':250},'performance_test':{'ok':True,'pingMs':800,'downloadMbps':5,'uploadMbps':1}}
+  tcp={'id':'tcp','name':'tcp','protocol':'vless','endpoint_test':{'reachable':True,'latency_ms':1}}
+  rows=E.node_public_rows({'schema':1,'selected':'','nodes':[tcp,healthy]})
+  self.assertEqual(rows[0]['id'],'healthy')
  def test_node_endpoint_freshness_reuses_recent_fast_scan(self):
   stamp=E.now();store={'schema':1,'selected':'n0','nodes':[{'id':'n0','endpoint_test':{'reachable':True,'checked':stamp}},{'id':'n1','endpoint_test':{'reachable':False,'checked':stamp}}]}
   self.assertTrue(E.node_endpoint_tests_fresh(store,300))

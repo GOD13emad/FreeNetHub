@@ -50,7 +50,7 @@ jobs:
           python3 crossplatform/linux/test_scope_policy.py
           python3 crossplatform/linux/test_r37_parity.py
           python3 crossplatform/linux/test_update_revision.py
-          python3 tests/build_linux_r15_package.py
+          python3 tests/build_linux_r16_package.py
           bash -n crossplatform/linux/install.sh crossplatform/linux/uninstall.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/install_singbox_pinned.sh crossplatform/linux/install_warpplus_pinned.sh crossplatform/linux/recover_warp_remote.sh
   android-build:
     runs-on: ubuntu-24.04
@@ -406,32 +406,32 @@ jobs:
           }
           if(-not $iscc){ throw 'ISCC_NOT_FOUND_AFTER_INSTALL' }
           Write-Host "ISCC=$iscc"
-      - name: Build exact FreeNet Hub 4.3.5 R49 installer
+      - name: Build exact FreeNet Hub 4.3.6 R50 installer
         shell: pwsh
-        run: ./tests/build_v435_installer.ps1
+        run: ./tests/build_v436_installer.ps1
       - name: Fresh install exact artifact into absent app directory
         shell: pwsh
         run: |
-          $installer=(Resolve-Path 'delivery\github_v4.3.5\FreeNetHub_4.3.5_R49_Setup.exe').Path
-          $probe=Join-Path $env:RUNNER_TEMP 'fnh-v435-r49-fresh'
+          $installer=(Resolve-Path 'delivery\github_v4.3.6\FreeNetHub_4.3.6_R50_Setup.exe').Path
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-v436-r50-fresh'
           Remove-Item -LiteralPath $probe -Recurse -Force -ErrorAction SilentlyContinue
           if(Test-Path -LiteralPath $probe){ throw 'FRESH_PROBE_DIR_PREEXISTS' }
           $p=Start-Process -FilePath $installer -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
-          if($p.ExitCode -ne 0){ throw ('V435_FRESH_INSTALL_EXIT_'+$p.ExitCode) }
+          if($p.ExitCode -ne 0){ throw ('V436_FRESH_INSTALL_EXIT_'+$p.ExitCode) }
           foreach($rel in @('FreeNetHub.exe','RELEASE.json','app\FreeNetHub.ps1','app\dependencies.json','INSTALL_RUNTIME_STATUS.json','PWSH_PATH.txt')){
-            if(!(Test-Path -LiteralPath (Join-Path $probe $rel))){ throw ('V435_FRESH_INSTALL_MISSING_'+$rel) }
+            if(!(Test-Path -LiteralPath (Join-Path $probe $rel))){ throw ('V436_FRESH_INSTALL_MISSING_'+$rel) }
           }
           $release=Get-Content -LiteralPath (Join-Path $probe 'RELEASE.json') -Raw -Encoding UTF8|ConvertFrom-Json
-          if([string]$release.version -ne '4.3.5'){ throw 'V435_FRESH_INSTALL_VERSION_MISMATCH' }
-          if([string]$release.releaseRevision -ne '4.3.5-r49-node-protocol-expansion'){ throw 'V435_FRESH_INSTALL_REVISION_MISMATCH' }
+          if([string]$release.version -ne '4.3.6'){ throw 'V436_FRESH_INSTALL_VERSION_MISMATCH' }
+          if([string]$release.releaseRevision -ne '4.3.6-r50-node-selection-quality'){ throw 'V436_FRESH_INSTALL_REVISION_MISMATCH' }
           $uiError=Join-Path $probe 'logs\ui-error.txt'
           Remove-Item -LiteralPath $uiError -Force -ErrorAction SilentlyContinue
           $launcher=Start-Process -FilePath (Join-Path $probe 'FreeNetHub.exe') -ArgumentList @((Join-Path $probe 'app\FreeNetHub.ps1')) -PassThru
           Start-Sleep -Seconds 6
-          if($launcher.HasExited){ throw ('V435_UI_LAUNCHER_EXITED_'+$launcher.ExitCode) }
+          if($launcher.HasExited){ throw ('V436_UI_LAUNCHER_EXITED_'+$launcher.ExitCode) }
           $child=@(Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $launcher.Id -and $_.Name -eq 'pwsh.exe' })
-          if($child.Count -lt 1){ throw 'V435_UI_CHILD_PWSH_MISSING' }
-          if(Test-Path -LiteralPath $uiError){ throw ('V435_UI_ERROR_'+(Get-Content -Raw -LiteralPath $uiError)) }
+          if($child.Count -lt 1){ throw 'V436_UI_CHILD_PWSH_MISSING' }
+          if(Test-Path -LiteralPath $uiError){ throw ('V436_UI_ERROR_'+(Get-Content -Raw -LiteralPath $uiError)) }
           Stop-Process -Id $child.ProcessId -Force -ErrorAction SilentlyContinue
           Stop-Process -Id $launcher.Id -Force -ErrorAction SilentlyContinue
 

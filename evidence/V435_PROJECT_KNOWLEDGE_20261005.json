@@ -2,8 +2,8 @@
   "schema": 1,
   "date": "2026-10-05",
   "project": "FreeNet Hub",
-  "version": "4.3.5",
-  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
+  "version": "4.3.6",
+  "status": "R50_LOCAL_GATES_PASS_HOSTED_OPEN",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -348,6 +348,28 @@
         "state-preservation regression",
         "failure prevention"
       ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R50 node selection quality",
+      "Claim_Decision": "Treat a fixed four-node full benchmark as insufficient evidence for no best node. Use bounded adaptive Linux search (max 24, target 3 full-health PASS) and rank measured full-health application results before TCP-only endpoint hints on both desktop platforms.",
+      "Evidence_Source": [
+        "evidence/V436_R50_LINUX_NODE_BATCH12_SOURCE_20261005.json",
+        "tests/test_engine.py",
+        "crossplatform/linux/freenet_hub_linux_r37.py",
+        "app/engine.py"
+      ],
+      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / LOCAL_FIX_PASS / HOSTED_OPEN",
+      "Reuse_Targets": [
+        "node selection policy",
+        "UX",
+        "failure prevention",
+        "future regression"
+      ],
+      "Provenance": {
+        "fullRegression": "244/244 PASS",
+        "windowsInstallerSha256": "8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4",
+        "linuxR16Sha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503"
+      }
     }
   ],
   "authoritativeEvidence": [

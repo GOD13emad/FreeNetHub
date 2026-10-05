@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.6",
+  "revision": "R50",
+  "status": "V436_R50_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "objective": "Fix evidence-backed best-node false negatives: rank full-health results before TCP-only hints and use bounded adaptive Linux best-node search.",
+  "baseline": {
+    "tag": "v4.3.5",
+    "mergeCommit": "93fea59d696b69eb5b723e2d6b2033d4fdb879dd",
+    "closureCommit": "3b2a94c5e760ec51739e5048ab39fc60c1194793"
+  },
+  "liveEvidence": {
+    "linuxR15Batch4": "NO_HEALTHY_NODE_IN_FIRST_SAMPLE",
+    "linuxR15Batch12": {
+      "benchmarked": 12,
+      "passed": 3,
+      "failed": 9,
+      "bestDownloadMbps": 6.4,
+      "bestCountry": "US"
+    },
+    "torDirect90": {
+      "result": "BOOTSTRAP_TIMEOUT",
+      "bootstrapPercent": 67,
+      "routePreserved": true,
+      "dnsSemanticPreserved": true,
+      "sessionPreserved": true
+    }
+  },
+  "verified": {
+    "targetedNodeTests": "8/8 PASS",
+    "pythonCompile": "PASS",
+    "powershellParse": "PASS",
+    "linuxParityAfterContractUpdate": "PASS",
+    "linuxR16Package": "PASS_225314_BYTES_SHA256_01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503",
+    "crossPlatformManifest": "PASS_F4E932E760BEE63E2471CD8F4104AF41D310D5F4F18E4E8BBF5DC465E71E995D",
+    "fullRegression": "244/244 PASS",
+    "linuxStatic": "SELFTEST+PARITY+UPDATE_REVISION PASS",
+    "publicSecurity": "PASS",
+    "installerBuild": "PASS_MANIFEST_PREFLIGHT_FROZEN_25_FILES",
+    "freshInstall": "PASS_UI_CHILD_PWSH_PRESENT",
+    "installer": "PASS_24258557_BYTES_SHA256_8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4",
+    "installerAuthenticode": "NotSigned_EXTERNAL",
+    "linuxR16": "PASS_225314_BYTES_SHA256_01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503",
+    "networkPreservation": "WINDOWS_FRESH_INSTALL_DEFAULT_ROUTE_UNCHANGED; LINUX_LIVE_TEST_ROUTE_SESSION_PRESERVED"
+  },
+  "openGates": [
+    "public/security/fail-closed final verification",
+    "hosted exact-SHA CI",
+    "merge/release/post-publish update"
+  ],
+  "networkMutationByPatch": false
+}

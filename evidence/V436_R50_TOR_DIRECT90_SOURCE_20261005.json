@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "version": "4.2.0-linux.15-r42",
+  "elapsedSec": 90.295,
+  "result": {
+    "ok": false,
+    "state": "failed",
+    "attempts": [
+      {
+        "ok": false,
+        "mode": "direct",
+        "error": "bootstrap timeout",
+        "bootstrap": 67
+      }
+    ]
+  },
+  "statusAfterStart": null,
+  "stop": {
+    "ok": true,
+    "state": "not-owned"
+  },
+  "pre": {
+    "route": "default via 192.168.20.1 dev enp1s0 proto dhcp src 192.168.20.6 metric 100 \n192.168.20.0/24 dev enp1s0 proto kernel scope link src 192.168.20.6 metric 100 \n",
+    "dns": "Global:\nLink 2 (enp1s0): 192.168.20.1\nLink 3 (wlp2s0):\nLink 22 (dimdns0): 192.0.2.53\n",
+    "domain": "Global:\nLink 2 (enp1s0): bwrouter\nLink 3 (wlp2s0):\nLink 22 (dimdns0): ~.\n",
+    "session": {
+      "mode": null,
+      "provider": null,
+      "detail": {}
+    }
+  },
+  "post": {
+    "route": "default via 192.168.20.1 dev enp1s0 proto dhcp src 192.168.20.6 metric 100 \n192.168.20.0/24 dev enp1s0 proto kernel scope link src 192.168.20.6 metric 100 \n",
+    "dns": "Global:\nLink 2 (enp1s0): 192.168.20.1\nLink 3 (wlp2s0):\nLink 22 (dimdns0): 192.0.2.53\n",
+    "domain": "Global:\nLink 2 (enp1s0): bwrouter\nLink 3 (wlp2s0):\nLink 22 (dimdns0): ~.\n",
+    "session": {
+      "mode": null,
+      "provider": null,
+      "detail": {}
+    }
+  },
+  "routePreserved": true,
+  "dnsSemanticPreserved": true,
+  "sessionSemanticPreserved": true
+}

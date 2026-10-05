@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "changeSet": "R50",
+  "status": "LOCAL_GATES_PASS_PUBLIC_VERIFY_PENDING",
+  "objective": "Eliminate false-negative best-node behavior and make smart ordering prefer proven full-health application metrics over TCP-only hints.",
+  "rootCause": "Linux best-node UX stopped after a fixed four-candidate sample; live evidence later found healthy nodes in a larger sample. Smart ordering also allowed endpoint hints to outrank measured full-health results.",
+  "validation": {
+    "targetedNode": "8/8 PASS",
+    "fullRegression": "244/244 PASS",
+    "pythonCompile": "PASS",
+    "powershellXamlParse": "PASS",
+    "linuxSelftest": "PASS_4.2.0-linux.16-r43",
+    "linuxParity": "PASS",
+    "linuxUpdateRevision": "PASS",
+    "windowsFreshInstall": "PASS",
+    "installerManifestPreflight": "PASS",
+    "diffCheck": "PASS"
+  },
+  "liveEvidence": {
+    "linuxR15Batch12": "3/12 full-health PASS; best observed 6.4 Mbps down / 0.09 Mbps up / 1527 ms / US",
+    "torDirect90": "bootstrap 67%, timeout; route/DNS/session semantics preserved"
+  },
+  "artifacts": {
+    "windows": {
+      "name": "FreeNetHub_4.3.6_R50_Setup.exe",
+      "bytes": 24258557,
+      "sha256": "8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4",
+      "authenticode": "NotSigned"
+    },
+    "linux": {
+      "name": "FreeNetHub_4.2.0_Linux_R16.zip",
+      "bytes": 225314,
+      "sha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503"
+    }
+  },
+  "supersededInstallerSha256": [
+    "FB317C82007749E82983C79A089E7499EACB231A6F0C98C6AFE7DD0CBFD35DC2"
+  ],
+  "safety": {
+    "newExternalDependency": false,
+    "networkMutationByPatch": false,
+    "windowsDefaultRoutePreserved": true
+  },
+  "openGates": [
+    "public/security/fail-closed final verification",
+    "hosted exact-SHA CI",
+    "public promotion",
+    "post-publish update acceptance"
+  ],
+  "exactNextAction": "Build PUBLIC_MANIFEST last, pass public/security/fail-closed, commit exact candidate, require hosted CI before promotion."
+}

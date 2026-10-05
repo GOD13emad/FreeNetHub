@@ -1,4 +1,4 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.15-r42
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.16-r43
 
 نسخهٔ Linux R15 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
 

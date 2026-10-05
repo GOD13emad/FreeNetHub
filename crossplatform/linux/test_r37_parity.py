@@ -11,17 +11,17 @@ def load(name,path):
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 
 legacy=load("legacy",LIN/"freenet_hub_linux.py")
-assert legacy.VERSION=="4.2.0-linux.15-r42"
+assert legacy.VERSION=="4.2.0-linux.16-r43"
 r37=load("r37",LIN/"freenet_hub_linux_r37.py")
-assert r37.VERSION=="4.2.0-linux.15-r42"
+assert r37.VERSION=="4.2.0-linux.16-r43"
 assert r37.NODE_PORT==19460
 assert r37.settings()["testPathMode"] in ("BASE","SELECTED")
-for fn in ("node_store","node_refresh_public","node_test_all","node_connect","node_connect_auto","node_stop","node_raw","node_history","node_export","node_update_meta","node_benchmark_batch","benchmark_method","benchmark_configured","benchmark_all_methods","connect_method","warpplus_status","warpplus_start","update_check","update_install","open_browser"):
+for fn in ("node_store","node_refresh_public","node_test_all","node_connect","node_connect_auto","node_stop","node_raw","node_history","node_export","node_update_meta","node_benchmark_batch","node_benchmark_best","node_best","benchmark_method","benchmark_configured","benchmark_all_methods","connect_method","warpplus_status","warpplus_start","update_check","update_install","open_browser"):
     assert callable(getattr(r37,fn))
 ui=(LIN/"freenet_hub_linux_gtk.py").read_text(encoding="utf-8")
 assert "core.benchmark_method(self.method,ping_only)" in ui
 assert "core.benchmark_direct(ping_only)" in ui
-for marker in ("داشبورد","روش‌ها","Node Pool","ابزارها","تنظیمات","Ping + Download + Upload","اتصال کنسول","Export Raw","Export Base64","History","Copy Raw","ذخیره Metadata","تست سریع همه روش‌ها","تست کامل همه روش‌ها","تست اولیه همه نودها","تست واقعی 4 نود برتر","مرتب‌سازی بر اساس","بیشترین Upload","کشور","نمایش IP","بررسی و نصب مستقیم آخرین نسخه"):
+for marker in ("داشبورد","روش‌ها","Node Pool","ابزارها","تنظیمات","Ping + Download + Upload","اتصال کنسول","Export Raw","Export Base64","History","Copy Raw","ذخیره Metadata","تست سریع همه روش‌ها","تست کامل همه روش‌ها","تست اولیه همه نودها","پیدا کردن بهترین نود","مرتب‌سازی بر اساس","بیشترین Upload","کشور","نمایش IP","بررسی و نصب مستقیم آخرین نسخه"):
     assert marker in ui, marker
 assert "self.win.set_size_request(720,480)" in ui
 assert "self.method_cards.setdefault(key,[])" in ui
@@ -32,7 +32,7 @@ assert "self._syncing_sort" in ui
 assert "elif int(idx)==int(self.node_sort_idx)" in ui
 assert "بیشترین Upload" in ui
 installer=(LIN/"install.sh").read_text(encoding="utf-8")
-for marker in ("freenet_hub_linux_r37.py","nodehub_shared.py","runtime/usr/bin/sing-box","runtime/usr/bin/warp-plus","4.2.0-linux.15-r42","install_singbox_pinned.sh","install_warpplus_pinned.sh"):
+for marker in ("freenet_hub_linux_r37.py","nodehub_shared.py","runtime/usr/bin/sing-box","runtime/usr/bin/warp-plus","4.2.0-linux.16-r43","install_singbox_pinned.sh","install_warpplus_pinned.sh"):
     assert marker in installer, marker
 pin=(LIN/"install_singbox_pinned.sh").read_text(encoding="utf-8")
 assert "v1.14.2" in pin
@@ -44,6 +44,21 @@ assert r37._linux_revision_from_name("FreeNetHub_4.2.0_Linux_R11.zip")==11
 assert r37._linux_revision_from_name("FreeNetHub_4.2.0_Linux_R12.zip")==12
 assert r37._linux_revision_from_name("bad.zip") is None
 assert 'https://speed.cloudflare.com/__up?bytes={int(bytes_count)}' in (LIN/"freenet_hub_linux_r37.py").read_text(encoding="utf-8")
+
+# Smart node order must prefer full proxy throughput PASS over TCP-only low latency.
+orig_node_store=r37.node_store
+try:
+    smart_store={"schema":1,"selected":"fast-tcp","nodes":[
+        {"id":"fast-tcp","name":"fast tcp only","protocol":"vless","server":"fast.example","port":443,"source":"unit","pinned":False,"favorite":False,"endpoint_test":{"reachable":True,"latency_ms":5}},
+        {"id":"full-pass","name":"full pass","protocol":"vless","server":"pass.example","port":443,"source":"unit","pinned":False,"favorite":False,"endpoint_test":{"reachable":True,"latency_ms":180},"performance_test":{"ok":True,"pingMs":900,"downloadMbps":6.4,"uploadMbps":0.2,"country":"US"}}
+    ]}
+    r37.node_store=lambda:smart_store
+    smart_rows=r37.node_rows()
+    assert smart_rows[0]["id"]=="full-pass"
+    best=r37.node_best()
+    assert best and best["id"]=="full-pass" and best["performance"]["ok"] is True
+finally:
+    r37.node_store=orig_node_store
 
 # Test-all must fail closed rather than replacing an active FreeNet Hub connection.
 orig_session=r37.legacy.session
