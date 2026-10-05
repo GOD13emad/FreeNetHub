@@ -2,7 +2,9 @@ from __future__ import annotations
 import base64, hashlib, html, json, re
 from urllib.parse import parse_qs, parse_qsl, urlencode, unquote, urlsplit
 
-SUPPORTED_PROTOCOLS = ("ss", "vmess", "vless", "trojan", "hysteria2", "hy2")
+SUPPORTED_PROTOCOLS = ("ss", "vmess", "vless", "trojan", "hysteria2", "hy2", "tuic", "anytls")
+JSON_ONLY_PROTOCOLS = ("shadowtls",)
+UDP_PREFLIGHT_PROTOCOLS = ("hysteria2", "tuic")
 MAX_NODE_TEXT = 2 * 1024 * 1024
 MAX_NODES = 2000
 
@@ -29,6 +31,34 @@ def _host_port(parts):
 
 def _q(parts):
     return {k: v[-1] for k, v in parse_qs(parts.query, keep_blank_values=True).items()}
+
+def _truthy(value) -> bool:
+    return str(value or "").strip().lower() in ("1", "true", "yes", "on")
+
+def _required_tls(q: dict, server: str) -> dict:
+    qq = dict(q)
+    qq["security"] = "tls"
+    return _tls(qq, server, default_enabled=True)
+
+def _json_tls(value, server: str) -> dict:
+    if not isinstance(value, dict):
+        raise ValueError("NODE_JSON_TLS_REQUIRED")
+    if value.get("enabled") is False:
+        raise ValueError("NODE_JSON_TLS_REQUIRED")
+    out = {"enabled": True, "server_name": str(value.get("server_name") or server)}
+    if value.get("insecure") is True:
+        out["insecure"] = True
+    alpn = value.get("alpn")
+    if isinstance(alpn, list):
+        clean = [str(x) for x in alpn if str(x).strip()][:8]
+        if clean:
+            out["alpn"] = clean
+    utls = value.get("utls")
+    if isinstance(utls, dict) and utls.get("enabled") is True:
+        fp = str(utls.get("fingerprint") or "").strip()
+        if fp:
+            out["utls"] = {"enabled": True, "fingerprint": fp[:64]}
+    return out
 
 def _transport(q: dict) -> dict | None:
     typ = (q.get("type") or q.get("net") or "").lower()
@@ -98,7 +128,7 @@ def _tls(q: dict, server: str, default_enabled: bool = False) -> dict | None:
         else:
             return None
     out = {"enabled": True, "server_name": q.get("sni") or q.get("servername") or q.get("serverName") or server}
-    insecure = str(q.get("allowInsecure") or q.get("allowinsecure") or q.get("insecure") or "").lower()
+    insecure = str(q.get("allowInsecure") or q.get("allowinsecure") or q.get("allow_insecure") or q.get("insecure") or "").lower()
     if insecure in ("1", "true", "yes"):
         out["insecure"] = True
     alpn = [x for x in (q.get("alpn") or "").split(",") if x]
@@ -178,6 +208,47 @@ def parse_uri(uri: str) -> dict:
         parts = urlsplit("ss://" + endpoint)
         server, port = _host_port(parts)
         node = {"protocol": "ss", "name": _name(frag, f"SS {server}"), "server": server, "port": port, "method": method, "password": password}
+    elif scheme == "tuic":
+        parts = urlsplit(raw)
+        server, port = _host_port(parts)
+        q = _q(parts)
+        uid = unquote(parts.username or "").strip()
+        password = unquote(parts.password or "").strip()
+        if not uid or not password:
+            raise ValueError("TUIC_CREDENTIALS_REQUIRED")
+        cc = str(q.get("congestion_control") or "cubic").lower()
+        if cc not in ("cubic", "new_reno", "bbr"):
+            raise ValueError("TUIC_CONGESTION_CONTROL_INVALID")
+        relay = str(q.get("udp_relay_mode") or "native").lower()
+        if relay not in ("native", "quic"):
+            raise ValueError("TUIC_UDP_RELAY_MODE_INVALID")
+        node = {
+            "protocol": "tuic", "name": _name(parts.fragment, f"TUIC {server}"),
+            "server": server, "port": port, "uuid": uid, "password": password,
+            "congestion_control": cc, "udp_relay_mode": relay,
+            "zero_rtt_handshake": _truthy(q.get("reduce_rtt") or q.get("zero_rtt_handshake")),
+            "tls": _required_tls(q, server), "transport": None,
+        }
+    elif scheme == "anytls":
+        parts = urlsplit(raw)
+        if not parts.hostname:
+            raise ValueError("NODE_HOST_PORT_REQUIRED")
+        try:
+            port = int(parts.port or 443)
+        except ValueError as e:
+            raise ValueError("NODE_PORT_INVALID") from e
+        if not 1 <= port <= 65535:
+            raise ValueError("NODE_PORT_INVALID")
+        server = parts.hostname
+        q = _q(parts)
+        password = unquote(parts.username or "").strip()
+        if not password:
+            raise ValueError("ANYTLS_PASSWORD_REQUIRED")
+        node = {
+            "protocol": "anytls", "name": _name(parts.fragment, f"AnyTLS {server}"),
+            "server": server, "port": port, "password": password,
+            "tls": _required_tls(q, server), "transport": None,
+        }
     else:
         parts = urlsplit(raw)
         server, port = _host_port(parts)
@@ -227,7 +298,7 @@ def parse_uri(uri: str) -> dict:
     node["source"] = "import"
     return node
 
-_URI_RE = re.compile(r"(?i)(?:vmess|vless|trojan|ss|hysteria2|hy2)://[^\s<>\"']+")
+_URI_RE = re.compile(r"(?i)(?:vmess|vless|trojan|ss|hysteria2|hy2|tuic|anytls)://[^\s<>\"']+")
 
 def extract_uris(text: str) -> list[str]:
     s = html.unescape(str(text))
@@ -243,6 +314,111 @@ def extract_uris(text: str) -> list[str]:
         return []
     return [x.rstrip("),.;]") for x in _URI_RE.findall(decoded)]
 
+def _singbox_json_node(outbound: dict) -> dict:
+    if not isinstance(outbound, dict):
+        raise ValueError("NODE_JSON_OUTBOUND_INVALID")
+    typ = str(outbound.get("type") or "").lower()
+    if typ not in ("tuic", "anytls", "shadowtls"):
+        raise ValueError("NODE_JSON_PROTOCOL_UNSUPPORTED")
+    if outbound.get("detour") or outbound.get("dialer_proxy"):
+        raise ValueError("NODE_JSON_DETOUR_UNSUPPORTED")
+    server = str(outbound.get("server") or "").strip()
+    try:
+        port = int(outbound.get("server_port"))
+    except Exception as e:
+        raise ValueError("NODE_PORT_INVALID") from e
+    if not server or not 1 <= port <= 65535:
+        raise ValueError("NODE_HOST_PORT_REQUIRED")
+    node = {
+        "protocol": typ,
+        "name": str(outbound.get("tag") or f"{typ.upper()} {server}")[:120],
+        "server": server,
+        "port": port,
+        "tls": _json_tls(outbound.get("tls"), server),
+        "transport": None,
+    }
+    if typ == "tuic":
+        uid = str(outbound.get("uuid") or "").strip()
+        password = str(outbound.get("password") or "").strip()
+        if not uid or not password:
+            raise ValueError("TUIC_CREDENTIALS_REQUIRED")
+        cc = str(outbound.get("congestion_control") or "cubic").lower()
+        relay = str(outbound.get("udp_relay_mode") or "native").lower()
+        if cc not in ("cubic", "new_reno", "bbr"):
+            raise ValueError("TUIC_CONGESTION_CONTROL_INVALID")
+        if relay not in ("native", "quic"):
+            raise ValueError("TUIC_UDP_RELAY_MODE_INVALID")
+        node.update(uuid=uid, password=password, congestion_control=cc, udp_relay_mode=relay,
+                    zero_rtt_handshake=bool(outbound.get("zero_rtt_handshake", False)))
+    elif typ == "anytls":
+        password = str(outbound.get("password") or "").strip()
+        if not password:
+            raise ValueError("ANYTLS_PASSWORD_REQUIRED")
+        node["password"] = password
+        for key in ("idle_session_check_interval", "idle_session_timeout", "client_metadata"):
+            if outbound.get(key) not in (None, ""):
+                node[key] = str(outbound[key])[:512]
+        if outbound.get("min_idle_session") is not None:
+            try:
+                node["min_idle_session"] = max(0, min(64, int(outbound["min_idle_session"])))
+            except Exception as e:
+                raise ValueError("ANYTLS_MIN_IDLE_SESSION_INVALID") from e
+    else:
+        try:
+            version = int(outbound.get("version") or 1)
+        except Exception as e:
+            raise ValueError("SHADOWTLS_VERSION_INVALID") from e
+        if version not in (1, 2, 3):
+            raise ValueError("SHADOWTLS_VERSION_INVALID")
+        password = str(outbound.get("password") or "").strip()
+        if version in (2, 3) and not password:
+            raise ValueError("SHADOWTLS_PASSWORD_REQUIRED")
+        node["version"] = version
+        if password:
+            node["password"] = password
+    node["id"] = _id(node)
+    node["raw"] = json.dumps(outbound, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    node["favorite"] = False
+    node["pinned"] = False
+    node["rating"] = 0
+    node["tags"] = []
+    node["note"] = ""
+    node["source"] = "import"
+    return node
+
+def _singbox_json_nodes(text: str) -> tuple[list[dict], list[str]]:
+    candidates = [str(text)]
+    compact = "".join(str(text).split())
+    try:
+        decoded = _b64decode(compact).decode("utf-8-sig")
+        if decoded.lstrip().startswith(("{", "[")):
+            candidates.append(decoded)
+    except Exception:
+        pass
+    for raw in candidates:
+        try:
+            obj = json.loads(raw)
+        except Exception:
+            continue
+        if isinstance(obj, dict) and isinstance(obj.get("outbounds"), list):
+            rows = obj["outbounds"]
+        elif isinstance(obj, dict) and obj.get("type"):
+            rows = [obj]
+        elif isinstance(obj, list):
+            rows = obj
+        else:
+            return [], []
+        nodes, errors = [], []
+        for row in rows:
+            if not isinstance(row, dict) or str(row.get("type") or "").lower() not in ("tuic", "anytls", "shadowtls"):
+                continue
+            try:
+                nodes.append(_singbox_json_node(row))
+            except ValueError as e:
+                errors.append(str(e))
+        return nodes, errors
+    return [], []
+
 def parse_blob(text: str, source: str = "import") -> dict:
     nodes, errors, seen = [], [], set()
     for raw in extract_uris(text):
@@ -257,6 +433,16 @@ def parse_blob(text: str, source: str = "import") -> dict:
             nodes.append(n)
         except ValueError as e:
             errors.append(str(e))
+    json_nodes, json_errors = _singbox_json_nodes(text)
+    for n in json_nodes:
+        if len(nodes) >= MAX_NODES:
+            break
+        if n["id"] in seen:
+            continue
+        seen.add(n["id"])
+        n["source"] = source[:120]
+        nodes.append(n)
+    errors.extend(json_errors)
     return {"nodes": nodes, "errors": errors[:100], "found": len(nodes)}
 
 def merge(existing: list[dict], incoming: list[dict]) -> list[dict]:
@@ -315,6 +501,20 @@ def _outbound(node: dict) -> dict:
         base["password"] = node["password"]
         if node.get("obfs"):
             base["obfs"] = node["obfs"]
+    elif proto == "tuic":
+        base.update(uuid=node["uuid"], password=node["password"],
+                    congestion_control=node.get("congestion_control", "cubic"),
+                    udp_relay_mode=node.get("udp_relay_mode", "native"),
+                    zero_rtt_handshake=bool(node.get("zero_rtt_handshake", False)))
+    elif proto == "anytls":
+        base["password"] = node["password"]
+        for key in ("idle_session_check_interval", "idle_session_timeout", "client_metadata", "min_idle_session"):
+            if node.get(key) not in (None, ""):
+                base[key] = node[key]
+    elif proto == "shadowtls":
+        base["version"] = int(node.get("version", 1))
+        if node.get("password"):
+            base["password"] = node["password"]
     else:
         raise ValueError("NODE_PROTOCOL_UNSUPPORTED")
     if node.get("tls"):

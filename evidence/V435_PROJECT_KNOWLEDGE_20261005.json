@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.5",
+  "status": "LOCAL_GATES_PASS_HOSTED_OPEN",
+  "records": [
+    {
+      "Date_Context": "2026-10-05 / R49 method choice",
+      "Claim_Decision": "Expand the existing pinned sing-box Node Pool with TUIC and AnyTLS share imports and standalone TUIC/AnyTLS/ShadowTLS JSON imports; do not add a new tunnel dependency.",
+      "Evidence_Source": [
+        "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+        "sing-box official outbound documentation",
+        "installed sing-box 1.14.0 runtime"
+      ],
+      "Confidence_Status": "CONFIRMED / ACCEPTED",
+      "Reuse_Targets": [
+        "protocol matrix",
+        "architecture",
+        "release notes"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 runtime validation",
+      "Claim_Decision": "Parser-generated TUIC/AnyTLS/ShadowTLS configs pass exact installed sing-box check and open their local SOCKS listeners under sing-box run. This proves runtime loading, not external endpoint connectivity.",
+      "Evidence_Source": [
+        "tests/test_r49_node_protocols.py",
+        "R49 synthetic config check/run receipts"
+      ],
+      "Confidence_Status": "CONFIRMED_RUNTIME_LOAD / EXTERNAL_CONNECTIVITY_UNPROVEN",
+      "Reuse_Targets": [
+        "regression",
+        "support",
+        "capability matrix"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 bridge input resilience",
+      "Claim_Decision": "Add clipboard import for WebTunnel/obfs4 by reusing the existing strict bridge parser. Temporary clipboard files are removed after success and failure; ordinary user files are preserved.",
+      "Evidence_Source": [
+        "tests/test_r49_resilience_inputs.py",
+        "app/FreeNetHub.ps1",
+        "app/engine.py"
+      ],
+      "Confidence_Status": "CONFIRMED / PASS",
+      "Reuse_Targets": [
+        "bridge UX",
+        "privacy",
+        "failure prevention"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 deferred capability",
+      "Claim_Decision": "Do not advertise Naive on Windows while libcronet.dll is missing even though sing-box carries with_naive_outbound. Do not absorb OpenVPN/OpenConnect or Psiphon without their separate product/config/server authority.",
+      "Evidence_Source": [
+        "installed sing-box directory audit",
+        "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+        "tests/test_product_boundary.py"
+      ],
+      "Confidence_Status": "CONFIRMED / DEFERRED_BY_EVIDENCE",
+      "Reuse_Targets": [
+        "future roadmap",
+        "scope control",
+        "packaging"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 local acceptance",
+      "Claim_Decision": "R49 passes 221/221 full regression and exact installer build with 25 frozen inputs; external live endpoints for the new protocols remain unproven and hosted CI remains the promotion gate.",
+      "Evidence_Source": [
+        "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+        "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+        "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_OPEN",
+      "Reuse_Targets": [
+        "release promotion",
+        "handoff"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 installer evidence reconciliation",
+      "Claim_Decision": "Treat the final V435_R49_INSTALLER_BUILD_20261005.json and current artifact bytes as authoritative after closing stale nodeHubSha256 and transitional RELEASE metadata before the final frozen-input build.",
+      "Evidence_Source": [
+        "delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe",
+        "evidence/V435_R49_INSTALLER_BUILD_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / STALE_METADATA_CLOSED",
+      "Reuse_Targets": [
+        "release promotion",
+        "failure prevention",
+        "supply-chain audit"
+      ],
+      "Provenance": {
+        "bytes": 24278071,
+        "sha256": "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 synthetic runtime preservation",
+      "Claim_Decision": "TUIC, AnyTLS and ShadowTLS parser-generated configs pass installed sing-box check and open local listeners, while installed session, route and DNS hashes remain unchanged. This proves runtime loading only, not external endpoint connectivity.",
+      "Evidence_Source": [
+        "evidence/R49_SYNTHETIC_RUNTIME_20261005.json",
+        "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED_RUNTIME_LOAD / EXTERNAL_CONNECTIVITY_UNPROVEN",
+      "Reuse_Targets": [
+        "capability matrix",
+        "regression",
+        "release notes"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 public-tree local closure",
+      "Claim_Decision": "R49 exact local candidate passes public-tree verification across 489 files, nested manifests, release hashes, public security, mobile fail-closed and diff checks. Only hosted exact-SHA CI remains before promotion.",
+      "Evidence_Source": [
+        "PUBLIC_MANIFEST.json",
+        "tests/verify_public_tree.py",
+        "tests/security_scan_public.py",
+        "crossplatform/common/verify_fail_closed.py"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_OPEN",
+      "Reuse_Targets": [
+        "release promotion",
+        "handoff",
+        "supply-chain baseline"
+      ],
+      "Provenance": {
+        "publicManifestSha256": "378F8DD3C86920A6F8A9A3D37D36E45055E5061E3A43F0959889E1CC9ADA2A3A",
+        "files": 489
+      }
+    }
+  ],
+  "authoritativeEvidence": [
+    "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+    "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+    "evidence/R49_SYNTHETIC_RUNTIME_20261005.json",
+    "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
+  ],
+  "openGates": [
+    "hosted exact-candidate CI",
+    "public promotion"
+  ],
+  "exactNextAction": "Commit/push exact R49 candidate and require hosted CI before v4.3.5 promotion."
+}

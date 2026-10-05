@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.5",
+  "revision": "R49",
+  "status": "V435_R49_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "objective": "Evidence-gated TUIC/AnyTLS/ShadowTLS node import/runtime expansion plus fail-closed bridge clipboard import.",
+  "baseline": {
+    "tag": "v4.3.4",
+    "commit": "4a3a24351ac892563d2c01e7d40cd5a001fe13e5"
+  },
+  "verified": {
+    "r49Focused": "15/15 PASS",
+    "legacyFocused": "138/138 PASS",
+    "pythonCompile": "PASS",
+    "powershellXamlParse": "PASS",
+    "singboxSyntheticCheck": {
+      "tuic": "PASS",
+      "anytls": "PASS",
+      "shadowtls": "PASS"
+    },
+    "fullRegression": "221/221 PASS",
+    "mobileFailClosed": "PASS",
+    "publicSecurity": "PASS_NO_SENSITIVE_PATHS",
+    "diffCheck": "PASS",
+    "runtimeListener": {
+      "tuic": "PASS",
+      "anytls": "PASS",
+      "shadowtls": "PASS"
+    },
+    "installer": {
+      "status": "PASS",
+      "path": "delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe",
+      "bytes": 24278071,
+      "sha256": "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E",
+      "frozenFiles": 25,
+      "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+      "authenticode": "NotSigned"
+    },
+    "networkPreservation": {
+      "installedSessionUnchanged": true,
+      "routeUnchanged": true,
+      "dnsUnchanged": true,
+      "evidence": "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
+    },
+    "publicTree": "PASS_489_FILES",
+    "releaseHashes": "PASS"
+  },
+  "liveExternal": {
+    "tuic": "UNPROVEN_NO_AUTHORIZED_ENDPOINT",
+    "anytls": "UNPROVEN_NO_AUTHORIZED_ENDPOINT",
+    "shadowtls": "UNPROVEN_NO_AUTHORIZED_ENDPOINT"
+  },
+  "deferred": {
+    "naive": "LIBCRONET_DLL_MISSING",
+    "openvpnOpenconnect": "PRODUCT_BOUNDARY_OR_SERVER_CONFIG_AUTHORITY_MISSING",
+    "psiphon": "SERVER_ENTRY_DISTRIBUTION_AUTHORITY_MISSING"
+  },
+  "networkMutationByR49": false,
+  "openGates": [
+    "hosted exact-candidate CI"
+  ],
+  "exactNextAction": "Commit/push exact R49 candidate and require hosted CI; no public promotion before exact-SHA PASS."
+}

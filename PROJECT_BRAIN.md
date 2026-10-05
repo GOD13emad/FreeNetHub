@@ -443,3 +443,26 @@ Rebuild/verify PUBLIC_MANIFEST, prove runtime diff versus v4.3.4 is zero, commit
 - Final control-only closure commit 161619b9ab3c931d171f9d80082a4b1dc7fa0d71 passed hosted CI run 37292728318.
 - Runtime diff versus immutable authority tag v4.3.4 is NONE; runtime authority remains v4.3.4 -> 4a3a24351ac892563d2c01e7d40cd5a001fe13e5.
 - Status: PUBLIC_FINAL_CLOSED. Any further resilience work must start as a new evidence-gated change set.
+
+## V435 R49 NODE PROTOCOL EXPANSION — 2026-10-05
+Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_OPEN
+- Baseline: public v4.3.4 / runtime commit 4a3a24351ac892563d2c01e7d40cd5a001fe13e5 / repository closure 7d6902f.
+- R49 expands the existing pinned sing-box Node Pool without a new external tunnel dependency: TUIC and AnyTLS share imports, standalone sing-box JSON import for TUIC/AnyTLS/ShadowTLS, and fail-closed clipboard import for WebTunnel/obfs4 bridges.
+- Naive remains intentionally not advertised because the installed Windows runtime lacks required libcronet.dll. OpenVPN/OpenConnect remain outside this product boundary, and Psiphon remains deferred because no authorized bootstrap/server-entry authority is integrated.
+- Exact local regression: R49 focused 15/15 PASS; legacy compatibility 138/138 PASS; full suite 221/221 PASS; frozen-input integrity 26/26 PASS; Python compile and PowerShell/XAML parse PASS.
+- Installed sing-box 1.14.0 runtime proof: parser-generated TUIC, AnyTLS and ShadowTLS configs all pass sing-box check and open their local SOCKS listeners. This proves config/runtime loading only; real external endpoints for these three protocols remain UNPROVEN because no authorized endpoint is available in current feeds.
+- Runtime-preservation proof: installed session hash, IPv4 route state and DNS state are identical before/after synthetic runtime tests.
+- Public security caught and closed one evidence-only privacy defect: initial synthetic receipts contained a local Windows user path. Receipts are now redacted to %LOCALAPPDATA% and security scan PASS.
+- Public-tree verifier caught and closed stale RELEASE.json nodeHubSha256. The final frozen RELEASE authority is synced to app/nodehub.py.
+- Exact final Windows installer: delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe = 24,278,071 bytes / SHA-256 7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E. 25 frozen inputs and raw app-manifest preflight PASS. Authenticode remains NotSigned / external.
+- Public tree: 489 files; public/app/gateway/cross-platform/windows manifests, release hashes, forbidden runtime artifacts, public security, mobile fail-closed and diff-check all PASS.
+- Evidence authority: evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json; evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json; evidence/V435_PROJECT_KNOWLEDGE_20261005.json; evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json; evidence/V435_R49_INSTALLER_BUILD_20261005.json.
+
+### Roadmap ← CURRENT
+1. Commit/push exact R49 candidate branch.
+2. Require hosted exact-SHA Windows fresh-install, Linux, console virtual, Android emulator, iOS simulator and aggregate acceptance.
+3. Only after hosted PASS: fast-forward/promote exact tested SHA, tag v4.3.5, require tag CI, publish exact R49 Windows bytes plus unchanged accepted Linux R14, then post-publish updater/digest verification.
+4. Trusted Authenticode, physical-console field E2E, and production Android/iOS forwarding/signing/real-device remain separate external gates.
+
+### Exact Next Action
+Update only the changed control-file entries in PUBLIC_MANIFEST, verify complete public tree/security, commit/push exact R49 and require hosted CI.

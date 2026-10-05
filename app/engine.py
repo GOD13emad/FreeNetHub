@@ -155,7 +155,7 @@ def node_public_rows(store=None):
  return [NH.public_node(x) for x in sorted(s['nodes'],key=key)]
 
 def node_endpoint_probe(n,timeout=1.25):
- if str(n.get('protocol','')).lower()=='hysteria2':
+ if str(n.get('protocol','')).lower() in NH.UDP_PREFLIGHT_PROTOCOLS:
   return {'reachable':None,'latency_ms':None,'checked':now(),'type':'UDP_QUIC_PREFLIGHT_NOT_APPLICABLE'}
  started=time.monotonic()
  try:
@@ -267,7 +267,7 @@ def ensure_node(target='AUTO',limit=12):
   # as Test All, so dead public nodes do not consume the real HTTPS/country budget.
   if not node_endpoint_tests_fresh(s):node_batch_fast()
   s=node_store()
-  candidates=[n for n in s['nodes'] if isinstance(n.get('endpoint_test'),dict) and (n['endpoint_test'].get('reachable') is True or str(n.get('protocol','')).lower()=='hysteria2')]
+  candidates=[n for n in s['nodes'] if isinstance(n.get('endpoint_test'),dict) and (n['endpoint_test'].get('reachable') is True or str(n.get('protocol','')).lower() in NH.UDP_PREFLIGHT_PROTOCOLS)]
   if not candidates:raise RuntimeError('NODE_POOL_NO_REACHABLE_ENDPOINTS')
   s=dict(s);s['nodes']=candidates
  def score(n):
@@ -1641,12 +1641,17 @@ def dispatch(action,mode,payload):
  if action=='Import':
   if mode not in ('WEBTUNNEL','OBFS4'):raise ValueError('INVALID_IMPORT_MODE')
   f=pathlib.Path(payload)
-  if f.stat().st_size>65536:raise ValueError('BRIDGE_FILE_TOO_LARGE')
-  lines=bridge_lines(f.read_text(encoding='utf-8-sig'),mode.lower())
-  if not lines:raise ValueError('NO_BRIDGES')
-  dest=ROOT/'data'/('bridges_'+mode.lower()+'.txt')
-  if dest.exists():shutil.copyfile(dest,ROOT/'backup'/f'{mode}_{uuid.uuid4().hex}.txt')
-  dest.write_text('\n'.join(lines)+'\n',encoding='utf8');return {'imported':len(lines),'connection':'NOT_TESTED','mode':mode}
+  temporary=(f.parent.resolve()==(ROOT/'jobs').resolve() and f.name.startswith('bridge-import-'))
+  try:
+   if not f.is_file() or f.stat().st_size>65536:raise ValueError('BRIDGE_FILE_TOO_LARGE')
+   lines=bridge_lines(f.read_text(encoding='utf-8-sig'),mode.lower())
+   if not lines:raise ValueError('NO_BRIDGES')
+   dest=ROOT/'data'/('bridges_'+mode.lower()+'.txt')
+   if dest.exists():shutil.copyfile(dest,ROOT/'backup'/f'{mode}_{uuid.uuid4().hex}.txt')
+   dest.write_text('\n'.join(lines)+'\n',encoding='utf8');return {'imported':len(lines),'connection':'NOT_TESTED','mode':mode}
+  finally:
+   if temporary:
+    with contextlib.suppress(OSError):f.unlink()
  if action=='NodeList':
   s=node_store();st=public_refresh_state();age=public_refresh_age_seconds(st);return {'total':len(s['nodes']),'selected':s.get('selected'),'refresh':{'fresh':public_refresh_is_fresh(st,s),'ageSeconds':round(age,1) if age is not None else None,'ttlSeconds':PUBLIC_REFRESH_TTL_SECONDS,'sourceFamilies':sorted({family for _,family,__ in PUBLIC_NODE_SOURCES}),'sources':list(st.get('sources') or []),'failedSources':list(st.get('failedSources') or [])},'nodes':node_public_rows(s)}
  if action=='NodeRefreshSmart':
@@ -1765,7 +1770,7 @@ def dispatch(action,mode,payload):
    ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
    old=n.get('performance_test') if isinstance(n.get('performance_test'),dict) else {}
    proto=str(n.get('protocol','')).lower()
-   eligible=(ep.get('reachable') is True or proto=='hysteria2')
+   eligible=(ep.get('reachable') is True or proto in NH.UDP_PREFLIGHT_PROTOCOLS)
    if eligible:ranked.append((0 if not old else 1,protocol_attempts.get(proto,0),node_source_quality(n),0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,float(ep.get('latency_ms',999999) or 999999),n))
   rows=[];limit=4
   ordered=sorted(ranked,key=lambda x:x[:6]);picked=[];picked_ids=set();seen_protocols=set();seen_sources=set()
@@ -1811,7 +1816,7 @@ def dispatch(action,mode,payload):
   s=node_store()
   def bench_eligible(n):
    ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
-   return ep.get('reachable') is True or str(n.get('protocol','')).lower()=='hysteria2'
+   return ep.get('reachable') is True or str(n.get('protocol','')).lower() in NH.UDP_PREFLIGHT_PROTOCOLS
   remaining=sum(1 for n in s['nodes'] if bench_eligible(n) and not isinstance(n.get('performance_test'),dict))
   eligible_total=sum(1 for n in s['nodes'] if bench_eligible(n))
   passed=sum(1 for r in rows if r.get('ok') is True);failed=len(rows)-passed

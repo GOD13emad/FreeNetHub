@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "utc": "2026-10-05T11:03:42.0759167+00:00",
+  "status": "PASS",
+  "runtime": {
+    "schema": 1,
+    "singbox": "%LOCALAPPDATA%\\Programs\\FreeNetHub\\gateway\\runtime\\bin\\sing-box-1.14.0\\sing-box.exe",
+    "singboxSha256": "AAD0EDE010EAFA7B277E520464F3A66FDE820103D737EFF739F40F3CC9451DCC",
+    "protocols": {
+      "tuic": {
+        "checkExit": 0,
+        "checkStdout": "",
+        "checkStderr": "",
+        "listenerPort": 19611,
+        "listenerOpened": true,
+        "cleanStop": true,
+        "runExit": 1,
+        "runStdout": "",
+        "runStderr": ""
+      },
+      "anytls": {
+        "checkExit": 0,
+        "checkStdout": "",
+        "checkStderr": "",
+        "listenerPort": 19612,
+        "listenerOpened": true,
+        "cleanStop": true,
+        "runExit": 1,
+        "runStdout": "",
+        "runStderr": ""
+      },
+      "shadowtls": {
+        "checkExit": 0,
+        "checkStdout": "",
+        "checkStderr": "",
+        "listenerPort": 19613,
+        "listenerOpened": true,
+        "cleanStop": true,
+        "runExit": 1,
+        "runStdout": "",
+        "runStderr": ""
+      }
+    },
+    "status": "PASS"
+  },
+  "checks": {
+    "syntheticRuntimeExitZero": true,
+    "installedSessionUnchanged": true,
+    "routeUnchanged": true,
+    "dnsUnchanged": true
+  },
+  "preservation": {
+    "sessionBefore": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "sessionAfter": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "routeBefore": "32450D0503009AEF0180B0576950B31A3C6F4656071D9CBA2AA50C0F52AB8A4C",
+    "routeAfter": "32450D0503009AEF0180B0576950B31A3C6F4656071D9CBA2AA50C0F52AB8A4C",
+    "dnsBefore": "D45048D67C6C8DCA2F9DD151B0FF42818D6C01EB37373628BAA90A047D50294D",
+    "dnsAfter": "D45048D67C6C8DCA2F9DD151B0FF42818D6C01EB37373628BAA90A047D50294D"
+  }
+}

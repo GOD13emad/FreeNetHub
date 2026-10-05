@@ -141,7 +141,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','ImportWebClipboard','ImportObfsClipboard','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
   $cap=Paint-ConsoleCapability
@@ -1038,6 +1038,17 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
  $script:C.Logs.Add_Click({$p=[Diagnostics.ProcessStartInfo]::new();$p.FileName='explorer.exe';$p.UseShellExecute=$false;[void]$p.ArgumentList.Add((Join-Path $script:Root 'evidence'));[void][Diagnostics.Process]::Start($p)})
 
  foreach($n in @('ImportWeb','ImportObfs')){$script:C[$n].Tag=if($n -eq 'ImportWeb'){'WEBTUNNEL'}else{'OBFS4'};$script:C[$n].Add_Click({param($sender,$event)$d=[Microsoft.Win32.OpenFileDialog]::new();$d.Filter='Text files (*.txt)|*.txt';if($d.ShowDialog($script:Window)){Start-Work 'Import' ([string]$sender.Tag) $d.FileName}})}
+ foreach($n in @('ImportWebClipboard','ImportObfsClipboard')){
+  $script:C[$n].Tag=if($n -eq 'ImportWebClipboard'){'WEBTUNNEL'}else{'OBFS4'}
+  $script:C[$n].Add_Click({
+   param($sender,$event)
+   try{$txt=[Windows.Clipboard]::GetText()}catch{$txt=''}
+   if([string]::IsNullOrWhiteSpace($txt)){$script:C.BridgeStatus.Text='Clipboard bridge text is empty.';return}
+   $p=Join-Path $script:Root ('jobs\bridge-import-'+[guid]::NewGuid().ToString('N')+'.txt')
+   [IO.File]::WriteAllText($p,$txt,[Text.UTF8Encoding]::new($false))
+   Start-Work 'Import' ([string]$sender.Tag) $p
+  })
+ }
 
  $script:C.Save.Add_Click({$script:Settings.country=[string]$script:C.Country.SelectedItem.Content;$script:Settings.home=$script:C.Home.Text;$script:Settings.localProxy=$script:C.CustomProxy.Text;$script:Settings.monitor=[bool]$script:C.Monitor.IsChecked;$script:Settings.autoRepair=[bool]$script:C.AutoRepair.IsChecked;$script:Settings.showIp=[bool]$script:C.ShowIp.IsChecked;$script:Settings.minimizeToTray=[bool]$script:C.TrayOption.IsChecked;$p=Join-Path $script:Root 'jobs\settings-request.json';Write-Json $p $script:Settings;Start-Work 'Settings' 'AUTO' $p})
 
