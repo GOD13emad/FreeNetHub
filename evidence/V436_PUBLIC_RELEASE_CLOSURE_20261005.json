@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.6",
+  "revision": "R50",
+  "status": "PUBLIC_FINAL_SOFTWARE_GATES_CLOSED",
+  "previousAcceptedState": {
+    "release": "v4.3.5",
+    "mergeCommit": "93fea59d696b69eb5b723e2d6b2033d4fdb879dd"
+  },
+  "runtimeAuthority": {
+    "candidateSha": "4c2658a53dce4aed0c8b6f84b563d60c3b52bbd5",
+    "mergeCommit": "915b9574aac107c333c298ca35391be097df1200",
+    "tag": "v4.3.6",
+    "tagObject": "c63515650e7b917af54dac0e9c20ec9d77794e03",
+    "candidateAndMergeTreeIdentical": true
+  },
+  "hostedValidation": {
+    "candidate": {
+      "pr": 26,
+      "runId": 37336539430,
+      "sha": "4c2658a53dce4aed0c8b6f84b563d60c3b52bbd5",
+      "status": "SUCCESS",
+      "jobs": "10/10 SUCCESS"
+    },
+    "main": {
+      "runId": 37337997914,
+      "sha": "915b9574aac107c333c298ca35391be097df1200",
+      "status": "SUCCESS",
+      "jobs": "10/10 SUCCESS"
+    },
+    "tag": {
+      "runId": 37339712561,
+      "sha": "915b9574aac107c333c298ca35391be097df1200",
+      "status": "SUCCESS",
+      "jobs": "10/10 SUCCESS"
+    }
+  },
+  "publicRelease": {
+    "tag": "v4.3.6",
+    "name": "FreeNet Hub 4.3.6 Final",
+    "publishedAt": "2026-10-05T16:28:07Z",
+    "latest": true,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.3.6_R50_Setup.exe",
+        "bytes": 24257042,
+        "sha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
+        "githubDigest": "sha256:e9592f858f166a7946ba8791ca9595b325456ab9be27fef07a3fc7e399f30ae1",
+        "independentRedownloadSha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
+        "verification": "PASS"
+      },
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R16.zip",
+        "bytes": 225314,
+        "sha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503",
+        "githubDigest": "sha256:01f852b1350c591ead5c03a0f094f92b4861e1d1da96226a48b9ae691d48c503",
+        "independentRedownloadSha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503",
+        "verification": "PASS"
+      }
+    ]
+  },
+  "postPublish": {
+    "windows": {
+      "status": "PASS",
+      "mode": "READ_ONLY_UPDATER",
+      "localRevision": 45,
+      "remoteRevision": 50,
+      "updateAvailable": true,
+      "assetExact": true,
+      "sessionPreserved": true,
+      "routePreserved": true,
+      "dnsPreserved": true,
+      "evidence": "evidence/V436_POSTPUBLISH_UPDATECHECK_20261005.json",
+      "evidenceSha256": "5413A808BD775CB2877675482D6DF6ACBEDC2C7FFE0985DA7951F4F6A2A4BF04"
+    },
+    "linux": {
+      "status": "PASS",
+      "beforeVersion": "4.2.0-linux.15-r42",
+      "installedVersion": "4.2.0-linux.16-r43",
+      "integrity": "9/9 PASS",
+      "postLocalRevision": 16,
+      "postRemoteRevision": 16,
+      "updateAvailable": false,
+      "routePreserved": true,
+      "dnsPreserved": true,
+      "sessionSemanticPreserved": true,
+      "evidence": "evidence/V436_R16_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
+      "evidenceSha256": "55B19D66CB3016868FFD46BBED275E65768DB0E6A7D4F56F6B077B19FE636B8A"
+    }
+  },
+  "validatedProductBehavior": {
+    "nodeSelection": "R50 bounded/adaptive best-node search and full-health-first ranking accepted",
+    "fullRegression": "244/244 PASS before promotion",
+    "publicSecurity": "PASS",
+    "freshInstall": "PASS",
+    "mobileCurrentTrack": "FAIL_CLOSED_BUILD_AND_EMULATOR_SIMULATOR_ACCEPTANCE_PASS"
+  },
+  "externalNonBlocking": [
+    "Trusted Windows Authenticode identity remains external; public installer is NotSigned",
+    "Physical console field/game/country E2E remains external hardware validation",
+    "Production Android/iOS forwarding cores/signing/real-device operation remains external",
+    "Live TUIC/AnyTLS/ShadowTLS public endpoint validation remains unproven without authorized endpoints"
+  ],
+  "finalObjectiveResult": "FreeNet Hub v4.3.6 R50 / Linux R16 is publicly released from exact tested bytes with candidate/main/tag hosted CI, exact release digests, independent re-download verification, Windows non-disruptive updater verification, and Linux real updater/install acceptance.",
+  "repositoryClosure": {
+    "status": "CONTROL_ONLY_CLOSURE_PENDING_FINAL_MAIN_CI",
+    "runtimeDiffVsTagExpected": "NONE"
+  },
+  "exactNextAction": "Commit only Brain/Knowledge/evidence/PUBLIC_MANIFEST closure, prove no app/crossplatform/windows runtime diff versus v4.3.6, then require final main CI."
+}

@@ -613,3 +613,47 @@ Generate PUBLIC_MANIFEST last; pass security/public-tree/fail-closed; freeze com
 - RELEASE changed, so the prior 8F4585... installer became superseded. The A4A207... installer was superseded when late control-plane RELEASE fields were stabilized. Final frozen R50 installer is 24,257,042 bytes / SHA-256 E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1; manifest preflight PASS; Authenticode NotSigned/external.
 - Post-fix local regression remains 244/244 PASS. Final E9592F... exact fresh-install/UI smoke PASS; Windows default route stayed 192.168.20.1.
 - Exact Next Action: rebuild PUBLIC_MANIFEST last, verify public/security/fail-closed, commit/push corrected exact SHA, require hosted retry PASS before merge/promotion.
+
+## V436 PUBLIC FINAL — 2026-10-05
+**Status: CURRENT / PUBLIC_FINAL_SOFTWARE_GATES_CLOSED / REPOSITORY_CLOSURE_PENDING_FINAL_MAIN_CI**
+
+### Accepted Authority
+- Exact candidate: 4c2658a53dce4aed0c8b6f84b563d60c3b52bbd5; PR #26 hosted run 37336539430: 10/10 SUCCESS.
+- Merge/runtime authority: 915b9574aac107c333c298ca35391be097df1200; main run 37337997914: 10/10 SUCCESS.
+- Exact tag v4.3.6 points to the same merge commit; tag run 37339712561: 10/10 SUCCESS.
+- Candidate and merge Git trees are identical. No merge-time runtime byte drift occurred.
+
+### Public Release / Exact Artifacts
+- FreeNetHub_4.3.6_R50_Setup.exe: 24,257,042 bytes; SHA-256 E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1.
+- FreeNetHub_4.2.0_Linux_R16.zip: 225,314 bytes; SHA-256 01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503.
+- GitHub release digests and independent re-download SHA-256 values match both frozen artifacts exactly.
+- Windows public Authenticode remains NotSigned; trusted signing identity is an external/non-blocking gate.
+
+### Post-Publish Acceptance
+- Windows installed updater check: PASS. Installed R45 discovered exact public R50 asset; updateAvailable=true; session, route and DNS hashes unchanged. Owner Windows was not forcibly upgraded.
+- Linux real updater: PASS R15->R16 using public release asset/digest. Installed version 4.2.0-linux.16-r43; integrity 9/9 PASS; post-update local=remote revision 16 and updateAvailable=false; route/DNS/disconnected session semantics preserved.
+- R50 node-selection correction remains evidence-backed: the former fixed four-candidate sample was a false negative; bounded/adaptive search and full-health-first ranking are the accepted behavior.
+
+### Software DoD
+- Local regression/security/public/fresh-install gates: PASS.
+- Candidate/main/tag hosted promotion matrices: PASS.
+- Exact assets/digests/redownload verification: PASS.
+- Windows updater preservation: PASS.
+- Linux real updater/install/integrity/preservation: PASS.
+- Therefore the desktop software release DoD is closed for v4.3.6 R50/R16.
+
+### External / Deferred
+- Trusted Windows Authenticode signing identity.
+- Physical console field/game/country E2E.
+- Production Android/iOS packet-forwarding core, signing and real-device validation.
+- Authorized live TUIC/AnyTLS/ShadowTLS endpoint validation.
+
+### Roadmap ← CURRENT
+1. v4.3.6 R50/R16 exact-SHA release — Completed/PASS.
+2. Post-publish Windows/Linux updater acceptance — Completed/PASS.
+3. Control-only repository closure with zero runtime diff — CURRENT.
+4. External hardware/signing/mobile-production/live-endpoint tracks — Deferred/External.
+
+### Exact Next Action
+Commit only Project Brain / Knowledge / release evidence / PUBLIC_MANIFEST closure, prove app/, crossplatform/, and windows/ have no diff versus immutable v4.3.6, and require final main CI. After that, do not mutate v4.3.6 runtime.
+

@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.6",
+  "status": "PASS",
+  "action": "LINUX_PUBLIC_R16_REAL_UPDATER_ACCEPTANCE",
+  "beforeVersion": "4.2.0-linux.15-r42",
+  "preUpdate": {
+    "ok": true,
+    "current": "4.2.0-linux.15-r42",
+    "localRevision": 15,
+    "tag": "v4.3.6",
+    "published": "2026-10-05T16:28:07Z",
+    "linuxAsset": {
+      "name": "FreeNetHub_4.2.0_Linux_R16.zip",
+      "size": 225314,
+      "digest": "sha256:01f852b1350c591ead5c03a0f094f92b4861e1d1da96226a48b9ae691d48c503",
+      "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.6/FreeNetHub_4.2.0_Linux_R16.zip"
+    },
+    "remoteRevision": 16,
+    "updateAvailable": true,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R16.zip",
+        "size": 225314,
+        "digest": "sha256:01f852b1350c591ead5c03a0f094f92b4861e1d1da96226a48b9ae691d48c503",
+        "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.6/FreeNetHub_4.2.0_Linux_R16.zip"
+      },
+      {
+        "name": "FreeNetHub_4.3.6_R50_Setup.exe",
+        "size": 24257042,
+        "digest": "sha256:e9592f858f166a7946ba8791ca9595b325456ab9be27fef07a3fc7e399f30ae1",
+        "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.6/FreeNetHub_4.3.6_R50_Setup.exe"
+      }
+    ]
+  },
+  "install": {
+    "ok": true,
+    "scheduled": true,
+    "tag": "v4.3.6",
+    "asset": "FreeNetHub_4.2.0_Linux_R16.zip",
+    "sha256": "01f852b1350c591ead5c03a0f094f92b4861e1d1da96226a48b9ae691d48c503",
+    "log": "EXTERNAL_INSTALLED_STATE/evidence/linux-update-1791217750.log",
+    "note": "Installer will restart only the FreeNet Hub UI; no connection is started by install."
+  },
+  "installed": {
+    "version": "4.2.0-linux.16-r43",
+    "metadata": {
+      "schema": 1,
+      "version": "4.2.0-linux.16-r43",
+      "release": "LINUX_4.2.0_R16_R43_NODE_SELECTION_QUALITY",
+      "installed_utc": "2026-10-05T16:29:11Z",
+      "network_mutation_on_install": false,
+      "integrity_manifest": "INSTALL.sha256"
+    },
+    "integrity": {
+      "status": "PASS",
+      "files": 9,
+      "failed": []
+    }
+  },
+  "postUpdate": {
+    "ok": true,
+    "current": "4.2.0-linux.16-r43",
+    "localRevision": 16,
+    "tag": "v4.3.6",
+    "published": "2026-10-05T16:28:07Z",
+    "linuxAsset": {
+      "name": "FreeNetHub_4.2.0_Linux_R16.zip",
+      "size": 225314,
+      "digest": "sha256:01f852b1350c591ead5c03a0f094f92b4861e1d1da96226a48b9ae691d48c503",
+      "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.6/FreeNetHub_4.2.0_Linux_R16.zip"
+    },
+    "remoteRevision": 16,
+    "updateAvailable": false,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R16.zip",
+        "size": 225314,
+        "digest": "sha256:01f852b1350c591ead5c03a0f094f92b4861e1d1da96226a48b9ae691d48c503",
+        "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.6/FreeNetHub_4.2.0_Linux_R16.zip"
+      },
+      {
+        "name": "FreeNetHub_4.3.6_R50_Setup.exe",
+        "size": 24257042,
+        "digest": "sha256:e9592f858f166a7946ba8791ca9595b325456ab9be27fef07a3fc7e399f30ae1",
+        "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.6/FreeNetHub_4.3.6_R50_Setup.exe"
+      }
+    ]
+  },
+  "checks": {
+    "preTag": true,
+    "remoteRevision": true,
+    "updateAvailable": true,
+    "assetName": true,
+    "assetSize": true,
+    "assetDigest": true,
+    "installedVersion": true,
+    "installedManifestVersion": true,
+    "integrity": true,
+    "postLocalRevision": true,
+    "postRemoteRevision": true,
+    "postNoUpdate": true,
+    "routePreserved": true,
+    "dnsPreserved": true,
+    "sessionSemanticPreserved": true
+  },
+  "preservation": {
+    "pre": {
+      "route": "default via 192.168.20.1 dev enp1s0 proto dhcp src 192.168.20.6 metric 100 \n192.168.20.0/24 dev enp1s0 proto kernel scope link src 192.168.20.6 metric 100 \n",
+      "dns": "Global:\nLink 2 (enp1s0): 192.168.20.1\nLink 3 (wlp2s0):\nLink 36 (dimdns0): 192.0.2.53\n",
+      "domain": "Global:\nLink 2 (enp1s0): bwrouter\nLink 3 (wlp2s0):\nLink 36 (dimdns0): ~.\n",
+      "session": {
+        "mode": null,
+        "provider": null,
+        "detail": {}
+      }
+    },
+    "post": {
+      "route": "default via 192.168.20.1 dev enp1s0 proto dhcp src 192.168.20.6 metric 100 \n192.168.20.0/24 dev enp1s0 proto kernel scope link src 192.168.20.6 metric 100 \n",
+      "dns": "Global:\nLink 2 (enp1s0): 192.168.20.1\nLink 3 (wlp2s0):\nLink 36 (dimdns0): 192.0.2.53\n",
+      "domain": "Global:\nLink 2 (enp1s0): bwrouter\nLink 3 (wlp2s0):\nLink 36 (dimdns0): ~.\n",
+      "session": {
+        "mode": null,
+        "provider": null,
+        "detail": {}
+      }
+    }
+  }
+}

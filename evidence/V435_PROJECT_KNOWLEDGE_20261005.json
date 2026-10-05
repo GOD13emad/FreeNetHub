@@ -2,8 +2,8 @@
   "schema": 1,
   "date": "2026-10-05",
   "project": "FreeNet Hub",
-  "version": "4.3.6-r50-node-selection-quality",
-  "status": "R50_LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
+  "version": "4.3.6",
+  "status": "V436_PUBLIC_FINAL_REPOSITORY_CLOSURE_PENDING",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -400,6 +400,32 @@
         "currentInstallerSha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
         "currentInstallerBytes": 24257042
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / v4.3.6 R50 public release closure",
+      "Claim_Decision": "Exact candidate 4c2658a passed 10/10 PR gates, merge 915b957 passed 10/10 main gates, exact v4.3.6 tag passed 10/10 tag gates, release assets match frozen and independently re-downloaded SHA-256 values, Windows updater preserved session/route/DNS, and Linux real updater installed R16 with 9/9 integrity and no network-state drift.",
+      "Evidence_Source": [
+        "evidence/V436_PUBLIC_RELEASE_CLOSURE_20261005.json",
+        "evidence/V436_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "evidence/V436_R16_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
+        "GitHub Actions PR run 37336539430",
+        "GitHub Actions main run 37337997914",
+        "GitHub Actions tag run 37339712561"
+      ],
+      "Confidence_Status": "CONFIRMED / PUBLIC_FINAL_SOFTWARE_GATES_CLOSED",
+      "Reuse_Targets": [
+        "release promotion",
+        "updater",
+        "packaging",
+        "support",
+        "future regression"
+      ],
+      "Provenance": {
+        "candidateSha": "4c2658a53dce4aed0c8b6f84b563d60c3b52bbd5",
+        "mergeSha": "915b9574aac107c333c298ca35391be097df1200",
+        "windowsSha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
+        "linuxSha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503"
+      }
     }
   ],
   "authoritativeEvidence": [
@@ -417,14 +443,16 @@
     "evidence/V436_R50_CANDIDATE_ACCEPTANCE_20261005.json",
     "evidence/V436_R50_INSTALLER_BUILD_20261005.json",
     "evidence/V436_R50_LINUX_NODE_BATCH12_SOURCE_20261005.json",
-    "evidence/V436_R50_TOR_DIRECT90_SOURCE_20261005.json"
+    "evidence/V436_R50_TOR_DIRECT90_SOURCE_20261005.json",
+    "evidence/V436_PUBLIC_RELEASE_CLOSURE_20261005.json",
+    "evidence/V436_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V436_R16_PUBLIC_UPDATE_ACCEPTANCE_20261005.json"
   ],
   "openGates": [
-    "R50 hosted exact-SHA CI / merge / public v4.3.6 promotion / post-publish update acceptance",
     "Trusted Windows Authenticode signing remains external",
     "Physical console field/game/country E2E remains external",
     "Production Android/iOS packet forwarding/signing/real-device remains external",
     "Live TUIC/AnyTLS/ShadowTLS external endpoint validation remains unavailable without authorized endpoints"
   ],
-  "exactNextAction": "Pass final local public-tree/security/fail-closed/regression on the canonicalization correction, commit/push the correction SHA to PR #26, and require hosted CI PASS on that exact SHA before merge or release."
+  "exactNextAction": "Repository control-only closure and final main CI; no further product/runtime mutation for v4.3.6."
 }
