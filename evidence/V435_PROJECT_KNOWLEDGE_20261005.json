@@ -3,7 +3,7 @@
   "date": "2026-10-05",
   "project": "FreeNet Hub",
   "version": "4.3.7",
-  "status": "V437_R51_LOCAL_FROZEN_HOSTED_OPEN",
+  "status": "V437_PUBLIC_FINAL_REPOSITORY_CLOSURE_PENDING",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -454,6 +454,29 @@
         "crossPlatformManifestSha256": "78651558F85B42FBA051D33BB80AD4CA522B9395E0026E40BF6646277F6851BE",
         "cronetSha256": "EEE741046F0A3975124BAE349AEAC237AA306F3CC4DE59FF5DE070E74DBFDAEB"
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / v4.3.7 R51 public release closure",
+      "Claim_Decision": "R51 is publicly released from exact tested bytes. Candidate push/PR, main and tag matrices are 10/10 SUCCESS; release digests and independent redownloads match; Windows updater is non-disruptive; Linux real updater installed R17 with 9/9 integrity and no route/DNS/domain/session drift.",
+      "Evidence_Source": [
+        "evidence/V437_PUBLIC_RELEASE_CLOSURE_20261005.json",
+        "evidence/V437_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "evidence/V437_R17_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
+        "GitHub Actions runs 37353807006, 37353842830, 37354810434, 37356646618"
+      ],
+      "Confidence_Status": "CONFIRMED / PUBLIC_FINAL_SOFTWARE_GATES_CLOSED",
+      "Reuse_Targets": [
+        "release promotion",
+        "updater",
+        "protocol expansion",
+        "future regression"
+      ],
+      "Provenance": {
+        "candidateSha": "e80d406d89bb9539689a5209d86ddb714f1a8539",
+        "mergeSha": "07424a87a0dfa2047afcfefeb62a71feb38a906d",
+        "windowsSha256": "4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3",
+        "linuxSha256": "1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6"
+      }
     }
   ],
   "authoritativeEvidence": [
@@ -476,13 +499,18 @@
     "evidence/V436_POSTPUBLISH_UPDATECHECK_20261005.json",
     "evidence/V436_R16_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
     "evidence/V437_R51_CANDIDATE_ACCEPTANCE_20261005.json",
-    "evidence/V437_R51_INSTALLER_BUILD_20261005.json"
+    "evidence/V437_R51_INSTALLER_BUILD_20261005.json",
+    "evidence/V437_PUBLIC_RELEASE_CLOSURE_20261005.json",
+    "evidence/V437_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V437_R17_PUBLIC_UPDATE_ACCEPTANCE_20261005.json"
   ],
   "openGates": [
-    "Exact-SHA hosted CI for R51",
-    "Merge/main/tag/release and post-publish Windows/Linux update acceptance",
-    "MASQUE/Tailcat require a separately validated sing-box 1.15+ runtime change set",
-    "Trusted Authenticode, physical console, and production mobile remain external"
+    "Repository control-only closure final main CI",
+    "Trusted Windows Authenticode external",
+    "Physical console field E2E external",
+    "Production mobile forwarding/signing external",
+    "R52 candidate: SS SIP002/SIP003 plugin refinement",
+    "Separate research: Mieru runtime; sing-box 1.15 alpha MASQUE/Tailcat not stable"
   ],
-  "exactNextAction": "Commit the frozen R51 snapshot, push the exact SHA, and require the full hosted matrix before promotion."
+  "exactNextAction": "Close R51 repository control-plane with zero runtime diff and final main CI. Any R52 work must start from immutable v4.3.7 as a new change set."
 }

@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.7",
+  "revision": "R51",
+  "status": "PUBLIC_FINAL_SOFTWARE_GATES_CLOSED",
+  "runtimeAuthority": {
+    "candidateSha": "e80d406d89bb9539689a5209d86ddb714f1a8539",
+    "mergeCommit": "07424a87a0dfa2047afcfefeb62a71feb38a906d",
+    "tag": "v4.3.7",
+    "tagObject": "00f61969c18d252d040e2ade9373022fa5db17e4",
+    "candidateAndMergeTreeIdentical": true
+  },
+  "hostedValidation": {
+    "candidatePush": {
+      "runId": 37353807006,
+      "sha": "e80d406d89bb9539689a5209d86ddb714f1a8539",
+      "status": "SUCCESS",
+      "jobs": "10/10 SUCCESS"
+    },
+    "candidatePR": {
+      "pr": 27,
+      "runId": 37353842830,
+      "sha": "e80d406d89bb9539689a5209d86ddb714f1a8539",
+      "status": "SUCCESS",
+      "jobs": "10/10 SUCCESS"
+    },
+    "main": {
+      "runId": 37354810434,
+      "sha": "07424a87a0dfa2047afcfefeb62a71feb38a906d",
+      "status": "SUCCESS",
+      "jobs": "10/10 SUCCESS"
+    },
+    "tag": {
+      "runId": 37356646618,
+      "sha": "07424a87a0dfa2047afcfefeb62a71feb38a906d",
+      "status": "SUCCESS",
+      "jobs": "10/10 SUCCESS"
+    }
+  },
+  "publicRelease": {
+    "tag": "v4.3.7",
+    "name": "FreeNet Hub 4.3.7 Final",
+    "publishedAt": "2026-10-05T18:40:31Z",
+    "latest": true,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.3.7_R51_Setup.exe",
+        "bytes": 24269473,
+        "sha256": "4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3",
+        "githubDigest": "sha256:4ccae665d9f641bec3facf2bfdb908f5e727bdc32f278a91ea2e6c3bfe8208a3",
+        "independentRedownloadSha256": "4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3",
+        "verification": "PASS"
+      },
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R17.zip",
+        "bytes": 234341,
+        "sha256": "1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6",
+        "githubDigest": "sha256:1646c70fbf2ca3c7eaac9d6470beed3d53063d9e5d9ff50a830d0507420c6ea6",
+        "independentRedownloadSha256": "1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6",
+        "verification": "PASS"
+      }
+    ]
+  },
+  "postPublish": {
+    "windows": {
+      "status": "PASS",
+      "mode": "READ_ONLY_UPDATER",
+      "localRevision": 45,
+      "remoteRevision": 51,
+      "updateAvailable": true,
+      "assetExact": true,
+      "sessionPreserved": true,
+      "routePreserved": true,
+      "dnsPreserved": true,
+      "evidence": "evidence/V437_POSTPUBLISH_UPDATECHECK_20261005.json",
+      "evidenceSha256": "233C7FF0C9071D02CC7A04F2D3A5D7B591871598DF2619FAA63D212BF8EECFD2"
+    },
+    "linux": {
+      "status": "PASS",
+      "beforeVersion": "4.2.0-linux.16-r43",
+      "installedVersion": "4.2.0-linux.17-r44",
+      "integrity": "9/9 PASS",
+      "postLocalRevision": 17,
+      "postRemoteRevision": 17,
+      "updateAvailable": false,
+      "routePreserved": true,
+      "dnsPreserved": true,
+      "domainPreserved": true,
+      "sessionSemanticPreserved": true,
+      "evidence": "evidence/V437_R17_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
+      "evidenceSha256": "D21FBDA9081C12061D1554F7977CFC591E9414F319A750AE62D8C1BA30B6406E"
+    }
+  },
+  "validatedProductBehavior": {
+    "addedProtocols": [
+      "Hysteria v1",
+      "SSH",
+      "Snell",
+      "SOCKS upstream",
+      "HTTP CONNECT upstream",
+      "Naive"
+    ],
+    "focusedRegression": "19/19 PASS",
+    "fullRegression": "252/252 PASS",
+    "generatedRuntimeChecks": "Windows 6/6 PASS; Linux 6/6 PASS",
+    "cronetRepair": "PASS with route/DNS/session preserved",
+    "publicSecurity": "PASS",
+    "freshInstall": "PASS"
+  },
+  "researchClosure": {
+    "stableSingBox114OutboundFamilies": "COVERED_EXCEPT_EXPLICIT_PRODUCT_EXCLUSIONS_AND_NON_NODE_ROUTING_TYPES",
+    "explicitExclusions": [
+      "WireGuard excluded by product decision",
+      "Tor is already a dedicated native FreeNet Hub method",
+      "OpenVPN/OpenConnect remain OpenInternetGateway boundary"
+    ],
+    "nextStableRefinement": [
+      "Shadowsocks SIP002/SIP003 plugin query support for internal obfs-local/v2ray-plugin"
+    ],
+    "separateRuntimeCandidates": [
+      "Mieru stable 3.38.0; requires separate runtime/licensing/server-authority evaluation"
+    ],
+    "preReleaseCandidates": [
+      "sing-box 1.15 alpha MASQUE/Tailcat; not eligible for stable promotion while pre-release"
+    ]
+  },
+  "externalNonBlocking": [
+    "Trusted Windows Authenticode identity",
+    "Physical console field/game/country E2E",
+    "Production Android/iOS packet forwarding/signing/real-device validation",
+    "Authorized live endpoint validation for protocols without supplied endpoints"
+  ],
+  "repositoryClosure": {
+    "status": "CONTROL_ONLY_CLOSURE_PENDING_FINAL_MAIN_CI",
+    "runtimeDiffVsTagExpected": "NONE"
+  },
+  "exactNextAction": "Commit only Brain/Knowledge/release/post-publish evidence/PUBLIC_MANIFEST closure, prove zero runtime diff versus immutable v4.3.7, then require final main CI."
+}

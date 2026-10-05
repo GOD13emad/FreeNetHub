@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "utc": "2026-10-05T18:41:35.4261626+00:00",
+  "status": "PASS",
+  "action": "INSTALLED_WINDOWS_UPDATECHECK_READ_ONLY",
+  "result": {
+    "tag": "v4.3.7",
+    "name": "FreeNet Hub 4.3.7 Final",
+    "published": "2026-10-05T18:40:31Z",
+    "htmlUrl": "https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.7",
+    "currentRevision": "4.3.1-r45-preconnect-test-hotfix",
+    "currentRevisionNumber": 45,
+    "remoteRevisionNumber": 51,
+    "revisionComparable": true,
+    "updateAvailable": true,
+    "asset": {
+      "name": "FreeNetHub_4.3.7_R51_Setup.exe",
+      "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.7/FreeNetHub_4.3.7_R51_Setup.exe",
+      "bytes": 24269473,
+      "digest": "sha256:4ccae665d9f641bec3facf2bfdb908f5e727bdc32f278a91ea2e6c3bfe8208a3"
+    },
+    "rootPath": {
+      "bound": false,
+      "interfaceAlias": "",
+      "proof": "SYSTEM_DEFAULT_NO_FNH_PC_TUNNEL"
+    }
+  },
+  "checks": {
+    "tag": true,
+    "remoteRevisionNumber": true,
+    "updateAvailable": true,
+    "assetName": true,
+    "assetBytes": true,
+    "assetDigest": true,
+    "sessionUnchanged": true,
+    "routeUnchanged": true,
+    "dnsUnchanged": true
+  },
+  "preservation": {
+    "sessionSha256Before": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "sessionSha256After": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+    "routeSha256Before": "D9AE74B82AE017CEBD7788B7B0B5C67989E7DCC99C7554146D4E186DA6149A1A",
+    "routeSha256After": "D9AE74B82AE017CEBD7788B7B0B5C67989E7DCC99C7554146D4E186DA6149A1A",
+    "dnsSha256Before": "13B7D3BC3854DDBCDFC68734090D5D44524F1E9826A49FF9D210FCF1645170CA",
+    "dnsSha256After": "13B7D3BC3854DDBCDFC68734090D5D44524F1E9826A49FF9D210FCF1645170CA"
+  }
+}

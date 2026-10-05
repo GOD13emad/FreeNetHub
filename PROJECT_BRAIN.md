@@ -658,7 +658,7 @@ Generate PUBLIC_MANIFEST last; pass security/public-tree/fail-closed; freeze com
 No open v4.3.6 software gates. Final main CI run 37343449317 is SUCCESS on control-only closure commit 3cdbd19fc62eaccdef9c0ae7f16cf2073f1c6392; runtime diff versus immutable v4.3.6 is NONE. Preserve the frozen release. Any broader connection-method research starts as a new change set.
 
 ## V437 R51 PROTOCOL EXPANSION 2 — 2026-10-05
-**Status: CURRENT / LOCAL_FROZEN_HOSTED_OPEN**
+**Status: CURRENT / PUBLIC_FINAL_SOFTWARE_GATES_CLOSED / REPOSITORY_CLOSURE_PENDING_FINAL_MAIN_CI**
 
 ### Previous Accepted State
 - v4.3.6 R50 / Linux R16 remains immutable and publicly finalized.
@@ -701,4 +701,16 @@ No open v4.3.6 software gates. Final main CI run 37343449317 is SUCCESS on contr
 6. After R51 is closed, perform a second research pass for additional authoritative connection families and runtime-upgrade candidates.
 
 ### Exact Next Action
-Local frozen gates are PASS. Commit the exact R51 candidate, push the immutable SHA, and require the full hosted CI matrix before any merge or public promotion.
+R51 public software gates are closed. Commit only Brain/Knowledge/post-publish/release evidence plus PUBLIC_MANIFEST closure, prove app/crossplatform/windows runtime diff versus immutable v4.3.7 is NONE, and require final main CI. Start any R52 research only after this control-plane closure.
+
+
+### R51 Public Promotion / Post-Publish Evidence
+- Exact candidate e80d406d89bb9539689a5209d86ddb714f1a8539: push CI 37353807006 and PR #27 CI 37353842830 are both 10/10 SUCCESS.
+- Merge/runtime authority 07424a87a0dfa2047afcfefeb62a71feb38a906d has an identical Git tree; main CI 37354810434 is 10/10 SUCCESS.
+- Exact v4.3.7 tag points to the merge authority; tag CI 37356646618 is 10/10 SUCCESS.
+- Public Windows asset: 24,269,473 bytes / SHA-256 4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3.
+- Public Linux R17 asset: 234,341 bytes / SHA-256 1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6.
+- GitHub digests and independent re-download hashes match both assets.
+- Windows installed R45 updater discovery: PASS for R51; session/route/DNS unchanged; owner Windows was not forcibly upgraded.
+- Linux public updater: PASS R16->R17; installed 4.2.0-linux.17-r44; integrity 9/9 PASS; updateAvailable=false; route/DNS/domain/disconnected-session semantics preserved.
+- Stable sing-box 1.14 outbound-family coverage is now exhausted for accepted node families, subject to product exclusions. A narrower R52 refinement remains for Shadowsocks SIP002/SIP003 plugin query preservation (obfs-local/v2ray-plugin). Mieru requires a separate runtime/server-authority evaluation. sing-box 1.15 MASQUE/Tailcat are alpha/pre-release and not accepted into this stable release line.
