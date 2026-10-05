@@ -3,7 +3,7 @@
   "project": "FreeNet Hub",
   "version": "4.3.4",
   "changeSet": "R47",
-  "status": "R48_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
   "previousAcceptedState": {
     "version": "4.3.2",
     "tag": "v4.3.2",
@@ -262,6 +262,62 @@
         "rootCause": "Acceptance status omitted the V434_R48 prefix required to match RELEASE.status",
         "prevention": "Keep acceptanceEvidence status byte-for-byte aligned with RELEASE.status before final public-tree verification."
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / Public v4.3.4 R48 release",
+      "Claim_Decision": "Promote exact tested SHA 4a3a243 to tag v4.3.4 only after branch/main/tag hosted validation; publish exact R48 Windows bytes plus unchanged Linux R14.",
+      "Evidence_Source": [
+        "evidence/V434_PUBLIC_RELEASE_CLOSURE_20261005.json",
+        "evidence/V434_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "evidence/V434_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "GitHub CI runs 37281848369, 37282638834, 37290013302"
+      ],
+      "Confidence_Status": "CONFIRMED / PUBLIC_RELEASED / REPOSITORY_CONTROL_CLOSURE_PENDING",
+      "Reuse_Targets": [
+        "release authority",
+        "updater semantics",
+        "handoff",
+        "future resilience baseline"
+      ],
+      "Provenance": {
+        "tag": "v4.3.4",
+        "commit": "4a3a24351ac892563d2c01e7d40cd5a001fe13e5",
+        "windowsSha256": "5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA",
+        "linuxSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Post-release protocol expansion audit",
+      "Claim_Decision": "Do not add TUIC/AnyTLS/ShadowTLS/Naive/OpenVPN/OpenConnect/Psiphon/AmneziaWG-like buttons to Smart without endpoint/config authority. Current 11-source feed audit contains no TUIC/AnyTLS/ShadowTLS/Naive endpoints despite runtime capability.",
+      "Evidence_Source": [
+        "evidence/V434_POSTRELEASE_EXPANSION_AUDIT_20261005.json",
+        "app/engine.py",
+        "app/nodehub.py",
+        "evidence/R48_RESILIENCE_AUDIT_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / NO_ADDITIONAL_AUTO_METHOD_JUSTIFIED",
+      "Reuse_Targets": [
+        "future architecture",
+        "scope control",
+        "protocol roadmap"
+      ],
+      "Provenance": {
+        "sourcesAudited": 11,
+        "observedSchemes": {
+          "vless": 1371,
+          "trojan": 1873,
+          "vmess": 331,
+          "hy2": 175,
+          "ss": 500,
+          "hysteria2": 4
+        },
+        "absent": [
+          "tuic",
+          "anytls",
+          "shadowtls",
+          "naive"
+        ]
+      }
     }
   ],
   "authoritativeEvidence": [
@@ -278,14 +334,18 @@
     "evidence/R48_RESILIENCE_AUDIT_20261005.json",
     "evidence/R48_BRIDGE_LIVE_20261005.json",
     "evidence/V434_R48_CANDIDATE_ACCEPTANCE_20261005.json",
-    "evidence/V434_R48_INSTALLER_BUILD_20261005.json"
+    "evidence/V434_R48_INSTALLER_BUILD_20261005.json",
+    "evidence/V434_PUBLIC_RELEASE_CLOSURE_20261005.json",
+    "evidence/V434_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V434_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V434_POSTRELEASE_EXPANSION_AUDIT_20261005.json"
   ],
   "openGates": [
-    "Hosted CI exact-candidate validation before public promotion",
-    "Trusted Windows Authenticode signing identity remains external",
-    "Current private WebTunnel bridge is not healthy in this network; integration remains fail-closed",
-    "Physical console field E2E remains external hardware validation",
-    "Production Android/iOS packet forwarding/signing/real-device remains separate architecture/device/legal work"
+    "Final repository-state control-only commit and hosted CI",
+    "Trusted Windows Authenticode signing remains external",
+    "Current private WebTunnel bridge health remains network/config dependent and currently fail-closed",
+    "Physical console field E2E remains external",
+    "Production Android/iOS packet forwarding/signing/real-device remains external"
   ],
-  "exactNextAction": "Rebuild/verify PUBLIC_MANIFEST after this closure record, then commit/push exact R48 candidate and require hosted CI before public promotion."
+  "exactNextAction": "Commit/push control-only v4.3.4 closure with zero runtime diff versus tag, require final repository-state CI PASS, then record that result without mutating v4.3.4."
 }

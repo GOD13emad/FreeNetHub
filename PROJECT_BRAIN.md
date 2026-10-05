@@ -419,3 +419,22 @@ Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_OPEN
 
 #### Exact Next Action
 Final PUBLIC_MANIFEST rebuild/verification, then commit/push exact R48 candidate for hosted CI. No public promotion before that PASS.
+
+## V434 PUBLIC RELEASE — 2026-10-05
+Status: CURRENT / PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING
+- Runtime/release authority is exact tag v4.3.4 -> 4a3a24351ac892563d2c01e7d40cd5a001fe13e5. Branch CI 37281848369, main CI 37282638834 and tag CI 37290013302 all SUCCESS on the same SHA, including Windows fresh-install, Linux, console virtual, Android emulator, iOS simulator and aggregate acceptance.
+- Public release FreeNet Hub 4.3.4 Final is latest. Windows R48 asset = 24,271,225 bytes / SHA-256 5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA. Linux remains unchanged accepted R14 = 213,124 bytes / SHA-256 B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984. GitHub digests and independent re-downloads match exactly.
+- R48 resilience is evidence-backed: valid configured WebTunnel/obfs4 participate in Smart/AUTO/Scan/Emergency; missing or invalid bridge configs are excluded fail-closed. Current obfs4 live path passed; current private WebTunnel path fails closed instead of generating a false success.
+- Windows installed updater read-only check PASS: installed R45 sees R48 as newer and selects exact asset bytes/digest; session/route/DNS unchanged. Linux installed R14 sees v4.3.4 Linux R14 as equal and updateAvailable=false; session/route/DNS unchanged.
+- Post-release expansion audit checked the 11 configured public node sources. They currently expose VLESS/Trojan/VMess/SS/Hysteria2 but no TUIC/AnyTLS/ShadowTLS/Naive endpoints. Therefore additional automatic Smart methods are not added merely because sing-box can support them; OpenVPN/OpenConnect/Psiphon/other families remain evidence-gated until real config/server authority exists.
+- No software guarantee is made for connectivity when all physical/upstream paths are unavailable. The product goal is maximum path diversity, failover and recovery with evidence-backed transports.
+- Evidence: evidence/V434_PUBLIC_RELEASE_CLOSURE_20261005.json; evidence/V434_POSTPUBLISH_UPDATECHECK_20261005.json; evidence/V434_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json; evidence/V434_POSTRELEASE_EXPANSION_AUDIT_20261005.json.
+
+### Roadmap ← CURRENT
+1. Rebuild PUBLIC_MANIFEST including public closure/expansion audit records and verify public tree/security.
+2. Commit/push one control-only closure commit with zero runtime diff versus v4.3.4 and require final repository-state CI PASS.
+3. Record final repository-state CI without mutating tag/assets.
+4. Future protocol/profile imports begin as a new evidence-gated change set. Authenticode, physical console field E2E, and production mobile forwarding/signing/device remain external.
+
+### Exact Next Action
+Rebuild/verify PUBLIC_MANIFEST, prove runtime diff versus v4.3.4 is zero, commit/push control-only closure, and require final CI.

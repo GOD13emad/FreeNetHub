@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.4",
+  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
+  "previousAcceptedState": {
+    "release": "v4.3.3",
+    "windows": "R47",
+    "linux": "R14/R41"
+  },
+  "runtimeAuthority": {
+    "tag": "v4.3.4",
+    "tagObject": "3e50deb445e37a736b6bced2262c452ad5c114a7",
+    "commit": "4a3a24351ac892563d2c01e7d40cd5a001fe13e5",
+    "promotion": "EXACT_TESTED_SHA",
+    "mergeCommitAdded": false
+  },
+  "hostedValidation": {
+    "branch": {
+      "runId": 37281848369,
+      "status": "SUCCESS",
+      "sha": "4a3a24351ac892563d2c01e7d40cd5a001fe13e5"
+    },
+    "main": {
+      "runId": 37282638834,
+      "status": "SUCCESS",
+      "sha": "4a3a24351ac892563d2c01e7d40cd5a001fe13e5"
+    },
+    "tag": {
+      "runId": 37290013302,
+      "status": "SUCCESS",
+      "sha": "4a3a24351ac892563d2c01e7d40cd5a001fe13e5"
+    },
+    "requiredGates": [
+      "windows-unit",
+      "windows-installer-fresh",
+      "windows-virtual-signing",
+      "linux-static",
+      "console-virtual-e2e",
+      "android-build",
+      "android-emulator-runtime",
+      "ios-static",
+      "ios-simulator-runtime",
+      "virtual-acceptance"
+    ]
+  },
+  "publicRelease": {
+    "tag": "v4.3.4",
+    "name": "FreeNet Hub 4.3.4 Final",
+    "publishedAt": "2026-10-05T09:40:10Z",
+    "latestObserved": true,
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.3.4_R48_Setup.exe",
+        "bytes": 24271225,
+        "sha256": "5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA",
+        "githubDigest": "sha256:5aaff015ffe196ff82132e52b891e73cf2fcd4acb6a36cfd64ca50c9347d3fba",
+        "independentRedownloadSha256": "5AAFF015FFE196FF82132E52B891E73CF2FCD4ACB6A36CFD64CA50C9347D3FBA",
+        "verification": "PASS"
+      },
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R14.zip",
+        "bytes": 213124,
+        "sha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+        "githubDigest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+        "independentRedownloadSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+        "verification": "PASS",
+        "note": "Unchanged accepted Linux R14/R41 baseline"
+      }
+    ]
+  },
+  "r48Behavior": {
+    "smartConfiguredBridges": "WebTunnel/obfs4 enter Smart/AUTO/Scan/Emergency only when private bridge config parses validly",
+    "strictCountryPolicy": "NODE/CFON only",
+    "obfs4Live": "PASS",
+    "webTunnelCurrentPrivateBridge": "FAIL_CLOSED_PATH_NOT_VERIFIED",
+    "privateBridgeMaterialInRepository": "NONE",
+    "localRegression": "206/206 PASS"
+  },
+  "postPublish": {
+    "windows": {
+      "status": "PASS",
+      "action": "INSTALLED_WINDOWS_UPDATECHECK_READ_ONLY",
+      "localRevision": 45,
+      "remoteRevision": 48,
+      "updateAvailable": true,
+      "assetExact": true,
+      "sessionSha256Before": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+      "sessionSha256After": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+      "routeSha256Before": "32450D0503009AEF0180B0576950B31A3C6F4656071D9CBA2AA50C0F52AB8A4C",
+      "routeSha256After": "32450D0503009AEF0180B0576950B31A3C6F4656071D9CBA2AA50C0F52AB8A4C",
+      "dnsSha256Before": "D45048D67C6C8DCA2F9DD151B0FF42818D6C01EB37373628BAA90A047D50294D",
+      "dnsSha256After": "D45048D67C6C8DCA2F9DD151B0FF42818D6C01EB37373628BAA90A047D50294D",
+      "evidence": "evidence/V434_POSTPUBLISH_UPDATECHECK_20261005.json",
+      "evidenceSha256": "D2904884B7FD410E7D274A42A577CAF605F96A5E6F6F627CF3AC5A57336F346E"
+    },
+    "linux": {
+      "status": "PASS",
+      "action": "INSTALLED_LINUX_UPDATECHECK_READ_ONLY",
+      "installedVersion": "4.2.0-linux.14-r41",
+      "localRevision": 14,
+      "remoteRevision": 14,
+      "updateAvailable": false,
+      "sessionSha256Before": "05FFAC97E27D6A7D4175E704DC1D139CFECEAAD09D7F78EADED1DF516E22BBE0",
+      "sessionSha256After": "05FFAC97E27D6A7D4175E704DC1D139CFECEAAD09D7F78EADED1DF516E22BBE0",
+      "routeSha256Before": "DFAC896D7AF1CFBABCA3E1CDAD5AFCC1404EF204BA4F78D9EF5B5669E9ADCFEB",
+      "routeSha256After": "DFAC896D7AF1CFBABCA3E1CDAD5AFCC1404EF204BA4F78D9EF5B5669E9ADCFEB",
+      "dnsSha256Before": "1B640FE99BDBA23E8AD483E3E28142FA0842428EEB8D77F45E2A8F8B6002E101",
+      "dnsSha256After": "1B640FE99BDBA23E8AD483E3E28142FA0842428EEB8D77F45E2A8F8B6002E101",
+      "evidence": "evidence/V434_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
+      "evidenceSha256": "52D4E75547BA115036AD7DFB62A74613516F725EC7E3207E5C2F6F19ECD0E1B3"
+    }
+  },
+  "expansionAudit": "evidence/V434_POSTRELEASE_EXPANSION_AUDIT_20261005.json",
+  "externalNonBlocking": [
+    "Trusted Windows Authenticode signing identity remains external / NotSigned",
+    "Current private WebTunnel bridge is not healthy on this network but integration correctly fails closed",
+    "Physical console field E2E remains external hardware validation",
+    "Production Android/iOS packet forwarding/signing/real-device remains external",
+    "Additional protocol families require reproducible server/config authority before Smart exposure"
+  ],
+  "authoritativeEvidence": [
+    "evidence/R48_RESILIENCE_AUDIT_20261005.json",
+    "evidence/R48_BRIDGE_LIVE_20261005.json",
+    "evidence/V434_R48_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/V434_R48_INSTALLER_BUILD_20261005.json",
+    "evidence/V434_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V434_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V434_POSTRELEASE_EXPANSION_AUDIT_20261005.json"
+  ],
+  "finalObjectiveResult": "Desktop/public v4.3.4 R48 CLOSED_PASS. Resilience expanded with evidence-backed configured bridge transports; no unsupported global-connectivity guarantee is claimed.",
+  "exactNextAction": "Commit/push control-only closure with zero runtime diff versus v4.3.4, require final repository-state CI PASS, then record the CI without changing tag/assets.",
+  "repositoryClosure": {
+    "status": "PENDING_CONTROL_ONLY_COMMIT_AND_CI"
+  }
+}

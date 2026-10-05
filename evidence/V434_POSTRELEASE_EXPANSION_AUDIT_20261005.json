@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "baseline": "v4.3.4 / R48",
+  "objective": "Post-release evidence-first expansion audit: identify only additional methods that have both runtime capability and reproducible endpoint/config authority.",
+  "currentProduct": {
+    "browserMethods": [
+      "SMART",
+      "NODE",
+      "WARP",
+      "CFON",
+      "GOOL",
+      "TOR/SNOWFLAKE",
+      "WEBTUNNEL_CONFIGURED",
+      "OBFS4_CONFIGURED",
+      "CUSTOM_LOCAL_PROXY",
+      "DIRECT"
+    ],
+    "nodeProtocols": [
+      "SS",
+      "VMESS",
+      "VLESS",
+      "TROJAN",
+      "HYSTERIA2"
+    ],
+    "resilience": [
+      "Smart all-method benchmark",
+      "best-node selection",
+      "monitor/autoRepair",
+      "Emergency ChatGPT",
+      "configured bridge priority",
+      "public node multi-source refresh",
+      "Direct network/DPI diagnostics"
+    ],
+    "scopes": [
+      "browser-only default",
+      "explicit PC tunnel paths",
+      "separate console gateway"
+    ],
+    "update": "GitHub release check/download/digest verification/confirm install"
+  },
+  "installedCoreCapability": {
+    "singBoxVersion": "1.14.0",
+    "buildTags": [
+      "with_quic",
+      "with_wireguard",
+      "with_utls",
+      "with_cloudflared",
+      "with_naive_outbound",
+      "with_openvpn",
+      "with_openconnect"
+    ],
+    "interpretation": "Runtime has more protocol capability than currently exposed by NodeHub, but capability alone is not sufficient evidence for an automatic product method."
+  },
+  "configuredPublicFeedAudit": {
+    "sources": 11,
+    "fetchResult": "ALL_OBSERVED_SOURCES_HTTP_200",
+    "observedSchemes": {
+      "vless": 1371,
+      "trojan": 1873,
+      "vmess": 331,
+      "hy2": 175,
+      "ss": 500,
+      "hysteria2": 4
+    },
+    "absentSchemes": [
+      "TUIC",
+      "AnyTLS",
+      "ShadowTLS",
+      "NaiveProxy"
+    ],
+    "conclusion": "No current configured public source provides reproducible endpoints for the deferred new protocol families; adding them to Smart now would be UI/parser-only complexity."
+  },
+  "methodEvidence": [
+    {
+      "method": "WebTunnel/obfs4/Snowflake",
+      "evidence": "Tor Project official bridge documentation + shipped lyrebird runtime",
+      "decision": "R48 implemented valid configured WebTunnel/obfs4; Snowflake remains Tor path."
+    },
+    {
+      "method": "TUIC/AnyTLS/ShadowTLS/Naive",
+      "evidence": "sing-box official protocol support; no endpoints in current 11-source feed audit",
+      "decision": "DEFER automatic Smart/public-source exposure until compatible source or user-config authority is proven."
+    },
+    {
+      "method": "OpenVPN/OpenConnect",
+      "evidence": "installed sing-box build tags and official endpoint support",
+      "decision": "DEFER to profile-import change set; needs real .ovpn/OpenConnect config/server authority and live validation."
+    },
+    {
+      "method": "Psiphon",
+      "evidence": "official tunnel-core exists; integration needs sponsor/propagation/server-entry/package/license authority",
+      "decision": "DEFER separate dependency/config/licensing change set."
+    },
+    {
+      "method": "AmneziaWG-like",
+      "evidence": "requires compatible remote server/config and would add a new operational dependency",
+      "decision": "DEFER; no evidence-backed server authority."
+    }
+  ],
+  "acceptedNextProductPolicy": [
+    "Do not add decorative transport buttons.",
+    "Accept new automatic methods only when endpoint/config source, parser, runtime dependency, live validation and rollback are all reproducible.",
+    "User-supplied advanced config/profile import is a potentially useful future track, but should be isolated from Smart until validation succeeds."
+  ],
+  "rejectedClaim": "No software can guarantee global Internet access when every physical/upstream path is unavailable or universally blocked.",
+  "status": "AUDIT_COMPLETE_NO_ADDITIONAL_AUTO_METHOD_JUSTIFIED",
+  "exactNextAction": "Close v4.3.4 repository control state. Begin any future protocol/profile import as a new evidence-gated change set; do not mutate v4.3.4."
+}
