@@ -613,7 +613,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
     $up=$(if($null -ne $uploadValue){Format-Metric $uploadValue 'Mbps'}elseif($perf){'N/A'}else{'?'})
     $country=$(if($perf -and $perf.country){[string]$perf.country}elseif($lt -and $lt.country){[string]$lt.country}else{'?'})
     $last=$(if($perf -and $perf.checked){[string]$perf.checked}elseif($lt -and $lt.checked){[string]$lt.checked}else{'?'})
-    $status=$(if($perf -and $perf.ok){'?'}elseif($lt -and $lt.healthy){'?'}elseif($n.endpoint_test -and $n.endpoint_test.reachable){'?'}else{'?'})
+    $status=$(if($perf -and $perf.ok){'PASS'}elseif($perf){'FAIL'}elseif($lt -and $lt.healthy){'HTTPS'}elseif($n.endpoint_test -and $n.endpoint_test.reachable){'TCP'}else{'—'})
     $nameText=($marks+[string]$n.name+$rating);$protocolText=[string]$n.protocol;$sourceText=[string]$n.source
     $script:NodeRows+=,[pscustomobject]@{Id=[string]$n.id;Display=$display;Status=$status;StatusSort=$status;Name=$nameText;NameSort=([string]$n.name).ToLowerInvariant();Country=$country;CountrySort=$country.ToLowerInvariant();Protocol=$protocolText;ProtocolSort=$protocolText.ToLowerInvariant();Ping=$ping;PingValue=$pingValue;Download=$down;DownloadValue=$downloadValue;Upload=$up;UploadValue=$uploadValue;Source=$sourceText;SourceSort=$sourceText.ToLowerInvariant();LastTest=$last;LastTestSort=$last.ToLowerInvariant();Node=$n}
    }
@@ -1233,7 +1233,9 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
         $script:NextNodeBenchmark=[DateTime]::UtcNow.AddSeconds(2)
        }else{
         $script:BenchmarkAllActive=$false;$script:C.StatusTitle.Text='Benchmark نودها کامل شد'
-        $script:C.StatusDetail.Text=[string]$r.result.benchmarked+' نود این batch به‌روزرسانی شدند · PASS '+[string]$r.result.passed+' · N/A '+[string]$r.result.failed+' · باقی‌مانده: '+[string]$remaining
+        $best=$r.result.best
+        $bestText=$(if($best -and $best.performance){' · بهترین: '+[string]$best.node.name+' · '+(Format-Metric $best.performance.pingMs 'ms')+' · ↓ '+(Format-Metric $best.performance.downloadMbps 'Mbps')+' · ↑ '+(Format-Metric $best.performance.uploadMbps 'Mbps')}else{' · بهترین full-health: پیدا نشد'})
+        $script:C.StatusDetail.Text=[string]$r.result.benchmarked+' نود این batch به‌روزرسانی شدند · PASS '+[string]$r.result.passed+' · N/A '+[string]$r.result.failed+' · باقی‌مانده: '+[string]$remaining+$bestText
         $script:NextNodeBenchmark=[DateTime]::UtcNow.AddMinutes(10)
        }
       }

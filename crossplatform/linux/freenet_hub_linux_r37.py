@@ -22,7 +22,7 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 
-VERSION = "4.2.0-linux.15-r42"
+VERSION = "4.2.0-linux.16-r43"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -430,7 +430,14 @@ def node_rows():
         perf=n.get("performance_test") if isinstance(n.get("performance_test"),dict) else {}
         source=str(n.get("source") or "")
         source_rank=0 if source=="AURX_HTTP_VERIFIED" else 1 if source=="MORPHEUS_BEST" else 2
-        return (0 if n.get("pinned") else 1,0 if n.get("favorite") else 1,0 if ep.get("reachable") else 1,source_rank,float(ep.get("latency_ms") or 999999),-(float(perf.get("downloadMbps") or 0)),str(n.get("name") or "").lower())
+        perf_ok=bool(perf.get("ok"))
+        try:perf_ping=float(perf.get("pingMs")) if perf.get("pingMs") is not None else 999999.0
+        except (TypeError,ValueError):perf_ping=999999.0
+        try:perf_down=float(perf.get("downloadMbps") or 0)
+        except (TypeError,ValueError):perf_down=0.0
+        try:perf_up=float(perf.get("uploadMbps") or 0)
+        except (TypeError,ValueError):perf_up=0.0
+        return (0 if perf_ok else 1,perf_ping if perf_ok else 999999.0,-perf_down if perf_ok else 0.0,-perf_up if perf_ok else 0.0,0 if n.get("pinned") else 1,0 if n.get("favorite") else 1,0 if ep.get("reachable") else 1,source_rank,float(ep.get("latency_ms") or 999999),str(n.get("name") or "").lower())
     return [NH.public_node(n) for n in sorted(s["nodes"],key=key)]
 
 def selected_node():
@@ -630,6 +637,37 @@ def node_benchmark_batch(limit=4):
         if original and any(x.get("id")==original for x in node_store()["nodes"]):node_select(original)
     eligible=len(ordered);remaining=sum(1 for n in node_store()["nodes"] if ((n.get("endpoint_test") or {}).get("reachable") is True or str(n.get("protocol") or "").lower()=="hysteria2") and not isinstance(n.get("performance_test"),dict))
     return {"ok":True,"benchmarked":len(rows),"passed":sum(1 for x in rows if x.get("ok")),"failed":sum(1 for x in rows if not x.get("ok")),"eligible":eligible,"remainingUnbenchmarked":remaining,"results":rows}
+
+def node_best():
+    s=node_store()
+    winners=[n for n in s["nodes"] if isinstance(n.get("performance_test"),dict) and n["performance_test"].get("ok") is True]
+    if not winners:return None
+    def key(n):
+        p=n["performance_test"]
+        try:ping=float(p.get("pingMs")) if p.get("pingMs") is not None else 999999.0
+        except (TypeError,ValueError):ping=999999.0
+        try:down=float(p.get("downloadMbps") or 0)
+        except (TypeError,ValueError):down=0.0
+        try:up=float(p.get("uploadMbps") or 0)
+        except (TypeError,ValueError):up=0.0
+        return (ping,-down,-up)
+    n=min(winners,key=key)
+    return {"id":n.get("id"),"node":NH.public_node(n),"performance":dict(n.get("performance_test") or {})}
+
+def node_benchmark_best(max_candidates=24,target_passes=3,batch_size=4):
+    max_candidates=max(4,min(int(max_candidates),24))
+    target_passes=max(1,min(int(target_passes),6))
+    batch_size=max(1,min(int(batch_size),4))
+    aggregate=[];first=True;last={}
+    while len(aggregate)<max_candidates:
+        winners=sum(1 for n in node_store()["nodes"] if isinstance(n.get("performance_test"),dict) and n["performance_test"].get("ok") is True)
+        if not first and winners>=target_passes:break
+        first=False
+        last=node_benchmark_batch(min(batch_size,max_candidates-len(aggregate)))
+        aggregate.extend(list(last.get("results") or []))
+        if not last.get("results") or int(last.get("remainingUnbenchmarked") or 0)<=0:break
+    best=node_best()
+    return {"ok":best is not None,"benchmarked":len(aggregate),"passed":sum(1 for x in aggregate if x.get("ok") is True),"failed":sum(1 for x in aggregate if x.get("ok") is not True),"eligible":last.get("eligible",0),"remainingUnbenchmarked":last.get("remainingUnbenchmarked",0),"best":best,"results":aggregate}
 
 def _node_owner():
     rec=_load(NODE_OWNER,{})

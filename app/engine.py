@@ -148,10 +148,16 @@ def node_select(node_id):
 
 def node_public_rows(store=None):
  s=node_store() if store is None else store
+ def num(v,default):
+  try:return float(v) if v is not None else default
+  except (TypeError,ValueError):return default
  def key(n):
   ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
   lt=n.get('last_test') if isinstance(n.get('last_test'),dict) else {}
-  return (0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if lt.get('healthy') else 1,0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),str(n.get('name','')).lower())
+  perf=n.get('performance_test') if isinstance(n.get('performance_test'),dict) else {}
+  perf_ok=bool(perf.get('ok'))
+  # Smart order: application-level health outranks raw TCP reachability.
+  return (0 if perf_ok else 1,num(perf.get('pingMs'),float('inf')) if perf_ok else float('inf'),-num(perf.get('downloadMbps'),0.0) if perf_ok else 0.0,-num(perf.get('uploadMbps'),0.0) if perf_ok else 0.0,0 if lt.get('healthy') else 1,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if ep.get('reachable') else 1,num(ep.get('latency_ms'),999999.0),str(n.get('name','')).lower())
  return [NH.public_node(x) for x in sorted(s['nodes'],key=key)]
 
 def node_endpoint_probe(n,timeout=1.25):
@@ -1820,7 +1826,10 @@ def dispatch(action,mode,payload):
   remaining=sum(1 for n in s['nodes'] if bench_eligible(n) and not isinstance(n.get('performance_test'),dict))
   eligible_total=sum(1 for n in s['nodes'] if bench_eligible(n))
   passed=sum(1 for r in rows if r.get('ok') is True);failed=len(rows)-passed
-  return {'benchmarked':len(rows),'passed':passed,'failed':failed,'eligible':eligible_total,'remainingUnbenchmarked':remaining,'results':rows,'total':len(s['nodes']),'selected':s.get('selected'),'nodes':node_public_rows(s)}
+  winners=[n for n in s['nodes'] if isinstance(n.get('performance_test'),dict) and n['performance_test'].get('ok') is True]
+  best=min(winners,key=lambda n:performance_rank_key(n.get('performance_test'))) if winners else None
+  best_public=({'id':best.get('id'),'performance':best.get('performance_test'),'node':NH.public_node(best)} if best else None)
+  return {'benchmarked':len(rows),'passed':passed,'failed':failed,'eligible':eligible_total,'remainingUnbenchmarked':remaining,'results':rows,'best':best_public,'total':len(s['nodes']),'selected':s.get('selected'),'nodes':node_public_rows(s)}
  if action=='Export':return safe_export()
  if action=='Updates':
   rows=[]

@@ -12,13 +12,21 @@ def canonical_bytes(p):
 
 def hc(p): return hashlib.sha256(canonical_bytes(p)).hexdigest().upper()
 
-def verify_manifest(base,manifest,key):
+def verify_manifest(base,manifest,key,canonical=False):
     m=json.loads(manifest.read_text(encoding="utf-8-sig"))
     failures=[]
     for row in m[key]:
         rel=row.get("file",row.get("name"))
         p=base/rel
-        if not p.is_file() or p.stat().st_size!=int(row["bytes"]) or h(p)!=row["sha256"].upper():
+        if not p.is_file():
+            failures.append(rel)
+            continue
+        if canonical:
+            data=canonical_bytes(p)
+            ok=len(data)==int(row["bytes"]) and hashlib.sha256(data).hexdigest().upper()==row["sha256"].upper()
+        else:
+            ok=p.stat().st_size==int(row["bytes"]) and h(p)==row["sha256"].upper()
+        if not ok:
             failures.append(rel)
     return m,failures
 
@@ -36,7 +44,7 @@ pm=json.loads(pm_path.read_text(encoding="utf-8-sig")) if pm_path.is_file() else
 public_index={row["file"] for row in pm.get("files",[])}
 
 gm,gatewaybad=verify_manifest(R/"gateway",R/"gateway"/"manifest.json","files")
-cm,crossbad=verify_manifest(R/"crossplatform",R/"crossplatform"/"MANIFEST.json","files")
+cm,crossbad=verify_manifest(R/"crossplatform",R/"crossplatform"/"MANIFEST.json","files",canonical=True)
 wm=json.loads((R/"windows"/"standalone"/"MANIFEST.json").read_text(encoding="utf-8-sig"))
 winbad=[]
 for row in wm["files"]:

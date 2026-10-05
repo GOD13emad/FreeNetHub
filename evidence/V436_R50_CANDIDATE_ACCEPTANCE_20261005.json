@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.6",
+  "revision": "R50",
+  "status": "V436_R50_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "objective": "Fix evidence-backed best-node false negatives: rank full-health results before TCP-only hints and use bounded adaptive Linux best-node search.",
+  "baseline": {
+    "tag": "v4.3.5",
+    "mergeCommit": "93fea59d696b69eb5b723e2d6b2033d4fdb879dd",
+    "closureCommit": "3b2a94c5e760ec51739e5048ab39fc60c1194793"
+  },
+  "liveEvidence": {
+    "linuxR15Batch4": "NO_HEALTHY_NODE_IN_FIRST_SAMPLE",
+    "linuxR15Batch12": {
+      "benchmarked": 12,
+      "passed": 3,
+      "failed": 9,
+      "bestDownloadMbps": 6.4,
+      "bestCountry": "US"
+    },
+    "torDirect90": {
+      "result": "BOOTSTRAP_TIMEOUT",
+      "bootstrapPercent": 67,
+      "routePreserved": true,
+      "dnsSemanticPreserved": true,
+      "sessionPreserved": true
+    }
+  },
+  "verified": {
+    "targetedNodeTests": "8/8 PASS",
+    "pythonCompile": "PASS",
+    "powershellParse": "PASS",
+    "linuxParityAfterContractUpdate": "PASS",
+    "linuxR16Package": "PASS_225314_BYTES_SHA256_01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503",
+    "crossPlatformManifest": "PASS_CANONICAL_SHA256_2C39E72AC80A76DE1A597A870412F26070977AB57D82E9E396596E23576250C9",
+    "fullRegression": "244/244 PASS",
+    "linuxStatic": "SELFTEST+PARITY+UPDATE_REVISION PASS",
+    "publicSecurity": "PASS",
+    "installerBuild": "PASS_SELF_REFERENCE_FREE_RELEASE_METADATA_MANIFEST_PREFLIGHT_FROZEN_25_FILES",
+    "freshInstall": "PASS_UI_CHILD_PWSH_PRESENT",
+    "installer": "PASS_24257042_BYTES_SHA256_E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
+    "installerAuthenticode": "NotSigned_EXTERNAL",
+    "linuxR16": "PASS_225314_BYTES_SHA256_01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503",
+    "networkPreservation": "WINDOWS_FRESH_INSTALL_DEFAULT_ROUTE_UNCHANGED; LINUX_LIVE_TEST_ROUTE_SESSION_PRESERVED",
+    "publicTree": "PENDING_FINAL_LOCAL_REVERIFY_AFTER_CANONICALIZATION_FIX",
+    "fullRegressionAfterCanonicalFix": "244/244 PASS",
+    "freshInstallAfterCanonicalFix": "PASS",
+    "crossPlatformManifestCanonicalEntries": "PASS_2C39E72AC80A76DE1A597A870412F26070977AB57D82E9E396596E23576250C9",
+    "firstHostedAttempt": "0dd73a874ecf4aa37b191c6adaa12bbe8d760c27_WINDOWS_UNIT_VERIFY_PUBLIC_MANIFEST_FAIL; OTHER_COMPLETED_EARLY_JOBS_PASS",
+    "canonicalizationFix": "CROSSPLATFORM_MANIFEST_BUILDER_AND_PUBLIC_VERIFIER_USE_GIT_CANONICAL_BYTES",
+    "finalFreshInstall": "PASS_DEFAULT_ROUTE_192.168.20.1",
+    "publicVerifierCanonicalPolicy": "CROSSPLATFORM_NESTED_ENTRIES_VERIFIED_WITH_GIT_CANONICAL_BYTES"
+  },
+  "openGates": [
+    "hosted exact-SHA retry CI",
+    "merge/release/post-publish update"
+  ],
+  "networkMutationByPatch": false,
+  "hostedFirstAttempt": {
+    "runId": 37334451018,
+    "sha": "0dd73a874ecf4aa37b191c6adaa12bbe8d760c27",
+    "status": "FAIL_WINDOWS_UNIT_ONLY_AT_PUBLIC_TREE",
+    "rootCause": "crossplatform manifest generator hashed nested text entries from raw Windows CRLF working-tree bytes; fresh checkout used LF",
+    "fix": "hash every crossplatform manifest entry through git hash-object/cat-file canonical bytes"
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "version": "4.2.0-linux.15-r42",
+  "elapsedSec": 267.638,
+  "status": "PASS",
+  "result": {
+    "ok": true,
+    "benchmarked": 12,
+    "passed": 3,
+    "failed": 9,
+    "eligible": 1770,
+    "remainingUnbenchmarked": 1749,
+    "results": [
+      {
+        "id": "0015846d2872db900f7f",
+        "status": "PASS",
+        "ok": true,
+        "pingMs": 1527.0,
+        "downloadMbps": 6.4,
+        "uploadMbps": 0.09,
+        "country": "US",
+        "error": ""
+      },
+      {
+        "id": "3e9b26002500e210eda2",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 5597.7,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "US",
+        "error": "THROUGHPUT_INCOMPLETE"
+      },
+      {
+        "id": "1890fad6afa17762255a",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 182.2,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "checked": "2026-10-05T15:00:31.124129+00:00",
+        "error": "TRACE_FAILED"
+      },
+      {
+        "id": "b4f42c51313bd5ad9e4e",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 6.0,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "checked": "2026-10-05T15:00:51.689499+00:00",
+        "error": "TRACE_FAILED"
+      },
+      {
+        "id": "6104f8a173c3a4e23f80",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": null,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "checked": "2026-10-05T15:01:07.239205+00:00",
+        "error": "TRACE_FAILED"
+      },
+      {
+        "id": "9f1dee18431bead95ceb",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 13.2,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "checked": "2026-10-05T15:01:07.834957+00:00",
+        "error": "TRACE_FAILED"
+      },
+      {
+        "id": "ab7104bb10a39d787757",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 15.3,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "checked": "2026-10-05T15:01:08.463922+00:00",
+        "error": "TRACE_FAILED"
+      },
+      {
+        "id": "5406175f1e541b06b5da",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 22.8,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "checked": "2026-10-05T15:01:29.037822+00:00",
+        "error": "TRACE_FAILED"
+      },
+      {
+        "id": "e578d8c6eb80e8167ff3",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 61.1,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "checked": "2026-10-05T15:01:29.505682+00:00",
+        "error": "NODE_PROXY_START_FAILED"
+      },
+      {
+        "id": "14bc0b11612ebb65236a",
+        "status": "FAIL",
+        "ok": false,
+        "pingMs": 85.3,
+        "downloadMbps": null,
+        "uploadMbps": null,
+        "country": "",
+        "checked": "2026-10-05T15:01:50.072830+00:00",
+        "error": "TRACE_FAILED"
+      },
+      {
+        "id": "7d6690b3e31e7e7bee4a",
+        "status": "PASS",
+        "ok": true,
+        "pingMs": 1294.2,
+        "downloadMbps": 1.75,
+        "uploadMbps": 0.25,
+        "country": "US",
+        "error": ""
+      },
+      {
+        "id": "66b3dfa3f8577353ab1d",
+        "status": "PASS",
+        "ok": true,
+        "pingMs": 1296.4,
+        "downloadMbps": 0.55,
+        "uploadMbps": 0.27,
+        "country": "US",
+        "error": ""
+      }
+    ]
+  },
+  "best": {
+    "id": "0015846d2872db900f7f",
+    "status": "PASS",
+    "ok": true,
+    "pingMs": 1527.0,
+    "downloadMbps": 6.4,
+    "uploadMbps": 0.09,
+    "country": "US",
+    "error": ""
+  },
+  "pre": {
+    "route": "53F2BC12B7380F69C75BA073F5BE2F2B042B72E8D16D7338EB9FF9B4B837DFDA",
+    "dns": "B0543CC5A59241965C8A1A80AAAE0D6E1DD48FB4DF6D6A455A4B20CC69278B6C",
+    "sessionSemantic": {
+      "mode": null,
+      "provider": null,
+      "detail": {}
+    }
+  },
+  "post": {
+    "route": "53F2BC12B7380F69C75BA073F5BE2F2B042B72E8D16D7338EB9FF9B4B837DFDA",
+    "dns": "D50E25EFBF16ABF5A8159A3F595074C2D2C58AD154CFA73583738D013A20C8F4",
+    "sessionSemantic": {
+      "mode": null,
+      "provider": null,
+      "detail": {}
+    }
+  },
+  "preserved": false
+}

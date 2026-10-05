@@ -379,11 +379,11 @@ class FreeNetHub(Adw.Application):
         root=vbox(10);root.set_margin_bottom(12);root.append(self.page_head("Node Pool","نودها را دریافت کن، تست اولیه بگیر، سپس نودهای برتر را با Ping/Speed واقعی بسنج"))
 
         guide=card();guide.append(label("روش کار نودها","section-title"))
-        guide.append(label("۱) «تست اولیه همه» فقط دسترسی endpoint را سریع می‌سنجد.  ۲) «تست واقعی 4 نود برتر» از proxy واقعی Ping/Download/Upload می‌گیرد.  ۳) روی هر ردیف کلیک کنی همان نود برای اتصال/تست انتخاب می‌شود.","muted"))
+        guide.append(label("۱) «تست اولیه همه» فقط دسترسی endpoint را سریع می‌سنجد.  ۲) «پیدا کردن بهترین نود» به‌صورت bounded و adaptive تا 24 کاندید را بررسی می‌کند و پس از چند PASS واقعی متوقف می‌شود.  ۳) روی هر ردیف کلیک کنی همان نود برای اتصال/تست انتخاب می‌شود.","muted"))
         guide.append(flow([
             button("⇩ دریافت نودهای عمومی",lambda *_:self.run_async("Node Refresh",core.node_refresh_public,self.nodes_done),"primary"),
             button("۱ · تست اولیه همه نودها (TCP)",lambda *_:self.run_async("Node Test All",core.node_test_all,self.nodes_done)),
-            button("۲ · تست واقعی 4 نود برتر",lambda *_:self.run_async("Node Benchmark Batch",lambda:core.node_benchmark_batch(4),self.nodes_done),"primary"),
+            button("۲ · پیدا کردن بهترین نود",lambda *_:self.run_async("Node Best Search",core.node_benchmark_best,self.nodes_done),"primary"),
             button("تست کامل نود منتخب",lambda *_:self.test_method("NODE",False)),
             button("↻ تازه‌سازی نمایش",lambda *_:self.refresh_nodes()),
         ],max_children=3,min_children=1))
@@ -682,8 +682,9 @@ class FreeNetHub(Adw.Application):
             if idx==4:return str(perf.get("country") or n.get("country") or "ZZ")
             if idx==5:return str(n.get("protocol") or "")
             if idx==6:return str(n.get("name") or "").lower()
-            return (0 if n.get("pinned") else 1,0 if n.get("favorite") else 1,0 if ep.get("reachable") else 1,float(ep.get("latency_ms") or 999999),-float(perf.get("downloadMbps") or 0))
-        rows=sorted(rows,key=key);self.node_cache=rows
+            return 0
+        if idx!=0:rows=sorted(rows,key=key)
+        self.node_cache=rows
         if hasattr(self,"node_list"):
             while True:
                 child=self.node_list.get_first_child()
@@ -784,6 +785,10 @@ class FreeNetHub(Adw.Application):
 
     def nodes_done(self,result):
         self.refresh_nodes();self.refresh_aux()
+        best=result.get("best") if isinstance(result,dict) else None
+        if isinstance(best,dict) and isinstance(best.get("performance"),dict):
+            n=best.get("node") or {};p=best.get("performance") or {}
+            self.status_detail.set_text(f"بهترین full-health: {n.get('name') or best.get('id')} · Ping {p.get('pingMs','—')} ms · ↓ {p.get('downloadMbps','—')} Mbps · ↑ {p.get('uploadMbps','—')} Mbps")
 
     def import_node_url(self,*_):
         url=self.node_url.get_text().strip()

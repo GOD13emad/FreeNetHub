@@ -1,5 +1,5 @@
 #define MyAppName "FreeNet Hub"
-#define MyAppVersion "4.3.5"
+#define MyAppVersion "4.3.6"
 #define MyAppPublisher "FreeNet Hub"
 #define MyAppExeName "FreeNetHub.exe"
 
@@ -13,8 +13,8 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-OutputDir=..\..\delivery\github_v4.3.5
-OutputBaseFilename=FreeNetHub_4.3.5_R49_Setup
+OutputDir=..\..\delivery\github_v4.3.6
+OutputBaseFilename=FreeNetHub_4.3.6_R50_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -24,9 +24,9 @@ CloseApplications=yes
 RestartApplications=no
 ChangesAssociations=no
 ChangesEnvironment=no
-VersionInfoVersion=4.3.5.0
+VersionInfoVersion=4.3.6.0
 VersionInfoProductName=FreeNet Hub
-VersionInfoDescription=FreeNet Hub 4.3.5 R49 TUIC AnyTLS ShadowTLS import and bridge clipboard resilience installer
+VersionInfoDescription=FreeNet Hub 4.3.6 R50 full-health node ranking and adaptive best-node search installer
 MinVersion=10.0.19041
 
 [Languages]
