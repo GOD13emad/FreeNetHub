@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.5",
+  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
+  "previousAcceptedState": {
+    "release": "v4.3.4",
+    "windows": "R48",
+    "linux": "R14/R41"
+  },
+  "runtimeAuthority": {
+    "tag": "v4.3.5",
+    "tagObject": "0e3ab0dcb79cf347c76ef2e55c31070691838219",
+    "commit": "93fea59d696b69eb5b723e2d6b2033d4fdb879dd",
+    "promotion": "EXACT_TESTED_MERGE_SHA",
+    "runtimeFrozen": true
+  },
+  "hostedValidation": {
+    "candidate": {
+      "runId": 37312605504,
+      "status": "SUCCESS",
+      "sha": "b47b7149a10d0bf1986fddb0eead32a05fa0b267",
+      "jobs": "10/10 SUCCESS"
+    },
+    "main": {
+      "runId": 37314410412,
+      "status": "SUCCESS",
+      "sha": "93fea59d696b69eb5b723e2d6b2033d4fdb879dd"
+    },
+    "tag": {
+      "runId": 37315272184,
+      "status": "SUCCESS",
+      "sha": "93fea59d696b69eb5b723e2d6b2033d4fdb879dd"
+    },
+    "requiredGates": [
+      "windows-unit",
+      "windows-installer-fresh",
+      "windows-virtual-signing",
+      "linux-static",
+      "console-virtual-e2e",
+      "android-build",
+      "android-emulator-runtime",
+      "ios-static",
+      "ios-simulator-runtime",
+      "virtual-acceptance"
+    ]
+  },
+  "publicRelease": {
+    "tag": "v4.3.5",
+    "name": "FreeNet Hub 4.3.5 Final",
+    "publishedAt": "2026-10-05T14:06:47Z",
+    "latestRequested": true,
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.3.5_R49_Setup.exe",
+        "bytes": 24260411,
+        "sha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
+        "githubDigest": "sha256:1ee176570baa8605bd32170fe7e6e11d219204eedb84012d1c0c28b50018974e",
+        "independentRedownloadSha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
+        "verification": "PASS"
+      },
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R15.zip",
+        "bytes": 221657,
+        "sha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01",
+        "githubDigest": "sha256:fba77fb02a7e4f207fa12606b4e1a49d3311188501ac3c550d87f98f08ecdf01",
+        "independentRedownloadSha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01",
+        "verification": "PASS"
+      }
+    ]
+  },
+  "postPublish": {
+    "windows": {
+      "status": "PASS",
+      "action": "INSTALLED_WINDOWS_UPDATECHECK_READ_ONLY",
+      "localRevision": 45,
+      "remoteRevision": 49,
+      "updateAvailable": true,
+      "assetExact": true,
+      "sessionPreserved": true,
+      "routePreserved": true,
+      "dnsPreserved": true,
+      "activeSessionPolicy": "OWNER_ACTIVE_CFON_BROWSER_SESSION_PRESERVED; R49 NOT INSTALLED ON OWNER_WINDOWS",
+      "evidence": "evidence/V435_POSTPUBLISH_UPDATECHECK_20261005.json",
+      "evidenceSha256": "D20CABC97316D1B258369712F4ABECE22E7553F90DC2851FEEB96A61C09C1930"
+    },
+    "linux": {
+      "status": "PASS_WITH_CURRENT_NETWORK_METHOD_LIMITATIONS",
+      "installedVersion": "4.2.0-linux.15-r42",
+      "integrity": {
+        "status": "PASS",
+        "files": 9,
+        "failed": []
+      },
+      "localRevision": 15,
+      "remoteRevision": 15,
+      "updateAvailable": false,
+      "realUpdaterInstall": "PASS",
+      "networkMutationOnInstall": false,
+      "liveMethods": {
+        "completed": 7,
+        "passed": 5,
+        "failed": 2,
+        "cleanupOk": true,
+        "routePreserved": true,
+        "dnsPreserved": true,
+        "sessionSemanticPreserved": true
+      },
+      "nodeBestBatch": {
+        "benchmarked": 4,
+        "passed": 0,
+        "failed": 4,
+        "eligibleTcpReachable": 1770,
+        "best": null,
+        "preserved": true,
+        "decision": "NO_FULL_HEALTH_BEST_NODE_CURRENTLY; DO_NOT PROMOTE TCP_ONLY_REACHABILITY_AS_HEALTH"
+      },
+      "evidence": "evidence/V435_LINUX_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
+      "evidenceSha256": "E13B0166339760C629317A2210A47D38ACB2EDCED050A01A7E4122BEA84085E3"
+    }
+  },
+  "currentNetworkObservations": {
+    "linuxPass": [
+      "DIRECT",
+      "WARP",
+      "GOOL",
+      "CFON",
+      "AUTO/WARP"
+    ],
+    "linuxNode": "NO_FULL_HEALTH_BEST_NODE_CURRENTLY; sampled reachable nodes failed throughput/trace; TCP reachability is not promoted as health",
+    "linuxTor": "CURRENT_NETWORK_BOOTSTRAP_TIMEOUT_DIRECT_AND_OBFS4",
+    "interpretation": "Current endpoint/network health is dynamic and is not misrepresented as a release-code failure; AUTO fallback remained live via WARP."
+  },
+  "externalNonBlocking": [
+    "Trusted Windows Authenticode signing identity remains external / NotSigned",
+    "Physical console field/game/country E2E remains external hardware validation",
+    "Production Android/iOS packet forwarding/signing/real-device validation remains external",
+    "Live external TUIC/AnyTLS/ShadowTLS endpoint connectivity remains UNPROVEN without authorized endpoints"
+  ],
+  "authoritativeEvidence": [
+    "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+    "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json",
+    "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+    "evidence/V435_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V435_LINUX_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
+    "evidence/V435_R15_LIVE_ALL_METHODS_20261005.json",
+    "evidence/V435_R15_NODE_BEST_BATCH_20261005.json"
+  ],
+  "finalObjectiveResult": "PUBLIC v4.3.5 R49/R15 RELEASED with exact branch/main/tag hosted acceptance, exact asset digests, Windows updater preservation and Linux real updater/install/live operational acceptance. Current dynamic NODE/TOR limitations are explicitly fail-closed and not hidden.",
+  "repositoryClosure": {
+    "status": "PENDING_CONTROL_ONLY_MAIN_CI",
+    "runtimeDiffVsTagExpected": "NONE"
+  },
+  "exactNextAction": "Rebuild/verify PUBLIC_MANIFEST, prove runtime diff versus v4.3.5 is NONE, commit/push control-only closure and require final main CI."
+}

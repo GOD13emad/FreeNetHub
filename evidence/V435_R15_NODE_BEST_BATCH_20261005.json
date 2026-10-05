@@ -1,0 +1,17 @@
+{
+  "schema":1,
+  "version":"4.2.0-linux.15-r42",
+  "elapsedSec":72.151,
+  "result":{"ok":true,"benchmarked":4,"passed":0,"failed":4,"eligible":1770,"remainingUnbenchmarked":1761,"results":[
+    {"id":"4bb737ae1bf0b8ee9868","status":"FAIL","ok":false,"pingMs":1141.8,"downloadMbps":null,"uploadMbps":null,"country":"US","error":"THROUGHPUT_INCOMPLETE"},
+    {"id":"b906045a16ba5f718848","status":"FAIL","ok":false,"pingMs":166.2,"downloadMbps":null,"uploadMbps":null,"country":"","checked":"2026-10-05T14:18:57.671117+00:00","error":"TRACE_FAILED"},
+    {"id":"44d5371b3823aa2a4d00","status":"FAIL","ok":false,"pingMs":181.6,"downloadMbps":null,"uploadMbps":null,"country":"","checked":"2026-10-05T14:19:08.233562+00:00","error":"TRACE_FAILED"},
+    {"id":"d9c0f4c1ca0ef5e1770d","status":"FAIL","ok":false,"pingMs":5.8,"downloadMbps":null,"uploadMbps":null,"country":"","checked":"2026-10-05T14:19:08.857424+00:00","error":"TRACE_FAILED"}
+  ]},
+  "best":null,
+  "cleanup":{"ok":true,"node":{"ok":true,"state":"not-owned"},"warpplus":{"ok":true,"results":{"WARP":{"ok":true,"state":"not-owned","mode":"WARP"},"GOOL":{"ok":true,"state":"not-owned","mode":"GOOL"},"CFON":{"ok":true,"state":"not-owned","mode":"CFON"}}},"legacy":{"ok":true,"results":{"tor":{"ok":true,"state":"not-owned"},"warp":{"ok":true,"state":"already-disconnected"}}}},
+  "pre":{"sessionSemantic":{"mode":null,"provider":null,"detail":{}},"route":"53F2BC12B7380F69C75BA073F5BE2F2B042B72E8D16D7338EB9FF9B4B837DFDA","dns":"085083200E2E34EFBACF1D0E3514C5EF3E1932C46E258536DCB6AAE7F2E355D4"},
+  "post":{"sessionSemantic":{"mode":null,"provider":null,"detail":{}},"route":"53F2BC12B7380F69C75BA073F5BE2F2B042B72E8D16D7338EB9FF9B4B837DFDA","dns":"085083200E2E34EFBACF1D0E3514C5EF3E1932C46E258536DCB6AAE7F2E355D4"},
+  "preserved":true,
+  "decision":"NO_FULL_HEALTH_BEST_NODE_CURRENTLY; DO_NOT PROMOTE TCP_ONLY_REACHABILITY_AS_HEALTH"
+}

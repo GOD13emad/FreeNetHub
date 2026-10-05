@@ -1,0 +1,25 @@
+{
+  "schema":1,
+  "date":"2026-10-05",
+  "project":"FreeNet Hub",
+  "version":"4.3.5",
+  "status":"PASS_WITH_CURRENT_NETWORK_METHOD_LIMITATIONS",
+  "action":"LINUX_PUBLIC_R15_REAL_UPDATER_AND_LIVE_ACCEPTANCE",
+  "installed":{"version":"4.2.0-linux.15-r42","release":"LINUX_4.2.0_R15_R42_NODE_PROTOCOL_PARITY","networkMutationOnInstall":false,"integrity":{"status":"PASS","files":9,"failed":[]},"nodehubSha256":"9B6BE6E4EA748A1559C011A326B75045702819B2A221ABC2E773B29A0968E2B0"},
+  "publicUpdate":{"tag":"v4.3.5","localRevision":15,"remoteRevision":15,"updateAvailable":false,"asset":{"name":"FreeNetHub_4.2.0_Linux_R15.zip","size":221657,"digest":"sha256:fba77fb02a7e4f207fa12606b4e1a49d3311188501ac3c550d87f98f08ecdf01","url":"https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.5/FreeNetHub_4.2.0_Linux_R15.zip"}},
+  "liveMethods":{"completed":7,"passed":5,"failed":2,"results":[
+    {"method":"DIRECT","ok":true,"pingMs":277.7,"downloadMbps":17.19,"uploadMbps":4.36,"country":"IR","error":"","mode":"DIRECT"},
+    {"method":"NODE","ok":false,"pingMs":799.0,"downloadMbps":null,"uploadMbps":null,"country":"NL","error":"THROUGHPUT_INCOMPLETE","mode":"NODE"},
+    {"method":"WARP","ok":true,"pingMs":527.5,"downloadMbps":15.84,"uploadMbps":1.32,"country":"IR","error":"","mode":"WARP"},
+    {"method":"GOOL","ok":true,"pingMs":467.8,"downloadMbps":14.28,"uploadMbps":1.2,"country":"IR","error":"","mode":"GOOL"},
+    {"method":"CFON","ok":true,"pingMs":541.5,"downloadMbps":4.72,"uploadMbps":1.07,"country":"AT","error":"","mode":"CFON"},
+    {"method":"TOR","ok":false,"pingMs":null,"downloadMbps":null,"uploadMbps":null,"country":null,"error":"BOOTSTRAP_TIMEOUT_CURRENT_NETWORK","mode":"TOR"},
+    {"method":"AUTO","ok":true,"pingMs":458.3,"downloadMbps":15.54,"uploadMbps":1.27,"country":"IR","error":"","mode":"AUTO/WARP"}],
+    "cleanupOk":true,"routePreserved":true,"dnsPreserved":true,"sessionSemanticPreserved":true,
+    "sessionByteHashNote":"Disconnected session timestamp changed during explicit stop_all; semantic mode/provider/detail remained disconnected."
+  },
+  "nodeBestBatch":{"benchmarked":4,"passed":0,"failed":4,"eligibleTcpReachable":1770,"best":null,"preserved":true,"decision":"NO_FULL_HEALTH_BEST_NODE_CURRENTLY; DO_NOT PROMOTE TCP_ONLY_REACHABILITY_AS_HEALTH"},
+  "currentPhysicalState":{"routeSha256":"53F2BC12B7380F69C75BA073F5BE2F2B042B72E8D16D7338EB9FF9B4B837DFDA","dnsStateSha256":"085083200E2E34EFBACF1D0E3514C5EF3E1932C46E258536DCB6AAE7F2E355D4"},
+  "evidence":{"allMethods":"evidence/V435_R15_LIVE_ALL_METHODS_20261005.json","allMethodsSha256":"335DABCFD7B86C81B203845E86D324A56801D8097D1EA2D1F3024784B70AA8F9","nodeBatch":"evidence/V435_R15_NODE_BEST_BATCH_20261005.json","nodeBatchSha256":"6495837B6F25F341D9676750F5472B60DFAEB282588DFA1C30A11D4220801026","installerLog":"EXTERNAL_INSTALLED_STATE/evidence/linux-update-1791209353.log"},
+  "interpretation":{"confirmed":["R15 real updater download/digest/install path works","installed integrity passes","DIRECT/WARP/GOOL/CFON/AUTO live full benchmarks pass","cleanup restores route/DNS and disconnected semantic session"],"currentNetworkLimitations":["sampled NODE proxies failed full throughput/application health despite TCP reachability","TOR direct/obfs4 bootstrap timed out on current network"],"notClaimed":["current live TUIC/AnyTLS/ShadowTLS external endpoint connectivity","physical console field validation","mobile production forwarding/device signing"]}
+}

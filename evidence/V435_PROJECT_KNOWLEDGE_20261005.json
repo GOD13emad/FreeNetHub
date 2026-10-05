@@ -3,7 +3,7 @@
   "date": "2026-10-05",
   "project": "FreeNet Hub",
   "version": "4.3.5",
-  "status": "LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
+  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -234,6 +234,120 @@
         "fullRegression": "221/221 PASS",
         "publicTreeFiles": 490
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / Public v4.3.5 exact-SHA release",
+      "Claim_Decision": "Promote v4.3.5 only after exact candidate, main and tag hosted validation; publish exact R49 Windows and R15 Linux bytes without rebuilding after acceptance.",
+      "Evidence_Source": [
+        "GitHub CI runs 37312605504, 37314410412, 37315272184",
+        "evidence/V435_PUBLIC_RELEASE_CLOSURE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / PUBLIC_RELEASED",
+      "Reuse_Targets": [
+        "release authority",
+        "supply-chain audit",
+        "handoff",
+        "future regression baseline"
+      ],
+      "Provenance": {
+        "tag": "v4.3.5",
+        "commit": "93fea59d696b69eb5b723e2d6b2033d4fdb879dd",
+        "windowsSha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
+        "linuxSha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Windows post-publish updater preservation",
+      "Claim_Decision": "Owner Windows R45 correctly discovers R49 exact asset while the active healthy CFON browser session, route and DNS remain unchanged; do not force-install R49 on the working owner session because fresh-install behavior is already hosted-validated.",
+      "Evidence_Source": [
+        "evidence/V435_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "Hosted windows-installer-fresh on exact candidate/main/tag"
+      ],
+      "Confidence_Status": "CONFIRMED / PASS",
+      "Reuse_Targets": [
+        "updater semantics",
+        "non-disruptive owner-machine policy",
+        "release support"
+      ],
+      "Provenance": {
+        "evidenceSha256": "D20CABC97316D1B258369712F4ABECE22E7553F90DC2851FEEB96A61C09C1930",
+        "localRevision": 45,
+        "remoteRevision": 49
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Linux R15 real public updater and installed integrity",
+      "Claim_Decision": "Installed Linux R14 discovered exact public R15 asset, verified digest, installed through the product updater without starting a connection, then reported local=remote R15 and updateAvailable=false; installed integrity is 9/9 PASS.",
+      "Evidence_Source": [
+        "evidence/V435_LINUX_PUBLIC_UPDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / PASS",
+      "Reuse_Targets": [
+        "Linux updater",
+        "packaging",
+        "installed acceptance",
+        "support"
+      ],
+      "Provenance": {
+        "evidenceSha256": "E13B0166339760C629317A2210A47D38ACB2EDCED050A01A7E4122BEA84085E3",
+        "installedVersion": "4.2.0-linux.15-r42",
+        "nodehubSha256": "9B6BE6E4EA748A1559C011A326B75045702819B2A221ABC2E773B29A0968E2B0"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Linux live all-method operational audit",
+      "Claim_Decision": "On the current laptop network, DIRECT/WARP/GOOL/CFON/AUTO-WARP pass full Ping+Download+Upload. NODE established a browser proxy and reached YouTube but failed complete throughput; TOR direct/obfs4 timed out bootstrapping. Cleanup restored route/DNS and disconnected semantic session.",
+      "Evidence_Source": [
+        "evidence/V435_R15_LIVE_ALL_METHODS_20261005.json",
+        "evidence/V435_LINUX_PUBLIC_UPDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / MIXED_DYNAMIC_NETWORK_RESULT",
+      "Reuse_Targets": [
+        "runtime diagnostics",
+        "Smart fallback behavior",
+        "support",
+        "future node/bridge refresh"
+      ],
+      "Provenance": {
+        "allMethodsSha256": "AD14F2208E00A8B9A8138A48912DA82E2CD7B920C1C33890E5B0D7E6204FB6EE",
+        "passed": 5,
+        "failed": 2,
+        "autoSelected": "WARP"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Node health truth rule",
+      "Claim_Decision": "Do not equate TCP endpoint reachability with a healthy/best node. Four diverse reachable candidates plus the selected node failed full application/throughput health, so current best-node result is NONE and AUTO fallback is preferred rather than presenting a false winner.",
+      "Evidence_Source": [
+        "evidence/V435_R15_NODE_BEST_BATCH_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / CURRENT_NETWORK_NO_FULL_HEALTH_NODE",
+      "Reuse_Targets": [
+        "Node UI semantics",
+        "selection policy",
+        "failure prevention",
+        "benchmark methodology"
+      ],
+      "Provenance": {
+        "nodeBatchSha256": "09BCCE33CE1C0A90FA373BD8010C7E335A5637C22C2BF17C818DF508B96B668F",
+        "eligibleTcpReachable": 1770,
+        "benchmarked": 4,
+        "fullHealthPassed": 0
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / Session-state verification semantics",
+      "Claim_Decision": "A byte-hash mismatch in disconnected session.json after test cleanup was timestamp-only, not state drift. For timestamped status files, verification must compare semantic mode/provider/detail plus route/DNS; raw byte hash remains secondary evidence.",
+      "Evidence_Source": [
+        "evidence/V435_R15_LIVE_ALL_METHODS_20261005.json",
+        "evidence/V435_R15_NODE_BEST_BATCH_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / PREVENTION_RECORDED",
+      "Reuse_Targets": [
+        "test harness design",
+        "state-preservation regression",
+        "failure prevention"
+      ]
     }
   ],
   "authoritativeEvidence": [
@@ -241,11 +355,18 @@
     "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json",
     "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
     "evidence/R49_SYNTHETIC_RUNTIME_20261005.json",
-    "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
+    "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json",
+    "evidence/V435_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V435_LINUX_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
+    "evidence/V435_R15_LIVE_ALL_METHODS_20261005.json",
+    "evidence/V435_R15_NODE_BEST_BATCH_20261005.json",
+    "evidence/V435_PUBLIC_RELEASE_CLOSURE_20261005.json"
   ],
   "openGates": [
-    "hosted exact-candidate retry CI",
-    "public promotion"
+    "Trusted Windows Authenticode signing remains external",
+    "Physical console field/game/country E2E remains external",
+    "Production Android/iOS packet forwarding/signing/real-device remains external",
+    "Live TUIC/AnyTLS/ShadowTLS external endpoint validation remains unavailable without authorized endpoints"
   ],
-  "exactNextAction": "Rebuild final PUBLIC_MANIFEST, verify, commit/push exact parity-fixed R49 and require hosted retry PASS."
+  "exactNextAction": "Commit/push control-only v4.3.5 public closure with zero runtime diff and require final main CI."
 }

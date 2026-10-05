@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "version": "4.2.0-linux.15-r42",
+  "started": 1791209444.2321885,
+  "elapsedSec": 336.626,
+  "result": {
+    "ok": true,
+    "pingOnly": false,
+    "completed": 7,
+    "passed": 5,
+    "failed": 2,
+    "results": [
+      {"ok":true,"pingMs":277.7,"downloadMbps":17.19,"uploadMbps":4.36,"country":"IR","exitIp":"164.215.144.118","warp":"off","checked":"2026-10-05T14:10:44.518847+00:00","proxyUsed":false,"interface":"enp1s0","error":"","mode":"DIRECT","path":"PHYSICAL_BASE_INTERFACE","routeProof":"PHYSICAL_DEFAULT_ROUTE","route":"default via 192.168.20.1 dev enp1s0 proto dhcp src 192.168.20.6 metric 100 ","method":"DIRECT"},
+      {"ok":false,"pingMs":799.0,"downloadMbps":null,"uploadMbps":null,"country":"NL","exitIp":"193.29.139.248","warp":"off","checked":"2026-10-05T14:10:52.002940+00:00","proxyUsed":true,"interface":"","youtubeReachable":true,"error":"THROUGHPUT_INCOMPLETE","mode":"NODE","scope":"BROWSER","temporary":true,"method":"NODE"},
+      {"ok":true,"pingMs":527.5,"downloadMbps":15.84,"uploadMbps":1.32,"country":"IR","exitIp":"2a09:bac5:41d9:2496::3a5:4","warp":"on","checked":"2026-10-05T14:11:44.789945+00:00","proxyUsed":true,"interface":"","youtubeReachable":true,"error":"","mode":"WARP","scope":"BROWSER","provider":"warp-plus","temporary":true,"method":"WARP"},
+      {"ok":true,"pingMs":467.8,"downloadMbps":14.28,"uploadMbps":1.2,"country":"IR","exitIp":"2a09:bac1:3820:10::47:5ba","warp":"on","checked":"2026-10-05T14:11:55.691648+00:00","proxyUsed":true,"interface":"","youtubeReachable":true,"error":"","mode":"GOOL","scope":"BROWSER","provider":"warp-plus","temporary":true,"method":"GOOL"},
+      {"ok":true,"pingMs":541.5,"downloadMbps":4.72,"uploadMbps":1.07,"country":"AT","exitIp":"130.195.249.58","warp":"off","checked":"2026-10-05T14:12:09.524291+00:00","proxyUsed":true,"interface":"","youtubeReachable":true,"error":"","mode":"CFON","scope":"BROWSER","provider":"warp-plus","temporary":true,"method":"CFON"},
+      {"ok":false,"state":"failed","attempts":[{"ok":false,"mode":"direct","error":"bootstrap timeout","bootstrap":64},{"ok":false,"mode":"obfs4","error":"bootstrap timeout","bootstrap":0}],"method":"TOR"},
+      {"ok":true,"pingMs":458.3,"downloadMbps":15.54,"uploadMbps":1.27,"country":"IR","exitIp":"2a09:bac1:3800:10::411:7","warp":"on","checked":"2026-10-05T14:16:19.064175+00:00","proxyUsed":true,"interface":"","youtubeReachable":true,"error":"","mode":"AUTO/WARP","scope":"BROWSER","provider":"warp-plus","temporary":true,"method":"AUTO"}
+    ]
+  },
+  "cleanup":{"ok":true,"node":{"ok":true,"state":"not-owned"},"warpplus":{"ok":true,"results":{"WARP":{"ok":true,"state":"not-owned","mode":"WARP"},"GOOL":{"ok":true,"state":"not-owned","mode":"GOOL"},"CFON":{"ok":true,"state":"not-owned","mode":"CFON"}}},"legacy":{"ok":true,"results":{"tor":{"ok":true,"state":"not-owned"},"warp":{"ok":true,"state":"already-disconnected"}}}},
+  "pre":{"session":"05FFAC97E27D6A7D4175E704DC1D139CFECEAAD09D7F78EADED1DF516E22BBE0","route":"53F2BC12B7380F69C75BA073F5BE2F2B042B72E8D16D7338EB9FF9B4B837DFDA","dns":"085083200E2E34EFBACF1D0E3514C5EF3E1932C46E258536DCB6AAE7F2E355D4"},
+  "post":{"session":"728AE1D0A6E9922A90B628E521B0B3E5E56E66529271F3B970774069839028ED","route":"53F2BC12B7380F69C75BA073F5BE2F2B042B72E8D16D7338EB9FF9B4B837DFDA","dns":"085083200E2E34EFBACF1D0E3514C5EF3E1932C46E258536DCB6AAE7F2E355D4"},
+  "preserved": false,
+  "reconciliation":{"sessionByteHashDrift":"TIMESTAMP_ONLY_AFTER_EXPLICIT_STOP_ALL","sessionSemanticBefore":{"mode":null,"provider":null,"detail":{}},"sessionSemanticAfter":{"mode":null,"provider":null,"detail":{}},"sessionSemanticPreserved":true}
+}

@@ -507,3 +507,34 @@ Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_RETRY_OPEN
 - Final local regression: 221/221 PASS. Fail-closed PASS. Public security PASS. diff-check PASS. Public tree PASS over 490 files with nested manifests/release hashes/forbidden-runtime checks all PASS.
 - RELEASE cross-platform manifest authority uses Git-canonical bytes; raw Windows CRLF hash is evidence-only.
 - Exact Next Action: rebuild PUBLIC_MANIFEST including this closure record, verify once more, commit/push exact R49 parity fix and require hosted retry CI PASS before any v4.3.5 promotion.
+
+## V435 PUBLIC RELEASE — 2026-10-05
+**Status: CURRENT / PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING**
+
+### Status / Key Result
+- Exact candidate b47b7149a10d0bf1986fddb0eead32a05fa0b267 passed PR CI run 37312605504 with 10/10 required jobs.
+- Merge/runtime authority is 93fea59d696b69eb5b723e2d6b2033d4fdb879dd. Main CI 37314410412 and exact tag v4.3.5 CI 37315272184 both SUCCESS on that SHA.
+- Public release FreeNet Hub 4.3.5 Final is published. Windows R49 = 24,260,411 bytes / SHA-256 1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E; Linux R15 = 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01. GitHub digests and independent re-download hashes match.
+- Windows owner install remains R45 intentionally because a healthy CFON browser session is active. Read-only updater check PASS: exact R49 asset discovered; session/route/DNS unchanged. Hosted fresh-install gates already validate R49 installer execution.
+- Linux public updater R14->R15 PASS using the product path: digest verification, safe extraction/install, no connection started. Installed R15 integrity 9/9 PASS; post-update local=remote revision 15 and updateAvailable=false.
+
+### Linux live operational result
+- Full Ping+Download+Upload: DIRECT PASS (277.7 ms / 17.19 / 4.36 Mbps), WARP PASS (527.5 / 15.84 / 1.32), GOOL PASS (467.8 / 14.28 / 1.20), CFON PASS (541.5 / 4.72 / 1.07), AUTO PASS via WARP (458.3 / 15.54 / 1.27).
+- NODE proxy reached NL/YouTube but failed complete throughput. A diverse 4-node full benchmark found 0 full-health winners among 1,770 TCP-reachable endpoints; current best-node truth is NONE.
+- TOR direct reached 64% bootstrap then timed out; obfs4 timed out at 0% on the current network. This is current dynamic path health, not hidden as success.
+- Cleanup PASS: no owned node/warpplus/Tor residue; physical route and DNS exact; disconnected session semantics preserved. Raw session hash drift was timestamp-only.
+
+### Authority / Open Gates
+- Runtime/tag/assets are frozen at v4.3.5 / 93fea59d; this closure must not mutate app/crossplatform/windows runtime bytes.
+- External/non-blocking: trusted Windows Authenticode; physical console field E2E; production Android/iOS forwarding/signing/real-device; authorized live TUIC/AnyTLS/ShadowTLS endpoint validation.
+- Dynamic current-path limitation: Linux sampled NODE and TOR are not live-full-health now; AUTO/WARP remains operational.
+
+### Roadmap ← CURRENT
+1. Public v4.3.5 exact-SHA release + asset verification — Completed/PASS.
+2. Windows non-disruptive updater + Linux real updater/install acceptance — Completed/PASS.
+3. Linux all-method live audit + Node truth audit — Completed/MIXED CURRENT NETWORK, fail-closed with working AUTO fallback.
+4. Control-only repository closure with zero runtime diff + final main CI — ← CURRENT.
+5. External signing/physical console/production mobile/live authorized new-protocol endpoints — Deferred/External.
+
+### Exact Next Action
+Rebuild/verify PUBLIC_MANIFEST.json; prove runtime diff versus immutable v4.3.5 is NONE; commit/push only Brain/Knowledge/evidence/manifest closure records and require final main CI.
