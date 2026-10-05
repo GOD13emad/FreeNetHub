@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "utc": "2026-10-05T03:08:30Z",
+  "status": "PASS",
+  "action": "INSTALLED_LINUX_UPDATECHECK_READ_ONLY",
+  "host": "aliemad laptop",
+  "installedVersion": "4.2.0-linux.14-r41",
+  "result": {
+    "ok": true,
+    "current": "4.2.0-linux.14-r41",
+    "localRevision": 14,
+    "tag": "v4.3.3",
+    "published": "2026-10-05T03:05:06Z",
+    "linuxAsset": {
+      "name": "FreeNetHub_4.2.0_Linux_R14.zip",
+      "size": 213124,
+      "digest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+      "url": "https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.3/FreeNetHub_4.2.0_Linux_R14.zip"
+    },
+    "remoteRevision": 14,
+    "updateAvailable": false
+  },
+  "checks": {
+    "currentVersion": true,
+    "localRevision": true,
+    "releaseTag": true,
+    "remoteRevisionSame": true,
+    "updateAvailableFalse": true,
+    "assetName": true,
+    "assetBytes": true,
+    "assetDigest": true,
+    "sessionUnchanged": true,
+    "routeUnchanged": true,
+    "dnsUnchanged": true
+  },
+  "preservation": {
+    "sessionSha256Before": "05FFAC97E27D6A7D4175E704DC1D139CFECEAAD09D7F78EADED1DF516E22BBE0",
+    "sessionSha256After": "05FFAC97E27D6A7D4175E704DC1D139CFECEAAD09D7F78EADED1DF516E22BBE0",
+    "routeStateSha256Before": "DFAC896D7AF1CFBABCA3E1CDAD5AFCC1404EF204BA4F78D9EF5B5669E9ADCFEB",
+    "routeStateSha256After": "DFAC896D7AF1CFBABCA3E1CDAD5AFCC1404EF204BA4F78D9EF5B5669E9ADCFEB",
+    "dnsStateSha256Before": "1B640FE99BDBA23E8AD483E3E28142FA0842428EEB8D77F45E2A8F8B6002E101",
+    "dnsStateSha256After": "1B640FE99BDBA23E8AD483E3E28142FA0842428EEB8D77F45E2A8F8B6002E101"
+  },
+  "mutation": "NONE"
+}

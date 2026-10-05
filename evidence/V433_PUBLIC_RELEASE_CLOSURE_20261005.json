@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.3",
+  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
+  "previousAcceptedState": {
+    "release": "v4.3.2",
+    "windows": "R46",
+    "linux": "R14/R41"
+  },
+  "runtimeAuthority": {
+    "tag": "v4.3.3",
+    "tagObject": "b2893b87570d327af1186310a57d1e7b67b836c7",
+    "commit": "af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93",
+    "promotion": "EXACT_TESTED_SHA",
+    "mergeCommitAdded": false
+  },
+  "hostedValidation": {
+    "branch": {
+      "runId": 37237796960,
+      "status": "SUCCESS",
+      "sha": "af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93"
+    },
+    "main": {
+      "runId": 37238257289,
+      "status": "SUCCESS",
+      "sha": "af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93"
+    },
+    "tag": {
+      "runId": 37257248862,
+      "status": "SUCCESS",
+      "sha": "af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93"
+    },
+    "requiredGates": [
+      "windows-unit",
+      "windows-installer-fresh",
+      "windows-virtual-signing",
+      "linux-static",
+      "console-virtual-e2e",
+      "android-build",
+      "android-emulator-runtime",
+      "ios-static",
+      "ios-simulator-runtime",
+      "virtual-acceptance"
+    ]
+  },
+  "publicRelease": {
+    "tag": "v4.3.3",
+    "name": "FreeNet Hub 4.3.3 Final",
+    "publishedAt": "2026-10-05T03:05:06Z",
+    "draft": false,
+    "prerelease": false,
+    "latestObserved": true,
+    "releaseImmutableObserved": false,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.3.3_R47_Setup.exe",
+        "bytes": 24276785,
+        "sha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
+        "githubDigest": "sha256:a4b82ab5b2176f11c1ae4aab920331d5fc7b82b988655932dc83a253fb188b63",
+        "independentRedownloadSha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
+        "verification": "PASS"
+      },
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R14.zip",
+        "bytes": 213124,
+        "sha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+        "githubDigest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+        "independentRedownloadSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984",
+        "verification": "PASS",
+        "note": "Unchanged accepted Linux R14/R41 baseline"
+      }
+    ],
+    "independentRedownload": {
+      "commandExit": 1,
+      "stderr": "",
+      "filesPresent": true,
+      "byteHashesExact": true,
+      "interpretation": "CLI/transport anomaly; authoritative byte-level verification PASS; no blind rerun performed."
+    }
+  },
+  "postPublish": {
+    "windows": {
+      "status": "PASS",
+      "action": "INSTALLED_WINDOWS_UPDATECHECK_READ_ONLY",
+      "installedRevision": "4.3.1-r45-preconnect-test-hotfix",
+      "localRevision": 45,
+      "remoteRevision": 47,
+      "updateAvailable": true,
+      "assetExact": true,
+      "sessionSha256Before": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+      "sessionSha256After": "B79A36A43DFB5013C7DF4A3E6517E3E128218949E8278C6569DD04B6C6AD4A40",
+      "routeStateSha256Before": "968D29D0FE6ACF24C5252E42B45BE0EF8EECAFAFC144F99E1DD82C37566307D0",
+      "routeStateSha256After": "968D29D0FE6ACF24C5252E42B45BE0EF8EECAFAFC144F99E1DD82C37566307D0",
+      "dnsStateSha256Before": "D40931AC865E65EFCAAA350634C528F77A5DC9D72CCD542CC0AC02C4F22FBE99",
+      "dnsStateSha256After": "D40931AC865E65EFCAAA350634C528F77A5DC9D72CCD542CC0AC02C4F22FBE99",
+      "evidence": "evidence/V433_POSTPUBLISH_UPDATECHECK_20261005.json",
+      "evidenceSha256": "DEFFFD34FFD2E059D47966AAFAE5376AF120ABF7AA3B606E88F0923F97B12171"
+    },
+    "linux": {
+      "status": "PASS",
+      "action": "INSTALLED_LINUX_UPDATECHECK_READ_ONLY",
+      "installedVersion": "4.2.0-linux.14-r41",
+      "localRevision": 14,
+      "remoteRevision": 14,
+      "updateAvailable": false,
+      "releaseTag": "v4.3.3",
+      "assetName": "FreeNetHub_4.2.0_Linux_R14.zip",
+      "assetBytes": 213124,
+      "assetDigest": "sha256:b3fd52c76c9331660ba06b667ba07a7d7a4beb87fbc074461cca14f9e13ff984",
+      "sessionSha256Before": "05FFAC97E27D6A7D4175E704DC1D139CFECEAAD09D7F78EADED1DF516E22BBE0",
+      "sessionSha256After": "05FFAC97E27D6A7D4175E704DC1D139CFECEAAD09D7F78EADED1DF516E22BBE0",
+      "routeStateSha256Before": "DFAC896D7AF1CFBABCA3E1CDAD5AFCC1404EF204BA4F78D9EF5B5669E9ADCFEB",
+      "routeStateSha256After": "DFAC896D7AF1CFBABCA3E1CDAD5AFCC1404EF204BA4F78D9EF5B5669E9ADCFEB",
+      "dnsStateSha256Before": "1B640FE99BDBA23E8AD483E3E28142FA0842428EEB8D77F45E2A8F8B6002E101",
+      "dnsStateSha256After": "1B640FE99BDBA23E8AD483E3E28142FA0842428EEB8D77F45E2A8F8B6002E101",
+      "evidence": "evidence/V433_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
+      "evidenceSha256": "943051578561E507CB3A2295E14C3908A383AF3DA40AC2DA29BA4FC33C90872E"
+    }
+  },
+  "externalNonBlocking": [
+    "Trusted Windows Authenticode signing identity remains MISSING_EXTERNAL / published Windows asset is NotSigned",
+    "Physical console field E2E remains external hardware validation",
+    "Android production packet forwarding/signing/real-device remains separate architecture/legal/device work",
+    "iOS production packet forwarding/signing/entitlement/real-device remains separate architecture/legal/device work"
+  ],
+  "authoritativeEvidence": [
+    "evidence/V433_R47_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/R47_SMART_LIVE_20261004.json",
+    "evidence/R47_NODE_LIVE_20261005.json",
+    "evidence/V433_R47_INSTALLER_BUILD_20261005.json",
+    "evidence/V433_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V433_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json"
+  ],
+  "finalObjectiveResult": "Desktop/public v4.3.3 runtime release CLOSED_PASS; repository control-state closure CI still pending. Production mobile forwarding, trusted signing, and physical-console field validation remain explicitly external.",
+  "exactNextAction": "Commit and push control-only Brain/Evidence/Public Manifest closure with zero runtime diff versus v4.3.3, require final repository-state CI PASS, then record that CI without changing runtime/tag/assets.",
+  "repositoryClosure": {
+    "status": "PENDING_CONTROL_ONLY_COMMIT_AND_CI"
+  }
+}

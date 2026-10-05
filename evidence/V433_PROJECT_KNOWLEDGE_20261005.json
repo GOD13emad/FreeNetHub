@@ -3,7 +3,7 @@
   "project": "FreeNet Hub",
   "version": "4.3.3",
   "changeSet": "R47",
-  "status": "CURRENT_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "status": "PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING",
   "previousAcceptedState": {
     "version": "4.3.2",
     "tag": "v4.3.2",
@@ -118,6 +118,29 @@
         "manifestFileCount": 466,
         "verification": "ALL_PUBLIC_TREE_CHECKS_PASS"
       }
+    },
+    {
+      "Date_Context": "2026-10-05 / Public v4.3.3 release closure",
+      "Claim_Decision": "Promote exact tested SHA af1983f to immutable project authority tag v4.3.3 only after branch/main/tag hosted validation; publish exact R47 Windows bytes plus unchanged accepted Linux R14.",
+      "Evidence_Source": [
+        "evidence/V433_PUBLIC_RELEASE_CLOSURE_20261005.json",
+        "evidence/V433_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "evidence/V433_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json",
+        "GitHub CI runs 37237796960, 37238257289, 37257248862"
+      ],
+      "Confidence_Status": "CONFIRMED / PUBLIC_RELEASED / REPOSITORY_CONTROL_CLOSURE_PENDING",
+      "Reuse_Targets": [
+        "release authority",
+        "updater semantics",
+        "handoff",
+        "future regression baseline"
+      ],
+      "Provenance": {
+        "tag": "v4.3.3",
+        "commit": "af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93",
+        "windowsSha256": "A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63",
+        "linuxSha256": "B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984"
+      }
     }
   ],
   "authoritativeEvidence": [
@@ -127,11 +150,16 @@
     "evidence/V433_R47_INSTALLER_BUILD_20261005.json",
     "evidence/V433_R47_FULL_REGRESSION_20261005.txt",
     "evidence/V433_R47_FAIL_CLOSED_20261005.json",
-    "evidence/V433_R47_SECURITY_20261005.json"
+    "evidence/V433_R47_SECURITY_20261005.json",
+    "evidence/V433_PUBLIC_RELEASE_CLOSURE_20261005.json",
+    "evidence/V433_POSTPUBLISH_UPDATECHECK_20261005.json",
+    "evidence/V433_LINUX_POSTPUBLISH_UPDATECHECK_20261005.json"
   ],
   "openGates": [
-    "Hosted CI exact-candidate acceptance",
-    "Trusted Authenticode signing remains external"
+    "Final repository-state control-only commit and hosted CI",
+    "Trusted Authenticode signing remains external",
+    "Physical console field E2E remains external",
+    "Production Android/iOS packet forwarding, signing and real-device validation remain external"
   ],
-  "exactNextAction": "Finalize PUBLIC_MANIFEST including closure records, verify again, commit/push exact R47 candidate, and require hosted CI before public promotion."
+  "exactNextAction": "Commit/push control-only public closure with zero runtime diff versus v4.3.3, require repository-state CI PASS, then record that result without changing v4.3.3 runtime/tag/assets."
 }

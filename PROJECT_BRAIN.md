@@ -353,3 +353,23 @@ Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_OPEN
 
 #### Exact Next Action
 Final PUBLIC_MANIFEST rebuild/verification, then commit and push the exact R47 candidate for hosted CI.
+
+## V433 PUBLIC RELEASE — 2026-10-05
+Status: CURRENT / PUBLIC_RELEASED_REPOSITORY_CLOSURE_PENDING
+- Runtime/release authority is now exact tag v4.3.3 -> af1983f18a5bcf49d0d8f0b8ed89a4649ff42a93. The tag dereferences to the same SHA that passed branch CI 37237796960, main CI 37238257289 and tag CI 37257248862.
+- All required hosted gates PASS on the exact authority SHA: windows-unit, windows-installer-fresh, windows-virtual-signing, linux-static, console-virtual-e2e, android-build, android-emulator-runtime, ios-static, ios-simulator-runtime and aggregate virtual-acceptance.
+- Public release FreeNet Hub 4.3.3 Final is latest. Windows asset FreeNetHub_4.3.3_R47_Setup.exe = 24,276,785 bytes / SHA-256 A4B82AB5B2176F11C1AE4AAB920331D5FC7B82B988655932DC83A253FB188B63. Linux asset remains unchanged accepted R14 = 213,124 bytes / SHA-256 B3FD52C76C9331660BA06B667BA07A7D7A4BEB87FBC074461CCA14F9E13FF984. GitHub server digests and independently re-downloaded bytes match both hashes exactly.
+- One gh release download invocation returned exit 1 with empty stderr although both fresh destination files were complete and matched exact size/hash. This is recorded as a CLI/transport anomaly; no blind rerun was performed because byte-level evidence is authoritative.
+- Windows post-publish UpdateCheck PASS on installed R45: remote R47 is newer, exact asset name/size/digest selected, and active CFON session/default route/DNS hashes are unchanged before/after.
+- Linux owner-laptop post-publish update_check() PASS on installed 4.2.0-linux.14-r41: remote Linux revision remains 14, updateAvailable=false, exact unchanged R14 asset selected, and session/route/DNS hashes are unchanged.
+- Production mobile packet forwarding/signing/real-device gates remain separate external work; current Android/iOS hosted evidence is fail-closed integration validation, not production tunnel completion. Physical console field E2E and trusted Windows Authenticode also remain external.
+- Authoritative public closure evidence: evidence/V433_PUBLIC_RELEASE_CLOSURE_20261005.json. Project knowledge: evidence/V433_PROJECT_KNOWLEDGE_20261005.json.
+
+### Roadmap ← CURRENT
+1. Create one control-only repository closure commit containing Brain/Evidence/Public Manifest updates; runtime diff versus v4.3.3 must be empty.
+2. Push that control commit to main and require one final repository-state CI PASS.
+3. Record the repository-state CI result without mutating v4.3.3 tag or published asset bytes.
+4. Preserve trusted Authenticode, physical-console field E2E and production mobile forwarding/signing/device as explicit external gates.
+
+### Exact Next Action
+Rebuild PUBLIC_MANIFEST.json from this control-only closure state, verify public tree/security/diff and zero runtime diff versus v4.3.3, then commit/push for final repository-state CI.
