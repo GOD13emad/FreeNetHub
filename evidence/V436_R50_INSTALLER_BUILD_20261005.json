@@ -3,10 +3,10 @@
   "version": "4.3.6",
   "revision": "R50",
   "path": "delivery/github_v4.3.6/FreeNetHub_4.3.6_R50_Setup.exe",
-  "bytes": 24273858,
-  "sha256": "A3A6E9490BE703B96068F3B481CFC85CE2E13EB52BA730D1DC6739F136AD9335",
+  "bytes": 24257042,
+  "sha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
   "authenticode": "NotSigned",
   "frozenFiles": 25,
   "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
-  "built": "2026-10-05T15:28:21.9811897Z"
+  "built": "2026-10-05T15:49:31.4293160Z"
 }

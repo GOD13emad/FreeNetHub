@@ -2,8 +2,8 @@
   "schema": 1,
   "date": "2026-10-05",
   "project": "FreeNet Hub",
-  "version": "4.3.6",
-  "status": "R50_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "version": "4.3.6-r50-node-selection-quality",
+  "status": "R50_LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
   "records": [
     {
       "Date_Context": "2026-10-05 / R49 method choice",
@@ -351,14 +351,15 @@
     },
     {
       "Date_Context": "2026-10-05 / R50 node selection quality",
-      "Claim_Decision": "Treat a fixed four-node full benchmark as insufficient evidence for no best node. Use bounded adaptive Linux search (max 24, target 3 full-health PASS) and rank measured full-health application results before TCP-only endpoint hints on both desktop platforms.",
+      "Claim_Decision": "R50 fixes the evidence-backed node-selection false negative. The first public candidate 0dd73a8 exposed an independent supply-chain portability defect in hosted windows-unit: cross-platform manifest entries had Windows working-tree byte assumptions. The correction makes both builder and verifier Git-canonical and removes installer digest/size self-reference from embedded RELEASE metadata.",
       "Evidence_Source": [
-        "evidence/V436_R50_LINUX_NODE_BATCH12_SOURCE_20261005.json",
-        "tests/test_engine.py",
-        "crossplatform/linux/freenet_hub_linux_r37.py",
-        "app/engine.py"
+        "GitHub Actions PR run 37334685245 / windows-unit",
+        "evidence/R50_NODE_SELECTION_QUALITY_AUDIT_20261005.json",
+        "evidence/V436_R50_INSTALLER_BUILD_20261005.json",
+        "tests/rebuild_crossplatform_manifest.py",
+        "tests/verify_public_tree.py"
       ],
-      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / LOCAL_FIX_PASS / HOSTED_OPEN",
+      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / CORRECTION_LOCAL_REVERIFY_PENDING",
       "Reuse_Targets": [
         "node selection policy",
         "UX",
@@ -366,9 +367,38 @@
         "future regression"
       ],
       "Provenance": {
-        "fullRegression": "244/244 PASS",
-        "windowsInstallerSha256": "8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4",
-        "linuxR16Sha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503"
+        "firstCandidateSha": "0dd73a874ecf4aa37b191c6adaa12bbe8d760c27",
+        "firstHostedFailure": "windows-unit / Verify public manifests",
+        "finalInstallerBytes": 24257042,
+        "finalInstallerSha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
+        "linuxR16Sha256": "01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503",
+        "crossPlatformCanonicalSha256": "2C39E72AC80A76DE1A597A870412F26070977AB57D82E9E396596E23576250C9",
+        "supersededInstallerSha256": [
+          "FB317C82007749E82983C79A089E7499EACB231A6F0C98C6AFE7DD0CBFD35DC2",
+          "8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4",
+          "A3A6E9490BE703B96068F3B481CFC85CE2E13EB52BA730D1DC6739F136AD9335"
+        ]
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R50 hosted canonical-entry failure",
+      "Claim_Decision": "Hosted run 37334451018 correctly blocked R50 because crossplatform/MANIFEST.json contained a raw-Windows-CRLF hash for linux/freenet_hub_linux_gtk.py. Canonicalizing only the manifest file itself is insufficient; every nested manifest entry must be generated from Git-canonical bytes.",
+      "Evidence_Source": [
+        "GitHub Actions run 37334451018 / windows-unit",
+        "tests/verify_public_tree.py",
+        "tests/rebuild_crossplatform_manifest.py"
+      ],
+      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / LOCAL_REPAIR_PASS / HOSTED_RETRY_OPEN",
+      "Reuse_Targets": [
+        "release hashing",
+        "nested manifests",
+        "CI failure prevention"
+      ],
+      "Provenance": {
+        "failedCandidate": "0dd73a874ecf4aa37b191c6adaa12bbe8d760c27",
+        "crossPlatformCanonicalSha256": "2C39E72AC80A76DE1A597A870412F26070977AB57D82E9E396596E23576250C9",
+        "currentInstallerSha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
+        "currentInstallerBytes": 24257042
       }
     }
   ],
@@ -382,13 +412,19 @@
     "evidence/V435_LINUX_PUBLIC_UPDATE_ACCEPTANCE_20261005.json",
     "evidence/V435_R15_LIVE_ALL_METHODS_20261005.json",
     "evidence/V435_R15_NODE_BEST_BATCH_20261005.json",
-    "evidence/V435_PUBLIC_RELEASE_CLOSURE_20261005.json"
+    "evidence/V435_PUBLIC_RELEASE_CLOSURE_20261005.json",
+    "evidence/R50_NODE_SELECTION_QUALITY_AUDIT_20261005.json",
+    "evidence/V436_R50_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/V436_R50_INSTALLER_BUILD_20261005.json",
+    "evidence/V436_R50_LINUX_NODE_BATCH12_SOURCE_20261005.json",
+    "evidence/V436_R50_TOR_DIRECT90_SOURCE_20261005.json"
   ],
   "openGates": [
+    "R50 hosted exact-SHA CI / merge / public v4.3.6 promotion / post-publish update acceptance",
     "Trusted Windows Authenticode signing remains external",
     "Physical console field/game/country E2E remains external",
     "Production Android/iOS packet forwarding/signing/real-device remains external",
     "Live TUIC/AnyTLS/ShadowTLS external endpoint validation remains unavailable without authorized endpoints"
   ],
-  "exactNextAction": "Commit/push control-only v4.3.5 public closure with zero runtime diff and require final main CI."
+  "exactNextAction": "Pass final local public-tree/security/fail-closed/regression on the canonicalization correction, commit/push the correction SHA to PR #26, and require hosted CI PASS on that exact SHA before merge or release."
 }

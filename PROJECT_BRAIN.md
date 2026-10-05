@@ -1,5 +1,42 @@
 # PROJECT BRAIN — FreeNet Hub
 
+Status: CURRENT / V436_R50_LOCAL_GATES_PASS_HOSTED_OPEN
+Brain version: v436-r50-node-selection-quality-local-2026-10-05
+Previous public baseline: v4.3.5 / R49 at merge commit 93fea59d696b69eb5b723e2d6b2033d4fdb879dd.
+Current source candidate: v4.3.6 / R50 (4.3.6-r50-node-selection-quality) on branch v4.3.6-r50-node-selection-quality; public promotion is NOT yet authorized until exact-SHA hosted CI passes.
+
+## CURRENT — R50 Node Selection Quality
+- Root cause confirmed by live Linux evidence: a fixed four-node deep sample returned no winner, while a 12-candidate continuation found 3 full-health PASS nodes. TCP endpoint reachability is only a preflight hint and must not outrank measured application-level health.
+- Windows: Smart node ordering now prefers full-health performance results; batch output exposes deterministic best full-health result. Existing UI continues bounded 4-node batches when the user requests all-node benchmarking.
+- Linux R16/r43: Smart ordering prefers full-health metrics; node_benchmark_best() performs bounded adaptive search (max 24 candidates, target 3 PASS, batch size 4).
+- Full local regression: 244/244 PASS. Targeted node regression: 8/8 PASS. Python compile / PowerShell parse / Linux parity / Linux selftest / update revision / public security: PASS.
+- Linux package: FreeNetHub_4.2.0_Linux_R16.zip, 225314 bytes, SHA-256 01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503.
+- Final frozen Windows installer: FreeNetHub_4.3.6_R50_Setup.exe, 24273858 bytes, SHA-256 A3A6E9490BE703B96068F3B481CFC85CE2E13EB52BA730D1DC6739F136AD9335; manifest preflight PASS; Authenticode NotSigned (trusted signing remains external).
+- Superseded R50 installer hashes: FB317C82007749E82983C79A089E7499EACB231A6F0C98C6AFE7DD0CBFD35DC2, 8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4.
+- Tor direct 90-second current-network probe reached 67% bootstrap then timed out; route/DNS/session semantics were restored/preserved. This is dynamic external-path evidence, not a proven code defect.
+- No new external dependency was added by R50 and the patch itself does not mutate the Windows default route.
+
+## CURRENT Open Gates / Critical Path
+1. Freeze PUBLIC_MANIFEST.json with no concurrent writer and pass verify_public_tree.py, security, fail-closed and final regression on the exact snapshot.
+2. Commit/push exact R50 candidate and require all hosted CI jobs PASS on the exact commit SHA.
+3. Merge only after exact-SHA PASS, then publish v4.3.6 using the already-accepted Windows R50 and Linux R16 bytes without rebuilding.
+4. Post-publish UpdateCheck: Windows read-only/preserve active session; Linux R15→R16 updater/install integrity and route/DNS/session preservation.
+5. External/nonblocking tracks remain: trusted Authenticode; physical-console field E2E; production Android/iOS forwarding/signing; live TUIC/AnyTLS/ShadowTLS endpoints without authorized server material.
+
+## Exact Next Action
+Pass final local verification on the canonicalization correction, commit/push the correction SHA to PR #26, and require hosted exact-SHA CI PASS before merge or release.
+
+
+## R50 hosted-attempt correction — CURRENT
+- First candidate commit 0dd73a874ecf4aa37b191c6adaa12bbe8d760c27 reached PR #26. Hosted PR run 37334685245 failed only the early windows-unit step Verify public manifests; already-completed windows-virtual-signing, console-virtual-e2e, android-build, linux-static and windows-installer-fresh passed.
+- Root cause: cross-platform manifest authority was not portable across Windows working-tree line endings and hosted checkout bytes. Correction policy: crossplatform manifest builder and public verifier use Git-canonical bytes for cross-platform source entries.
+- Independent supply-chain prevention: RELEASE.json is embedded in the Windows installer, so the current installer digest/byte size must not be written into RELEASE.json. Artifact digest lives only in external evidence.
+- Current self-reference-free frozen Windows installer: FreeNetHub_4.3.6_R50_Setup.exe, 24257042 bytes, SHA-256 E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1, Authenticode NotSigned, manifest preflight PASS.
+- Linux R16 remains 225314 bytes, SHA-256 01F852B1350C591EAD5C03A0F094F92B4861E1D1DA96226A48B9AE691D48C503.
+- Correction is local and requires final local public-tree reverify, then a new exact commit SHA and a fresh hosted CI run. Commit 0dd73a8 is not promotion authority.
+
+## Superseded historical Brain follows
+
 Status: CURRENT / V431_PUBLIC_FINAL + OWNER_LOCAL_R45_PRECONNECT_HOTFIX
 Brain version: v431-public-final+r45-owner-hotfix-2026-10-04
 Installed authority: Windows owner machine v4.3.1 with local R45 pre-connect-test hotfix applied in place; app manifest 17/17 PASS; installed Speed/DIRECT backend PASS (93.3 ms / 36.0 Mbps / 4.82 Mbps) and CFON remained CONNECTED_HEALTHY. Visual post-click table rendering is UNPROVEN because GUI helper timed out. Public artifact authority remains v4.3.1/R44.
@@ -566,3 +603,13 @@ Rebuild/verify PUBLIC_MANIFEST.json; prove runtime diff versus immutable v4.3.5 
 
 ### Exact Next Action
 Generate PUBLIC_MANIFEST last; pass security/public-tree/fail-closed; freeze commit SHA and require hosted CI before any v4.3.6 promotion.
+
+### R50 Hosted Attempt 1 — Canonical Nested-Manifest Guard
+- Exact candidate 0dd73a874ecf4aa37b191c6adaa12bbe8d760c27 reached hosted CI run 37334451018.
+- Linux static, console virtual, Windows installer build/fresh path, Android build, iOS static and virtual signing progressed/passed; windows-unit blocked promotion at Verify public manifests.
+- Exact root cause: crossplatform/MANIFEST.json entries were generated from raw Windows working-tree bytes. linux/freenet_hub_linux_gtk.py was CRLF locally but LF in fresh checkout, so the nested entry hash failed even though RELEASE used a canonical hash for the manifest file itself.
+- Prevention: tests/rebuild_crossplatform_manifest.py now canonicalizes every entry through Git hash-object/cat-file before recording bytes/SHA-256. Nested manifests must use the same canonicalization policy as their verifier.
+- Corrected cross-platform manifest canonical SHA-256: 2C39E72AC80A76DE1A597A870412F26070977AB57D82E9E396596E23576250C9.
+- RELEASE changed, so the prior 8F4585... installer became superseded. The A4A207... installer was superseded when late control-plane RELEASE fields were stabilized. Final frozen R50 installer is 24,257,042 bytes / SHA-256 E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1; manifest preflight PASS; Authenticode NotSigned/external.
+- Post-fix local regression remains 244/244 PASS. Final E9592F... exact fresh-install/UI smoke PASS; Windows default route stayed 192.168.20.1.
+- Exact Next Action: rebuild PUBLIC_MANIFEST last, verify public/security/fail-closed, commit/push corrected exact SHA, require hosted retry PASS before merge/promotion.

@@ -3,7 +3,7 @@
   "date": "2026-10-05",
   "project": "FreeNet Hub",
   "changeSet": "R50",
-  "status": "LOCAL_GATES_PASS_PUBLIC_VERIFY_PENDING",
+  "status": "LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
   "objective": "Eliminate false-negative best-node behavior and make smart ordering prefer proven full-health application metrics over TCP-only hints.",
   "rootCause": "Linux best-node UX stopped after a fixed four-candidate sample; live evidence later found healthy nodes in a larger sample. Smart ordering also allowed endpoint hints to outrank measured full-health results.",
   "validation": {
@@ -16,7 +16,14 @@
     "linuxUpdateRevision": "PASS",
     "windowsFreshInstall": "PASS",
     "installerManifestPreflight": "PASS",
-    "diffCheck": "PASS"
+    "diffCheck": "PASS",
+    "publicSecurity": "PASS",
+    "publicTree": "PENDING_FINAL_LOCAL_REVERIFY_AFTER_CANONICALIZATION_FIX",
+    "fullRegressionAfterCanonicalFix": "244/244 PASS",
+    "freshInstallAfterCanonicalFix": "PASS",
+    "crossPlatformCanonicalEntries": "PASS_2C39E72AC80A76DE1A597A870412F26070977AB57D82E9E396596E23576250C9",
+    "firstHostedAttempt": "FAIL_WINDOWS_UNIT_VERIFY_PUBLIC_MANIFEST_AT_0dd73a8",
+    "finalFreshInstall": "PASS_DEFAULT_ROUTE_PRESERVED"
   },
   "liveEvidence": {
     "linuxR15Batch12": "3/12 full-health PASS; best observed 6.4 Mbps down / 0.09 Mbps up / 1527 ms / US",
@@ -25,8 +32,8 @@
   "artifacts": {
     "windows": {
       "name": "FreeNetHub_4.3.6_R50_Setup.exe",
-      "bytes": 24258557,
-      "sha256": "8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4",
+      "bytes": 24257042,
+      "sha256": "E9592F858F166A7946BA8791CA9595B325456AB9BE27FEF07A3FC7E399F30AE1",
       "authenticode": "NotSigned"
     },
     "linux": {
@@ -36,7 +43,9 @@
     }
   },
   "supersededInstallerSha256": [
-    "FB317C82007749E82983C79A089E7499EACB231A6F0C98C6AFE7DD0CBFD35DC2"
+    "FB317C82007749E82983C79A089E7499EACB231A6F0C98C6AFE7DD0CBFD35DC2",
+    "8F458553E7EA3E4A88A31D1C0F6F9B4970DF578C859C2A739220ECED7532E8B4",
+    "A4A2074977A0D8657B28DF21E43BDC681F6084D815A5AC9D385147F2E5E39CFA"
   ],
   "safety": {
     "newExternalDependency": false,
@@ -44,10 +53,29 @@
     "windowsDefaultRoutePreserved": true
   },
   "openGates": [
-    "public/security/fail-closed final verification",
+    "final local public-tree verification",
+    "commit/push canonicalization correction",
     "hosted exact-SHA CI",
     "public promotion",
     "post-publish update acceptance"
   ],
-  "exactNextAction": "Build PUBLIC_MANIFEST last, pass public/security/fail-closed, commit exact candidate, require hosted CI before promotion."
+  "exactNextAction": "Rebuild PUBLIC_MANIFEST last from the stable correction snapshot, pass verify/security/fail-closed/regression, commit and push a correction SHA, then require hosted CI on that exact SHA.",
+  "hostedFirstAttempt": {
+    "runId": 37334451018,
+    "sha": "0dd73a874ecf4aa37b191c6adaa12bbe8d760c27",
+    "failedJob": "windows-unit",
+    "failedStep": "Verify public manifests",
+    "rootCause": "CROSSPLATFORM_MANIFEST_ENTRY_RAW_CRLF_HASH",
+    "prevention": "REBUILD_CROSSPLATFORM_MANIFEST_CANONICALIZES_EVERY_ENTRY_AND_REPORTS_CANONICAL_MANIFEST_HASH"
+  },
+  "failurePrevention": {
+    "crossPlatformManifest": "Build and verify cross-platform source entries from Git-canonical bytes so Windows CRLF and hosted LF checkouts share one authority.",
+    "installerSelfReference": "Never store the current installer digest or byte size inside RELEASE.json because RELEASE.json is embedded in the installer; keep artifact digest in external evidence."
+  },
+  "hostedEvidence": {
+    "candidateSha": "0dd73a874ecf4aa37b191c6adaa12bbe8d760c27",
+    "pr": 26,
+    "prRun": 37334685245,
+    "failedJob": "windows-unit / Verify public manifests"
+  }
 }

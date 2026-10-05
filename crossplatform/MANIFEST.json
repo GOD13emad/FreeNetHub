@@ -114,8 +114,8 @@
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
-      "bytes": 59356,
-      "sha256": "9DC7B6C5F41A7B7B47688C817892C58A4D13DB461F7615F456A592F42B01B7E1"
+      "bytes": 58420,
+      "sha256": "078ABB646FF518677E4FB98F68180F75ED900DAAD1600B3859D980DF4CC3314E"
     },
     {
       "file": "linux/freenet_hub_linux_r37.py",
