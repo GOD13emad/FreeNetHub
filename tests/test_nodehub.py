@@ -59,9 +59,9 @@ assert hycfg["outbounds"][0]["type"] == "hysteria2" and hycfg["outbounds"][0]["t
 
 try:
     n.parse_uri("tuic://x@example.com:443")
-    raise AssertionError("unsupported protocol must fail closed")
+    raise AssertionError("TUIC without password must fail closed")
 except ValueError as e:
-    assert str(e) == "NODE_PROTOCOL_UNSUPPORTED"
+    assert str(e) == "TUIC_CREDENTIALS_REQUIRED"
 
 # R28 transport-compatibility regressions.
 tr_default_tls = n.parse_uri("trojan://secret@tr2.example.com:443?sni=tr2.example.com#TR-DEFAULT-TLS")

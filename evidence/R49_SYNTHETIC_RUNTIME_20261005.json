@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "singbox": "%LOCALAPPDATA%\\Programs\\FreeNetHub\\gateway\\runtime\\bin\\sing-box-1.14.0\\sing-box.exe",
+  "singboxSha256": "AAD0EDE010EAFA7B277E520464F3A66FDE820103D737EFF739F40F3CC9451DCC",
+  "protocols": {
+    "tuic": {
+      "checkExit": 0,
+      "checkStdout": "",
+      "checkStderr": "",
+      "listenerPort": 19611,
+      "listenerOpened": true,
+      "cleanStop": true,
+      "runExit": 1,
+      "runStdout": "",
+      "runStderr": ""
+    },
+    "anytls": {
+      "checkExit": 0,
+      "checkStdout": "",
+      "checkStderr": "",
+      "listenerPort": 19612,
+      "listenerOpened": true,
+      "cleanStop": true,
+      "runExit": 1,
+      "runStdout": "",
+      "runStderr": ""
+    },
+    "shadowtls": {
+      "checkExit": 0,
+      "checkStdout": "",
+      "checkStderr": "",
+      "listenerPort": 19613,
+      "listenerOpened": true,
+      "cleanStop": true,
+      "runExit": 1,
+      "runStdout": "",
+      "runStderr": ""
+    }
+  },
+  "status": "PASS"
+}

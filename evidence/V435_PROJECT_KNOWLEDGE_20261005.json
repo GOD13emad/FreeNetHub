@@ -1,0 +1,251 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "version": "4.3.5",
+  "status": "LOCAL_GATES_PASS_HOSTED_RETRY_OPEN",
+  "records": [
+    {
+      "Date_Context": "2026-10-05 / R49 method choice",
+      "Claim_Decision": "Expand the existing pinned sing-box Node Pool with TUIC and AnyTLS share imports and standalone TUIC/AnyTLS/ShadowTLS JSON imports; do not add a new tunnel dependency.",
+      "Evidence_Source": [
+        "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+        "sing-box official outbound documentation",
+        "installed sing-box 1.14.0 runtime"
+      ],
+      "Confidence_Status": "CONFIRMED / ACCEPTED",
+      "Reuse_Targets": [
+        "protocol matrix",
+        "architecture",
+        "release notes"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 runtime validation",
+      "Claim_Decision": "Parser-generated TUIC/AnyTLS/ShadowTLS configs pass exact installed sing-box check and open their local SOCKS listeners under sing-box run. This proves runtime loading, not external endpoint connectivity.",
+      "Evidence_Source": [
+        "tests/test_r49_node_protocols.py",
+        "R49 synthetic config check/run receipts"
+      ],
+      "Confidence_Status": "CONFIRMED_RUNTIME_LOAD / EXTERNAL_CONNECTIVITY_UNPROVEN",
+      "Reuse_Targets": [
+        "regression",
+        "support",
+        "capability matrix"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 bridge input resilience",
+      "Claim_Decision": "Add clipboard import for WebTunnel/obfs4 by reusing the existing strict bridge parser. Temporary clipboard files are removed after success and failure; ordinary user files are preserved.",
+      "Evidence_Source": [
+        "tests/test_r49_resilience_inputs.py",
+        "app/FreeNetHub.ps1",
+        "app/engine.py"
+      ],
+      "Confidence_Status": "CONFIRMED / PASS",
+      "Reuse_Targets": [
+        "bridge UX",
+        "privacy",
+        "failure prevention"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 deferred capability",
+      "Claim_Decision": "Do not advertise Naive on Windows while libcronet.dll is missing even though sing-box carries with_naive_outbound. Do not absorb OpenVPN/OpenConnect or Psiphon without their separate product/config/server authority.",
+      "Evidence_Source": [
+        "installed sing-box directory audit",
+        "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+        "tests/test_product_boundary.py"
+      ],
+      "Confidence_Status": "CONFIRMED / DEFERRED_BY_EVIDENCE",
+      "Reuse_Targets": [
+        "future roadmap",
+        "scope control",
+        "packaging"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 local acceptance",
+      "Claim_Decision": "R49 passes 221/221 full regression and exact installer build with 25 frozen inputs; external live endpoints for the new protocols remain unproven and hosted CI remains the promotion gate.",
+      "Evidence_Source": [
+        "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+        "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+        "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_OPEN",
+      "Reuse_Targets": [
+        "release promotion",
+        "handoff"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 installer evidence reconciliation",
+      "Claim_Decision": "Treat the final V435_R49_INSTALLER_BUILD_20261005.json and current artifact bytes as authoritative after closing stale nodeHubSha256 and transitional RELEASE metadata before the final frozen-input build.",
+      "Evidence_Source": [
+        "delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe",
+        "evidence/V435_R49_INSTALLER_BUILD_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED / STALE_METADATA_CLOSED",
+      "Reuse_Targets": [
+        "release promotion",
+        "failure prevention",
+        "supply-chain audit"
+      ],
+      "Provenance": {
+        "bytes": 24278071,
+        "sha256": "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 synthetic runtime preservation",
+      "Claim_Decision": "TUIC, AnyTLS and ShadowTLS parser-generated configs pass installed sing-box check and open local listeners, while installed session, route and DNS hashes remain unchanged. This proves runtime loading only, not external endpoint connectivity.",
+      "Evidence_Source": [
+        "evidence/R49_SYNTHETIC_RUNTIME_20261005.json",
+        "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
+      ],
+      "Confidence_Status": "CONFIRMED_RUNTIME_LOAD / EXTERNAL_CONNECTIVITY_UNPROVEN",
+      "Reuse_Targets": [
+        "capability matrix",
+        "regression",
+        "release notes"
+      ]
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 public-tree local closure",
+      "Claim_Decision": "R49 exact local candidate passes public-tree verification across 489 files, nested manifests, release hashes, public security, mobile fail-closed and diff checks. Only hosted exact-SHA CI remains before promotion.",
+      "Evidence_Source": [
+        "PUBLIC_MANIFEST.json",
+        "tests/verify_public_tree.py",
+        "tests/security_scan_public.py",
+        "crossplatform/common/verify_fail_closed.py"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_OPEN",
+      "Reuse_Targets": [
+        "release promotion",
+        "handoff",
+        "supply-chain baseline"
+      ],
+      "Provenance": {
+        "publicManifestSha256": "378F8DD3C86920A6F8A9A3D37D36E45055E5061E3A43F0959889E1CC9ADA2A3A",
+        "files": 489
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 hosted Linux parity failure",
+      "Claim_Decision": "Hosted CI first attempt failed only because R49 updated app/nodehub.py without synchronizing the Linux shared mirror. Preserve the byte-parity guard; synchronize the mirror and bump Linux to a new R15/r42 package instead of silently changing R14 bytes.",
+      "Evidence_Source": [
+        "GitHub Actions run 37302766809 / linux-static",
+        "crossplatform/linux/test_r37_parity.py",
+        "app/nodehub.py",
+        "crossplatform/linux/nodehub_shared.py",
+        "tests/build_linux_r15_package.py"
+      ],
+      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / FIX_LOCAL_PASS / HOSTED_RETRY_OPEN",
+      "Reuse_Targets": [
+        "failure prevention",
+        "Linux packaging",
+        "release governance"
+      ],
+      "Provenance": {
+        "linuxVersion": "4.2.0-linux.15-r42",
+        "linuxPackage": "FreeNetHub_4.2.0_Linux_R15.zip",
+        "bytes": 221657,
+        "sha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 post-Linux-parity installer rebuild",
+      "Claim_Decision": "The pre-parity Windows R49 installer hash 7BC7... is superseded because RELEASE/cross-platform authority changed. Rebuild the exact frozen Windows installer after Linux R15 authority sync and use only the new 29227... digest for promotion.",
+      "Evidence_Source": [
+        "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+        "delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe"
+      ],
+      "Confidence_Status": "CONFIRMED / CURRENT_INSTALLER_AUTHORITY",
+      "Reuse_Targets": [
+        "release promotion",
+        "supply-chain audit",
+        "failure prevention"
+      ],
+      "Provenance": {
+        "bytes": 24271706,
+        "sha256": "29227FA8E8A8FE388396204D4FEAE75FF24CE110ABE1CBA5BC45BEF9FF8231DF",
+        "supersededSha256": "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 cross-platform canonical hash policy",
+      "Claim_Decision": "RELEASE.crossPlatformManifestSha256 must use Git-canonical bytes because verify_public_tree canonicalizes tracked text files; raw Windows working-tree CRLF SHA is evidence-only and cannot be used as release authority.",
+      "Evidence_Source": [
+        "tests/verify_public_tree.py",
+        "tests/rebuild_crossplatform_manifest.py",
+        "crossplatform/MANIFEST.json"
+      ],
+      "Confidence_Status": "CONFIRMED_ROOT_CAUSE / CLOSED",
+      "Reuse_Targets": [
+        "release hashing",
+        "cross-platform manifest generation",
+        "failure prevention"
+      ],
+      "Provenance": {
+        "rawSha256": "060A9D8E907E424F00DE45C2C5BE0A67EA6C2BE02D54456F4FD9D774E21FE570",
+        "canonicalSha256": "DE4F27B50EFF88E3A5E1F85D8B06D8F74E8F72391009773DC240445B39158D89"
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 final canonical-authority installer rebuild",
+      "Claim_Decision": "After correcting RELEASE to the Git-canonical cross-platform manifest hash, rebuild the frozen Windows installer again. Only the resulting 1EE176... digest is current promotion authority; earlier R49 installer digests are superseded.",
+      "Evidence_Source": [
+        "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+        "tests/verify_public_tree.py"
+      ],
+      "Confidence_Status": "CONFIRMED / CURRENT_FROZEN_INSTALLER",
+      "Reuse_Targets": [
+        "release promotion",
+        "supply-chain audit"
+      ],
+      "Provenance": {
+        "bytes": 24260411,
+        "sha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
+        "superseded": [
+          "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E",
+          "29227FA8E8A8FE388396204D4FEAE75FF24CE110ABE1CBA5BC45BEF9FF8231DF"
+        ]
+      }
+    },
+    {
+      "Date_Context": "2026-10-05 / R49 parity-fixed local closure",
+      "Claim_Decision": "After Linux R15 parity repair and canonical cross-platform hash correction, the frozen R49 candidate passes 221/221 full regression, fail-closed, public security, diff-check and complete public-tree verification. Hosted retry is the only promotion gate.",
+      "Evidence_Source": [
+        "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json",
+        "PUBLIC_MANIFEST.json",
+        "tests/verify_public_tree.py",
+        "crossplatform/linux/test_r37_parity.py",
+        "tests/build_linux_r15_package.py"
+      ],
+      "Confidence_Status": "CONFIRMED_LOCAL / HOSTED_RETRY_OPEN",
+      "Reuse_Targets": [
+        "release promotion",
+        "failure prevention",
+        "handoff"
+      ],
+      "Provenance": {
+        "windowsInstallerSha256": "1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E",
+        "linuxR15Sha256": "FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01",
+        "fullRegression": "221/221 PASS",
+        "publicTreeFiles": 490
+      }
+    }
+  ],
+  "authoritativeEvidence": [
+    "evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json",
+    "evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json",
+    "evidence/V435_R49_INSTALLER_BUILD_20261005.json",
+    "evidence/R49_SYNTHETIC_RUNTIME_20261005.json",
+    "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
+  ],
+  "openGates": [
+    "hosted exact-candidate retry CI",
+    "public promotion"
+  ],
+  "exactNextAction": "Rebuild final PUBLIC_MANIFEST, verify, commit/push exact parity-fixed R49 and require hosted retry PASS."
+}

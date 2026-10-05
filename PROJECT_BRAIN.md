@@ -443,3 +443,67 @@ Rebuild/verify PUBLIC_MANIFEST, prove runtime diff versus v4.3.4 is zero, commit
 - Final control-only closure commit 161619b9ab3c931d171f9d80082a4b1dc7fa0d71 passed hosted CI run 37292728318.
 - Runtime diff versus immutable authority tag v4.3.4 is NONE; runtime authority remains v4.3.4 -> 4a3a24351ac892563d2c01e7d40cd5a001fe13e5.
 - Status: PUBLIC_FINAL_CLOSED. Any further resilience work must start as a new evidence-gated change set.
+
+## V435 R49 NODE PROTOCOL EXPANSION — 2026-10-05
+Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_OPEN
+- Baseline: public v4.3.4 / runtime commit 4a3a24351ac892563d2c01e7d40cd5a001fe13e5 / repository closure 7d6902f.
+- R49 expands the existing pinned sing-box Node Pool without a new external tunnel dependency: TUIC and AnyTLS share imports, standalone sing-box JSON import for TUIC/AnyTLS/ShadowTLS, and fail-closed clipboard import for WebTunnel/obfs4 bridges.
+- Naive remains intentionally not advertised because the installed Windows runtime lacks required libcronet.dll. OpenVPN/OpenConnect remain outside this product boundary, and Psiphon remains deferred because no authorized bootstrap/server-entry authority is integrated.
+- Exact local regression: R49 focused 15/15 PASS; legacy compatibility 138/138 PASS; full suite 221/221 PASS; frozen-input integrity 26/26 PASS; Python compile and PowerShell/XAML parse PASS.
+- Installed sing-box 1.14.0 runtime proof: parser-generated TUIC, AnyTLS and ShadowTLS configs all pass sing-box check and open their local SOCKS listeners. This proves config/runtime loading only; real external endpoints for these three protocols remain UNPROVEN because no authorized endpoint is available in current feeds.
+- Runtime-preservation proof: installed session hash, IPv4 route state and DNS state are identical before/after synthetic runtime tests.
+- Public security caught and closed one evidence-only privacy defect: initial synthetic receipts contained a local Windows user path. Receipts are now redacted to %LOCALAPPDATA% and security scan PASS.
+- Public-tree verifier caught and closed stale RELEASE.json nodeHubSha256. The final frozen RELEASE authority is synced to app/nodehub.py.
+- Exact final Windows installer: delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe = 24,278,071 bytes / SHA-256 7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E. 25 frozen inputs and raw app-manifest preflight PASS. Authenticode remains NotSigned / external.
+- Public tree: 489 files; public/app/gateway/cross-platform/windows manifests, release hashes, forbidden runtime artifacts, public security, mobile fail-closed and diff-check all PASS.
+- Evidence authority: evidence/R49_PROTOCOL_EXPANSION_AUDIT_20261005.json; evidence/V435_R49_CANDIDATE_ACCEPTANCE_20261005.json; evidence/V435_PROJECT_KNOWLEDGE_20261005.json; evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json; evidence/V435_R49_INSTALLER_BUILD_20261005.json.
+
+### Roadmap ← CURRENT
+1. Commit/push exact R49 candidate branch.
+2. Require hosted exact-SHA Windows fresh-install, Linux, console virtual, Android emulator, iOS simulator and aggregate acceptance.
+3. Only after hosted PASS: fast-forward/promote exact tested SHA, tag v4.3.5, require tag CI, publish exact R49 Windows bytes plus unchanged accepted Linux R14, then post-publish updater/digest verification.
+4. Trusted Authenticode, physical-console field E2E, and production Android/iOS forwarding/signing/real-device remain separate external gates.
+
+### Exact Next Action
+Update only the changed control-file entries in PUBLIC_MANIFEST, verify complete public tree/security, commit/push exact R49 and require hosted CI.
+
+### V435 R49 hosted Linux parity root-cause — 2026-10-05
+Status: CURRENT / FIX_LOCAL_PASS_HOSTED_RETRY_OPEN
+- Hosted CI run 37302766809 failed only linux-static. Windows unit/fresh-install/virtual-signing, console virtual, Android build/emulator and iOS static/simulator all passed; aggregate was skipped only because Linux failed.
+- Root cause: R49 changed app/nodehub.py for TUIC/AnyTLS/ShadowTLS imports but crossplatform/linux/nodehub_shared.py remained at R48 bytes. The existing SHA parity guard correctly blocked promotion.
+- Prevention: keep byte-parity guard; Linux shared nodehub is synchronized from app authority in the same change set. Because Linux package bytes changed, do not reuse R14 identity. Linux candidate is bumped to 4.2.0-linux.15-r42 / FreeNetHub_4.2.0_Linux_R15.zip.
+- Local Linux logic gates PASS: selftest, console policy, browser profile, scope policy, R37 parity and updater revision. POSIX permission test is not authoritative on NTFS and remains a Linux-host/CI gate.
+- R15 package candidate: 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01.
+- Exact Next Action: rebuild Windows R49 installer because RELEASE/cross-platform authority changed, rerun full/public gates, commit/push parity fix and require hosted retry PASS before promotion.
+
+### V435 R49 post-parity frozen installer — 2026-10-05
+Status: CURRENT / LOCAL_FROZEN_CANDIDATE_HOSTED_RETRY_OPEN
+- Linux parity fix changes RELEASE/cross-platform authority, so the earlier R49 Windows installer digest 7BC7BCED... is superseded.
+- Current exact Windows R49 installer: 24,271,706 bytes / SHA-256 29227FA8E8A8FE388396204D4FEAE75FF24CE110ABE1CBA5BC45BEF9FF8231DF. Frozen inputs=25; raw app-manifest preflight PASS; Authenticode NotSigned/external.
+- Current Linux candidate: 4.2.0-linux.15-r42 / FreeNetHub_4.2.0_Linux_R15.zip = 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01.
+- Previous R49 Windows installer hash is historical/superseded and must not be promoted.
+- Exact Next Action: full regression + public-tree/security on this frozen state, then commit/push parity fix and require hosted retry PASS.
+
+### V435 R49 canonical cross-platform hash correction — 2026-10-05
+- Public-tree verification found only releaseHashes/crossPlatformManifestSha256 mismatched after Linux R15 sync.
+- Root cause: cross-platform manifest generator reported raw working-tree SHA (CRLF on Windows), while release verifier correctly hashes Git-canonical bytes. RELEASE must use canonical SHA.
+- Raw SHA: 060A9D8E907E424F00DE45C2C5BE0A67EA6C2BE02D54456F4FD9D774E21FE570. Canonical release SHA: DE4F27B50EFF88E3A5E1F85D8B06D8F74E8F72391009773DC240445B39158D89.
+- Prevention: release authorities use the same canonicalization policy as verify_public_tree; generator receipts may retain raw hashes only as secondary evidence.
+- Because RELEASE is a frozen Windows installer input, rebuild the installer after this correction before promotion.
+
+### V435 R49 canonical-authority frozen installer — 2026-10-05
+Status: CURRENT / FINAL_LOCAL_FREEZE_PENDING_HOSTED_RETRY
+- Correcting RELEASE to the Git-canonical cross-platform manifest hash required one final Windows installer rebuild.
+- Current exact R49 Windows installer: 24,260,411 bytes / SHA-256 1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E; 25 frozen inputs; raw app-manifest preflight PASS; Authenticode NotSigned/external.
+- Earlier R49 installer hashes 7BC7... and 29227... are superseded and must not be promoted.
+- Linux candidate remains 4.2.0-linux.15-r42 / R15, 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01.
+- Exact Next Action: one final regression/public verification, then commit/push exact state and require hosted retry PASS.
+
+### V435 R49 parity-fixed local closure — 2026-10-05
+Status: CURRENT / LOCAL_GATES_CLOSED_HOSTED_RETRY_OPEN
+- Hosted CI first attempt failed only Linux nodehub byte parity; root cause was app/nodehub.py changing without synchronizing crossplatform/linux/nodehub_shared.py.
+- Linux is now versioned as a new candidate, not silently mutated R14: 4.2.0-linux.15-r42 / FreeNetHub_4.2.0_Linux_R15.zip = 221,657 bytes / SHA-256 FBA77FB02A7E4F207FA12606B4E1A49D3311188501AC3C550D87F98F08ECDF01.
+- Current Windows R49 installer authority: 24,260,411 bytes / SHA-256 1EE176570BAA8605BD32170FE7E6E11D219204EEDB84012D1C0C28B50018974E.
+- Final local regression: 221/221 PASS. Fail-closed PASS. Public security PASS. diff-check PASS. Public tree PASS over 490 files with nested manifests/release hashes/forbidden-runtime checks all PASS.
+- RELEASE cross-platform manifest authority uses Git-canonical bytes; raw Windows CRLF hash is evidence-only.
+- Exact Next Action: rebuild PUBLIC_MANIFEST including this closure record, verify once more, commit/push exact R49 parity fix and require hosted retry CI PASS before any v4.3.5 promotion.

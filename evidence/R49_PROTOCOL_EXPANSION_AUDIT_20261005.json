@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "project": "FreeNet Hub",
+  "changeSet": "R49",
+  "status": "LOCAL_GATES_PASS_HOSTED_OPEN",
+  "objective": "Expand node/import resilience using the already-pinned sing-box runtime without adding a new external dependency.",
+  "baseline": {
+    "tag": "v4.3.4",
+    "runtimeCommit": "4a3a24351ac892563d2c01e7d40cd5a001fe13e5",
+    "repositoryClosure": "7d6902f"
+  },
+  "methodChoice": {
+    "accepted": [
+      {
+        "method": "TUIC",
+        "reason": "Official sing-box outbound supported by installed 1.14.0 runtime; common TUIC share URI is parseable; exact generated config passes sing-box check and runtime listener load.",
+        "evidence": [
+          "app/nodehub.py",
+          "tests/test_r49_node_protocols.py",
+          "installed sing-box 1.14.0 check/run"
+        ],
+        "liveExternal": "UNPROVEN_NO_AUTHORIZED_ENDPOINT"
+      },
+      {
+        "method": "AnyTLS",
+        "reason": "Official sing-box outbound supported by installed runtime; official anytls-go share URI exists; exact generated config passes sing-box check and runtime listener load.",
+        "evidence": [
+          "app/nodehub.py",
+          "tests/test_r49_node_protocols.py",
+          "installed sing-box 1.14.0 check/run"
+        ],
+        "liveExternal": "UNPROVEN_NO_AUTHORIZED_ENDPOINT"
+      },
+      {
+        "method": "ShadowTLS",
+        "reason": "Official sing-box outbound supported by installed runtime; no sufficiently authoritative universal share URI was assumed, so import is restricted to standalone sing-box JSON with fail-closed validation.",
+        "evidence": [
+          "app/nodehub.py",
+          "tests/test_r49_node_protocols.py",
+          "installed sing-box 1.14.0 check/run"
+        ],
+        "liveExternal": "UNPROVEN_NO_AUTHORIZED_ENDPOINT"
+      },
+      {
+        "method": "Bridge Clipboard Import",
+        "reason": "Tor bridge delivery is copy/paste oriented; reuses existing strict WebTunnel/obfs4 parser, with temporary clipboard material deleted on both success and failure.",
+        "evidence": [
+          "app/FreeNetHub.ps1",
+          "app/engine.py",
+          "app/View.xaml",
+          "tests/test_r49_resilience_inputs.py"
+        ]
+      }
+    ],
+    "deferred": [
+      {
+        "method": "Naive",
+        "status": "DEFERRED",
+        "reason": "Installed sing-box advertises with_naive_outbound but Windows runtime directory contains only sing-box.exe; required libcronet.dll is absent. Advertising Naive would be a false capability."
+      },
+      {
+        "method": "OpenVPN/OpenConnect",
+        "status": "DEFERRED",
+        "reason": "Runtime build tags exist, but FreeNet Hub has a locked product-boundary separating the OIG/OpenVPN backend and no authorized compatible server/config authority is established."
+      },
+      {
+        "method": "Psiphon",
+        "status": "DEFERRED",
+        "reason": "Architecture is valuable for censorship resistance but requires server-entry/distribution/tactics authority; no supported bootstrap authority is currently integrated."
+      }
+    ],
+    "officialReferences": [
+      "https://sing-box.sagernet.org/configuration/outbound/tuic/",
+      "https://sing-box.sagernet.org/configuration/outbound/anytls/",
+      "https://sing-box.sagernet.org/configuration/outbound/shadowtls/",
+      "https://sing-box.sagernet.org/configuration/outbound/naive/",
+      "https://github.com/anytls/anytls-go",
+      "https://support.torproject.org/censorship/connecting-from-censored-country/",
+      "https://github.com/Psiphon-Labs/psiphon-tunnel-core"
+    ]
+  },
+  "validation": {
+    "r49Focused": "15/15 PASS",
+    "legacyFocused": "138/138 PASS",
+    "packagingIntegrityFocused": "26/26 PASS",
+    "fullRegression": "221/221 PASS",
+    "pythonCompile": "PASS",
+    "powershellXamlParse": "PASS",
+    "mobileFailClosed": "PASS",
+    "publicSecurity": "PASS",
+    "diffCheck": "PASS",
+    "syntheticSingboxCheck": {
+      "tuic": "PASS",
+      "anytls": "PASS",
+      "shadowtls": "PASS"
+    },
+    "syntheticRuntimeListener": {
+      "tuic": "PASS",
+      "anytls": "PASS",
+      "shadowtls": "PASS"
+    },
+    "temporaryBridgeCleanup": "PASS",
+    "syntheticRuntimePreservation": {
+      "status": "PASS",
+      "installedSessionUnchanged": true,
+      "routeUnchanged": true,
+      "dnsUnchanged": true,
+      "evidence": "evidence/R49_SYNTHETIC_RUNTIME_PRESERVATION_20261005.json"
+    },
+    "publicTree": "PASS_489_FILES",
+    "publicManifestSha256": "378F8DD3C86920A6F8A9A3D37D36E45055E5061E3A43F0959889E1CC9ADA2A3A"
+  },
+  "installer": {
+    "path": "delivery/github_v4.3.5/FreeNetHub_4.3.5_R49_Setup.exe",
+    "bytes": 24278071,
+    "sha256": "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E",
+    "frozenFiles": 25,
+    "manifestPreflight": "PASS_RAW_BYTES_MATCH_APP_MANIFEST",
+    "authenticode": "NotSigned",
+    "authority": "V435_R49_INSTALLER_BUILD_20261005.json"
+  },
+  "sourceFeedContext": {
+    "priorSameDayAudit": "evidence/V434_POSTRELEASE_EXPANSION_AUDIT_20261005.json",
+    "currentConfiguredSources": 11,
+    "priorObservedNewSchemes": {
+      "tuic": 0,
+      "anytls": 0,
+      "shadowtls": 0,
+      "naive": 0
+    },
+    "implication": "R49 expands compatible user/subscription imports but does not claim a live public feed for the new protocols."
+  },
+  "safety": {
+    "networkMutationByPatch": false,
+    "installedNetworkChanged": false,
+    "newExternalDependency": false,
+    "liveEndpointClaim": false
+  },
+  "openGates": [
+    "hosted exact-candidate CI",
+    "public promotion"
+  ],
+  "exactNextAction": "Commit/push exact R49 candidate and require hosted CI; no public v4.3.5 promotion before exact-SHA hosted PASS.",
+  "evidenceReconciliation": {
+    "staleObserved": {
+      "bytes": 24267631,
+      "sha256": "2D0F53D129B230EF970FB50F0213593C03EC2FB8A423BBFE69FFDA326D6F4FFA"
+    },
+    "authoritativeCurrent": {
+      "bytes": 24278071,
+      "sha256": "7BC7BCED649BE925B2D5C67D36FAFD6AEF0F1A3B613ADD7CC7B2D113859A201E"
+    },
+    "rootCause": "Candidate/audit metadata lagged successive exact rebuilds required to close RELEASE.json nodeHubSha256 authority and remove a transitional status. Runtime source did not change during those rebuilds.",
+    "prevention": "Freeze all RELEASE/runtime authority fields before final builder invocation; treat the final builder receipt as authoritative and do not mutate frozen inputs afterward."
+  }
+}
