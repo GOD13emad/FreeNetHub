@@ -715,3 +715,14 @@ No open v4.3.7 software gates. Final repository-closure CI run 37359029522 is 10
 - Linux public updater: PASS R16->R17; installed 4.2.0-linux.17-r44; integrity 9/9 PASS; updateAvailable=false; route/DNS/domain/disconnected-session semantics preserved.
 - Stable sing-box 1.14 outbound-family coverage is now exhausted for accepted node families, subject to product exclusions. A narrower R52 refinement remains for Shadowsocks SIP002/SIP003 plugin query preservation (obfs-local/v2ray-plugin). Mieru requires a separate runtime/server-authority evaluation. sing-box 1.15 MASQUE/Tailcat are alpha/pre-release and not accepted into this stable release line.
 - Final repository closure commit 4d2ab2270904b76b261d5c2f75a0f01b50342a57: main CI run 37359029522 = 10/10 SUCCESS; app/crossplatform/windows runtime diff versus v4.3.7 = NONE.
+
+### Owner Windows + Linux Installed Final Acceptance — 2026-10-06
+- Windows canonical install path is now v4.3.7 / R51, upgraded from the prior R45 owner install.
+- Windows app manifest 17/17 PASS; gateway manifest 17/17 PASS.
+- Windows sing-box 1.14.0 and pinned Cronet runtime are configured; setup preserved route, DNS and session and reported networkMutation=false.
+- Windows backend Inventory PASS; all advertised providers are available/not connected. Update check reports localRevision=remoteRevision=51 and updateAvailable=false.
+- Windows installed UI smoke PASS: visible=true, 212 controls rendered, UI PNG generated, networkRequested=false, no ui-error.
+- The stale fresh-install Temp instance was stopped and removed; Inno uninstall authority now points to the canonical per-user Programs/FreeNetHub path.
+- Linux owner install remains 4.2.0-linux.17-r44 / R17; installed integrity 9/9 PASS; update check local=remote=17 and updateAvailable=false.
+- Linux package selftest PASS with network_on_import=false; route/DNS/session remained preserved.
+- Result: both owner Windows and Linux installations are current and final for immutable v4.3.7.

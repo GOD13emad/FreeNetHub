@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "date": "2026-10-06",
+  "project": "FreeNet Hub",
+  "release": "v4.3.7",
+  "status": "PASS_BOTH_OWNER_PLATFORMS_FINAL",
+  "windows": {
+    "installedVersion": "4.3.7",
+    "revision": "4.3.7-r51-protocol-expansion-2",
+    "installLocation": "%LOCALAPPDATA%/Programs/FreeNetHub",
+    "registryVersion": "4.3.7",
+    "registryLocation": "%LOCALAPPDATA%/Programs/FreeNetHub",
+    "installerSha256": "4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3",
+    "appManifest": "17/17 PASS",
+    "gatewayManifest": "17/17 PASS",
+    "session": "STOPPED",
+    "systemProxyEnabled": false,
+    "tempFreshInstallOrphanRemoved": true,
+    "gatewayRuntime": {
+      "singBoxVersion": "1.14.0",
+      "singBoxSha256": "AAD0EDE010EAFA7B277E520464F3A66FDE820103D737EFF739F40F3CC9451DCC",
+      "cronetSha256": "EEE741046F0A3975124BAE349AEAC237AA306F3CC4DE59FF5DE070E74DBFDAEB",
+      "setupStatus": "PASS",
+      "networkMutation": false,
+      "routePreserved": true,
+      "dnsPreserved": true,
+      "sessionPreserved": true
+    },
+    "backend": {
+      "inventory": "PASS_ALL_ADVERTISED_PROVIDERS_AVAILABLE_NOT_CONNECTED",
+      "currentRevision": 51,
+      "remoteRevision": 51,
+      "updateAvailable": false,
+      "rootPathProof": "SYSTEM_DEFAULT_NO_FNH_PC_TUNNEL"
+    },
+    "uiSmoke": {
+      "status": "PASS",
+      "visible": true,
+      "controls": 212,
+      "width": 1440,
+      "height": 1020,
+      "networkRequested": false,
+      "uiPngGenerated": true,
+      "uiError": false
+    }
+  },
+  "linux": {
+    "installedVersion": "4.2.0-linux.17-r44",
+    "releaseRevision": 17,
+    "integrity": "9/9 PASS",
+    "updateAvailable": false,
+    "remoteRevision": 17,
+    "session": "DISCONNECTED",
+    "routePreserved": true,
+    "dnsPreserved": true,
+    "sessionPreserved": true,
+    "packageSelftest": "PASS",
+    "packageSelftestResult": {
+      "ok": true,
+      "network_on_import": false,
+      "ui": "GTK4+Libadwaita",
+      "public_bridge_material": false
+    },
+    "sourceParity": "PASS_FROM_ACCEPTED_SOURCE_AND_HOSTED_LINUX_STATIC",
+    "note": "Packaged test_r37_parity.py expects repository layout and is not an installed-root test; package selftest and installed integrity/update checks are authoritative for the owner installation."
+  },
+  "runtimeMutationAfterRelease": false,
+  "conclusion": "Windows owner installation is now upgraded from R45 to R51 and Linux remains accepted R17. Both installed owner platforms are current against v4.3.7 with no update pending."
+}
