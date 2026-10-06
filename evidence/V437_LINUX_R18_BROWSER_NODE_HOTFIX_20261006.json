@@ -62,7 +62,7 @@
   "browserAcceptance": {
     "browserCommand": "/usr/bin/firefox",
     "runtime": "Ubuntu Snap Firefox",
-    "profile": "/home/aliemad/snap/firefox/common/FreeNetHub/firefox-tunneled",
+    "profile": "~/snap/firefox/common/FreeNetHub/firefox-tunneled",
     "mode": "NODE",
     "proxy": true,
     "proxyPort": 19460,
