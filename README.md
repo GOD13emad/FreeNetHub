@@ -1,51 +1,76 @@
-# FreeNet Hub 4.2.0
+# FreeNet Hub 4.3.7
 
-FreeNet Hub is a multi-method connectivity control center with explicit Browser, Full System, and Console scopes, pre-connect measurement, fail-closed provider boundaries, and rollback-aware Windows network mutation.
+FreeNet Hub is a multi-method connectivity control center for Windows and Linux with explicit Browser, Full System, and Console scopes, pre-connect measurement, fail-closed provider boundaries, rollback-aware network mutation, node management, and online update checks.
 
-## Evidence-backed Windows status
+## Final desktop install authority
 
-- R37 five-tab UI (Dashboard / Methods / Nodes / Tools / Settings): accepted from the installed product.
-- Browser, Full System, and Console capability boundaries are explicit; unsupported paths remain fail-closed.
-- Method-card Connect and pre-connect measurement actions invoke real backend operations.
-- Node refresh fetch/parse/merge is separated from explicit endpoint Test All. Node imports accept SS/VMess/VLESS/Trojan/Hysteria v1/Hysteria2/TUIC/AnyTLS share links; standalone sing-box JSON imports additionally support ShadowTLS, SSH, Snell, SOCKS, HTTP CONNECT and Naive with fail-closed validation. Naive on Windows is runtime-gated on the hash-pinned Cronet DLL from the same official sing-box archive.
-- Direct base-path speed measurement and browser WARP benchmark: accepted.
-- Full-System WARP through the official gateway path: accepted; update/node retrieval during TUN is proven bound to the pre-TUN base route.
-- Stop/rollback removes FreeNet Hub TUN/session state and restores the accepted route.
-- Exact R37 installer lifecycle: install exit 0, runtime bootstrap PASS, 17 app + 17 gateway parity PASS, five UI smoke tabs PASS, route unchanged.
-- Hosted CI #99: Windows, Linux, Android build/emulator fail-closed runtime, iOS static/simulator runtime, console virtual E2E, virtual signing, and aggregate virtual acceptance all PASS.
-- Physical console/game/country field E2E and publicly trusted Windows Authenticode remain explicit external gates.
+The current public desktop release is **v4.3.7**.
 
-Current acceptance evidence is in `evidence/R37_WINDOWS_FINAL_ACCEPTANCE_20260929.json` and `evidence/R37_PUBLIC_RELEASE_ACCEPTANCE_20260929.json`.
+### Windows
 
-## Install on Windows
+Install exactly:
 
-The recommended path is `FreeNetHub_4.2.0_R37_Final_Setup.exe` from GitHub Release `v4.2.0-r37-final`. Its accepted SHA-256 is `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64`; verify it against `SHA256SUMS.txt`.
+`FreeNetHub_4.3.7_R51_Setup.exe`
 
-The installer does not auto-connect networking. Network mutation is explicit and elevated only when Full PC or Console Gateway actions are requested.
+SHA-256:
 
-Gateway core provisioning uses pinned sing-box 1.14.0. Browser provider binaries/configs such as WARP/Tor/GOOL/CFON are not redistributed by this repository; missing optional providers remain unavailable/fail-closed rather than silently falling back to DIRECT.
+`4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3`
 
-For source installation:
+Accepted product revision: `4.3.7-r51-protocol-expansion-2`.
 
-    pwsh.exe -NoProfile -ExecutionPolicy Bypass -File .\Install-Windows.ps1 -InstallMissingRuntime
+Fresh owner-host verification on 2026-10-06:
+- full regression: **252/252 PASS**
+- installed/source RELEASE parity: PASS
+- installed/source app manifest parity: PASS
+- installed/source gateway manifest parity: PASS
+- current update revision: 51 / remote revision: 51 / no update pending
 
-## Cross-platform source
+The Windows installer is currently **not publicly Authenticode-signed** because no trusted external signing identity is provisioned. This is an external signing gate, not a desktop runtime defect.
 
-GitHub Release `v4.2.0-r37-final`, targeting commit `45e21a1bc64aefaf3276751754c0f4f4fd1fb649`, is the accepted public R37 authority. GitHub reports the release as `immutable=false`, so server-enforced release immutability is not claimed.
+### Linux
 
-Native Linux 4.2.0-linux.12-r38 is the current Linux authority on Ubuntu 24.04. The GTK4/Libadwaita product UI now follows the R37 five-section architecture: Dashboard, Methods, Nodes, Tools and Settings. Browser scope has real Node Pool support through app-local hash-pinned sing-box, WARP/GOOL/CFON through app-local hash-pinned warp-plus, Tor/obfs4/Snowflake, Custom proxy and Direct. Node refresh is separated from explicit endpoint Test All; HTTPS proxy-health and throughput are separate gates. Raw/Base64 export, metadata, history, filtering/sorting and bounded batch benchmark are exposed in the UI.
+Install exactly:
 
-Full-System remains WARP-only on Linux R12; a privileged Full-System Node helper is not claimed without separate CAP_NET_ADMIN/root acceptance. Console Gateway software policy, UUID ownership and rollback remain accepted while physical console DHCP/UDP/game/country validation is external. The installer does not auto-connect networking, verifies installed files through INSTALL.sha256, provisions sing-box 1.14.2 and warp-plus 1.2.6 from their official releases with pinned archive hashes, and reloads only the exact FreeNet Hub UI process. The accepted Linux R11 package is `FreeNetHub_4.2.0_Linux_R11.zip`; its release digest is recorded in the R11 UX acceptance evidence.
+`FreeNetHub_4.2.0_Linux_R17.zip`
 
-Android 4.2.0 clean build and hosted emulator lifecycle PASS with the VpnService permission flow exercised fail-closed; the production packet-forwarding core/signing remain open external gates. iOS static and hosted simulator build/install/launch/relaunch PASS with the Packet Tunnel extension present and fail-closed while its production forwarding core is unlinked; Apple production signing/provisioning and physical-device runtime remain open gates.
+SHA-256:
 
-## Security boundary
+`1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6`
 
-Runtime identities, private profiles/keys, bridge files, browser state, local dependency paths and raw private evidence are excluded from Git history by construction. See SECURITY.md.
+Accepted installed version: `4.2.0-linux.17-r44`.
 
+Fresh owner-host verification on 2026-10-06:
+- installed integrity: **9/9 PASS**
+- selftest: PASS
+- scope policy: PASS
+- browser profile: PASS
+- console policy: PASS
+- private-state permissions: PASS
+- Windows/Linux source parity: PASS
+- update-revision regression: PASS
+- source checkout aligned with Windows on `main`
 
-## Licensing and third-party components
+## Current capabilities
 
-This repository currently does not declare a project-wide software license. No license should be inferred from repository visibility alone.
+- Dashboard / Methods / Nodes / Tools / Settings desktop UI
+- Browser, Full System, and Console scopes with explicit boundaries
+- AUTO, Node Pool, WARP, GOOL, CFON, Tor/obfs4/Snowflake, Custom, and Direct paths where platform/runtime support is validated
+- Node imports for SS, VMess, VLESS, Trojan, Hysteria v1/v2, TUIC, AnyTLS, plus validated standalone sing-box JSON imports for ShadowTLS, SSH, Snell, SOCKS, HTTP CONNECT, and Naive
+- fail-closed handling for unsupported or unsafe imported local credential/certificate paths
+- explicit node refresh, endpoint testing, performance testing, ranking, favorites/pins, metadata, filtering/sorting, and export
+- revision-aware online update checks with downgrade protection
+- normal application launch does not auto-connect networking
 
-Third-party software retains its own license terms. In particular, the Console Gateway setup can download the pinned upstream sing-box 1.14.0 release at setup time after SHA-256 verification; the sing-box binary is not embedded in the FreeNet Hub installer. See `THIRD_PARTY_NOTICES.md`.
+## Validation boundary
+
+The final desktop release is evidence-backed for the accepted Windows and Linux owner installations. Separate external gates remain for publicly trusted Windows Authenticode, physical console field/game/country E2E, and production mobile forwarding/signing/real-device operation.
+
+No product can guarantee connectivity when every physical/upstream path is unavailable.
+
+## Source authority
+
+Current public source authority: `main` at or after final owner acceptance commit `09b8483851ed900e16784f2ef0cd837ecee90c9b`.
+
+Historical evidence remains in the repository for auditability. Superseded release artifacts are not installation authority; use **v4.3.7** only for new desktop installs.
+
+See `SECURITY.md` and the release evidence under `evidence/` for detailed validation records.
