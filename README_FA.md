@@ -1,35 +1,80 @@
-# FreeNet Hub 4.2.0
+# FreeNet Hub 4.3.7
 
-Windows R37 با رابط پنج‌بخشی Dashboard / Methods / Nodes / Tools / Settings و مرزبندی صریح Browser / Full System / Console پذیرش نهایی شده است.
+نسخهٔ نهایی دسکتاپ FreeNet Hub برای Windows و Linux روی Release عمومی **v4.3.7** قرار دارد.
 
-- Full-System WARP از مسیر رسمی Gateway: PASS؛ دریافت آپدیت/نود هنگام TUN از مسیر pre-TUN پایه اثبات شده است.
-- Direct base-speed و benchmark مرورگر WARP: PASS.
-- Node refresh فقط fetch/parse/merge می‌کند و تست endpointها با Test All جداست.
-- Installer دقیق R37: exit=0، bootstrap=PASS، parity برای 17 فایل app + 17 فایل gateway=PASS، smoke هر پنج تب=PASS و route بدون تغییر.
-- Hosted CI #99 برای Windows، Linux، Android build/emulator fail-closed، iOS static/simulator، Console virtual E2E، virtual signing و aggregate acceptance همگی PASS است.
-- تست فیزیکی console/game/country و Authenticode قابل‌اعتماد همچنان gate خارجی هستند.
-- providerهای اختیاری در نبود runtime معتبر fail-closed می‌مانند و fallback پنهان به DIRECT ندارند.
+## نصب نهایی Windows
 
-برای Windows از `FreeNetHub_4.2.0_R37_Final_Setup.exe` در Release `v4.2.0-r37-final` استفاده کنید. SHA-256 پذیرفته‌شده: `35491B9BCAD06263C063DA7559D67B206F01028E613232F101D249D552BA0C64`.
+فقط این فایل را برای نصب جدید استفاده کنید:
 
-## Linux R12 / R38
+`FreeNetHub_4.3.7_R51_Setup.exe`
 
-نسخهٔ فعلی Linux برابر `4.2.0-linux.12-r38` است و معماری UI ویندوز R37 را با پنج بخش Dashboard / Methods / Nodes / Tools / Settings روی GTK4/Libadwaita پیاده می‌کند.
+SHA-256:
 
-- Browser: AUTO، Node Pool، WARP، GOOL، CFON، Tor/obfs4/Snowflake، Custom و Direct.
-- Node Pool: import URL/File/Clipboard، public refresh، Test All مستقل، benchmark محدود، sort/filter، Favorite/Pin، metadata، History و Export Raw/Base64.
-- Node import اکنون SS/VMess/VLESS/Trojan/Hysteria v1/Hysteria2/TUIC/AnyTLS و JSON رسمی standalone برای TUIC/AnyTLS/ShadowTLS/SSH/Snell/SOCKS/HTTP CONNECT/Naive را با اعتبارسنجی fail-closed می‌پذیرد. Naive روی Windows فقط با Cronet رسمی hash-pinned فعال می‌شود.
-- sing-box 1.14.2 و warp-plus 1.2.6 به‌صورت app-local و hash-pinned از release رسمی upstream provision می‌شوند.
-- Full-System در Linux R12 فقط WARP رسمی است؛ Full-System Node بدون helper privileged و acceptance مستقل ادعا نمی‌شود.
-- Console Gateway software policy و rollback حفظ شده‌اند؛ تست فیزیکی game/country همچنان external gate است.
-- UpdateCheck revision-aware است و downgrade را نصب نمی‌کند؛ Install Update فقط asset جدیدتر با SHA-256 معتبر را می‌پذیرد.
-- نصب و بازشدن برنامه هیچ VPN/proxy/Hotspot را خودکار روشن نمی‌کند و route موجود—including VPN خارجی—در acceptance دقیق package بدون تغییر باقی ماند.
+`4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3`
 
-بستهٔ پذیرفته‌شده: `FreeNetHub_4.2.0_Linux_R11.zip`.
-## به‌روزرسانی Android/iOS روی main
+Revision پذیرفته‌شده:
 
-Android 4.2.0 علاوه بر clean build، در hosted emulator چرخه permission واقعی VpnService را به‌صورت fail-closed PASS کرده است؛ forwarding core و signing تولیدی هنوز gate خارجی‌اند. iOS نیز static و hosted simulator build/install/launch/relaunch را PASS کرده، اما forwarding core تولیدی، Apple signing/provisioning و runtime روی دستگاه فیزیکی همچنان gate خارجی هستند.
+`4.3.7-r51-protocol-expansion-2`
 
-## iOS static gate
+اعتبارسنجی تازه روی سیستم مالک در 2026-10-06:
+- regression کامل: **252/252 PASS**
+- تطابق دقیق RELEASE نصب‌شده با source: PASS
+- تطابق app manifest: PASS
+- تطابق gateway manifest: PASS
+- revision محلی و remote هر دو 51 و آپدیت معوق وجود ندارد
 
-برای iOS، extension point و entitlement مربوط به Packet Tunnel تأیید شده‌اند و startTunnel تا قبل از اتصال forwarding core به‌صورت fail-closed رد می‌شود. build/signing/device runtime هنوز OPEN است.
+Installer ویندوز فعلاً Authenticode عمومی معتبر ندارد، چون signing identity خارجی trusted فراهم نشده است. این یک gate خارجی signing است و defect نرم‌افزار دسکتاپ محسوب نمی‌شود.
+
+## نصب نهایی Linux
+
+فقط این بسته را برای نصب جدید استفاده کنید:
+
+`FreeNetHub_4.2.0_Linux_R17.zip`
+
+SHA-256:
+
+`1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6`
+
+نسخهٔ نصب‌شدهٔ پذیرفته‌شده:
+
+`4.2.0-linux.17-r44`
+
+اعتبارسنجی تازه:
+- integrity نصب‌شده: **9/9 PASS**
+- selftest: PASS
+- scope policy: PASS
+- browser profile: PASS
+- console policy: PASS
+- private-state permissions: PASS
+- parity با source مشترک Windows/Linux: PASS
+- update-revision regression: PASS
+- checkout لینوکس و ویندوز روی authority یکسان `main`
+
+## امکانات فعلی
+
+- UI پنج‌بخشی Dashboard / Methods / Nodes / Tools / Settings
+- مرزبندی صریح Browser / Full System / Console
+- AUTO، Node Pool، WARP، GOOL، CFON، Tor/obfs4/Snowflake، Custom و Direct در مسیرهایی که runtime و platform آن‌ها اعتبارسنجی شده است
+- import نودهای SS، VMess، VLESS، Trojan، Hysteria v1/v2، TUIC و AnyTLS
+- import کنترل‌شدهٔ sing-box JSON برای ShadowTLS، SSH، Snell، SOCKS، HTTP CONNECT و Naive
+- fail-closed برای ورودی‌های ناامن یا unsupported
+- Refresh، Test، benchmark، رتبه‌بندی، Favorite/Pin، metadata، sort/filter و export نودها
+- Online Update revision-aware با جلوگیری از downgrade
+- اجرای عادی برنامه هیچ VPN/proxy/network path را خودکار روشن نمی‌کند
+
+## مرز اعتبارسنجی
+
+نسخهٔ دسکتاپ Windows و Linux بر اساس evidence فعلی نهایی است. موارد زیر gateهای مستقل خارجی هستند:
+- Windows Authenticode با زنجیرهٔ public trust
+- تست فیزیکی Console/Game/Country
+- forwarding/signing/runtime تولیدی Android و iOS روی دستگاه واقعی
+
+در صورت قطع همهٔ مسیرهای فیزیکی/upstream، هیچ نرم‌افزاری نمی‌تواند اتصال را تضمین کند.
+
+## Authority
+
+Authority عمومی source: شاخهٔ `main` در یا بعد از commit نهایی مالک:
+
+`09b8483851ed900e16784f2ef0cd837ecee90c9b`
+
+Evidence تاریخی برای audit در repository نگه داشته می‌شود، اما نسخه‌های قدیمی authority نصب نیستند. برای نصب جدید فقط **v4.3.7** را استفاده کنید.
