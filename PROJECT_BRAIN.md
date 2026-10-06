@@ -726,3 +726,33 @@ No open v4.3.7 software gates. Final repository-closure CI run 37359029522 is 10
 - Linux owner install remains 4.2.0-linux.17-r44 / R17; installed integrity 9/9 PASS; update check local=remote=17 and updateAvailable=false.
 - Linux package selftest PASS with network_on_import=false; route/DNS/session remained preserved.
 - Result: both owner Windows and Linux installations are current and final for immutable v4.3.7.
+
+
+## Linux R18 browser/NODE hotfix — 2026-10-06 — LOCAL EXACT PACKAGE OWNER ACCEPTED; HOSTED CI OPEN
+
+Previous accepted Linux authority was `4.2.0-linux.17-r44` / `FreeNetHub_4.2.0_Linux_R17.zip` under public release `v4.3.7`.
+
+Current evidence-backed delta:
+- CONFIRMED product root cause: Linux `open_browser()` proxied TOR but not NODE even though NODE/sing-box exposes SOCKS5 on `127.0.0.1:19460`. R18 maps NODE to that port, uses remote DNS, persists `proxyPort`, verifies NODE before browser launch, and verifies a real project Firefox process before reporting success.
+- CONFIRMED host root cause for the original Firefox launch failure: Ubuntu 24.04 -> 26.04.1 release upgrade required reboot. After owner-controlled reboot the host runs kernel `7.0.0-38-generic`, GDM/user Wayland session is healthy, and standard Ubuntu Snap Firefox launches normally. The temporary native-Mozilla diagnostic workaround was rejected and removed; the original Snap desktop entry was restored.
+- Public-node refresh: 8/8 configured sources returned data; 2,876 raw configs parsed; capped pool 2,000; 1,199 TCP endpoints reachable. TCP reachability was not treated as full proxy health.
+- Full-health NODE evidence: ID `189bdf109289b55ae495`, VMess / `AURX_HTTP_VERIFIED`, DE; throughput acceptance 447.1 ms / 12.61 Mbps down / 0.66 Mbps up. Final installed acceptance: exit IP `31.76.11.83`, DE, YouTube HTTP 204.
+- One transient first `TRACE_FAILED` was observed on an otherwise healthy existing NODE. R18 adds a bounded two-attempt verification guard with 0.5 s delay; regression added. No unbounded retry.
+- R18 exact package: `FreeNetHub_4.2.0_Linux_R18.zip`, 240,757 bytes, SHA-256 `3C9254840C85B6D7305B0986209FF96EBEE578193D193538E8E8D45924ECBCD7`.
+- Exact extracted package: SHA256SUMS PASS; 7/7 bundled standalone tests PASS. Exact owner install: `4.2.0-linux.18-r45`, installed integrity 9/9 PASS, install network mutation = false.
+- Final installed runtime acceptance: NODE connect PASS; `/usr/bin/firefox` -> Ubuntu Snap Firefox PASS with isolated FreeNet Hub profile; browser route records NODE / SOCKS 19460; live SOCKS trace DE / `31.76.11.83`; YouTube HTTP 204.
+- CI prevention: Linux hosted job now builds R18 and executes the extracted ZIP tests, closing the package-layout regression that source-tree-only testing missed.
+- Windows runtime remains unchanged at public `4.3.7/R51`. Public tag `v4.3.7` is not moved.
+
+Evidence authority: `evidence/V437_LINUX_R18_BROWSER_NODE_HOTFIX_20261006.json`.
+
+Roadmap ← CURRENT:
+1. Local source/live acceptance — PASS.
+2. Exact R18 package build/extracted-package tests — PASS.
+3. Exact owner install/post-install NODE->Snap Firefox validation — PASS.
+4. Hosted CI on exact candidate SHA — OPEN.
+5. Merge to main only after exact-SHA CI PASS — OPEN.
+6. Add R18 asset to existing public `v4.3.7` release and verify updater R18==R18 — OPEN.
+7. Post-publish evidence/Brain closure — OPEN.
+
+Exact Next Action: rebuild current manifests, commit/push the candidate branch, run hosted CI on the exact candidate SHA, and promote/upload only if hosted evidence passes.

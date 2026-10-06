@@ -1,6 +1,8 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.17-r44
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.18-r45
 
-نسخهٔ Linux R15 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
+نسخهٔ Linux R18 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
+
+R18 مسیر Browser برای NODE را به SOCKS محلی همان sing-box (`127.0.0.1:19460`) متصل می‌کند، DNS مرورگر را از همان SOCKS می‌فرستد و launch Firefox را بعد از ایجاد process واقعی verify می‌کند.
 
 ## رابط R37
 
@@ -20,7 +22,7 @@
   - Custom HTTP/SOCKS proxy و Direct.
 - Full System:
   - WARP رسمی Cloudflare، با ownership/rollback موجود.
-  - Full-System Node در Linux R15 ادعا نمی‌شود؛ بدون helper privileged/CAP_NET_ADMIN fail-closed می‌ماند.
+  - Full-System Node در Linux R18 ادعا نمی‌شود؛ بدون helper privileged/CAP_NET_ADMIN fail-closed می‌ماند.
 - Console:
   - NetworkManager-owned hotspot/gateway مستقل؛ physical game/country E2E همچنان gate خارجی است.
 

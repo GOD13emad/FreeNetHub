@@ -16,7 +16,7 @@ import uuid
 import zipfile
 
 APP = "FreeNet Hub"
-VERSION = "4.2.0-linux.17-r44"
+VERSION = "4.2.0-linux.18-r45"
 STATE = pathlib.Path.home() / ".local" / "share" / "FreeNetHub"
 EVIDENCE = STATE / "evidence"
 TOR_STATE = STATE / "tor"
@@ -27,6 +27,7 @@ SNOWFLAKE_BRIDGES = STATE / "bridges_snowflake.txt"
 SESSION = STATE / "session.json"
 CONSOLE = STATE / "console.json"
 SOCKS_PORT = 9909
+NODE_SOCKS_PORT = 19460
 TOR_DIRECT_TIMEOUT = 90
 TOR_AUTO_DIRECT_TIMEOUT = 30
 TOR_TRANSPORT_TIMEOUT = 120
@@ -619,6 +620,22 @@ def stop_all():
 def verify_current():
     return current_status()
 
+def browser_proxy_port(s=None):
+    s = session() if s is None else (s or {})
+    mode = str(s.get("mode") or "").upper()
+    if mode == "TOR":
+        return SOCKS_PORT
+    if mode == "NODE":
+        detail = s.get("detail") or {}
+        try:
+            port = int(detail.get("proxyPort") or NODE_SOCKS_PORT)
+        except (TypeError, ValueError):
+            port = NODE_SOCKS_PORT
+        if 1024 <= port <= 65535:
+            return port
+    return None
+
+
 def firefox_profile_root():
     snap_common = pathlib.Path.home() / "snap" / "firefox" / "common"
     if snap_common.is_dir() and pathlib.Path("/snap/firefox/current").exists():
@@ -633,24 +650,26 @@ def firefox_profile_root():
     return root
 
 
-def firefox_profile(proxy=False):
+def firefox_profile(proxy=False, proxy_port=None):
     base = firefox_profile_root() / "firefox-tunneled"
     base.mkdir(parents=True, exist_ok=True)
     try:
         os.chmod(base, 0o700)
     except OSError:
         pass
+    if proxy_port is None and proxy:
+        proxy_port = SOCKS_PORT
     prefs = [
         'user_pref("browser.shell.checkDefaultBrowser", false);',
         'user_pref("browser.startup.homepage", "about:blank");',
         'user_pref("datareporting.healthreport.uploadEnabled", false);',
         'user_pref("toolkit.telemetry.enabled", false);',
     ]
-    if proxy:
+    if proxy_port is not None:
         prefs += [
             'user_pref("network.proxy.type", 1);',
             'user_pref("network.proxy.socks", "127.0.0.1");',
-            f'user_pref("network.proxy.socks_port", {SOCKS_PORT});',
+            f'user_pref("network.proxy.socks_port", {int(proxy_port)});',
             'user_pref("network.proxy.socks_version", 5);',
             'user_pref("network.proxy.socks_remote_dns", true);',
             'user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1");',
@@ -733,16 +752,21 @@ def open_browser(url="https://www.cloudflare.com/cdn-cgi/trace"):
     mode = s.get("mode")
     if not mode:
         return {"ok": False, "error": "CONNECT_FIRST"}
-    proxy = mode == "TOR"
-    if proxy:
+    proxy_port = browser_proxy_port(s)
+    proxy = proxy_port is not None
+    if mode == "TOR":
         ts = tor_status()
         if not ts.get("ok"):
             return {"ok": False, "error": "TOR_NOT_READY", "tor": ts}
+    if mode == "NODE":
+        tr = trace(f"socks5h://127.0.0.1:{proxy_port}", 12)
+        if not tr.get("ok"):
+            return {"ok": False, "error": "NODE_NOT_READY", "trace": tr, "proxyPort": proxy_port}
     if mode in ("WARP", "WARP_TRIAL", "WARP_EXTERNAL"):
         tr = trace(timeout=10)
         if not (tr.get("ok") and (tr.get("trace") or {}).get("warp") == "on"):
             return {"ok": False, "error": "WARP_NOT_READY", "trace": tr}
-    prof = firefox_profile(proxy=proxy)
+    prof = firefox_profile(proxy_port=proxy_port)
     legacy = STATE / "firefox-tunneled"
     if legacy != prof:
         old = stop_project_firefox(legacy)
@@ -752,7 +776,11 @@ def open_browser(url="https://www.cloudflare.com/cdn-cgi/trace"):
     if not stopped.get("ok"):
         return {"ok": False, "error": "BROWSER_BUSY_CLOSE_REQUIRED", "pids": stopped.get("busy", [])}
     env = os.environ.copy()
-    subprocess.Popen(
+    if env.get("DISPLAY") and not env.get("XAUTHORITY"):
+        xauth = pathlib.Path(f"/run/user/{os.getuid()}/gdm/Xauthority")
+        if xauth.is_file():
+            env["XAUTHORITY"] = str(xauth)
+    proc = subprocess.Popen(
         [firefox, "--no-remote", "--new-instance", "--profile", str(prof), url],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
@@ -761,8 +789,28 @@ def open_browser(url="https://www.cloudflare.com/cdn-cgi/trace"):
         start_new_session=True,
         close_fds=True,
     )
-    atomic_json(STATE / "browser_route.json", {"schema": 1, "mode": mode, "scope": "SYSTEM" if mode in ("WARP", "WARP_TRIAL", "WARP_EXTERNAL") else "BROWSER", "proxy": proxy, "profile": str(prof), "launched": time.time()})
-    return {"ok": True, "browser": "firefox", "profile": str(prof), "mode": mode, "proxy": proxy, "restarted": bool(stopped.get("stopped"))}
+    launched = []
+    for _ in range(20):
+        time.sleep(0.1)
+        launched = project_firefox_pids(prof)
+        if launched:
+            break
+        if proc.poll() is not None:
+            break
+    if not launched:
+        return {"ok": False, "error": "BROWSER_LAUNCH_FAILED", "returncode": proc.poll(), "browser": firefox}
+    atomic_json(STATE / "browser_route.json", {
+        "schema": 1,
+        "mode": mode,
+        "scope": "SYSTEM" if mode in ("WARP", "WARP_TRIAL", "WARP_EXTERNAL") else "BROWSER",
+        "proxy": proxy,
+        "proxyPort": proxy_port,
+        "profile": str(prof),
+        "browser": firefox,
+        "pids": launched,
+        "launched": time.time(),
+    })
+    return {"ok": True, "browser": firefox, "profile": str(prof), "mode": mode, "proxy": proxy, "proxyPort": proxy_port, "pids": launched, "restarted": bool(stopped.get("stopped"))}
 
 def default_route():
     p = run([executable("ip") or "ip", "route", "show", "default"], 5)
@@ -823,8 +871,9 @@ def speed_sample():
     if not s.get("mode"):
         return {"ok": False, "error": "CONNECT_FIRST"}
     args = [curl, "-4", "--max-time", "30", "-L", "-o", "/dev/null", "-sS", "-w", "%{speed_download}", "https://speed.cloudflare.com/__down?bytes=2000000"]
-    if s.get("mode") == "TOR":
-        args[1:1] = ["--proxy", f"socks5h://127.0.0.1:{SOCKS_PORT}"]
+    proxy_port = browser_proxy_port(s)
+    if proxy_port is not None:
+        args[1:1] = ["--proxy", f"socks5h://127.0.0.1:{proxy_port}"]
     p = run(args, 35)
     try:
         bps = float(p.stdout.strip())

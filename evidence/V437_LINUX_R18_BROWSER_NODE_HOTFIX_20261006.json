@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "date": "2026-10-06",
+  "baseRelease": "v4.3.7",
+  "platform": "Linux",
+  "candidateVersion": "4.2.0-linux.18-r45",
+  "candidateRelease": "LINUX_4.2.0_R18_R45_BROWSER_NODE_HOTFIX",
+  "status": "LOCAL_EXACT_PACKAGE_OWNER_ACCEPTED_HOSTED_CI_PENDING",
+  "rootCauses": [
+    {
+      "status": "CONFIRMED",
+      "cause": "FreeNet Hub open_browser proxied TOR but not NODE, even though NODE sing-box exposes SOCKS on 127.0.0.1:19460.",
+      "prevention": "Mode-to-proxy-port mapping, NODE pre-launch tunneled trace, session proxyPort recording, browser profile regression, and exact package CI."
+    },
+    {
+      "status": "CONFIRMED_HOST_STATE",
+      "cause": "Ubuntu 24.04 to 26.04.1 release upgrade left the pre-reboot graphical session inconsistent; GDM/Firefox launch failures were resolved by the required owner-controlled reboot.",
+      "prevention": "Do not retain a product Firefox workaround after a release upgrade until post-reboot standard Firefox is retested."
+    }
+  ],
+  "rejectedWorkaround": {
+    "nativeMozillaLocalInstall": "DIAGNOSTIC_ONLY_REMOVED",
+    "reason": "Snap Firefox 157 launched successfully after the required Ubuntu 26 reboot; standard Ubuntu/Snap Firefox is sufficient.",
+    "desktopOverrideRestored": true,
+    "defaultBrowserPreserved": "brave-browser.desktop"
+  },
+  "nodePoolRefresh": {
+    "sourcesPassed": 8,
+    "failedSources": 0,
+    "parsedRaw": 2876,
+    "poolTotal": 2000,
+    "tcpReachable": 1199,
+    "note": "TCP endpoint reachability was not treated as proxy-health acceptance."
+  },
+  "liveNodeEvidence": {
+    "id": "189bdf109289b55ae495",
+    "name": "vmess-1681494253",
+    "protocol": "vmess",
+    "source": "AURX_HTTP_VERIFIED",
+    "fullThroughput": {
+      "ok": true,
+      "pingMs": 447.1,
+      "downloadMbps": 12.61,
+      "uploadMbps": 0.66,
+      "country": "DE"
+    },
+    "finalInstalledConnect": {
+      "ok": true,
+      "pingMs": 495.2,
+      "country": "DE",
+      "exitIp": "31.76.11.83",
+      "youtubeReachable": true
+    },
+    "finalSocksTrace": {
+      "proxy": "socks5h://127.0.0.1:19460",
+      "ip": "31.76.11.83",
+      "country": "DE",
+      "warp": "off",
+      "youtubeHttp": 204
+    }
+  },
+  "browserAcceptance": {
+    "browserCommand": "/usr/bin/firefox",
+    "runtime": "Ubuntu Snap Firefox",
+    "profile": "/home/aliemad/snap/firefox/common/FreeNetHub/firefox-tunneled",
+    "mode": "NODE",
+    "proxy": true,
+    "proxyPort": 19460,
+    "remoteDns": true,
+    "processObserved": true,
+    "regularSnapDesktopLauncher": "PASS"
+  },
+  "transientFailurePrevention": {
+    "observation": "One existing healthy NODE produced a transient first TRACE_FAILED while subsequent SOCKS trace immediately passed.",
+    "guard": "_node_verify_stable performs at most two bounded verification attempts with 0.5 second delay.",
+    "regression": "PASS"
+  },
+  "artifact": {
+    "path": "delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R18.zip",
+    "bytes": 240757,
+    "sha256": "3C9254840C85B6D7305B0986209FF96EBEE578193D193538E8E8D45924ECBCD7",
+    "packageFiles": 23,
+    "sha256Sums": "PASS",
+    "exactExtractedTests": "PASS_7_OF_7"
+  },
+  "ownerInstall": {
+    "version": "4.2.0-linux.18-r45",
+    "release": "LINUX_4.2.0_R18_R45_BROWSER_NODE_HOTFIX",
+    "installedIntegrity": "PASS_9_OF_9",
+    "networkMutationOnInstall": false
+  },
+  "sourceVerification": {
+    "pyCompile": "PASS",
+    "selftest": "PASS",
+    "browserProfile": "PASS",
+    "consolePolicy": "PASS",
+    "privateStatePermissions": "PASS",
+    "scopePolicy": "PASS",
+    "r37Parity": "PASS",
+    "updateRevision": "PASS",
+    "pytest": "MISSING_ON_OWNER_UBUNTU26_NOT_USED_AS_ACCEPTANCE; standalone authoritative tests passed"
+  },
+  "authority": {
+    "publicMainBeforePromotion": "8bfddf7202a534f0677f1b2c7ec2082931910a75",
+    "candidateBranch": "linux-browser-hotfix-20261006",
+    "initialHotfixCommit": "82fdc90",
+    "windowsRuntimeMutation": false,
+    "tagMutationPlanned": false,
+    "releaseAssetPlan": "Add Linux R18 asset to existing latest v4.3.7 release after exact-SHA hosted CI passes."
+  },
+  "openGate": "Hosted CI on exact candidate commit, then upload/verify Linux R18 release asset and post-publish updater behavior."
+}

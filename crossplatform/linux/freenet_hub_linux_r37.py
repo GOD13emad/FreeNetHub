@@ -22,7 +22,7 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 
-VERSION = "4.2.0-linux.17-r44"
+VERSION = "4.2.0-linux.18-r45"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -707,6 +707,17 @@ def node_stop():
         if s.get("mode")=="NODE": legacy.set_session()
     return {"ok":ok,"state":"stopped" if ok else "stop-timeout"}
 
+def _node_verify_stable(attempts=2, delay=.5):
+    attempts=max(1,min(int(attempts),3))
+    last={}
+    for idx in range(attempts):
+        last=node_verify()
+        if last.get("ok"):
+            return last
+        if idx+1<attempts:
+            time.sleep(max(0.0,float(delay)))
+    return last
+
 def node_connect(node_id=None):
     st=singbox_status()
     if not st.get("ok"):
@@ -718,7 +729,8 @@ def node_connect(node_id=None):
         return {"ok":False,"error":"NODE_NOT_SELECTED"}
     existing=_node_owner()
     if existing and existing.get("nodeId")==n.get("id") and _port_open(NODE_PORT):
-        return node_verify()
+        legacy.set_session("NODE","sing-box",{"scope":"BROWSER","nodeId":n["id"],"name":n.get("name"),"proxyPort":NODE_PORT})
+        return _node_verify_stable()
     if existing:
         node_stop()
     elif _port_open(NODE_PORT):
@@ -743,8 +755,8 @@ def node_connect(node_id=None):
         legacy.stop_pid(p.pid); return {"ok":False,"error":"NODE_IDENTITY_FAIL"}
     rec={**ident,"config":str(NODE_CONFIG),"nodeId":n["id"],"started":_now()}
     _atomic(NODE_OWNER,rec)
-    legacy.set_session("NODE","sing-box",{"scope":"BROWSER","nodeId":n["id"],"name":n.get("name")})
-    result=node_verify()
+    legacy.set_session("NODE","sing-box",{"scope":"BROWSER","nodeId":n["id"],"name":n.get("name"),"proxyPort":NODE_PORT})
+    result=_node_verify_stable()
     if not result.get("ok"):
         node_stop()
     return result

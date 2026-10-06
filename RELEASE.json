@@ -38,7 +38,7 @@
   "acceptanceEvidence": "evidence/V437_R51_CANDIDATE_ACCEPTANCE_20261005.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
-    "linux": "CANDIDATE_NATIVE_LINUX_4.2.0_R17_R44_LOCAL_GATES",
+    "linux": "ACCEPTED_NATIVE_LINUX_4.2.0_R18_R45_BROWSER_NODE_HOTFIX",
     "android": "BUILD_ACCEPTED_CORE_NOT_LINKED",
     "ios": "STATIC_FAIL_CLOSED_PASS_BUILD_SIGN_RUNTIME_OPEN"
   },
@@ -84,13 +84,13 @@
     "nativeLinuxDesktop": "PASS_GTK4_LIBADWAITA_SINGLE_INSTANCE_WINDOW_CONTROLS",
     "nativeLinuxTor": "AUTO_PASS_DIRECT_30S_THEN_OBFS4_100_PERCENT_HTTPS",
     "nativeLinuxSnowflake": "PROVIDER_RETAINED_FAIL_CLOSED_WITHOUT_RUNTIME_BRIDGE",
-    "nativeLinuxFirefox": "PASS_ISOLATED_PROFILE_REMOTE_DNS",
+    "nativeLinuxFirefox": "PASS_SNAP_FIREFOX_POST_UBUNTU26_REBOOT_ISOLATED_PROFILE_REMOTE_DNS",
     "nativeLinuxConsoleGateway": "PASS_UUID_OWNED_WPA2_RSN_PMF_DISABLED_IDEMPOTENT_STOP_PHYSICAL_FIELD_GATE_OPEN",
     "nativeLinuxIntegrityLauncher": "PASS",
-    "nativeLinuxAcceptanceEvidence": "evidence/LINUX_NATIVE_420_PUBLIC_ACCEPTANCE.json",
+    "nativeLinuxAcceptanceEvidence": "evidence/V437_LINUX_R18_BROWSER_NODE_HOTFIX_20261006.json",
     "v4.2.0PublishedReleaseAuthority": true,
     "githubReleaseImmutableObserved": false,
-    "nativeLinuxVersion": "4.2.0-linux.17-r44",
+    "nativeLinuxVersion": "4.2.0-linux.18-r45",
     "nativeLinuxLegacyProfileMigration": "PASS_EXACT_FINGERPRINT_ONLY",
     "nativeLinuxUninstaller": "PASS_OWNED_UUID_SCOPE_PRIVATE_STATE_PRESERVED",
     "nativeLinuxDirectCurrentProbe": "NETWORK_TRANSIENT_BOOTSTRAP_67_PERCENT_AT_90S_ROUTE_DNS_SESSION_PRESERVED",
@@ -1037,5 +1037,46 @@
     "installerAsset": "FreeNetHub_4.3.7_R51_Setup.exe",
     "installerEvidence": "evidence/V437_R51_INSTALLER_BUILD_20261005.json",
     "authenticode": "NotSigned"
+  },
+  "linuxR18BrowserNodeHotfix": {
+    "status": "LOCAL_EXACT_PACKAGE_OWNER_ACCEPTED_HOSTED_CI_PENDING",
+    "basePublicRelease": "v4.3.7",
+    "windowsRuntime": "UNCHANGED_4.3.7_R51",
+    "version": "4.2.0-linux.18-r45",
+    "release": "LINUX_4.2.0_R18_R45_BROWSER_NODE_HOTFIX",
+    "artifact": "FreeNetHub_4.2.0_Linux_R18.zip",
+    "artifactBytes": 240757,
+    "artifactSha256": "3C9254840C85B6D7305B0986209FF96EBEE578193D193538E8E8D45924ECBCD7",
+    "rootCause": "NODE_BROWSER_LAUNCHED_WITHOUT_NODE_SOCKS_PROXY",
+    "browserRoute": "NODE_TO_SOCKS5_127.0.0.1_19460_REMOTE_DNS",
+    "firefox": "UBUNTU_SNAP_POST_REBOOT_PASS",
+    "ubuntu26Upgrade": "REBOOT_REQUIRED_HOST_STATE_RESOLVED_NO_PRODUCT_WORKAROUND_RETAINED",
+    "liveNode": {
+      "id": "189bdf109289b55ae495",
+      "protocol": "vmess",
+      "source": "AURX_HTTP_VERIFIED",
+      "country": "DE",
+      "exitIp": "31.76.11.83",
+      "youtubeHttp": 204
+    },
+    "poolRefresh": {
+      "sourcesPassed": 8,
+      "parsedRaw": 2876,
+      "poolTotal": 2000,
+      "tcpReachable": 1199
+    },
+    "fullThroughputEvidence": {
+      "pingMs": 447.1,
+      "downloadMbps": 12.61,
+      "uploadMbps": 0.66,
+      "country": "DE"
+    },
+    "transientVerifyGuard": "BOUNDED_RETRY_2_ATTEMPTS",
+    "exactPackageTests": "PASS_7_OF_7_PLUS_SHA256SUMS",
+    "installedIntegrity": "PASS_9_OF_9",
+    "networkMutationOnInstall": false,
+    "hostedCi": "OPEN_REQUIRED_BEFORE_PUBLIC_ASSET_PROMOTION",
+    "publicReleaseAsset": false,
+    "evidence": "evidence/V437_LINUX_R18_BROWSER_NODE_HOTFIX_20261006.json"
   }
 }

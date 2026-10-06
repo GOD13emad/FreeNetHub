@@ -50,7 +50,13 @@ jobs:
           python3 crossplatform/linux/test_scope_policy.py
           python3 crossplatform/linux/test_r37_parity.py
           python3 crossplatform/linux/test_update_revision.py
-          python3 tests/build_linux_r17_package.py
+          python3 tests/build_linux_r18_package.py
+          rm -rf /tmp/fnh-r18-ci && mkdir -p /tmp/fnh-r18-ci
+          unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R18.zip -d /tmp/fnh-r18-ci
+          cd /tmp/fnh-r18-ci/FreeNetHub_4.2.0_Linux_R18
+          sha256sum -c SHA256SUMS.txt
+          for f in selftest.py test_browser_profile.py test_console_policy.py test_private_state_permissions.py test_scope_policy.py test_r37_parity.py test_update_revision.py; do python3 "$f"; done
+          cd "$GITHUB_WORKSPACE"
           bash -n crossplatform/linux/install.sh crossplatform/linux/uninstall.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/install_singbox_pinned.sh crossplatform/linux/install_warpplus_pinned.sh crossplatform/linux/recover_warp_remote.sh
   android-build:
     runs-on: ubuntu-24.04

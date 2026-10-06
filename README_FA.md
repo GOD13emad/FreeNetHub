@@ -29,15 +29,15 @@ Installer ویندوز فعلاً Authenticode عمومی معتبر ندارد�
 
 فقط این بسته را برای نصب جدید استفاده کنید:
 
-`FreeNetHub_4.2.0_Linux_R17.zip`
+`FreeNetHub_4.2.0_Linux_R18.zip`
 
 SHA-256:
 
-`1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6`
+`3C9254840C85B6D7305B0986209FF96EBEE578193D193538E8E8D45924ECBCD7`
 
 نسخهٔ نصب‌شدهٔ پذیرفته‌شده:
 
-`4.2.0-linux.17-r44`
+`4.2.0-linux.18-r45`
 
 اعتبارسنجی تازه:
 - integrity نصب‌شده: **9/9 PASS**
@@ -48,6 +48,10 @@ SHA-256:
 - private-state permissions: PASS
 - parity با source مشترک Windows/Linux: PASS
 - update-revision regression: PASS
+- مسیر Browser برای NODE روی SOCKS5 `127.0.0.1:19460` با remote DNS: PASS
+- اجرای Snap Firefox از داخل FreeNet Hub: PASS
+- trace زندهٔ تونل: DE و YouTube HTTP 204: PASS
+- تست مستقیم ZIP استخراج‌شده: PASS
 - checkout لینوکس و ویندوز روی authority یکسان `main`
 
 ## امکانات فعلی

@@ -31,13 +31,13 @@ The Windows installer is currently **not publicly Authenticode-signed** because 
 
 Install exactly:
 
-`FreeNetHub_4.2.0_Linux_R17.zip`
+`FreeNetHub_4.2.0_Linux_R18.zip`
 
 SHA-256:
 
-`1646C70FBF2CA3C7EAAC9D6470BEED3D53063D9E5D9FF50A830D0507420C6EA6`
+`3C9254840C85B6D7305B0986209FF96EBEE578193D193538E8E8D45924ECBCD7`
 
-Accepted installed version: `4.2.0-linux.17-r44`.
+Accepted installed version: `4.2.0-linux.18-r45`.
 
 Fresh owner-host verification on 2026-10-06:
 - installed integrity: **9/9 PASS**
@@ -48,6 +48,10 @@ Fresh owner-host verification on 2026-10-06:
 - private-state permissions: PASS
 - Windows/Linux source parity: PASS
 - update-revision regression: PASS
+- NODE browser route: SOCKS5 `127.0.0.1:19460` + remote DNS PASS
+- installed Snap Firefox launch from FreeNet Hub: PASS
+- live tunneled trace: DE / YouTube HTTP 204 PASS
+- exact extracted package tests: PASS
 - source checkout aligned with Windows on `main`
 
 ## Current capabilities
