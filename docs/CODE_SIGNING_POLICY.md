@@ -116,3 +116,22 @@ Production integration prerequisites:
 Important reconciled baseline: local evidence R52_CANDIDATE_GATE_RECEIPT_20261009.json reports an unsigned installer of 24,260,213 bytes (SHA256 7214F7AE832539924B58A6750584079DD859DB5CDA53A59A345B5C9DA3D24DD0), with 176 Windows native tests and hosted clean/upgrade checks. A DIFFERENT later unsigned QA compilation R52_PUBLIC_SIGNED_RELEASE_GATE_V3_20261010.json reports 24,273,164 bytes (SHA256 C3FA52249A0F6B703D45752492AE49E426566BBA39EBBD0C7BAE26C02B60609B). They are NOT interchangeable nor the post-sign release hash. R52_SIGNING_ADMISSION_INVENTORY_20261010.json records nine PE candidates: two Authenticode Valid, seven NotSigned; 17 unsigned PowerShell scripts among a 25-script mixed-language inventory. Third-party WinDivert64.sys upstream was reported signed Valid but independent kernel-policy validation remains open. These are local historical audit observations, not newly performed trusted signing operations.
 
 Official kernel verification reference: https://learn.microsoft.com/en-us/windows-hardware/drivers/install/verifying-the-release-signature
+
+
+## 2026-10-10 legal publisher eligibility — REAL INDIVIDUAL RESIDENT IN IRAN
+
+Source-verified CA availability facts for any issuance to an individual declaring genuine Iranian residence:
+- Microsoft Artifact Signing PUBLIC Trust: ineligible as individual unless located in United States or Canada. See https://learn.microsoft.com/en-us/azure/artifact-signing/quickstart
+- Sectigo: official banned-country list explicitly disallows certificate issuance to individuals and entities in Iran. See https://www.sectigo.com/knowledge-base/detail/Banned-Country-List-1527076085907
+- DigiCert: Iran is an embargoed country under its current comprehensive-sanctions conditions. See https://knowledge.digicert.com/solution/embargoed-countries-and-regions
+- GlobalSign: its current publicly advertised Code Signing product is only offered to legally registered organizations, not direct individual purchasers. See https://shop.globalsign.com/en/code-signing
+- Certum by Asseco (Poland): official Standard Code Signing does accommodate individuals and lists starting €139 for token/e-code and €209 for cloud, but country/export/sanctions eligibility for Iranian residents is UNCONFIRMED. See https://www.certum.eu/en/code-signing-certificates/ and https://shop.certum.eu/buy-a-code-signing-certyficate. A PRE-PURCHASE, NON-TRANSACTIONAL, no-identity-document inquiry was sent to the vendor's verified official address infolinia@certum.pl on 2026-10-10. No issuance or approval may be inferred.
+- Certum Open Source Code Signing is cheaper but unsuitable for a blanket all-software commercial use: its terms require publicly evidenced OSS association and disallow commercial signing, with revocation for commercial misuse. See https://support.certum.eu/en/code-signing-required-documents/
+- The U.S. OFAC 31 CFR 560.540 framework permits certain personal-communications-related software/services, but does NOT by itself constitute issuance approval by any specific CA, and its scope would require legal advice for a signing service. See https://ofac.treasury.gov/faqs/1110
+- SignPath Foundation uses the FOUNDATION's publisher identity, not the individual developer's, and requires OSI-compliant OSS with additional conditions; not a blanket solution for proprietary projects. See https://signpath.org/terms.html
+
+PUBLISHER GATE: NO PURCHASE, NO PERSONAL ID UPLOAD, NO CERTIFICATE PROFILE CREATION UNTIL CA ISSUER WRITTEN AUTHORIZATION FOR DECLARED RESIDENCE + REAL ID + PROPOSED SOFTWARE TYPES, payment and lawful cloud/token provisioning.
+
+Technical contingency if all public CAs reject: self-signed development trust only on user-controlled endpoints, with manual explicit import when appropriate; GPG release signatures and SHA256 for software authenticity; never describe self-signed Authenticode as generally trusted by Windows or compliant with public Smart App Control.
+
+All issuer prices are public STARTING points only and depend on order type, tax, key custody, and identity eligibility. Issuance feasibility takes precedence over cost.
