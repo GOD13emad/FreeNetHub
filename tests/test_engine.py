@@ -484,7 +484,7 @@ Network Destination        Netmask          Gateway       Interface  Metric
     r=E.console_preflight_speed()
    self.assertTrue(r['ok']);self.assertTrue(r['temporary']);self.assertEqual(r['country'],'DE');self.assertEqual(calls,['Start','Stop']);self.assertFalse((runtime/'console-provider-owner.json').exists())
  def test_node_public_rows_smart_prefers_full_health_over_tcp_only(self):
-  healthy={'id':'healthy','name':'healthy','protocol':'vless','endpoint_test':{'reachable':True,'latency_ms':250},'performance_test':{'ok':True,'pingMs':800,'downloadMbps':5,'uploadMbps':1}}
+  healthy={'id':'healthy','name':'healthy','protocol':'vless','endpoint_test':{'reachable':True,'latency_ms':250},'performance_test':{'ok':True,'pingMs':800,'downloadMbps':5,'uploadMbps':1,'checked':E.now()}}
   tcp={'id':'tcp','name':'tcp','protocol':'vless','endpoint_test':{'reachable':True,'latency_ms':1}}
   rows=E.node_public_rows({'schema':1,'selected':'','nodes':[tcp,healthy]})
   self.assertEqual(rows[0]['id'],'healthy')

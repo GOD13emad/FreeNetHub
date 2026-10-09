@@ -22,6 +22,8 @@ jobs:
         run: python crossplatform/common/verify_fail_closed.py
       - name: Engine unit tests
         run: python tests/test_engine.py
+      - name: Reject stale Windows node health and throughput data
+        run: python tests/test_node_health_freshness.py
       - name: Gateway unit tests
         run: python gateway/tests/test_gateway.py
       - name: Clean self-contained packaging regression
@@ -52,6 +54,7 @@ jobs:
           python3 crossplatform/linux/test_update_revision.py
           python3 tests/test_linux_browser_action_guards.py
           python3 tests/test_linux_site_diagnostics_auto.py
+          python3 tests/test_node_health_freshness.py
           python3 tests/test_linux_install_active_guard.py
           python3 tests/build_linux_r20_package.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
