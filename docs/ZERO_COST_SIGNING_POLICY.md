@@ -37,3 +37,10 @@ Official reference: https://docs.github.com/en/actions/how-tos/secure-your-work/
 Official reference: https://signpath.org/terms.html
 Official reference: https://learn.microsoft.com/en-us/windows/apps/develop/smart-app-control/code-signing-for-smart-app-control
 Official reference: https://learn.microsoft.com/en-us/windows/apps/publish/whats-new-individual-developer
+
+## Reproducible evidence: Windows QA payload and stage test (2026-10-10)
+
+- Actual Windows GitHub Actions R52 candidate built from the exact historical frozen source SHA 5f99c56e294ff225479ee0a828bd0e6050e13740. Setup SHA256 5FC313279822FE28B7E48A26A1B6F5753D07968EA1E82ABCB736C27F2DC1426F was attested using Sigstore in run https://github.com/GOD13emad/FreeNetHub/actions/runs/38006640079, attestation https://github.com/GOD13emad/FreeNetHub/attestations/54503938. This proves the byte digest from the run, NOT Authenticode trust. Keep the original source checkout commit distinct from the workflow-code commit.
+- Automated exact Inno installer [Files] inventory: 26 code-like shipped payload files and 8 upstream/third-party rights reviews; no root LICENSE/COPYING found. https://github.com/GOD13emad/FreeNetHub/actions/runs/38006580126. This is a static QA inventory and is not a substitute for actual installed executable closure including on-demand downloads.
+- Frozen-source isolated Windows stage/copy and mock byte-delta manifest recompute: 45 hashes checked in run https://github.com/GOD13emad/FreeNetHub/actions/runs/38006732972. This is unit/smoke validation only, NOT trusted signing or SAC acceptance.
+- Official SignPath Foundation conditions: https://signpath.org/terms.html. Its OSS policy permits bundling *unsigned upstream open source binaries* in a signed package in some cases, though upstream binaries must not be signed using the project's Foundation subscription. Upstream packages must be lawfully redistributable and contain no proprietary components prohibited by the free program; Windows execution trust is a separate question. The root project license remains unapproved and absent.
