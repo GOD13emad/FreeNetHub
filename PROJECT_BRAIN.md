@@ -815,3 +815,15 @@ New evidence and implementation in draft PR #36:
 - Status: Signing architecture PREPARED / VERIFICATION_AND_LAWFUL_IDENTITY_HOLD. Brain cumulative CURRENT for recorded staging delta, production public trust UNPROVEN.
 - Exact next action: check final SHA PR #36 CI; receive authoritative legal publisher jurisdiction and real certificate evidence (outside chat); sign one disposable staged probe with that CA, only then enable exact real full-signing integration. Do not merge/publish R52 under any condition while this hold exists.
 
+
+
+## 2026-10-10 — PUBLIC Code Signing legal identity gate — Iran individual
+
+User-selected publisher class: REAL INDIVIDUAL; legal residency IRAN. No names, IDs, payment details, credentials, passports or home addresses stored in repo. Legal eligibility was checked against official CA policies and recorded in docs/CODE_SIGNING_POLICY.md.
+- Azure/Microsoft Artifact Signing Public Trust individual: location restricted to US/Canada -> IRAN INELIGIBLE.
+- Sectigo official no-issuance list: IRAN explicit -> INELIGIBLE.
+- DigiCert official embargo list: IRAN explicit -> INELIGIBLE/RESTRICTED.
+- GlobalSign public code-signing program currently organization-only -> does not meet individual profile.
+- Certum/Asseco Poland officially offers individual Standard Code Signing: €139+ standard and €209+ cloud starting prices; Iran residency eligibility UNKNOWN, awaiting written CA answer. One non-purchase inquiry sent to verified official pre-sales mailbox on 2026-10-10; no payment/document/issuance initiated.
+- Self-signed signing and GPG may provide reproducible dev/test or cryptographic file verification, but neither constitutes default Microsoft Smart App Control public-trust acceptance.
+- Source-policy milestones remain draft PR #36; production signed R52, signed full dependency inventory, SAC, release promotion all BLOCKED. Do not silently switch to another person's identity, fabricated jurisdiction, unverifiable reseller, or untrusted root. Next external action: issuer's written acceptance or refusal; next code action only if valid certificate entitlement is independently confirmed.
