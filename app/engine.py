@@ -146,18 +146,33 @@ def node_select(node_id):
  if not any(x.get('id')==node_id for x in s['nodes']):raise ValueError('NODE_NOT_FOUND')
  s['selected']=node_id;save_node_store(s);return node_selected(s)
 
+# Historic public-node measurements are hints, never current connection proof.
+# Expired and undated measurements cannot promote an unusable NODE to PASS.
+NODE_PROOF_TTL_SECONDS = 600
+
+def node_proof_fresh(proof, ttl_seconds=NODE_PROOF_TTL_SECONDS, reference=None):
+ if not isinstance(proof,dict) or not proof.get('checked'):return False
+ try:
+  stamp=dt.datetime.fromisoformat(str(proof['checked']).replace('Z','+00:00'))
+  if stamp.tzinfo is None:return False
+  clock=reference if reference is not None else dt.datetime.now(dt.timezone.utc)
+  age=(clock.astimezone(dt.timezone.utc)-stamp.astimezone(dt.timezone.utc)).total_seconds()
+  return 0<=age<=ttl_seconds
+ except (TypeError,ValueError,OverflowError,AttributeError):return False
+
 def node_public_rows(store=None):
  s=node_store() if store is None else store
  def num(v,default):
   try:return float(v) if v is not None else default
   except (TypeError,ValueError):return default
  def key(n):
-  ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
+  ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) and node_proof_fresh(n.get('endpoint_test'),300) else {}
   lt=n.get('last_test') if isinstance(n.get('last_test'),dict) else {}
   perf=n.get('performance_test') if isinstance(n.get('performance_test'),dict) else {}
-  perf_ok=bool(perf.get('ok'))
-  # Smart order: application-level health outranks raw TCP reachability.
-  return (0 if perf_ok else 1,num(perf.get('pingMs'),float('inf')) if perf_ok else float('inf'),-num(perf.get('downloadMbps'),0.0) if perf_ok else 0.0,-num(perf.get('uploadMbps'),0.0) if perf_ok else 0.0,0 if lt.get('healthy') else 1,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if ep.get('reachable') else 1,num(ep.get('latency_ms'),999999.0),str(n.get('name','')).lower())
+  perf_ok=bool(perf.get('ok') and node_proof_fresh(perf))
+  lt_ok=bool(lt.get('healthy') and node_proof_fresh(lt))
+  # Smart order: only fresh application-level health outranks TCP reachability.
+  return (0 if perf_ok else 1,num(perf.get('pingMs'),float('inf')) if perf_ok else float('inf'),-num(perf.get('downloadMbps'),0.0) if perf_ok else 0.0,-num(perf.get('uploadMbps'),0.0) if perf_ok else 0.0,0 if lt_ok else 1,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if ep.get('reachable') else 1,num(ep.get('latency_ms'),999999.0),str(n.get('name','')).lower())
  return [NH.public_node(x) for x in sorted(s['nodes'],key=key)]
 
 def node_endpoint_probe(n,timeout=1.25):
@@ -287,21 +302,22 @@ def ensure_node(target='AUTO',limit=12):
   s=dict(s);s['nodes']=candidates
  def score(n):
   lt=n.get('last_test') if isinstance(n.get('last_test'),dict) else {}
-  exact=target!='AUTO' and lt.get('healthy') and str(lt.get('country','')).upper()==target
+  exact=target!='AUTO' and lt.get('healthy') and node_proof_fresh(lt) and str(lt.get('country','')).upper()==target
   shard=target!='AUTO' and str(n.get('source') or '')=='AURX_COUNTRY_'+target
   aliases={'AT':('austria','?sterreich','autriche'),'DE':('germany','deutschland','allemagne'),'NL':('netherlands','niederlande','pays-bas','holland'),'US':('united states','usa','�tats unis','estados unidos'),'CA':('canada','kanada'),'GB':('united kingdom','uk','royaume-uni','vereinigtes k?nigreich'),'FR':('france','frankreich','francia'),'SG':('singapore','singapour','singapur'),'JP':('japan','japon','japan')}
   name=str(n.get('name','')).lower()
   hint=target!='AUTO' and (target.lower() in name or any(x in name for x in aliases.get(target,())))
-  ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else {}
+  ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) and node_proof_fresh(n.get('endpoint_test'),300) else {}
   perf=n.get('performance_test') if isinstance(n.get('performance_test'),dict) else {}
-  perf_ok=bool(perf.get('ok'))
+  perf_ok=bool(perf.get('ok') and node_proof_fresh(perf))
   try:perf_ping=float(perf.get('pingMs')) if perf.get('pingMs') is not None else 999999.0
   except (TypeError,ValueError):perf_ping=999999.0
   try:perf_down=float(perf.get('downloadMbps') or 0)
   except (TypeError,ValueError):perf_down=0.0
   try:perf_up=float(perf.get('uploadMbps') or 0)
   except (TypeError,ValueError):perf_up=0.0
-  healthy=bool(lt.get('healthy'));lat=lt.get('seconds')
+  if not perf_ok:perf_ping=999999.0;perf_down=0.0;perf_up=0.0
+  healthy=bool(lt.get('healthy') and node_proof_fresh(lt));lat=lt.get('seconds') if healthy else None
   return (0 if exact else 1,0 if shard else 1,0 if hint else 1,0 if perf_ok else 1,perf_ping,-perf_down,-perf_up,0 if n.get('pinned') else 1,0 if n.get('favorite') else 1,0 if healthy else 1,node_source_quality(n),0 if ep.get('reachable') else 1,float(ep.get('latency_ms',999999) or 999999),float(lat) if isinstance(lat,(int,float)) else 9999)
 
  nodes=sorted(s['nodes'],key=score)

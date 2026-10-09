@@ -295,9 +295,21 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  }
 
+ function Test-RecentNodeProof($proof,[double]$MaxAgeSeconds=600){
+  if(!$proof -or !$proof.ContainsKey('checked') -or ![string]$proof.checked){return $false}
+  try{
+   $stamp=[DateTimeOffset]::Parse([string]$proof.checked,[Globalization.CultureInfo]::InvariantCulture)
+   $age=([DateTimeOffset]::UtcNow-$stamp.ToUniversalTime()).TotalSeconds
+   return ($age -ge 0 -and $age -le $MaxAgeSeconds)
+  }catch{return $false}
+ }
+
  function Node-StateText($n){
-  $lt=$(if($n.ContainsKey('last_test')){$n.last_test}else{$null});$ep=$(if($n.ContainsKey('endpoint_test')){$n.endpoint_test}else{$null})
-  return $(if($lt -and $lt.healthy){'✓ '+[string]$lt.country+' '+$(if($null -ne $lt.seconds){([math]::Round([double]$lt.seconds*1000)).ToString()+'ms'}else{''})}elseif($lt){'× proxy'}elseif($ep -and $ep.reachable){'TCP '+[string]$ep.latency_ms+'ms'}elseif($ep){'× TCP'}else{'?'})
+  $oldLt=$(if($n.ContainsKey('last_test')){$n.last_test}else{$null})
+  $oldEp=$(if($n.ContainsKey('endpoint_test')){$n.endpoint_test}else{$null})
+  $lt=$(if(Test-RecentNodeProof $oldLt){$oldLt}else{$null})
+  $ep=$(if(Test-RecentNodeProof $oldEp 300){$oldEp}else{$null})
+  return $(if($lt -and $lt.healthy){'HTTPS '+[string]$lt.country+' '+$(if($null -ne $lt.seconds){([math]::Round([double]$lt.seconds*1000)).ToString()+'ms'}else{''})}elseif($lt){'FAIL proxy'}elseif($ep -and $ep.reachable){'TCP '+[string]$ep.latency_ms+'ms'}elseif($ep){'FAIL TCP'}elseif($oldLt -or $oldEp){'STALE / retest'}else{'NOT TESTED'})
  }
 
  function Format-Metric([object]$v,[string]$unit){
@@ -601,19 +613,22 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
     $marks=$(if($n.pinned){'📌 '}else{''})+$(if($n.favorite){'★ '}else{''})
     $rating=$(if([int]$n.rating -gt 0){' '+('★'*[int]$n.rating)}else{''})
     $display=$marks+$state+'  ['+[string]$n.protocol+'] '+[string]$n.name+$rating+'  ·  '+[string]$n.server+':'+[string]$n.port
-    $perf=$(if($n.performance_test){$n.performance_test}else{$null});$lt=$(if($n.last_test){$n.last_test}else{$null})
+    $oldPerf=$(if($n.performance_test){$n.performance_test}else{$null});$oldLt=$(if($n.last_test){$n.last_test}else{$null})
+    $perf=$(if(Test-RecentNodeProof $oldPerf){$oldPerf}else{$null})
+    $lt=$(if(Test-RecentNodeProof $oldLt){$oldLt}else{$null})
+    $recentEp=$(if(Test-RecentNodeProof $n.endpoint_test 300){$n.endpoint_test}else{$null})
     $pingValue=$null
     if($perf -and $null -ne $perf.pingMs){$pingValue=[double]$perf.pingMs}
     elseif($lt -and $null -ne $lt.seconds){$pingValue=[double]$lt.seconds*1000}
-    elseif($n.endpoint_test -and $n.endpoint_test.reachable -and $null -ne $n.endpoint_test.latency_ms){$pingValue=[double]$n.endpoint_test.latency_ms}
+    elseif($recentEp -and $recentEp.reachable -and $null -ne $recentEp.latency_ms){$pingValue=[double]$recentEp.latency_ms}
     $downloadValue=$(if($perf -and $perf.ok -and $null -ne $perf.downloadMbps){[double]$perf.downloadMbps}else{$null})
     $uploadValue=$(if($perf -and $perf.ok -and $null -ne $perf.uploadMbps){[double]$perf.uploadMbps}else{$null})
     $ping=$(if($null -ne $pingValue){Format-Metric $pingValue 'ms'}else{'?'})
-    $down=$(if($null -ne $downloadValue){Format-Metric $downloadValue 'Mbps'}elseif($perf){'N/A'}else{'?'})
-    $up=$(if($null -ne $uploadValue){Format-Metric $uploadValue 'Mbps'}elseif($perf){'N/A'}else{'?'})
+    $down=$(if($null -ne $downloadValue){Format-Metric $downloadValue 'Mbps'}elseif($perf){'N/A'}elseif($oldPerf){'STALE'}else{'?'})
+    $up=$(if($null -ne $uploadValue){Format-Metric $uploadValue 'Mbps'}elseif($perf){'N/A'}elseif($oldPerf){'STALE'}else{'?'})
     $country=$(if($perf -and $perf.country){[string]$perf.country}elseif($lt -and $lt.country){[string]$lt.country}else{'?'})
     $last=$(if($perf -and $perf.checked){[string]$perf.checked}elseif($lt -and $lt.checked){[string]$lt.checked}else{'?'})
-    $status=$(if($perf -and $perf.ok){'PASS'}elseif($perf){'FAIL'}elseif($lt -and $lt.healthy){'HTTPS'}elseif($n.endpoint_test -and $n.endpoint_test.reachable){'TCP'}else{'—'})
+    $status=$(if($perf -and $perf.ok){'PASS'}elseif($perf){'FAIL'}elseif($lt -and $lt.healthy){'HTTPS'}elseif($recentEp -and $recentEp.reachable){'TCP'}elseif($oldPerf -or $oldLt -or $n.endpoint_test){'STALE'}else{'NOT TESTED'})
     $nameText=($marks+[string]$n.name+$rating);$protocolText=[string]$n.protocol;$sourceText=[string]$n.source
     $script:NodeRows+=,[pscustomobject]@{Id=[string]$n.id;Display=$display;Status=$status;StatusSort=$status;Name=$nameText;NameSort=([string]$n.name).ToLowerInvariant();Country=$country;CountrySort=$country.ToLowerInvariant();Protocol=$protocolText;ProtocolSort=$protocolText.ToLowerInvariant();Ping=$ping;PingValue=$pingValue;Download=$down;DownloadValue=$downloadValue;Upload=$up;UploadValue=$uploadValue;Source=$sourceText;SourceSort=$sourceText.ToLowerInvariant();LastTest=$last;LastTestSort=$last.ToLowerInvariant();Node=$n}
    }
