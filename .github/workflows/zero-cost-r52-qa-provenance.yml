@@ -1,0 +1,83 @@
+# Zero-cost provenance for a strictly unsigned QA installer; never publish or run it.
+# Workflow identity is PR branch; code input is separately pinned to exact R52 SHA.
+name: Zero-cost R52 QA installer provenance (not trusted signing)
+
+on:
+  push:
+    branches:
+      - chore/windows-public-signing-gate-20261010
+    paths:
+      - '.github/workflows/zero-cost-r52-qa-provenance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qa-attestation:
+    if: github.repository == 'GOD13emad/FreeNetHub'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - name: Checkout exact frozen unsigned R52 source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: 5f99c56e294ff225479ee0a828bd0e6050e13740
+          persist-credentials: false
+      - name: Verify frozen R52 source and unsigned release status
+        shell: pwsh
+        run: |
+          $want='5f99c56e294ff225479ee0a828bd0e6050e13740'
+          $got=(& git rev-parse HEAD).Trim()
+          if ($got -ne $want) { throw 'WRONG_EXACT_R52_SOURCE' }
+          $rel=Get-Content -LiteralPath RELEASE.json -Raw | ConvertFrom-Json
+          if ($rel.releaseRevision -ne '4.3.8-r52-stale-node-health-ttl' -or $rel.status -notmatch 'UNRELEASED') {
+            throw 'R52_RELEASE_AUTHORITY_INVALID'
+          }
+          Write-Output 'QA_ONLY_UNSIGNED_R52_INPUT; GITHUB_WORKFLOW_SHA_IS_NOT_SOURCE_SHA'
+      - name: Ensure free Inno Setup compiler
+        shell: pwsh
+        run: |
+          $candidates=@(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
+            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+          )
+          $iscc=$candidates|Where-Object{$_ -and (Test-Path -LiteralPath $_)}|Select-Object -First 1
+          if (!$iscc) {
+            choco install innosetup --no-progress -y
+            if ($LASTEXITCODE -ne 0) { throw 'INNO_INSTALL_FAILED' }
+            $iscc=$candidates|Where-Object{$_ -and (Test-Path -LiteralPath $_)}|Select-Object -First 1
+          }
+          if (!$iscc) { throw 'ISCC_NOT_FOUND' }
+      - name: Compile QA candidate without any key or Windows policy changes
+        shell: pwsh
+        run: |
+          ./tests/build_v438_installer.ps1
+          $f='delivery/github_v4.3.8/FreeNetHub_4.3.8_R52_Setup.exe'
+          if ((Get-AuthenticodeSignature -LiteralPath $f).Status -ne 'NotSigned') {
+            throw 'UNEXPECTED_SIGNATURE_ON_UNTRUSTED_QA_BUILD'
+          }
+          $h=(Get-FileHash -LiteralPath $f -Algorithm SHA256).Hash
+          Write-Output ('QA_UNSIGNED_R52_INSTALLER_SHA256='+$h)
+          Write-Output 'DO_NOT_DISTRIBUTE_OR_TREAT_PROVENANCE_AS_AUTHENTICODE'
+      - name: Attest exact UNSIGNED QA bytes through free GitHub Sigstore
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: delivery/github_v4.3.8/FreeNetHub_4.3.8_R52_Setup.exe
+      - name: Verify attested unsigned QA installer by digest
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $f='delivery/github_v4.3.8/FreeNetHub_4.3.8_R52_Setup.exe'
+          & gh attestation verify $f --repo $env:GITHUB_REPOSITORY
+          if ($LASTEXITCODE -ne 0) { throw 'QA_ATTESTATION_VERIFICATION_FAILED' }
+          if ((Get-AuthenticodeSignature -LiteralPath $f).Status -ne 'NotSigned') { throw 'NOT_UNSIGNED_AS_EXPECTED' }
+          Write-Output 'PASS_QA_BINARY_ORIGIN_ONLY_NOT_PUBLIC_WINDOWS_TRUST'
