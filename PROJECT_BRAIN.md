@@ -798,3 +798,20 @@ Exact Next Action: rebuild current manifests, commit/push the candidate branch, 
 - Roadmap ← CURRENT: policy and negative gate PREPARED; hosted PR verification OPEN; publisher legal issuer/identity OPEN; HSM/cloud authorized signing OPEN; signed staging+Inno+uninstaller OPEN; verify/isolated SAC/immutable release OPEN.
 - Brain status: CURRENT for code-signing delta, not a claim of FINAL. Exact Next Action: check hosted CI for PR #36, confirm lawful publisher jurisdiction and issuer eligibility, then implement one chosen provider's signer integration in a signed staging tree; never sign tracked raw R52 sources in-place.
 
+
+## 2026-10-10 — Windows trusted signing Stage-Preparation Milestone (one blocker)
+
+Previous accepted public state: immutable Windows R51, not signed R52; exact R52 source SHA 5f99c56e294ff225479ee0a828bd0e6050e13740. Public R52 admission is still FAIL_HOLD / UNPROVEN.
+
+New evidence and implementation in draft PR #36:
+- Device audit read-only evidence at C:\Users\Aa.Emad\source\repos\.fnh-control\R52_CANDIDATE_GATE_RECEIPT_20261009.json and R52_PUBLIC_SIGNED_RELEASE_GATE_V3_20261010.json: separate, unsigned R52 build bytes/hashes (24,260,213 / 7214F7AE832539924B58A6750584079DD859DB5CDA53A59A345B5C9DA3D24DD0 and 24,273,164 / C3FA52249A0F6B703D45752492AE49E426566BBA39EBBD0C7BAE26C02B60609B). Both are pre-sign QA artifacts, not FINAL.
+- R52_SIGNING_ADMISSION_INVENTORY_20261010.json: 9 packaged PE files, 7 unsigned, 2 valid; 17 unsigned PowerShell among 25 scripts; detected upstream kernel driver signature but /kp and loaded behavior not yet accepted.
+- Azure signing historical readiness R20_TRUSTED_SIGNING_READINESS_20260926.json: Azure CLI/tools present, usable subscriptions = 0, certificate/public identity validation not established. CA legal eligibility unknown.
+- Signing code added under scripts/signing/: New-R52SigningStage.ps1, Sign-FirstPartyStaging.ps1, Update-R52StagedIntegrity.ps1, Invoke-R52SignedInno.ps1, Test-PublicAuthenticode.ps1. These prepare exact-sha isolation, one-use HSM native store signing, staged manifest rehash, signed Inno Setup/Uninstaller configuration, and strict post-sign SHA/trust/code inventory verification. No real credential used; no release made.
+- CI negative guard rejects unsigned, omitted, wrong-SHA and absent-certificate sample. Distinguish script parsing/negative PASS from production signing PASS; hosted jobs must be rechecked at final PR SHA.
+- Failure-root-cause registered: a JS patch helper used replacement-string dollar expansions, multiplying the verifier script and causing PowerShell parse fail. The file was reconstructed from a 4,875-char original with callback-based literal replacements; CI parser succeeded on restored baseline. Prevention: treat all '$' in patch templates literally, add final compiler parse + negative regression, never promote failed commit.
+- Inno source R52 is unsigned and must remain unchanged: signer and SignedUninstaller enabled only in detached one-shot stage. Reconciliation of app/gateway/standalone runtime-hash manifests is mandatory before compile; the installer SHA is external, not embedded into itself.
+- External legal and physical gates: lawful publisher identity and CA eligibility, public-trust RSA certificate/authorized HSM or eligible Azure, third-party unsigned PE rights or upstream signed alternatives, actual timestamp and cryptographic release verification, signed uninstall extraction and SAC disposable VM install/upgrade/uninstall, immutable GitHub asset verification.
+- Status: Signing architecture PREPARED / VERIFICATION_AND_LAWFUL_IDENTITY_HOLD. Brain cumulative CURRENT for recorded staging delta, production public trust UNPROVEN.
+- Exact next action: check final SHA PR #36 CI; receive authoritative legal publisher jurisdiction and real certificate evidence (outside chat); sign one disposable staged probe with that CA, only then enable exact real full-signing integration. Do not merge/publish R52 under any condition while this hold exists.
+
