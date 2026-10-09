@@ -2340,8 +2340,8 @@
     },
     {
       "file": "tests/test_product_boundary.py",
-      "bytes": 1522,
-      "sha256": "62C4B5ABA3AE3DEFE774657FDDDD4A72C98F33042CD5DC5F2A6C66AE92A6290E"
+      "bytes": 1779,
+      "sha256": "F7BA03F2F9C492075895AE5ECFB2F7D12FC4602F7D8A6E835149232C2E491E46"
     },
     {
       "file": "tests/test_r22_country_shadowshare.py",

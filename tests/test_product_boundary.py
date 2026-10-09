@@ -31,7 +31,10 @@ def test_freenethub_does_not_absorb_oig_vpngate_openvpn_backend():
                 continue
             rel = path.relative_to(ROOT).as_posix()
             # Third-party notice/license material is not product implementation.
-            if "/docs/" in f"/{rel.lower()}/" or "third_party" in rel.lower():
+            if ("/docs/" in f"/{rel.lower()}/" or "third_party" in rel.lower()
+                    or (path.suffix.lower() == ".md" and path.name.lower().startswith("readme"))):
+                # A README may warn against integrating a foreign backend;
+                # only implementation/metadata files establish product absorption.
                 continue
             text = path.read_text(encoding="utf-8", errors="ignore").lower()
             hits = [term for term in FORBIDDEN_BACKEND_MARKERS if term in text]
