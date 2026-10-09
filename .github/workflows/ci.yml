@@ -418,34 +418,63 @@ jobs:
           }
           if(-not $iscc){ throw 'ISCC_NOT_FOUND_AFTER_INSTALL' }
           Write-Host "ISCC=$iscc"
-      - name: Build exact FreeNet Hub 4.3.7 R51 installer
+      - name: Build exact FreeNet Hub 4.3.8 R52 candidate installer
         shell: pwsh
-        run: ./tests/build_v437_installer.ps1
+        run: ./tests/build_v438_installer.ps1
       - name: Fresh install exact artifact into absent app directory
         shell: pwsh
         run: |
-          $installer=(Resolve-Path 'delivery\github_v4.3.7\FreeNetHub_4.3.7_R51_Setup.exe').Path
-          $probe=Join-Path $env:RUNNER_TEMP 'fnh-v437-r51-fresh'
+          $installer=(Resolve-Path 'delivery\github_v4.3.8\FreeNetHub_4.3.8_R52_Setup.exe').Path
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-v438-r52-fresh'
           Remove-Item -LiteralPath $probe -Recurse -Force -ErrorAction SilentlyContinue
           if(Test-Path -LiteralPath $probe){ throw 'FRESH_PROBE_DIR_PREEXISTS' }
           $p=Start-Process -FilePath $installer -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
-          if($p.ExitCode -ne 0){ throw ('V437_FRESH_INSTALL_EXIT_'+$p.ExitCode) }
+          if($p.ExitCode -ne 0){ throw ('V438_FRESH_INSTALL_EXIT_'+$p.ExitCode) }
           foreach($rel in @('FreeNetHub.exe','RELEASE.json','app\FreeNetHub.ps1','app\dependencies.json','INSTALL_RUNTIME_STATUS.json','PWSH_PATH.txt')){
-            if(!(Test-Path -LiteralPath (Join-Path $probe $rel))){ throw ('V437_FRESH_INSTALL_MISSING_'+$rel) }
+            if(!(Test-Path -LiteralPath (Join-Path $probe $rel))){ throw ('V438_FRESH_INSTALL_MISSING_'+$rel) }
           }
           $release=Get-Content -LiteralPath (Join-Path $probe 'RELEASE.json') -Raw -Encoding UTF8|ConvertFrom-Json
-          if([string]$release.version -ne '4.3.7'){ throw 'V437_FRESH_INSTALL_VERSION_MISMATCH' }
-          if([string]$release.releaseRevision -ne '4.3.7-r51-protocol-expansion-2'){ throw 'V437_FRESH_INSTALL_REVISION_MISMATCH' }
+          if([string]$release.version -ne '4.3.8'){ throw 'V438_FRESH_INSTALL_VERSION_MISMATCH' }
+          if([string]$release.releaseRevision -ne '4.3.8-r52-stale-node-health-ttl'){ throw 'V438_FRESH_INSTALL_REVISION_MISMATCH' }
           $uiError=Join-Path $probe 'logs\ui-error.txt'
           Remove-Item -LiteralPath $uiError -Force -ErrorAction SilentlyContinue
           $launcher=Start-Process -FilePath (Join-Path $probe 'FreeNetHub.exe') -ArgumentList @((Join-Path $probe 'app\FreeNetHub.ps1')) -PassThru
           Start-Sleep -Seconds 6
-          if($launcher.HasExited){ throw ('V437_UI_LAUNCHER_EXITED_'+$launcher.ExitCode) }
+          if($launcher.HasExited){ throw ('V438_UI_LAUNCHER_EXITED_'+$launcher.ExitCode) }
           $child=@(Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $launcher.Id -and $_.Name -eq 'pwsh.exe' })
-          if($child.Count -lt 1){ throw 'V437_UI_CHILD_PWSH_MISSING' }
-          if(Test-Path -LiteralPath $uiError){ throw ('V437_UI_ERROR_'+(Get-Content -Raw -LiteralPath $uiError)) }
+          if($child.Count -lt 1){ throw 'V438_UI_CHILD_PWSH_MISSING' }
+          if(Test-Path -LiteralPath $uiError){ throw ('V438_UI_ERROR_'+(Get-Content -Raw -LiteralPath $uiError)) }
           Stop-Process -Id $child.ProcessId -Force -ErrorAction SilentlyContinue
           Stop-Process -Id $launcher.Id -Force -ErrorAction SilentlyContinue
+
+      - name: Upgrade R51 to R52 on isolated Windows runner and verify file hashes
+        shell: pwsh
+        run: |
+          $oldUrl='https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.7-r20-linux-cfon-smart/FreeNetHub_4.3.7_R51_Setup.exe'
+          $old=Join-Path $env:RUNNER_TEMP 'FreeNetHub_4.3.7_R51_Setup.exe'
+          & curl.exe -fL --retry 2 --connect-timeout 12 --max-time 120 -o $old $oldUrl
+          if($LASTEXITCODE){throw 'R51_DOWNLOAD_FAILED'}
+          if((Get-FileHash $old -Algorithm SHA256).Hash -ne '8283803146E1625A31F0223487A63C05D7B7D9C3D8B59D1A7432D14AB9D4FF11'){throw 'R51_PUBLIC_ASSET_HASH_MISMATCH'}
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-r51-to-r52'
+          $r51=Start-Process -FilePath $old -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
+          if($r51.ExitCode -ne 0){throw ('R51_INITIAL_INSTALL_EXIT_'+$r51.ExitCode)}
+          $installed=Join-Path $probe 'RELEASE.json'
+          if(!(Test-Path $installed)){throw 'R51_INITIAL_INSTALL_MISSING'}
+          $v51=Get-Content $installed -Raw|ConvertFrom-Json
+          if($v51.releaseRevision -ne '4.3.7-r51-protocol-expansion-2'){throw 'R51_INITIAL_REVISION_WRONG'}
+          $new=(Resolve-Path 'delivery\github_v4.3.8\FreeNetHub_4.3.8_R52_Setup.exe').Path
+          $r52=Start-Process -FilePath $new -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
+          if($r52.ExitCode -ne 0){throw ('R52_UPGRADE_INSTALL_EXIT_'+$r52.ExitCode)}
+          $v52=Get-Content $installed -Raw|ConvertFrom-Json
+          if($v52.releaseRevision -ne '4.3.8-r52-stale-node-health-ttl'){throw 'R52_UPGRADE_REVISION_WRONG'}
+          $manifest=Get-Content (Join-Path $probe 'app\manifest.json') -Raw|ConvertFrom-Json
+          foreach($row in $manifest.code){
+            $source=Join-Path (Join-Path $probe 'app') $row.file
+            if(!(Test-Path $source)){throw ('R52_UPGRADE_FILE_MISSING_'+$row.file)}
+            if((Get-FileHash $source -Algorithm SHA256).Hash -ne [string]$row.sha256){throw ('R52_UPGRADE_CODE_HASH_BAD_'+$row.file)}
+          }
+          if([string]$manifest.coreVersion -ne '4.3.8-r52-stale-node-health-ttl'){throw 'R52_UPGRADE_CORE_VERSION_BAD'}
+          Write-Host 'R51_TO_R52_REAL_INNO_UPGRADE_APP_HASHES_PASS'
 
   virtual-acceptance:
     needs:

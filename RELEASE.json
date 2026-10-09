@@ -1,8 +1,8 @@
 {
   "product": "FreeNet Hub",
-  "version": "4.3.7",
-  "releaseRevision": "4.3.7-r51-protocol-expansion-2",
-  "status": "V437_R51_LOCAL_GATES_PASS_HOSTED_OPEN",
+  "version": "4.3.8",
+  "releaseRevision": "4.3.8-r52-stale-node-health-ttl",
+  "status": "R52_UNRELEASED_STAGED_INSTALLER_ACCEPTANCE_OPEN",
   "scope": [
     "BROWSER_PROXY",
     "PC_TUNNEL_WARP",
@@ -35,7 +35,7 @@
   "gatewayManifestSha256": "3239178AFC96B4E17A9320B31712E76E3A0096791D5BD3D6462AB8FEA5904AE2",
   "crossPlatformManifestSha256": "813816B798DA0974B2D1316929CF66D1B36B30A5916ACC4B69A2C3C54138FE3A",
   "installerSha256": null,
-  "acceptanceEvidence": "evidence/V437_R51_CANDIDATE_ACCEPTANCE_20261005.json",
+  "acceptanceEvidence": "evidence/V438_R52_STAGED_CANDIDATE_ACCEPTANCE_20261009.json",
   "consolePhysicalFieldValidated": false,
   "crossPlatform": {
     "linux": "ACCEPTED_NATIVE_LINUX_4.2.0_R18_R45_BROWSER_NODE_HOTFIX",
