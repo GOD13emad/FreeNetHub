@@ -1,58 +1,30 @@
-# FreeNet Hub 4.3.7
+# FreeNet Hub 4.3.7 — public desktop release
 
-FreeNet Hub is a multi-method connectivity control center for Windows and Linux with explicit Browser, Full System, and Console scopes, pre-connect measurement, fail-closed provider boundaries, rollback-aware network mutation, node management, and online update checks.
+FreeNet Hub controls connectivity on Windows and Linux with explicit Browser, Full System, and Console capabilities. Availability differs by provider and platform.
 
-## Final desktop install authority
+## Installation authority
 
-The current public desktop release is **v4.3.7**.
+**Latest public release:** https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.7-r20-linux-cfon-smart
 
-### Windows
+### Windows R51 — public
 
-Install exactly:
+- Asset: `FreeNetHub_4.3.7_R51_Setup.exe`
+- SHA-256: `8283803146E1625A31F0223487A63C05D7B7D9C3D8B59D1A7432D14AB9D4FF11`
+- Accepted installed revision: `4.3.7-r51-protocol-expansion-2`
+- Read-only live host check (2026-10-09): installed app code integrity 17/17 PASS, CFON browser GitHub HTTP 200 and Tailscale running.
+- Public Authenticode publisher signing not established.
 
-`FreeNetHub_4.3.7_R51_Setup.exe`
+### Linux R20 — public
 
-SHA-256:
+- Asset: `FreeNetHub_4.2.0_Linux_R20.zip`
+- SHA-256: `5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B`
+- Accepted installed revision: `4.2.0-linux.20-r47`
+- Read-only live host check (2026-10-09): installed file integrity 9/9 PASS; CFON Austria browser proxy GitHub HTTP 200 and Google HTTP 204, Tailscale preserved.
+- **Browser-only CFON:** a working scoped Riseup UID trial is not evidence of safe all-host Linux VPN. Global DNS leak remains OPEN.
 
-`4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3`
+### Windows R52 (v4.3.8) — NOT PUBLIC
 
-Accepted product revision: `4.3.7-r51-protocol-expansion-2`.
-
-Fresh owner-host verification on 2026-10-06:
-- full regression: **252/252 PASS**
-- installed/source RELEASE parity: PASS
-- installed/source app manifest parity: PASS
-- installed/source gateway manifest parity: PASS
-- current update revision: 51 / remote revision: 51 / no update pending
-
-The Windows installer is currently **not publicly Authenticode-signed** because no trusted external signing identity is provisioned. This is an external signing gate, not a desktop runtime defect.
-
-### Linux
-
-Install exactly:
-
-`FreeNetHub_4.2.0_Linux_R18.zip`
-
-SHA-256:
-
-`3C9254840C85B6D7305B0986209FF96EBEE578193D193538E8E8D45924ECBCD7`
-
-Accepted installed version: `4.2.0-linux.18-r45`.
-
-Fresh owner-host verification on 2026-10-06:
-- installed integrity: **9/9 PASS**
-- selftest: PASS
-- scope policy: PASS
-- browser profile: PASS
-- console policy: PASS
-- private-state permissions: PASS
-- Windows/Linux source parity: PASS
-- update-revision regression: PASS
-- NODE browser route: SOCKS5 `127.0.0.1:19460` + remote DNS PASS
-- installed Snap Firefox launch from FreeNet Hub: PASS
-- live tunneled trace: DE / YouTube HTTP 204 PASS
-- exact extracted package tests: PASS
-- source checkout aligned with Windows on `main`
+PR #34 (https://github.com/GOD13emad/FreeNetHub/pull/34) remains Draft/unmerged. Exact-head CI run https://github.com/GOD13emad/FreeNetHub/actions/runs/37972493989 is 10/10 PASS, including fresh Windows R52, R51->R52 upgrade, and explicitly pinned R52->R51 restore on isolated runners. Public publisher signature and field GUI acceptance remain OPEN. Do not install this candidate as the public release.
 
 ## Current capabilities
 
@@ -67,14 +39,12 @@ Fresh owner-host verification on 2026-10-06:
 
 ## Validation boundary
 
-The final desktop release is evidence-backed for the accepted Windows and Linux owner installations. Separate external gates remain for publicly trusted Windows Authenticode, physical console field/game/country E2E, and production mobile forwarding/signing/real-device operation.
+The installed and published Windows R51 and Linux R20 products are accepted only for their tested scopes. Linux global VPN DNS-leak prevention, public Windows R52 signing, field GUI validation, physical console acceptance, production mobile forwarding/signing, and interactive Cloudflare challenge/login remain OPEN. A Cloudflare HTTP 403 does not demonstrate login success.
 
-No product can guarantee connectivity when every physical/upstream path is unavailable.
+No software can promise Internet access if all underlying paths are unavailable.
 
-## Source authority
+## Source and release authority
 
-Current public source authority: `main` at or after final owner acceptance commit `09b8483851ed900e16784f2ef0cd837ecee90c9b`.
+The immutable asset names and SHA-256 digests of release v4.3.7-r20-linux-cfon-smart govern public installation; source `main` may be newer. The repository has **no project-wide software license** (see `THIRD_PARTY_NOTICES.md`); third-party licenses are not a license grant for FreeNet Hub's own source. License choice is an owner/legal gate.
 
-Historical evidence remains in the repository for auditability. Superseded release artifacts are not installation authority; use **v4.3.7** only for new desktop installs.
-
-See `SECURITY.md` and the release evidence under `evidence/` for detailed validation records.
+See SECURITY.md, issues #30/#32 and evidence/ for accepted and outstanding proof.

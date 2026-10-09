@@ -1,58 +1,26 @@
-# FreeNet Hub 4.3.7
+# FreeNet Hub 4.3.7 — نسخه عمومی جاری
 
-نسخهٔ نهایی دسکتاپ FreeNet Hub برای Windows و Linux روی Release عمومی **v4.3.7** قرار دارد.
+مرجع نصب عمومی دقیقاً این Release است: https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.7-r20-linux-cfon-smart
 
-## نصب نهایی Windows
+## Windows R51 — نسخه عمومی
 
-فقط این فایل را برای نصب جدید استفاده کنید:
+- نام فایل: `FreeNetHub_4.3.7_R51_Setup.exe`
+- SHA-256: `8283803146E1625A31F0223487A63C05D7B7D9C3D8B59D1A7432D14AB9D4FF11`
+- Revision نصب: `4.3.7-r51-protocol-expansion-2`
+- ممیزی زنده در 2026-10-09: تطابق ۱۷/۱۷ هش نصب، CFON مرورگر با GitHub HTTP 200 و Tailscale فعال.
+- امضای Authenticode ناشر با اعتماد عمومی برای این نصب‌کننده ثابت نشده است.
 
-`FreeNetHub_4.3.7_R51_Setup.exe`
+## Linux R20 — نسخه عمومی
 
-SHA-256:
+- نام فایل: `FreeNetHub_4.2.0_Linux_R20.zip`
+- SHA-256: `5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B`
+- Revision نصب: `4.2.0-linux.20-r47`
+- ممیزی زنده در 2026-10-09: تطابق ۹/۹ هش نصب، CFON اتریش GitHub HTTP 200 و Google HTTP 204 با حفظ Tailscale.
+- **CFON در Linux فقط Browser است**؛ موفقیت تونل خصوصی UID ایزوله، حفاظت همهٔ سیستم و رفع نشت DNS میزبان را ثابت نمی‌کند.
 
-`4CCAE665D9F641BEC3FACF2BFDB908F5E727BDC32F278A91EA2E6C3BFE8208A3`
+## Windows R52 — منتشرنشده
 
-Revision پذیرفته‌شده:
-
-`4.3.7-r51-protocol-expansion-2`
-
-اعتبارسنجی تازه روی سیستم مالک در 2026-10-06:
-- regression کامل: **252/252 PASS**
-- تطابق دقیق RELEASE نصب‌شده با source: PASS
-- تطابق app manifest: PASS
-- تطابق gateway manifest: PASS
-- revision محلی و remote هر دو 51 و آپدیت معوق وجود ندارد
-
-Installer ویندوز فعلاً Authenticode عمومی معتبر ندارد، چون signing identity خارجی trusted فراهم نشده است. این یک gate خارجی signing است و defect نرم‌افزار دسکتاپ محسوب نمی‌شود.
-
-## نصب نهایی Linux
-
-فقط این بسته را برای نصب جدید استفاده کنید:
-
-`FreeNetHub_4.2.0_Linux_R18.zip`
-
-SHA-256:
-
-`3C9254840C85B6D7305B0986209FF96EBEE578193D193538E8E8D45924ECBCD7`
-
-نسخهٔ نصب‌شدهٔ پذیرفته‌شده:
-
-`4.2.0-linux.18-r45`
-
-اعتبارسنجی تازه:
-- integrity نصب‌شده: **9/9 PASS**
-- selftest: PASS
-- scope policy: PASS
-- browser profile: PASS
-- console policy: PASS
-- private-state permissions: PASS
-- parity با source مشترک Windows/Linux: PASS
-- update-revision regression: PASS
-- مسیر Browser برای NODE روی SOCKS5 `127.0.0.1:19460` با remote DNS: PASS
-- اجرای Snap Firefox از داخل FreeNet Hub: PASS
-- trace زندهٔ تونل: DE و YouTube HTTP 204: PASS
-- تست مستقیم ZIP استخراج‌شده: PASS
-- checkout لینوکس و ویندوز روی authority یکسان `main`
+PR #34 در https://github.com/GOD13emad/FreeNetHub/pull/34 همچنان Draft است. CI روی SHA دقیق با ۱۰/۱۰ Job موفق، نصب تازه، ارتقای R51 به R52 و بازگشت کنترل‌شده R52 به R51 را روی Windows آزمایشی ثابت کرده است: https://github.com/GOD13emad/FreeNetHub/actions/runs/37972493989 . امضای معتبر عمومی و پذیرش GUI روی دستگاه فعال هنوز بازند؛ R52 مرجع نصب عمومی نیست.
 
 ## امکانات فعلی
 
@@ -68,17 +36,12 @@ SHA-256:
 
 ## مرز اعتبارسنجی
 
-نسخهٔ دسکتاپ Windows و Linux بر اساس evidence فعلی نهایی است. موارد زیر gateهای مستقل خارجی هستند:
-- Windows Authenticode با زنجیرهٔ public trust
-- تست فیزیکی Console/Game/Country
-- forwarding/signing/runtime تولیدی Android و iOS روی دستگاه واقعی
+محصول عمومی Windows R51 و Linux R20 فقط برای محدوده‌های واقعاً آزموده‌شده پذیرفته شده است. گیت‌های جداگانهٔ رفع نشت DNS تمام‌سیستم Linux، امضای معتبر عمومی Windows R52، پذیرش GUI روی سیستم فعال، آزمون فیزیکی Console، Forwarding و امضای تولیدی موبایل و ورود تعاملی مرورگر پس از چالش Cloudflare بازند. HTTP 403 به‌معنای ورود موفق نیست.
 
-در صورت قطع همهٔ مسیرهای فیزیکی/upstream، هیچ نرم‌افزاری نمی‌تواند اتصال را تضمین کند.
+هیچ برنامه‌ای در صورت قطع همهٔ مسیرهای بالادستی نمی‌تواند دسترسی اینترنت را تضمین کند.
 
-## Authority
+## مرجع سورس و انتشار
 
-Authority عمومی source: شاخهٔ `main` در یا بعد از commit نهایی مالک:
+برای نصب، نام فایل و SHA-256 واقعی Assetهای Release v4.3.7-r20-linux-cfon-smart معیار است؛ شاخهٔ `main` می‌تواند سورس جدیدتر داشته باشد. مخزن در حال حاضر **مجوز سراسری نرم‌افزاری ندارد** (مطابق `THIRD_PARTY_NOTICES.md`) و مجوز وابستگی‌ها برای سورس خود FreeNet Hub مجوز محسوب نمی‌شود. تعیین نوع مجوز به مالک پروژه مربوط است.
 
-`09b8483851ed900e16784f2ef0cd837ecee90c9b`
-
-Evidence تاریخی برای audit در repository نگه داشته می‌شود، اما نسخه‌های قدیمی authority نصب نیستند. برای نصب جدید فقط **v4.3.7** را استفاده کنید.
+شواهد و محدودیت‌ها: SECURITY.md، Issues #30/#32 و evidence/.
