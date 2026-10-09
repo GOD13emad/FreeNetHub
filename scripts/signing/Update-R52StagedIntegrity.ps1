@@ -16,7 +16,7 @@ if ($stage.Equals($source,[StringComparison]::OrdinalIgnoreCase) -or
 $marker=Join-Path $stage '.signing-staging-authority.json'
 if (!(Test-Path -LiteralPath $marker -PathType Leaf)) { throw 'STAGE_MARKER_MISSING' }
 $m=Get-Content -LiteralPath $marker -Raw | ConvertFrom-Json
-if ($m.purpose -cne 'SINGLE_USE_SIGNED_BUILD' -or !$m.sourceCommit -or $m.status -cne 'READY_TO_SIGN') {
+if ($m.purpose -cne 'SINGLE_USE_SIGNED_BUILD' -or !$m.sourceCommit -or $m.status -cne 'FILES_SIGNED') {
  throw 'STAGE_AUTHORITY_INVALID'
 }
 $records=[System.Collections.Generic.List[object]]::new()
@@ -68,6 +68,8 @@ $release.gatewayManifestSha256=(Get-FileHash -LiteralPath (Join-Path $stage 'gat
 $release.installerSha256=$null
 $release.status='R52_SIGNED_STAGE_NOT_PUBLIC_RELEASE'
 $release | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $releaseFile -Encoding UTF8
+$m.status='MANIFESTS_RECONCILED'
+$m | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $marker -Encoding UTF8
 [pscustomobject]@{
  verdict='STAGE_MANIFESTS_RECONCILED_NOT_RELEASED'
  sourceCommit=$m.sourceCommit
