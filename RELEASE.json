@@ -33,7 +33,7 @@
   "viewSha256": "8297EC1381CE796F36BBF5AEEF6C43C7B070BED54FDEEF018E15D82E1222E063",
   "desktopShellSha256": "42399C7A30ECC88588AAA0F68782629ADB4A049F2576F978C5EAC1F35E2D6435",
   "gatewayManifestSha256": "3239178AFC96B4E17A9320B31712E76E3A0096791D5BD3D6462AB8FEA5904AE2",
-  "crossPlatformManifestSha256": "8667133BE790504CA93C8FF8C4AD85B3D3EBFABD23F9A0EE4169F87CEBB403AC",
+  "crossPlatformManifestSha256": "6F492F4D568A93D742DCE5DB547DC4C638691D634C22DF3BC5F19BD5B9097FF1",
   "installerSha256": null,
   "acceptanceEvidence": "evidence/V437_R51_CANDIDATE_ACCEPTANCE_20261005.json",
   "consolePhysicalFieldValidated": false,
@@ -1078,5 +1078,13 @@
     "hostedCi": "OPEN_REQUIRED_BEFORE_PUBLIC_ASSET_PROMOTION",
     "publicReleaseAsset": false,
     "evidence": "evidence/V437_LINUX_R18_BROWSER_NODE_HOTFIX_20261006.json"
+  },
+  "linuxR19BrowserActionCandidate": {
+    "status": "CANDIDATE_LOCAL_TESTED",
+    "version": "4.2.0-linux.19-r46",
+    "asset": "FreeNetHub_4.2.0_Linux_R19.zip",
+    "scope": "Explicit system browser separate from fail-closed tunnel browser; process launch verification; regression",
+    "hostedCI": "PENDING",
+    "publicRelease": "NOT_PUBLISHED"
   }
 }

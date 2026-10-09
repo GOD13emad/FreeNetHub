@@ -1,8 +1,8 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.18-r45
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.19-r46
 
-نسخهٔ Linux R18 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
+نسخهٔ Linux R19 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
 
-R18 مسیر Browser برای NODE را به SOCKS محلی همان sing-box (`127.0.0.1:19460`) متصل می‌کند، DNS مرورگر را از همان SOCKS می‌فرستد و launch Firefox را بعد از ایجاد process واقعی verify می‌کند.
+R19 مسیر Browser برای NODE را به SOCKS محلی همان sing-box (`127.0.0.1:19460`) متصل می‌کند، DNS مرورگر را از همان SOCKS می‌فرستد و اجرای واقعی Firefox را با PID بررسی می‌کند؛ دکمه مرورگر عادی از مرورگر تونلی جداست.
 
 ## رابط R37
 

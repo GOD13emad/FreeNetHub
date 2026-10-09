@@ -756,3 +756,22 @@ Roadmap ← CURRENT:
 7. Post-publish evidence/Brain closure — OPEN.
 
 Exact Next Action: rebuild current manifests, commit/push the candidate branch, run hosted CI on the exact candidate SHA, and promote/upload only if hosted evidence passes.
+
+## 2026-10-09 — Linux Browser Button Defect — CANDIDATE ONLY
+- Scope: Linux FreeNet Hub, browser action semantics only; previous public v4.3.7 R18/R51 release and accepted SHA 06d3459 remain authoritative and unchanged.
+- Live reproduction: on aliemad-Labtop, installed open_browser() returned CONNECT_FIRST with session.mode=None. Firefox 157 Snap exists, integrity PASS, and an isolated Firefox profile launched and terminated correctly with PID verification.
+- Cause: tunneled browser requires active session, GUI offers no explicit normal-browser path, and r37 open_browser returned success without inspecting process launch.
+- Candidate branch: fix/linux-browser-explicit-20261009. Changes: explicit unprotected system browser action, clear protected-browser labeling, validated Firefox PID before success, failure display kept after refresh.
+- Regression: four new mocked tests PASS, browser-profile test PASS, scope-policy PASS, permissions PASS, parity PASS, update-revision PASS, py_compile PASS, isolated live Firefox launch/cleanup PASS. pytest unavailable on this host; tests executed as standalone functions.
+- V&V boundaries: no new Linux release built or published; no Windows runtime mutation; no VPN/system-route mutation. Public upgrade and fresh-install verification pending.
+- Status: CANDIDATE/UNPROVEN FOR PUBLIC RELEASE. Exact next action: complete candidate review and hosted CI, then new versioned artifact with install/fresh-upgrade evidence; do not overwrite accepted 4.3.7 asset.
+
+## 2026-10-09 — R19 Browser Fix Candidate — Packaging and Install Evidence
+- Previous accepted: public v4.3.7 Linux R18 SHA256 3C9254840C85B6D7305B0986209FF96EBEE578193D193538E8E8D45924ECBCD7, Windows R51 SHA256 8283803146E1625A31F0223487A63C05D7B7D9C3D8B59D1A7432D14AB9D4FF11, main 06d34593766560423608cd97aefd014bf625dcfe.
+- Candidate Linux version 4.2.0-linux.19-r46; R19 ZIP 243147 bytes, SHA256 26EF150D7BE890D54EAC5D518F2A0EFDF66CD20E92C3DC659855039D23A344CC; 23 source-controlled files and 23 checksum checks PASS. NOT YET PUBLIC.
+- Reproduced CONNECT_FIRST when session.mode=None; patch retains fail-closed protected browser, adds distinct direct/unprotected browser action, verifies live Firefox process and leaves GUI error visible. Native Firefox Snap 157 isolated launch/teardown PASS.
+- Regression: 4 new tests, legacy selftest, parity, update revision, browser-profile, scope PASS; public manifest, crossplatform manifest, security PASS.
+- Install validation: fresh and R18-to-R19 upgrade installs in isolated HOME PASS using pre-seeded previously verified sing-box and warp-plus pinned runtime binaries. User settings preserved, backup created, no network started. Online bootstrap and real network proxy readiness NOT CLAIMED.
+- PR #28 remains draft, candidate only. CI release job scoped to successful push on main after virtual-acceptance; reproduces Linux R19, confirms unchanged Windows R51 SHA and validates public asset digests. Await hosted exact-SHA PR CI, merge, main CI, post-release verification and installed UI acceptance.
+- Brain status CURRENT, public FINAL = UNPROVEN.
+- R19 package reconstruction after README-only edit: previous candidate ZIP SHA256 26EF150D7BE890D54EAC5D518F2A0EFDF66CD20E92C3DC659855039D23A344CC superseded; authoritative candidate ZIP is 243206 bytes, SHA256 AB95D42A4A9A7AA30CEF5F4B99CC9939436B3A4D3779F3770A04305C27F8FFB7. Runtime Python and shell install sources unchanged by this rebuild.

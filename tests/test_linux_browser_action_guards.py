@@ -55,3 +55,15 @@ def test_direct_browser_is_explicit_and_never_creates_tunnel():
     assert result["ok"] and result["mode"] == "DIRECT_UNPROTECTED"
     assert result["state"] == "DISPATCHED_NOT_WINDOW_VERIFIED"
     assert popen.call_args.args[0] == ["/usr/bin/xdg-open", "about:blank"]
+
+
+if __name__ == "__main__":
+    import tempfile
+    for name, fn in sorted(globals().copy().items()):
+        if name.startswith("test_") and callable(fn):
+            if "tmp_path" in fn.__code__.co_varnames[:fn.__code__.co_argcount]:
+                with tempfile.TemporaryDirectory() as d:
+                    fn(pathlib.Path(d))
+            else:
+                fn()
+            print(name, "PASS")
