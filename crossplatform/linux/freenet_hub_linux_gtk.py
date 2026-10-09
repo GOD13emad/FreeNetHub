@@ -71,7 +71,7 @@ listbox { background:transparent; }
 """
 
 METHODS=[
-    ("AUTO","هوشمند","Node / Tor با fallback امن","مرورگر ✓ · کل سیستم WARP"),
+    ("AUTO","هوشمند","Node / CFON تأییدشده / WARP / Tor","مرورگر ✓ · کل سیستم WARP"),
     ("NODE","Node Pool","VLESS / VMess / SS / Trojan / Hysteria2","مرورگر ✓ · سیستم نیازمند helper"),
     ("WARP","WARP","Cloudflare WARP رسمی","کل سیستم ✓"),
     ("TOR","Tor / Bridges","Direct / obfs4 / Snowflake","مرورگر ✓"),
@@ -284,6 +284,9 @@ class FreeNetHub(Adw.Application):
         top.append(button("مرورگر عادی (بدون تونل)",lambda *_:self.run_async("Direct browser",core.open_direct_browser)))
         status.append(top)
         status.append(label("مرورگر تونلی فقط پس از اتصال تأییدشده فعال می‌شود. مرورگر عادی از اینترنت سیستم استفاده می‌کند.","muted"))
+        self.site_health_label=label("وضعیت سایت‌ها: آزمایش نشده (اتصال برقرار، تضمین دسترسی به هر سایت نیست).","muted")
+        status.append(self.site_health_label)
+        status.append(button("تست دسترسی سایت‌ها از داخل اتصال فعلی",lambda *_:self.run_async("Target sites",core.test_active_sites,self.site_health_done)))
 
         metrics=flow(max_children=4,min_children=2,spacing=8)
         for title,attr in [("مسیر","dash_route"),("کشور","dash_country"),("WARP","dash_warp"),("Ping","dash_ping")]:
@@ -590,6 +593,13 @@ class FreeNetHub(Adw.Application):
         def done(r):
             if r.get("ok"):self.pending_warp_token=None;self.keep_btn.set_sensitive(False)
         self.run_async("Keep WARP",lambda:legacy.warp_keep(token),done)
+
+    def site_health_done(self,result):
+        if result.get("results"):
+            details=" · ".join(f"{x['site']} {x['code']} ({x['status']})" for x in result["results"])
+            self.site_health_label.set_text("دسترسی واقعی سایت‌ها: "+details)
+        else:
+            self.site_health_label.set_text("تست سایت‌ها: "+str(result.get("error") or "نتیجه‌ای دریافت نشد"))
 
     def test_base(self,ping_only=False):
         self.run_async("Base Internet "+("Ping" if ping_only else "Ping + Speed"),lambda:core.benchmark_direct(ping_only),lambda r:self.metric_done("DIRECT",r))

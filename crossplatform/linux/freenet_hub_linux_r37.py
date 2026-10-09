@@ -22,7 +22,7 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 
-VERSION = "4.2.0-linux.19-r46"
+VERSION = "4.2.0-linux.20-r47"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -906,6 +906,69 @@ def benchmark_all_methods(ping_only=False):
         "results":rows,
     }
 
+ACTIVE_SITE_TARGETS = (
+    ("Google", "https://www.google.com/generate_204"),
+    ("GitHub", "https://github.com/"),
+    ("NVIDIA", "https://www.nvidia.com/"),
+    ("ChatGPT", "https://chatgpt.com/"),
+)
+
+def _active_proxy_for_diagnostics():
+    """Return a proven owned local proxy; never fall back to direct for a protected probe."""
+    mode=str(legacy.session().get("mode") or "")
+    if mode=="NODE":
+        if _node_owner() and _port_open(NODE_PORT):
+            return f"socks5h://127.0.0.1:{NODE_PORT}", mode
+        return "", mode
+    if mode in ("CFON","GOOL","WARP_PROXY"):
+        method="WARP" if mode=="WARP_PROXY" else mode
+        if _warpplus_owner(method) and _port_open(WARPPLUS_PORTS[method]):
+            return _warpplus_proxy(method),mode
+        return "",mode
+    if mode=="TOR":
+        if legacy.tor_status().get("ok"):
+            return f"socks5h://127.0.0.1:{legacy.SOCKS_PORT}",mode
+        return "",mode
+    return "", mode
+
+def test_active_sites(targets=ACTIVE_SITE_TARGETS, timeout=8):
+    """Bounded destination evidence; 403 is not silently counted as a working destination."""
+    proxy,mode=_active_proxy_for_diagnostics()
+    if not proxy:
+        return {"ok":False,"error":"CONNECT_PROTECTED_BROWSER_FIRST","mode":mode,"results":[]}
+    if not (proxy.startswith("socks5h://127.0.0.1:")):
+        return {"ok":False,"error":"UNVERIFIED_PROXY_PATH","mode":mode,"results":[]}
+    limit=max(3,min(15,int(timeout)))
+    results=[]
+    curl=legacy.executable("curl") or "curl"
+    for label,url in targets:
+        if (label,url) not in ACTIVE_SITE_TARGETS:
+            raise ValueError("SITE_TEST_TARGET_NOT_ALLOWLISTED")
+        # The explicit destination must be last; never mark a missing-URL curl failure as a provider failure.
+        argv=[curl,"-4","--head","--location","--silent","--show-error",
+              "--connect-timeout",str(min(5,limit)),"--max-time",str(limit),
+              "--proxy",proxy,"--output","/dev/null","--write-out","%{http_code}",url]
+        assert argv[-1]==url
+        try:
+            proc=legacy.run(argv,limit+3)
+            code=(proc.stdout or "").strip().splitlines()[-1:] or [""]
+            code=code[0]
+            transport=proc.returncode==0
+            valid=code.isdigit() and len(code)==3
+            passed=transport and valid and code.startswith(("2","3"))
+            results.append({"site":label,"code":code if valid else "000",
+                            "transportOK":transport,"ok":passed,
+                            "status":"PASS" if passed else ("HTTP_RESTRICTED_OR_CHALLENGED" if transport and code in ("403","429") else "FAILED")})
+        except (OSError,subprocess.TimeoutExpired) as exc:
+            results.append({"site":label,"code":"000","transportOK":False,
+                            "ok":False,"status":type(exc).__name__})
+    by_name={x["site"]:x for x in results}
+    allowed=by_name.get("Google",{}).get("ok") and (
+        by_name.get("GitHub",{}).get("ok") or by_name.get("NVIDIA",{}).get("ok"))
+    return {"ok":bool(allowed),"mode":mode,"proxyUsed":True,
+            "scope":"BROWSER","results":results,"passed":sum(bool(x["ok"]) for x in results),
+            "error":"" if allowed else "NO_INDEPENDENT_TARGET_HEALTH"}
+
 def connect_method(mode, scope="BROWSER"):
     mode=str(mode or "AUTO").upper(); scope=str(scope or "BROWSER").upper()
     if scope=="CONSOLE":
@@ -924,6 +987,15 @@ def connect_method(mode, scope="BROWSER"):
                 r["selected"]="NODE"
                 return r
         if warpplus_status().get("ok"):
+            # A country-targeted CFON exit precedes WARP; a trace-only pass is insufficient.
+            r=warpplus_start("CFON")
+            if r.get("ok"):
+                sites=test_active_sites(targets=ACTIVE_SITE_TARGETS[:3],timeout=8)
+                if sites.get("ok"):
+                    r["selected"]="CFON"
+                    r["siteHealth"]=sites
+                    return r
+                _warpplus_stop("CFON")
             r=warpplus_start("WARP")
             if r.get("ok"):
                 r["selected"]="WARP"
