@@ -24,18 +24,19 @@ Use one **legally verified publisher identity** across first-party projects. Eve
 ## Planned pipeline (not yet enabled for public signing)
 `source SHA + dependencies/SBOM` -> clean hermetic **BUILD** -> stage own binaries/PS scripts -> **SIGN inner first-party files** -> **TIMESTAMP** -> reconcile embedded integrity manifests and signed bytes -> Inno Setup `SignTool` signs **Setup and Uninstaller** -> **VERIFY** with `signtool verify /pa /all /v`, Authenticode signer/TSA, third-party provenance and SHA256 -> isolated install/upgrade/uninstall + Smart App Control audit/enforcement observation -> release immutable artifact/attestation -> verify downloaded release byte identity.
 
-Use `scripts/signing/Test-PublicAuthenticode.ps1` on the actual distribution tree with a concrete manifest containing exact relative filenames, `ownership=first-party` or `third-party`, publisherSubject (exact X.509 Subject), and for third-party entries `expectedPublisherSubject`. For PE files supply the installed SDK `signtool.exe` path. The verifier rejects unsigned, expired/untrusted, wrong-publisher, missing timestamp, missing artifacts, unsupported types and drivers not subjected to a separate driver gate. A passing verifier is **necessary, not sufficient** for a signed release.
+Use `scripts/signing/Test-PublicAuthenticode.ps1` on the actual distribution tree with a concrete manifest containing exact relative filenames, `ownership=first-party` or `third-party`, publisherSubject (exact X.509 Subject), and for third-party entries `expectedPublisherSubject`. For PE files supply the installed SDK `signtool.exe` path. The verifier rejects unsigned, expired/untrusted, wrong-publisher, missing timestamp, missing artifacts, unsupported types and drivers not subjected to a separate driver gate. Each item needs a post-sign exact SHA-256 and pinned signer identity; complete coverage of runnable files under ArtifactRoot is mandatory. The sample manifest uses intentionally INVALID hash placeholders and must not be treated as ready for use. A passing verifier is **necessary, not sufficient** for a signed release.
 
 Example manifest schema (replace all illustrative values before actual use):
 ```json
 {
   "schema": 1,
   "publisherSubject": "CN=YOUR REAL LEGAL PUBLISHER, O=YOUR REGISTERED ORGANIZATION, C=XX",
+  "publisherThumbprint": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   "artifacts": [
-    {"path": "FreeNetHub_4.3.8_R52_Setup.exe", "ownership": "first-party"},
-    {"path": "installed/FreeNetHub.exe", "ownership": "first-party"},
-    {"path": "installed/app/FreeNetHub.ps1", "ownership": "first-party"},
-    {"path": "installed/unins000.exe", "ownership": "first-party"}
+    {"path": "FreeNetHub_4.3.8_R52_Setup.exe", "ownership": "first-party", "expectedSha256": "REPLACE_WITH_64_HEX_FINAL_SHA256"},
+    {"path": "installed/FreeNetHub.exe", "ownership": "first-party", "expectedSha256": "REPLACE_WITH_64_HEX_FINAL_SHA256"},
+    {"path": "installed/app/FreeNetHub.ps1", "ownership": "first-party", "expectedSha256": "REPLACE_WITH_64_HEX_FINAL_SHA256"},
+    {"path": "installed/unins000.exe", "ownership": "first-party", "expectedSha256": "REPLACE_WITH_64_HEX_FINAL_SHA256"}
   ]
 }
 ```
