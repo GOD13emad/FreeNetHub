@@ -43,6 +43,7 @@ $cert=@(
 if ($cert.Count -ne 1) { throw 'EXACTLY_ONE_HSM_OR_STORE_CODE_SIGNING_CERT_REQUIRED' }
 $c=$cert[0]
 if ($c.Subject -cne $PublisherSubject) { throw 'PUBLISHER_IDENTITY_MISMATCH' }
+if ($c.PublicKey.Oid.Value -ne '1.2.840.113549.1.1.1') { throw 'RSA_CERTIFICATE_REQUIRED_FOR_SMART_APP_CONTROL' }
 if ($c.Subject -ceq $c.Issuer) { throw 'SELF_SIGNED_CERT_REJECTED' }
 $eku=@($c.Extensions | Where-Object {$_.Oid.Value -eq '2.5.29.37'})
 if (!$eku -or !$c.EnhancedKeyUsageList -or
