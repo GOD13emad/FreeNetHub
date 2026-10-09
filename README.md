@@ -37,6 +37,14 @@ PR #34 (https://github.com/GOD13emad/FreeNetHub/pull/34) remains Draft/unmerged.
 - revision-aware online update checks with downgrade protection
 - normal application launch does not auto-connect networking
 
+## Code signing policy (current trust status)
+
+Windows R51 is the existing public installer, but a generally trusted publisher Authenticode signature has **not** been established. Windows R52 remains unsigned QA and **must not** be distributed as a final public release. An independently verifiable zero-cost GitHub/Sigstore attestation exists for specific source and isolated QA-build bytes; it **does not** provide a Microsoft-trusted EXE/PS1/Setup publisher signature, guarantee Smart App Control acceptance, or authorize third-party components.
+
+- [Code signing policy, admission gates and cross-platform keys](docs/CODE_SIGNING_POLICY.md)
+- [Zero-cost source/binary provenance and SignPath eligibility hold](docs/ZERO_COST_SIGNING_POLICY.md)
+- [Evidence-backed R52 zero-cost QA attestation and bundled binary inventory](evidence/ZERO_COST_R52_BINARY_AND_SIGNPATH_GATES_20261010.json)
+
 ## Validation boundary
 
 The installed and published Windows R51 and Linux R20 products are accepted only for their tested scopes. Linux global VPN DNS-leak prevention, public Windows R52 signing, field GUI validation, physical console acceptance, production mobile forwarding/signing, and interactive Cloudflare challenge/login remain OPEN. A Cloudflare HTTP 403 does not demonstrate login success.
