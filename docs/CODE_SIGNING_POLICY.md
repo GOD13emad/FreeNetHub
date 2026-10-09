@@ -53,6 +53,22 @@ Get-AuthenticodeSignature -LiteralPath '.\STAGED_OWN_SCRIPT.ps1'
 ```
 Do not put any private key, PFX, password, device PIN, cloud credential or certificate issuance document into a public repository or conversation. For Azure signing use repository-environment-scoped OIDC federation, restricted subject, least-privileged certificate-profile signer RBAC, approved event/branch and protected environment.
 
+## Non-Windows signing matrix (separate trust ecosystems)
+- **Linux:** sign release-tag commits with GPG/SSH (GitHub verified commits), and publish a detached `.asc` signature for tar/ZIP/SHA256SUMS using a dedicated project GPG signing key; for distribution through package repos use the repository's APT `Release/InRelease` GPG signature or RPM package signing. These prove provenance to users who trust/import the key, **not** Windows Authenticode public CA trust. Maintain a trusted key fingerprint outside the archive; GitHub artifact attestations (Sigstore) can supplement, not replace package-manager trust.
+- **Android:** sign AAB/APK with Android upload key from controlled Keystore; Google Play App Signing manages the app-signing key for Play releases. The Play identity/account and Android app keys are **separate** from Windows Authenticode. APKs outside Play need your own Android signing cert and package update compatibility; do not reuse Windows private keys.
+- **macOS:** independently enroll with Apple Developer Program, create **Developer ID Application** and if using PKG **Developer ID Installer**, apply hardened runtime where required, `codesign`, `notarytool submit --wait`, `stapler staple`, and `spctl` checks. These Apple credentials and the notarization ticket are **not** Windows CA certs.
+- **iOS:** Apple Developer Team, provisioning profile, correct entitlements and Apple Distribution certificate/automatic Xcode signing for IPA/TestFlight/App Store (or other explicitly authorized distribution). A macOS Developer ID does not authorize iOS builds; both generally use the same paid Apple Developer membership but distinct certificate/profile types. For a VPN/Network Extension, Apple entitlements and App Review form an **additional** product gate.
+- **Shared governance:** one project signing inventory, publisher ownership record, release manifest, branch protection, review, evidence records, and key rotation plan; retain **separate platform-specific signing keys/credentials** with least privilege. Cross-platform software version names do not imply one universal certificate or cross-trust.
+
+**FreeNet Hub SignPath eligibility caution:** no top-level OSI `LICENSE` file was found in the audited R52 Git tree; upstream licenses exist for separate components but do not by themselves license every first-party file. SignPath Foundation's published terms demand OSI licensing of all relevant components and expressly exclude certain hacking/security-circumvention tools. Whether FreeNet Hub's DPI/network functionality is eligible requires direct approval; do not assume acceptance, and do not publish a new license without a rights review.
+
+### Cross-platform primary references
+- https://docs.github.com/en/actions/concepts/security/artifact-attestations
+- https://developer.android.com/studio/publish/app-signing
+- https://developer.apple.com/developer-id/
+- https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution
+- https://developer.apple.com/help/account/membership/program-enrollment/
+
 ## Acceptance and roadmap ← CURRENT
 - Confirm actual identity, issuer jurisdiction, and whether the issuer will serve this legal publisher and project use case (OPEN; OWNER/CA).
 - Obtain verified public trust certificate/service and sign a sample first-party staged PE + PS1 with RFC3161/approved timestamp (OPEN; OWNER/CA).
