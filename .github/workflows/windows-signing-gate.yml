@@ -46,6 +46,9 @@ jobs:
           if ($report.verdict -ne 'FAIL' -or $report.passed -ne 0 -or $report.count -ne 1) {
             throw 'FAIL_CLOSED_REPORT_INVALID'
           }
+          # GitHub's pwsh wrapper propagates a child's nonzero LASTEXITCODE
+          # even when the exit code is the expected negative-test result.
+          $global:LASTEXITCODE = 0
           Remove-Item -LiteralPath $dir -Recurse -Force
       - name: Confirm no release or private key was generated
         shell: pwsh
