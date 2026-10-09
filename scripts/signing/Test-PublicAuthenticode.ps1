@@ -50,7 +50,7 @@ foreach ($item in $items) {
     if ($owner -notin @('first-party','third-party')) { throw 'OWNERSHIP_NOT_CLASSIFIED' }
     $ext = [IO.Path]::GetExtension($full).ToLowerInvariant()
     if ($ext -eq '.sys' -and $owner -ne 'third-party') { throw 'FIRST_PARTY_KERNEL_DRIVER_REQUIRES_HARDWARE_DEV_CENTER_GATE' }
-    if ($ext -notin @('.exe','.dll','.ocx','.msi','.msix','.msp','.cab','.ps1','.psm1','.psd1')) {
+    if ($ext -notin @('.exe','.dll','.ocx','.sys','.msi','.msix','.msp','.cab','.ps1','.psm1','.psd1')) {
       throw 'ARTIFACT_TYPE_NOT_APPROVED'
     }
     if ((Get-Item -LiteralPath $full).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'REPARSE_POINT_NOT_ALLOWED' }
