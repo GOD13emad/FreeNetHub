@@ -24,7 +24,7 @@ jobs:
         shell: pwsh
         run: |
           $tokens = $null; $errors = $null
-          foreach ($path in @('scripts/signing/Test-PublicAuthenticode.ps1','scripts/signing/Sign-FirstPartyStaging.ps1','scripts/signing/Update-R52StagedIntegrity.ps1','scripts/signing/Invoke-R52SignedInno.ps1')) {
+          foreach ($path in @('scripts/signing/Test-PublicAuthenticode.ps1','scripts/signing/Sign-FirstPartyStaging.ps1','scripts/signing/Update-R52StagedIntegrity.ps1','scripts/signing/Invoke-R52SignedInno.ps1','scripts/signing/New-R52SigningStage.ps1')) {
             $tokens=$null; $errors=$null
             [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $path),[ref]$tokens,[ref]$errors) | Out-Null
             if (@($errors).Count -ne 0) { $errors | ForEach-Object Message; exit 1 }
