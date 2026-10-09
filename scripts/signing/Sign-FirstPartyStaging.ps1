@@ -78,6 +78,9 @@ foreach ($f in @($plan.files)) {
   $files.Add([pscustomobject]@{path=$rel;full=$full;extension=$ext;unsignedSHA256=$hash})
 }
 # Preflight ALL targets before the first mutation.
+# A failed signing attempt is single-use; never blindly re-run a partially signed stage.
+$m.status='SIGN_IN_PROGRESS'
+$m | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $marker -Encoding UTF8
 $results=[System.Collections.Generic.List[object]]::new()
 foreach ($file in $files) {
   if ($file.extension -in @('.ps1','.psm1','.psd1')) {
@@ -99,6 +102,8 @@ foreach ($file in $files) {
     timestampAuthority=$signature.TimeStamperCertificate.Subject
   })
 }
+$m.status='FILES_SIGNED'
+$m | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $marker -Encoding UTF8
 # This receipt NEVER claims Smart App Control, public release or external user-device trust.
 [pscustomobject]@{
   verdict='SIGNED_STAGING_ONLY'
