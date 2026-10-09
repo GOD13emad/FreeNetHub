@@ -117,3 +117,34 @@ jobs:
             Write-Output 'Separate signed release workflow exists; review its authority before enabling'
           }
           Write-Output 'VERIFIER_REGRESSION_ONLY: no CA trust or release claimed'
+
+  signpath-readiness-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Audit exact Inno payload ownership and linked license notices
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/signing/audit_signpath_readiness.py
+          python3 scripts/signing/audit_signpath_readiness.py --output "$RUNNER_TEMP/signpath-readiness.json"
+          python3 - "$RUNNER_TEMP/signpath-readiness.json" <<'PY'
+          import json, pathlib, sys
+          o = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert o["result"] == "OSS_SIGNPATH_ELIGIBILITY_HOLD"
+          assert o["artifactCount"] >= 9
+          assert o["upstreamCount"] >= 1
+          assert o["unreviewedUpstreamCount"] == o["upstreamCount"]
+          assert o["licenseApprovedByRightsOwner"] is False
+          assert len({p["path"] for p in o["artifacts"]}) == o["artifactCount"]
+          for row in o["artifacts"]:
+              assert len(row["sha256"]) == 64 and row["bytes"] > 0
+          print("PASS_INVENTORY_EVIDENCE_ONLY_NOT_OSS_ELIGIBILITY")
+          PY
+      - name: Attach read-only legal and upstream inventory evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: signpath-readiness-hold-inventory
+          path: ${{ runner.temp }}/signpath-readiness.json
+          if-no-files-found: error
+          retention-days: 7
