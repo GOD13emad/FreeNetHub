@@ -475,6 +475,31 @@ jobs:
           }
           if([string]$manifest.coreVersion -ne '4.3.8-r52-stale-node-health-ttl'){throw 'R52_UPGRADE_CORE_VERSION_BAD'}
           Write-Host 'R51_TO_R52_REAL_INNO_UPGRADE_APP_HASHES_PASS'
+      - name: Explicit rollback R52 to SHA256-pinned public R51 on same Windows test installation
+        shell: pwsh
+        run: |
+          # The rollback is an explicit operator action; automatic update still
+          # blocks downgrades. The active user PC is never part of this test.
+          $old=Join-Path $env:RUNNER_TEMP 'FreeNetHub_4.3.7_R51_Setup.exe'
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-r51-to-r52'
+          $installed=Join-Path $probe 'RELEASE.json'
+          if(!(Test-Path -LiteralPath $old)){throw 'R51_ROLLBACK_INSTALLER_MISSING'}
+          if((Get-FileHash -LiteralPath $old -Algorithm SHA256).Hash -ne '8283803146E1625A31F0223487A63C05D7B7D9C3D8B59D1A7432D14AB9D4FF11'){throw 'R51_ROLLBACK_INSTALLER_HASH_BAD'}
+          if(!(Test-Path -LiteralPath $installed)){throw 'R52_PRE_ROLLBACK_RELEASE_MISSING'}
+          $before=Get-Content -LiteralPath $installed -Raw | ConvertFrom-Json
+          if($before.releaseRevision -ne '4.3.8-r52-stale-node-health-ttl'){throw 'R52_PRE_ROLLBACK_REVISION_BAD'}
+          $rollback=Start-Process -FilePath $old -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
+          if($rollback.ExitCode -ne 0){throw ('R51_EXPLICIT_ROLLBACK_EXIT_'+$rollback.ExitCode)}
+          $after=Get-Content -LiteralPath $installed -Raw | ConvertFrom-Json
+          if($after.releaseRevision -ne '4.3.7-r51-protocol-expansion-2'){throw 'R51_ROLLBACK_REVISION_BAD'}
+          $manifest=Get-Content -LiteralPath (Join-Path $probe 'app\manifest.json') -Raw | ConvertFrom-Json
+          foreach($row in $manifest.code){
+            $file=Join-Path (Join-Path $probe 'app') $row.file
+            if(!(Test-Path -LiteralPath $file)){throw ('R51_ROLLBACK_CODE_MISSING_'+$row.file)}
+            if((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash -ne [string]$row.sha256){throw ('R51_ROLLBACK_CODE_HASH_BAD_'+$row.file)}
+          }
+          if(!(Test-Path -LiteralPath (Join-Path $probe 'FreeNetHub.exe'))){throw 'R51_ROLLBACK_GUI_MISSING'}
+          Write-Host 'R51_TO_R52_UPGRADE_AND_EXPLICIT_R51_ROLLBACK_PASS'
 
   virtual-acceptance:
     needs:
