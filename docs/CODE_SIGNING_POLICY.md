@@ -94,3 +94,25 @@ Do not put any private key, PFX, password, device PIN, cloud credential or certi
 - https://www.globalsign.com/en/code-signing-certificate
 
 **Knowledge provenance:** authoritative project source at stated SHA, official CA/Microsoft/Inno docs inspected 2026-10-10. Pricing may change; CA sanctions and legal eligibility cannot be inferred from documentation silence. This record is scoped to the signing blocker and is not approval to mutate active network settings or release artifacts.
+
+
+## Implemented tools and source-linked R52 signing evidence — 2026-10-10
+
+Status: DEVELOPMENT_PREPARED_ONLY / NOT_SIGNED / NOT_PUBLISHED.
+
+Implemented under scripts/signing:
+1. New-R52SigningStage.ps1: creates an isolated single-use stage from exact R52 source SHA after checking tracked source cleanliness. The source tree stays immutable.
+2. Sign-FirstPartyStaging.ps1: preflights exact first-party paths and their unsigned SHA256, validates one non-self-signed code-signing certificate in Windows store/HSM, signs staged PS1, PSM1, PSD1, EXE, DLL, or OCX, and requires signing and timestamp evidence. Third-party and kernel-driver files are refused. Signing transitions the stage to SIGN_IN_PROGRESS then FILES_SIGNED; do not resume failed partial signing.
+3. Update-R52StagedIntegrity.ps1: reconciles app, gateway and standalone manifests, preserves original sourceSha256 provenance where defined, updates relevant staged RELEASE.json fields and transitions stage to MANIFESTS_RECONCILED. Installer SHA must be recorded outside the installer rather than inside its own payload.
+4. Invoke-R52SignedInno.ps1: for exact R52 in a reconciled signing stage only, injects Inno SignTool and SignedUninstaller=yes, compiles a new installer using a Windows HSM-backed certificate, checks publisher, timestamp and SignTool verification, and refuses to overwrite prior installer bytes. The resulting receipt is SIGNED_SETUP_ONLY; extracted Uninstaller and SAC still require independent evidence.
+5. Test-PublicAuthenticode.ps1: release verification with explicit post-sign SHA256 per file, certificate thumbprint and subject pins, full runnable-file inventory, upstream-specific publisher identities; for embedded upstream SYS drivers uses the Microsoft /kp kernel signature policy. It cannot override hardware driver signing requirements or legal rights.
+
+Production integration prerequisites:
+- Generate a human-reviewed, first-party-only signing plan with exact pre-sign hashes for the CLEAN signed stage. Do not copy or expose a PFX/private key, cloud credential, HSM PIN, identity document, or password in the repository or conversation.
+- For CA OV with Windows HSM/CNG/KSP key, run the staged signer only after legal publisher eligibility and CA trust are confirmed. Microsoft Artifact Signing is a DIFFERENT provider backend requiring Azure subscription, legal public-trust identity validation and the official signing client; do not treat this Windows store script as automatically compatible with a cloud key.
+- After staged signatures: recalculate runtime hash manifests, verify the product still launches with signed bytes, build and sign Inno Setup and generated Uninstaller, independently inspect complete extracted installed payload (including upstream drivers/binaries), test with Smart App Control on disposable VM and verify exact final asset SHA after GitHub publishing.
+- Do not mark R52 FINAL until legal third-party binary rights, CA public trust, exact issuer name, trusted timestamp, uninstaller trust, signed file inventory, SAC and immutable release proof ALL pass.
+
+Important reconciled baseline: local evidence R52_CANDIDATE_GATE_RECEIPT_20261009.json reports an unsigned installer of 24,260,213 bytes (SHA256 7214F7AE832539924B58A6750584079DD859DB5CDA53A59A345B5C9DA3D24DD0), with 176 Windows native tests and hosted clean/upgrade checks. A DIFFERENT later unsigned QA compilation R52_PUBLIC_SIGNED_RELEASE_GATE_V3_20261010.json reports 24,273,164 bytes (SHA256 C3FA52249A0F6B703D45752492AE49E426566BBA39EBBD0C7BAE26C02B60609B). They are NOT interchangeable nor the post-sign release hash. R52_SIGNING_ADMISSION_INVENTORY_20261010.json records nine PE candidates: two Authenticode Valid, seven NotSigned; 17 unsigned PowerShell scripts among a 25-script mixed-language inventory. Third-party WinDivert64.sys upstream was reported signed Valid but independent kernel-policy validation remains open. These are local historical audit observations, not newly performed trusted signing operations.
+
+Official kernel verification reference: https://learn.microsoft.com/en-us/windows-hardware/drivers/install/verifying-the-release-signature
