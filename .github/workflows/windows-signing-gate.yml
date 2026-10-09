@@ -24,10 +24,11 @@ jobs:
         shell: pwsh
         run: |
           $tokens = $null; $errors = $null
-          [System.Management.Automation.Language.Parser]::ParseFile(
-            (Resolve-Path 'scripts/signing/Test-PublicAuthenticode.ps1'),
-            [ref]$tokens, [ref]$errors) | Out-Null
-          if (@($errors).Count -ne 0) { $errors | ForEach-Object Message; exit 1 }
+          foreach ($path in @('scripts/signing/Test-PublicAuthenticode.ps1','scripts/signing/Sign-FirstPartyStaging.ps1')) {
+            $tokens=$null; $errors=$null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $path),[ref]$tokens,[ref]$errors) | Out-Null
+            if (@($errors).Count -ne 0) { $errors | ForEach-Object Message; exit 1 }
+          }
       - name: Reject unsigned PowerShell artifact (negative regression)
         shell: pwsh
         run: |
@@ -81,6 +82,34 @@ jobs:
           if ($s.files[0].reasons -notcontains 'FINAL_SIGNED_SHA256_MISMATCH') { throw 'SHA_MISMATCH_NOT_RECORDED' }
           $global:LASTEXITCODE = 0
           Remove-Item -LiteralPath $dir -Recurse -Force
+      - name: Reject signing without real certificate and leave staged bytes intact
+        shell: pwsh
+        run: |
+          $src = Join-Path $env:RUNNER_TEMP 'signer-source-fixture'
+          $stage = Join-Path $env:RUNNER_TEMP 'signer-stage-fixture'
+          New-Item -Path $src,$stage -ItemType Directory -Force | Out-Null
+          Set-Content -LiteralPath (Join-Path $stage 'Sample.ps1') -Value 'Write-Output "must stay unsigned"' -Encoding utf8
+          $hash = (Get-FileHash -LiteralPath (Join-Path $stage 'Sample.ps1') -Algorithm SHA256).Hash
+          @{purpose='SINGLE_USE_SIGNED_BUILD';sourceCommit='fixture';status='READY_TO_SIGN'} |
+            ConvertTo-Json | Set-Content -LiteralPath (Join-Path $stage '.signing-staging-authority.json') -Encoding utf8
+          @{schema=1;files=@(@{path='Sample.ps1';ownership='first-party';expectedUnsignedSha256=$hash})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $stage 'signing-plan.json') -Encoding utf8
+          $signArgs = @{
+            StageRoot=$stage
+            SourceRoot=$src
+            PlanPath=(Join-Path $stage 'signing-plan.json')
+            PublisherThumbprint='0000000000000000000000000000000000000000'
+            PublisherSubject='CN=Not A Public Signing Credential'
+            TimestampUrl='http://timestamp.digicert.com'
+            SignToolPath=(Join-Path $PSHOME 'pwsh.exe')
+          }
+          & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Sign-FirstPartyStaging.ps1' -StageRoot $signArgs.StageRoot -SourceRoot $signArgs.SourceRoot -PlanPath $signArgs.PlanPath -PublisherThumbprint $signArgs.PublisherThumbprint -PublisherSubject $signArgs.PublisherSubject -TimestampUrl $signArgs.TimestampUrl -SignToolPath $signArgs.SignToolPath
+          if ($LASTEXITCODE -ne 1) { throw 'MISSING_PUBLIC_SIGNER_NOT_REJECTED' }
+          if ((Get-FileHash -LiteralPath (Join-Path $stage 'Sample.ps1') -Algorithm SHA256).Hash -ne $hash) {
+            throw 'UNAUTHORIZED_STAGE_MUTATION'
+          }
+          $global:LASTEXITCODE = 0
+          Remove-Item -LiteralPath $stage,$src -Recurse -Force
       - name: Confirm no release or private key was generated
         shell: pwsh
         run: |
