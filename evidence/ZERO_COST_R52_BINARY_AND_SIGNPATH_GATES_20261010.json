@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "date": "2026-10-10",
+  "releaseGate": "HOLD_NOT_SIGNED_NOT_PUBLISHED",
+  "costOfCertificateIssuance": "ZERO_COST_PIPELINES_ONLY",
+  "r52QaBinaryProvenance": {
+    "workflowRun": 38006640079,
+    "workflowUrl": "https://github.com/GOD13emad/FreeNetHub/actions/runs/38006640079",
+    "workflowConclusion": "success",
+    "checkoutExactSourceSha": "5f99c56e294ff225479ee0a828bd0e6050e13740",
+    "note": "Attestation workflow invocation commit is not identical to pinned original R52 source checkout. The original commit was verified in the hosted Windows job.",
+    "buildArtifact": "FreeNetHub_4.3.8_R52_Setup.exe",
+    "sha256": "5FC313279822FE28B7E48A26A1B6F5753D07968EA1E82ABCB736C27F2DC1426F",
+    "authenticode": "NotSigned",
+    "attestationId": 54503938,
+    "attestationUrl": "https://github.com/GOD13emad/FreeNetHub/attestations/54503938",
+    "verifiedBy": "gh attestation verify on exact newly built unsigned installer",
+    "publicRelease": false,
+    "signedSetup": false,
+    "certifiedWindowsSAC": false
+  },
+  "signpathLicenseInventory": {
+    "workflowRun": 38006580126,
+    "workflowUrl": "https://github.com/GOD13emad/FreeNetHub/actions/runs/38006580126",
+    "workflowConclusion": "success",
+    "itemsFromInnoFiles": 26,
+    "upstreamOwnershipReview": 8,
+    "topLevelLicenseCandidates": [],
+    "status": "OSS_SIGNPATH_ELIGIBILITY_HOLD",
+    "reportArtifactId": 11651412553,
+    "reportUrl": "https://github.com/GOD13emad/FreeNetHub/actions/runs/38006580126/artifacts/11651412553",
+    "scope": "Source declared Inno payload including wildcard expansions; on-demand downloads and installed generated artifacts excluded"
+  },
+  "outstanding": [
+    "SignPath actual Iran residency eligibility response",
+    "Rightsholder authorization for a declared OSI-accepted whole-project license",
+    "Independent third-party license, origin, hash, publisher and source validation",
+    "Public trusted code signing for first-party EXE, DLL, PS1 and Inno Uninstaller",
+    "Real Smart App Control enabled disposable Windows VM results",
+    "User-owned physical and full-system feature acceptance",
+    "Immutable signed distribution promotion; preserve Windows public R51"
+  ]
+}
