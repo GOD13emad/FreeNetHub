@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.3.7-r51-linux-r19-browser-candidate",
+  "version": "4.3.7-r51-linux-r20-smart-browser-candidate",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 27694,
-      "sha256": "3EBB7111C92E5ADFDDDBAD04E8C9361EDB3C1E47ECBE5BB9DD9E5D46FE18A939"
+      "bytes": 28152,
+      "sha256": "C0ED61925BC9371FE64592BAA33FFBA1E9790D29FC443D9E527E174139327E17"
     },
     {
       "file": ".gitignore",
@@ -25,8 +25,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 104386,
-      "sha256": "39B8C7E1E3AFEA60206619750B6D6E4B90DFD1B2F6491CE10A5207D5F8C49B77"
+      "bytes": 106468,
+      "sha256": "274DFD49F39A25618518ADA3078D026C6D2FC3156474EE6F5D967678ED5C52ED"
     },
     {
       "file": "README.md",
@@ -40,8 +40,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 42332,
-      "sha256": "AEC78932E9CD961BE67CF069EC68DD91628E214F161172DD15A42976445C4C7D"
+      "bytes": 42775,
+      "sha256": "AB77EA5F116C2C4222CFE87FB77A7A44699D2772FFD9BE17058984C29B6142A9"
     },
     {
       "file": "SECURITY.md",
@@ -166,7 +166,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 7094,
-      "sha256": "6F492F4D568A93D742DCE5DB547DC4C638691D634C22DF3BC5F19BD5B9097FF1"
+      "sha256": "813816B798DA0974B2D1316929CF66D1B36B30A5916ACC4B69A2C3C54138FE3A"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -275,8 +275,8 @@
     },
     {
       "file": "crossplatform/linux/README_FA.md",
-      "bytes": 3865,
-      "sha256": "685585869C9C4592CD1BB5DF51BB1CFDE0E9BF900B40C344EA6D0E2492233D62"
+      "bytes": 5419,
+      "sha256": "4E0437902D2A8E995F2633F8FE58CD0F7EB7F74FABA6B421B6AB69CF3105EF6C"
     },
     {
       "file": "crossplatform/linux/bridges_obfs4.txt",
@@ -291,17 +291,17 @@
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
       "bytes": 44276,
-      "sha256": "CA4F468EFC2D269558DEB7E7F93D48D8FE8CC4B969FCC281A2833E1832601D6E"
+      "sha256": "CE6F7B1D959521FBEEEF8BD1D33E7571ECC2EE88E18203E1350D24EC8F1FF045"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
-      "bytes": 59010,
-      "sha256": "0D4BAD494BC75246EAE6BD8EDD4F6EFA69AE0CF4F448CD97E62134F5B71EFC5C"
+      "bytes": 59862,
+      "sha256": "5D16D1F590787EE95895D39041A3AC58183F5C642146B3BC35CF31C1755E36DC"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_r37.py",
-      "bytes": 55563,
-      "sha256": "7BE9769E7C240145BCFD11D8868DCE3A5C4123DE266A44B54D78DFB07E148055"
+      "bytes": 59235,
+      "sha256": "7A29607854E89211B891D2A62A48B77D5F255F982BF87D5F9BEF685B0B9AB154"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -310,8 +310,8 @@
     },
     {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 5634,
-      "sha256": "B9D1C3788861D42B5399BAA53CA9AE4266415C70B37EF4FA0F48B4D028E6733F"
+      "bytes": 6355,
+      "sha256": "0E6B187EF62A61BB86C6F273052EE628D6CB0E2E9933E7685CD42875DCBD296B"
     },
     {
       "file": "crossplatform/linux/install_singbox_pinned.sh",
@@ -341,7 +341,7 @@
     {
       "file": "crossplatform/linux/selftest.py",
       "bytes": 1829,
-      "sha256": "A02CE07E913CAE288CB96E1D380EFE6F17CC9C5F9F7A3B3379A96D31F9A30C76"
+      "sha256": "01BBDE9359F7637185681AFA6717FABDDEE44A834F3052B93E03F642FFB7BE38"
     },
     {
       "file": "crossplatform/linux/test_browser_profile.py",
@@ -361,7 +361,7 @@
     {
       "file": "crossplatform/linux/test_r37_parity.py",
       "bytes": 9098,
-      "sha256": "BBAD624A539FE017B852F3F9909D6CDE792143744421CE7247D947C3608B76F8"
+      "sha256": "9E033833C3260810802D728629476B574AC6AE47103253A08CDE19E66BE39863"
     },
     {
       "file": "crossplatform/linux/test_scope_policy.py",
@@ -371,7 +371,7 @@
     {
       "file": "crossplatform/linux/test_update_revision.py",
       "bytes": 2306,
-      "sha256": "C67D8BFFB90FE87086002402BF38E6274AD4F7448B5B0A231F7737B183C9C0FE"
+      "sha256": "8A3877F81D1143159C7588CEE16612F5FB8A8907F233995ACDCD441091503041"
     },
     {
       "file": "crossplatform/linux/uninstall.sh",
@@ -1719,6 +1719,11 @@
       "sha256": "6551F1FBF44CE23821E44CCE100A9C92942944FC8FB42103F81D4CE8B831756D"
     },
     {
+      "file": "tests/build_linux_r20_package.py",
+      "bytes": 2976,
+      "sha256": "B2EF0D6F8EA97CE060374475ED4511184D3E5B2139311CC70368095FA847E4A7"
+    },
+    {
       "file": "tests/build_linux_r9_package.py",
       "bytes": 2097,
       "sha256": "71AA8760EDF61BFFC585436ED9384452AD56698F71EE01D96A44E0F729F6C442"
@@ -2312,6 +2317,16 @@
       "file": "tests/test_linux_browser_action_guards.py",
       "bytes": 3318,
       "sha256": "1C5C4D3CA944FF8B1F820737D61F72012BB457BFFD0EB84678BC16CE30DDDAB4"
+    },
+    {
+      "file": "tests/test_linux_install_active_guard.py",
+      "bytes": 2031,
+      "sha256": "27B4AEE42B4519D4E2B68949ED94E84A607D14695126330039279E53A4E1F647"
+    },
+    {
+      "file": "tests/test_linux_site_diagnostics_auto.py",
+      "bytes": 4894,
+      "sha256": "066FC4D6958E5812C62724EB7489C36178AA8F1F480D436051ED79A150DC0271"
     },
     {
       "file": "tests/test_nodehub.py",
