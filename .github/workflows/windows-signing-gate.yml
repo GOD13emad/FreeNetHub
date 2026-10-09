@@ -1,0 +1,56 @@
+name: Windows public signing gate (no certificate required for CI)
+on:
+  push:
+    paths:
+      - '.github/workflows/windows-signing-gate.yml'
+      - 'scripts/signing/**'
+      - 'docs/CODE_SIGNING_POLICY.md'
+  pull_request:
+    paths:
+      - '.github/workflows/windows-signing-gate.yml'
+      - 'scripts/signing/**'
+      - 'docs/CODE_SIGNING_POLICY.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verifier-regression:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Parse PowerShell verification gate
+        shell: pwsh
+        run: |
+          $tokens = $null; $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'scripts/signing/Test-PublicAuthenticode.ps1'),
+            [ref]$tokens, [ref]$errors) | Out-Null
+          if (@($errors).Count -ne 0) { $errors | ForEach-Object Message; exit 1 }
+      - name: Reject unsigned PowerShell artifact (negative regression)
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'fnh-sign-gate-fixture'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          Set-Content -LiteralPath (Join-Path $dir 'Unsigned.ps1') -Encoding utf8 -Value 'Write-Output "unsigned"'
+          $manifest = @{
+            schema = 1
+            publisherSubject = 'CN=Public Verification Fixture (intentionally absent)'
+            artifacts = @(@{ path='Unsigned.ps1'; ownership='first-party' })
+          } | ConvertTo-Json -Depth 5
+          Set-Content -LiteralPath (Join-Path $dir 'manifest.json') -Encoding utf8 -Value $manifest
+          & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Test-PublicAuthenticode.ps1' -ArtifactRoot $dir -ManifestPath (Join-Path $dir 'manifest.json') -ReportPath (Join-Path $dir 'report.json')
+          if ($LASTEXITCODE -ne 1) { throw 'FAIL_CLOSED_GATE_DID_NOT_REJECT_UNSIGNED_FIXTURE' }
+          $report = Get-Content -LiteralPath (Join-Path $dir 'report.json') -Raw | ConvertFrom-Json
+          if ($report.verdict -ne 'FAIL' -or $report.passed -ne 0 -or $report.count -ne 1) {
+            throw 'FAIL_CLOSED_REPORT_INVALID'
+          }
+          Remove-Item -LiteralPath $dir -Recurse -Force
+      - name: Confirm no release or private key was generated
+        shell: pwsh
+        run: |
+          if (Test-Path '.github/workflows/sign-and-release.yml') {
+            Write-Output 'Separate signed release workflow exists; review its authority before enabling'
+          }
+          Write-Output 'VERIFIER_REGRESSION_ONLY: no CA trust or release claimed'
