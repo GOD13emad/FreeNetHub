@@ -34,10 +34,12 @@ jobs:
           $dir = Join-Path $env:RUNNER_TEMP 'fnh-sign-gate-fixture'
           New-Item -ItemType Directory -Force -Path $dir | Out-Null
           Set-Content -LiteralPath (Join-Path $dir 'Unsigned.ps1') -Encoding utf8 -Value 'Write-Output "unsigned"'
+          $unsignedSha = (Get-FileHash -LiteralPath (Join-Path $dir 'Unsigned.ps1') -Algorithm SHA256).Hash
           $manifest = @{
             schema = 1
             publisherSubject = 'CN=Public Verification Fixture (intentionally absent)'
-            artifacts = @(@{ path='Unsigned.ps1'; ownership='first-party' })
+            publisherThumbprint = '0000000000000000000000000000000000000000'
+            artifacts = @(@{ path='Unsigned.ps1'; ownership='first-party'; expectedSha256=$unsignedSha })
           } | ConvertTo-Json -Depth 5
           Set-Content -LiteralPath (Join-Path $dir 'manifest.json') -Encoding utf8 -Value $manifest
           & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Test-PublicAuthenticode.ps1' -ArtifactRoot $dir -ManifestPath (Join-Path $dir 'manifest.json') -ReportPath (Join-Path $dir 'report.json')
@@ -48,6 +50,35 @@ jobs:
           }
           # GitHub's pwsh wrapper propagates a child's nonzero LASTEXITCODE
           # even when the exit code is the expected negative-test result.
+          $global:LASTEXITCODE = 0
+          Remove-Item -LiteralPath $dir -Recurse -Force
+      - name: Reject omitted runnable artifacts and incorrect SHA pin
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'fnh-sign-gate-missing'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $script = Join-Path $dir 'Declared.ps1'
+          Set-Content -LiteralPath $script -Encoding utf8 -Value 'Write-Output "declared"'
+          Set-Content -LiteralPath (Join-Path $dir 'Undeclared.ps1') -Encoding utf8 -Value 'Write-Output "omitted"'
+          $sha = (Get-FileHash -LiteralPath $script -Algorithm SHA256).Hash
+          $manifest = @{
+            schema = 1
+            publisherSubject = 'CN=Missing Fixture'
+            publisherThumbprint = '0000000000000000000000000000000000000000'
+            artifacts = @(@{path='Declared.ps1';ownership='first-party';expectedSha256=$sha})
+          }
+          $json = Join-Path $dir 'manifest.json'
+          $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $json -Encoding utf8
+          & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Test-PublicAuthenticode.ps1' -ArtifactRoot $dir -ManifestPath $json -ReportPath (Join-Path $dir 'omission.json')
+          if ($LASTEXITCODE -ne 1) { throw 'OMITTED_CODE_NOT_REJECTED' }
+          $o = Get-Content -LiteralPath (Join-Path $dir 'omission.json') -Raw | ConvertFrom-Json
+          if ($o.verdict -ne 'FAIL' -or 'Undeclared.ps1' -notin @($o.missingFromManifest)) { throw 'OMISSION_NOT_RECORDED' }
+          $manifest.artifacts[0].expectedSha256 = ('0' * 64)
+          $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $json -Encoding utf8
+          & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Test-PublicAuthenticode.ps1' -ArtifactRoot $dir -ManifestPath $json -ReportPath (Join-Path $dir 'bad-sha.json')
+          if ($LASTEXITCODE -ne 1) { throw 'SHA_MISMATCH_NOT_REJECTED' }
+          $s = Get-Content -LiteralPath (Join-Path $dir 'bad-sha.json') -Raw | ConvertFrom-Json
+          if ($s.files[0].reasons -notcontains 'FINAL_SIGNED_SHA256_MISMATCH') { throw 'SHA_MISMATCH_NOT_RECORDED' }
           $global:LASTEXITCODE = 0
           Remove-Item -LiteralPath $dir -Recurse -Force
       - name: Confirm no release or private key was generated
