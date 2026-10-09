@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 28041,
-      "sha256": "70D040A4476C46F2E8C6CB7A5D583CA88B0C9E29EE754DCE549A4D0FC34B7141"
+      "bytes": 28152,
+      "sha256": "C0ED61925BC9371FE64592BAA33FFBA1E9790D29FC443D9E527E174139327E17"
     },
     {
       "file": ".gitignore",
@@ -25,8 +25,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 106001,
-      "sha256": "D1CABD749187A228BFA7D4A5FAAAEF00A044FB6DCF16071836357086C52B5E8F"
+      "bytes": 106468,
+      "sha256": "274DFD49F39A25618518ADA3078D026C6D2FC3156474EE6F5D967678ED5C52ED"
     },
     {
       "file": "README.md",
@@ -40,8 +40,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 42701,
-      "sha256": "BFF3D09FEA021FE1FA0E46B7D0576140D075C4C016475557FAA63FF4DFA5E23F"
+      "bytes": 42775,
+      "sha256": "AB77EA5F116C2C4222CFE87FB77A7A44699D2772FFD9BE17058984C29B6142A9"
     },
     {
       "file": "SECURITY.md",
@@ -166,7 +166,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 7094,
-      "sha256": "CC68618BC3F516B245D7935199E4E8A5DA6D48F8A550E1DC221F41F220ABDE20"
+      "sha256": "813816B798DA0974B2D1316929CF66D1B36B30A5916ACC4B69A2C3C54138FE3A"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -275,8 +275,8 @@
     },
     {
       "file": "crossplatform/linux/README_FA.md",
-      "bytes": 5103,
-      "sha256": "39E4A0B4512BFA55963172C59086A863CB926349B3D8B79E7E946638E21DF21A"
+      "bytes": 5419,
+      "sha256": "4E0437902D2A8E995F2633F8FE58CD0F7EB7F74FABA6B421B6AB69CF3105EF6C"
     },
     {
       "file": "crossplatform/linux/bridges_obfs4.txt",
@@ -310,8 +310,8 @@
     },
     {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 5642,
-      "sha256": "E3D5290FFCF4DBB49C43784B1B915E8EB281FDB116A3EAB4A143278961B332CA"
+      "bytes": 6355,
+      "sha256": "0E6B187EF62A61BB86C6F273052EE628D6CB0E2E9933E7685CD42875DCBD296B"
     },
     {
       "file": "crossplatform/linux/install_singbox_pinned.sh",
@@ -2317,6 +2317,11 @@
       "file": "tests/test_linux_browser_action_guards.py",
       "bytes": 3318,
       "sha256": "1C5C4D3CA944FF8B1F820737D61F72012BB457BFFD0EB84678BC16CE30DDDAB4"
+    },
+    {
+      "file": "tests/test_linux_install_active_guard.py",
+      "bytes": 2031,
+      "sha256": "27B4AEE42B4519D4E2B68949ED94E84A607D14695126330039279E53A4E1F647"
     },
     {
       "file": "tests/test_linux_site_diagnostics_auto.py",

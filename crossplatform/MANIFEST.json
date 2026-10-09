@@ -134,8 +134,8 @@
     },
     {
       "file": "linux/install.sh",
-      "bytes": 5642,
-      "sha256": "E3D5290FFCF4DBB49C43784B1B915E8EB281FDB116A3EAB4A143278961B332CA"
+      "bytes": 6355,
+      "sha256": "0E6B187EF62A61BB86C6F273052EE628D6CB0E2E9933E7685CD42875DCBD296B"
     },
     {
       "file": "linux/install_singbox_pinned.sh",
@@ -159,8 +159,8 @@
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 5103,
-      "sha256": "39E4A0B4512BFA55963172C59086A863CB926349B3D8B79E7E946638E21DF21A"
+      "bytes": 5419,
+      "sha256": "4E0437902D2A8E995F2633F8FE58CD0F7EB7F74FABA6B421B6AB69CF3105EF6C"
     },
     {
       "file": "linux/recover_warp_remote.sh",

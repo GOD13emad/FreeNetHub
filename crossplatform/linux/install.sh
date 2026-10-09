@@ -12,6 +12,25 @@ BACKUP_HOME="$APP_HOME/backup/$STAMP"
 UI_PATH="$APP_HOME/freenet_hub_linux_gtk.py"
 RESTART_UI=0
 
+# Installing while an owned browser tunnel is in use would signal GTK to exit,
+# whose normal shutdown stops its provider. Refuse before touching any files.
+ACTIVE_SESSION=""
+if [ -f "$APP_HOME/session.json" ]; then
+  ACTIVE_SESSION="$(python3 - "$APP_HOME/session.json" <<'SESSIONPY'
+import json,sys
+try:
+    data=json.load(open(sys.argv[1],encoding="utf-8"))
+    print(str(data.get("mode") or "").strip() if isinstance(data,dict) else "")
+except Exception:
+    print("UNREADABLE_SESSION_STATE")
+SESSIONPY
+)"
+fi
+if [ -n "$ACTIVE_SESSION" ]; then
+  echo "FREENET_HUB_ACTIVE_SESSION: disconnect from FreeNet Hub before upgrading (mode=$ACTIVE_SESSION). Installer has not changed app or network." >&2
+  exit 72
+fi
+
 if [ -f "$UI_PATH" ]; then
   RESTART_UI="$(python3 - "$UI_PATH" <<'PY'
 from pathlib import Path

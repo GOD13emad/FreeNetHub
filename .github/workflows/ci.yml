@@ -52,6 +52,7 @@ jobs:
           python3 crossplatform/linux/test_update_revision.py
           python3 tests/test_linux_browser_action_guards.py
           python3 tests/test_linux_site_diagnostics_auto.py
+          python3 tests/test_linux_install_active_guard.py
           python3 tests/build_linux_r20_package.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
@@ -492,7 +493,7 @@ jobs:
           - Linux: explicit site checks against four allowlisted destinations from owned SOCKS5H with remote DNS; HTTP 403/challenge is never PASS. Previously verified R19 browser launch checks retained.
           - Linux package: FreeNetHub_4.2.0_Linux_R20.zip (4.2.0-linux.20-r47).
           - Windows: original FreeNetHub_4.3.7_R51_Setup.exe, byte-for-byte unchanged (SHA256 8283803146e1625a31f0223487a63c05d7b7d9c3d8b59d1a7432d14ab9d4ff11).
-          - Linux R20 fresh install and R19 upgrade tested in isolated HOME with locally verified pinned runtimes; Ubuntu 26.04 CFON target probe passed Google/GitHub/NVIDIA, ChatGPT challenge correctly classified.
+          - Linux R20 fresh install and R19 upgrade tested in isolated HOME; active CFON session upgrade refuses pre-mutation with explicit error (regression tested); Ubuntu 26.04 CFON target probe passed Google/GitHub/NVIDIA, ChatGPT challenge correctly classified.
           - This release is browser-scoped only; a full-system CFON/OpenVPN TCP+UDP gateway remains unaccepted and is not auto-installed or enabled. Community VPN Gate is logging and privacy-sensitive.
           NOTES
             gh release create "$tag" "$linux" "$windows" --target "$GITHUB_SHA" --latest --title "FreeNet Hub 4.3.7 Linux R20 CFON smart browser" --notes-file "$tmp/notes.md"
