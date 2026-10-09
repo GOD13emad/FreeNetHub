@@ -39,5 +39,20 @@
     "Real Smart App Control enabled disposable Windows VM results",
     "User-owned physical and full-system feature acceptance",
     "Immutable signed distribution promotion; preserve Windows public R51"
-  ]
+  ],
+  "frozenStageSimulation": {
+    "run": 38006732972,
+    "url": "https://github.com/GOD13emad/FreeNetHub/actions/runs/38006732972",
+    "conclusion": "success",
+    "sourceSha": "5f99c56e294ff225479ee0a828bd0e6050e13740",
+    "reconciledManifestEntries": 45,
+    "signature": "NO_REAL_SIGNATURE_SIMULATED_NON_EXECUTING_COMMENT",
+    "sourceTreePreserved": true,
+    "releaseReadiness": "HOLD"
+  },
+  "publicManifest": {
+    "expectedFiles": 535,
+    "regeneratedForCurrentDraft": true,
+    "finalCI": "PENDING_EXACT_COMMIT_VERIFICATION"
+  }
 }
