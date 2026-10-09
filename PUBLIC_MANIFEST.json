@@ -106,7 +106,7 @@
     {
       "file": "app/manifest.json",
       "bytes": 4860,
-      "sha256": "15F11F03C7878AB6898D1ABCE3E342680776E21CC6B58B8AEE7C1531944DF640"
+      "sha256": "B536FE00BDF8A69655DAF97C7B1D7134448263F2EB871B360A6C88FD73D29CCD"
     },
     {
       "file": "app/nodehub.py",
@@ -115,8 +115,8 @@
     },
     {
       "file": "app/View.xaml",
-      "bytes": 73877,
-      "sha256": "8297EC1381CE796F36BBF5AEEF6C43C7B070BED54FDEEF018E15D82E1222E063"
+      "bytes": 73864,
+      "sha256": "3F7A9F5E7D16DEF9F14933009FE090DEB3B5203A0245AE954E9CFC77AAE60C6A"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -1651,7 +1651,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42793,
-      "sha256": "C222D4B0928BFC765A6B164AC6E8AB3F3CB098470754828EB3EAEE93870C5BCB"
+      "sha256": "75BE8CA2FD2EC6771EF8BFA43795CD74B51126B8FDB4D5C6A103FBD8AC4B7125"
     },
     {
       "file": "SECURITY.md",
