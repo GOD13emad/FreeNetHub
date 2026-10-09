@@ -148,3 +148,57 @@ jobs:
           path: ${{ runner.temp }}/signpath-readiness.json
           if-no-files-found: error
           retention-days: 7
+
+  frozen-r52-signing-stage-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout new signing controls on draft branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: controls
+          persist-credentials: false
+      - name: Checkout FROZEN R52 source for isolated test
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: 5f99c56e294ff225479ee0a828bd0e6050e13740
+          path: exact-r52
+          persist-credentials: false
+      - name: Verify stage preflight and hash reconciliation without real signing
+        shell: pwsh
+        run: |
+          $source=Join-Path $env:GITHUB_WORKSPACE 'exact-r52'
+          $controls=Join-Path $env:GITHUB_WORKSPACE 'controls/scripts/signing'
+          $stage=Join-Path $env:RUNNER_TEMP 'fnh-r52-simulated-stage-only'
+          & (Join-Path $controls 'New-R52SigningStage.ps1') -SourceRoot $source -StageRoot $stage
+          if (!(Test-Path -LiteralPath (Join-Path $stage '.signing-staging-authority.json'))) {
+            throw 'STAGING_MARKER_NOT_CREATED'
+          }
+          if (Test-Path -LiteralPath (Join-Path $stage '.git')) { throw 'STAGING_GIT_DIRECTORY_LEAK' }
+          $sourceHash=(Get-FileHash -LiteralPath (Join-Path $source 'app/FreeNetHub.ps1') -Algorithm SHA256).Hash
+          if ((Get-FileHash -LiteralPath (Join-Path $stage 'app/FreeNetHub.ps1') -Algorithm SHA256).Hash -ne $sourceHash) {
+            throw 'STAGING_SOURCE_DIFFERENCE_BEFORE_TEST'
+          }
+          # CI fixture: append a harmless comment to mimic a signature-changing
+          # bytes. This is NOT a signature nor any public-trust acceptance.
+          Add-Content -LiteralPath (Join-Path $stage 'app/FreeNetHub.ps1') -Encoding utf8 -Value '# CI_ONLY_UNSIGNED_SIMULATED_SIGNATURE_DELTA'
+          $marker=Join-Path $stage '.signing-staging-authority.json'
+          $m=Get-Content -LiteralPath $marker -Raw | ConvertFrom-Json
+          $m.status='FILES_SIGNED'
+          $m | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $marker -Encoding utf8
+          & (Join-Path $controls 'Update-R52StagedIntegrity.ps1') -StageRoot $stage -SourceRoot $source
+          $manifest=Get-Content -LiteralPath (Join-Path $stage 'app/manifest.json') -Raw | ConvertFrom-Json
+          $entry=@($manifest.code | Where-Object file -eq 'FreeNetHub.ps1')
+          if ($entry.Count -ne 1) { throw 'STAGED_UI_MANIFEST_ENTRY_MISSING' }
+          $signedStageHash=(Get-FileHash -LiteralPath (Join-Path $stage 'app/FreeNetHub.ps1') -Algorithm SHA256).Hash
+          if ($entry[0].sha256 -ne $signedStageHash) { throw 'STAGED_MANIFEST_NOT_RECONCILED' }
+          $release=Get-Content -LiteralPath (Join-Path $stage 'RELEASE.json') -Raw | ConvertFrom-Json
+          if ($release.uiSha256 -ne $signedStageHash -or $release.installerSha256) {
+            throw 'STAGED_RELEASE_HASH_RECONCILIATION_FAILED'
+          }
+          if ((Get-FileHash -LiteralPath (Join-Path $source 'app/FreeNetHub.ps1') -Algorithm SHA256).Hash -ne $sourceHash) {
+            throw 'TRACKED_SOURCE_MUTATED'
+          }
+          $finalMarker=Get-Content -LiteralPath $marker -Raw | ConvertFrom-Json
+          if ($finalMarker.status -ne 'MANIFESTS_RECONCILED') { throw 'STAGING_STATE_MACHINE_FAILED' }
+          Write-Output 'PASS_ISOLATED_STAGING_AND_REHASH_SIMULATION_ONLY; NO_CERTIFICATE_USED'
