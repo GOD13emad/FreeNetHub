@@ -49,7 +49,7 @@ foreach ($item in $items) {
     if (!(Test-Path -LiteralPath $full -PathType Leaf)) { throw 'ARTIFACT_MISSING' }
     if ($owner -notin @('first-party','third-party')) { throw 'OWNERSHIP_NOT_CLASSIFIED' }
     $ext = [IO.Path]::GetExtension($full).ToLowerInvariant()
-    if ($ext -eq '.sys') { throw 'KERNEL_DRIVER_REQUIRES_INDEPENDENT_DRIVER_POLICY' }
+    if ($ext -eq '.sys' -and $owner -ne 'third-party') { throw 'FIRST_PARTY_KERNEL_DRIVER_REQUIRES_HARDWARE_DEV_CENTER_GATE' }
     if ($ext -notin @('.exe','.dll','.ocx','.msi','.msix','.msp','.cab','.ps1','.psm1','.psd1')) {
       throw 'ARTIFACT_TYPE_NOT_APPROVED'
     }
@@ -79,7 +79,13 @@ foreach ($item in $items) {
       if (!$SignToolPath -or !(Test-Path -LiteralPath $SignToolPath -PathType Leaf)) {
         throw 'SIGNTOOL_REQUIRED_FOR_PE_OR_PACKAGE_VALIDATION'
       }
-      $output = & $SignToolPath verify /pa /all /v $full 2>&1 | Out-String
+      # Microsoft WDK documents /kp for existing embedded-signed upstream kernel drivers.
+      # This DOES NOT replace runtime load/install test or publisher's rights evidence.
+      if ($ext -eq '.sys') {
+        $output = & $SignToolPath verify /kp /v $full 2>&1 | Out-String
+      } else {
+        $output = & $SignToolPath verify /pa /all /v $full 2>&1 | Out-String
+      }
       $exit = $LASTEXITCODE
       $record.signtool = "EXIT_$exit"
       if ($exit -ne 0) { throw ('SIGNTOOL_VERIFY_FAILED_'+$exit) }
