@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 28152,
-      "sha256": "C0ED61925BC9371FE64592BAA33FFBA1E9790D29FC443D9E527E174139327E17"
+      "bytes": 28329,
+      "sha256": "06856ABBC8C3EAF81038280BA441E975089B7729FEEBA6776C9ECC041B1B4DE7"
     },
     {
       "file": ".gitignore",
