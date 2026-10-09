@@ -785,3 +785,16 @@ Exact Next Action: rebuild current manifests, commit/push the candidate branch, 
 - This patch only improves BROWSER. Full-system global CFON+VPN Gate remains explicitly BLOCKED by unaccepted all-UID live route trial and server privacy/reliability gates. No subscription/server purchase, no implicit volunteer-VPN routing.
 - Release progression: update manifests and hosted CI on exact SHA, merge only if CI green, then publish new R20 Linux asset plus byte-exact Windows R51 and verify latest asset SHA. Do not mutate old R19 asset.
 - Release blocker discovered before R20 acceptance: existing installer SIGTERMs GTK at install start; GTK cleanup may stop currently active CFON/WARP. R20 now fails before touching state when session.mode is active or session JSON unreadable (error FREENET_HUB_ACTIVE_SESSION / exit72), allowing user to intentionally disconnect before upgrading; CI includes active-session no-mutation regression and unparseable JSON fail-closed tests. No live CFON process touched.
+
+## 2026-10-10 — Reusable Windows public-signing gate — PREPARED, not signed
+
+- Previous accepted public Windows baseline remains R51; R52 source commit `5f99c56e294ff225479ee0a828bd0e6050e13740` remains an unpublished candidate.
+- R52 evidence `evidence/V438_R52_STAGED_CANDIDATE_ACCEPTANCE_20261009.json` records unsigned setup 24,260,213 bytes and SHA256 `7214F7AE832539924B58A6750584079DD859DB5CDA53A59A345B5C9DA3D24DD0`, with signing/isolated installation still OPEN. This hash is unsigned pre-sign evidence only.
+- One-blocker preparation on PR #36, branch `chore/windows-public-signing-gate-20261010`: `scripts/signing/Test-PublicAuthenticode.ps1` (read-only fail-closed verification), `.github/workflows/windows-signing-gate.yml` (reject unsigned sample; no public signing claim), `docs/CODE_SIGNING_POLICY.md` (legal providers, accepted baseline, ownership/security, staged signing and DoD).
+- No signing keys, secrets, vendor files, root network state, Smart App Control, or public release mutated.
+- Authoritative independent references collected in `docs/CODE_SIGNING_POLICY.md`. Microsoft Artifact Signing Public Trust unavailable to Iranian individual/organization without independently verified eligible publisher; SignPath Foundation would show Foundation publisher and has stricter OSS eligibility. OV/EV cert issuer and legal eligibility unresolved.
+- Root cause: virtual self-signed CI proves signature mechanics only; R52 Inno pipeline lacks production signing, signed inner files require integrity manifest regeneration, and separate signed uninstaller.
+- Prevention: CI distinguishes a **negative verification regression** from publicly trusted release signature and never auto-promotes unsigned setup.
+- Roadmap ← CURRENT: policy and negative gate PREPARED; hosted PR verification OPEN; publisher legal issuer/identity OPEN; HSM/cloud authorized signing OPEN; signed staging+Inno+uninstaller OPEN; verify/isolated SAC/immutable release OPEN.
+- Brain status: CURRENT for code-signing delta, not a claim of FINAL. Exact Next Action: check hosted CI for PR #36, confirm lawful publisher jurisdiction and issuer eligibility, then implement one chosen provider's signer integration in a signed staging tree; never sign tracked raw R52 sources in-place.
+
