@@ -92,8 +92,8 @@ import json,pathlib,sys,time
 p=pathlib.Path(sys.argv[1])
 p.write_text(json.dumps({
   "schema":1,
-  "version":"4.2.0-linux.18-r45",
-  "release":"LINUX_4.2.0_R18_R45_BROWSER_NODE_HOTFIX",
+  "version":"4.2.0-linux.19-r46",
+  "release":"LINUX_4.2.0_R19_R46_BROWSER_ACTION_FIX",
   "installed_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
   "network_mutation_on_install":False,
   "integrity_manifest":"INSTALL.sha256"
@@ -133,5 +133,5 @@ command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "
 if [ "$RESTART_UI" = "1" ] && command -v gtk-launch >/dev/null 2>&1 && [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
   gtk-launch local.freenethub >/dev/null 2>&1 &
 fi
-echo "Installed FreeNet Hub Linux 4.2.0-linux.18-r45"
+echo "Installed FreeNet Hub Linux 4.2.0-linux.19-r46"
 echo "No network connection was started."

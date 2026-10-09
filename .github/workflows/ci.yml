@@ -50,10 +50,11 @@ jobs:
           python3 crossplatform/linux/test_scope_policy.py
           python3 crossplatform/linux/test_r37_parity.py
           python3 crossplatform/linux/test_update_revision.py
-          python3 tests/build_linux_r18_package.py
-          rm -rf /tmp/fnh-r18-ci && mkdir -p /tmp/fnh-r18-ci
-          unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R18.zip -d /tmp/fnh-r18-ci
-          cd /tmp/fnh-r18-ci/FreeNetHub_4.2.0_Linux_R18
+          python3 tests/test_linux_browser_action_guards.py
+          python3 tests/build_linux_r19_package.py
+          rm -rf /tmp/fnh-r19-ci && mkdir -p /tmp/fnh-r19-ci
+          unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R19.zip -d /tmp/fnh-r19-ci
+          cd /tmp/fnh-r19-ci/FreeNetHub_4.2.0_Linux_R19
           sha256sum -c SHA256SUMS.txt
           for f in selftest.py test_browser_profile.py test_console_policy.py test_private_state_permissions.py test_scope_policy.py test_r37_parity.py test_update_revision.py; do python3 "$f"; done
           cd "$GITHUB_WORKSPACE"
@@ -455,3 +456,54 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - run: echo 'All desktop and virtualized external-gate validations passed.'
+
+  publish-linux-r19:
+    needs: [virtual-acceptance]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Publish verified Linux browser fix alongside unchanged Windows R51
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tests/verify_public_tree.py
+          python3 tests/security_scan_public.py
+          python3 tests/build_linux_r19_package.py
+          linux="delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R19.zip"
+          test -s "$linux"
+          tmp="$(mktemp -d)"
+          unzip -q "$linux" -d "$tmp/zip"
+          (cd "$tmp/zip/FreeNetHub_4.2.0_Linux_R19" && sha256sum -c SHA256SUMS.txt)
+          gh release download v4.3.7 --pattern FreeNetHub_4.3.7_R51_Setup.exe --dir "$tmp"
+          windows="$tmp/FreeNetHub_4.3.7_R51_Setup.exe"
+          echo "8283803146e1625a31f0223487a63c05d7b7d9c3d8b59d1a7432d14ab9d4ff11  $windows" | sha256sum -c -
+          tag="v4.3.7-r19-linux-browser"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            cat > "$tmp/notes.md" <<'NOTES'
+          FreeNet Hub 4.3.7 — Linux browser action patch R19.
+
+          - Linux: explicit unprotected system-browser button; tunneled browser remains fail-closed until connection health is verified.
+          - Linux: verifies Firefox process launch before reporting success; preserves useful error feedback.
+          - Linux package: FreeNetHub_4.2.0_Linux_R19.zip (4.2.0-linux.19-r46).
+          - Windows: original FreeNetHub_4.3.7_R51_Setup.exe, byte-for-byte unchanged (SHA256 8283803146e1625a31f0223487a63c05d7b7d9c3d8b59d1a7432d14ab9d4ff11).
+          - Linux R19 fresh install and R18 upgrade tested in isolated HOME with locally verified pinned runtimes; native Ubuntu 26.04 isolated Firefox launch verified.
+          - VPN/node functionality still depends on available live upstreams; this patch does not claim to resolve blocked network paths.
+          NOTES
+            gh release create "$tag" "$linux" "$windows" --target "$GITHUB_SHA" --latest --title "FreeNet Hub 4.3.7 Linux R19 browser fix" --notes-file "$tmp/notes.md"
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" > "$tmp/release.json"
+          python3 - "$tmp/release.json" "$linux" "$windows" <<'PY'
+          import hashlib,json,pathlib,sys
+          metadata=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          a={x["name"]:x for x in metadata["assets"]}
+          for p in map(pathlib.Path,sys.argv[2:]):
+              expect="sha256:"+hashlib.sha256(p.read_bytes()).hexdigest()
+              assert p.name in a and a[p.name].get("digest")==expect,(p.name,a.get(p.name,{}).get("digest"),expect)
+          assert metadata["draft"] is False and metadata["prerelease"] is False
+          print("PUBLIC_RELEASE_EXACT_ASSET_DIGEST_PASS", metadata["tag_name"])
+          PY

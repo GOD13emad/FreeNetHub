@@ -279,8 +279,11 @@ class FreeNetHub(Adw.Application):
         top=hbox(10);st=vbox(2);st.set_hexpand(True)
         self.status_title=label("در حال خواندن وضعیت","section-title");self.status_detail=label("—","muted")
         st.append(self.status_title);st.append(self.status_detail);top.append(st)
-        top.append(button("باز کردن مرورگر",lambda *_:self.run_async("Browser",core.open_browser)))
+        self.tunnel_browser_button=button("مرورگر تونلی",lambda *_:self.run_async("Browser",core.open_browser))
+        top.append(self.tunnel_browser_button)
+        top.append(button("مرورگر عادی (بدون تونل)",lambda *_:self.run_async("Direct browser",core.open_direct_browser)))
         status.append(top)
+        status.append(label("مرورگر تونلی فقط پس از اتصال تأییدشده فعال می‌شود. مرورگر عادی از اینترنت سیستم استفاده می‌کند.","muted"))
 
         metrics=flow(max_children=4,min_children=2,spacing=8)
         for title,attr in [("مسیر","dash_route"),("کشور","dash_country"),("WARP","dash_warp"),("Ping","dash_ping")]:
@@ -639,10 +642,11 @@ class FreeNetHub(Adw.Application):
         if hasattr(self,"details"):self.details.get_buffer().set_text(json.dumps(result,ensure_ascii=False,indent=2))
         ok=bool(result and result.get("ok"))
         self.sidebar_state.set_text("موفق" if ok else "نیاز به توجه");self.sidebar_detail.set_text(name)
-        if result and result.get("error"):
-            self.status_title.set_text("عملیات کامل نشد");self.status_detail.set_text(str(result.get("error")))
         if on_done:on_done(result or {})
         self.refresh_snapshot()
+        if result and result.get("error"):
+            self.status_title.set_text("عملیات کامل نشد")
+            self.status_detail.set_text(str(result.get("message") or result.get("error")))
         return False
 
     def refresh_all(self):
@@ -651,6 +655,8 @@ class FreeNetHub(Adw.Application):
     def refresh_snapshot(self):
         try:s=core.current_snapshot()
         except Exception as e:s={"ok":False,"error":str(e)}
+        if hasattr(self,"tunnel_browser_button"):
+            self.tunnel_browser_button.set_sensitive(bool(s.get("ok") and s.get("mode")))
         mode=s.get("mode") or "—";provider=s.get("provider") or "—";country=s.get("country") or "—";warp=s.get("warp") or ""
         if not warp and isinstance(s.get("trace"),dict):warp=(s.get("trace") or {}).get("trace",{}).get("warp","")
         self.dash_route.set_text(str(provider));self.dash_country.set_text("Tor / نامشخص" if country=="T1" else str(country));self.dash_warp.set_text(str(warp or "off"))

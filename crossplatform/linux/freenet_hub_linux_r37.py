@@ -22,7 +22,7 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 
-VERSION = "4.2.0-linux.18-r45"
+VERSION = "4.2.0-linux.19-r46"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -983,11 +983,32 @@ def _firefox_profile(proxy=None):
     (base/"user.js").write_text("\n".join(prefs)+"\n",encoding="utf-8")
     return base
 
+def open_direct_browser(url=None):
+    """Explicitly dispatch the system browser without creating any tunnel."""
+    launcher=legacy.executable("xdg-open")
+    if not launcher:
+        return {"ok":False,"error":"SYSTEM_BROWSER_MISSING"}
+    target=url or str(settings().get("home") or "https://www.youtube.com/")
+    try:
+        proc=subprocess.Popen([launcher,target],stdin=subprocess.DEVNULL,
+                              stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
+                              start_new_session=True,close_fds=True)
+    except OSError as exc:
+        return {"ok":False,"error":"SYSTEM_BROWSER_LAUNCH_FAILED","detail":str(exc)}
+    time.sleep(0.5)
+    code=proc.poll()
+    if code is not None and code != 0:
+        return {"ok":False,"error":"SYSTEM_BROWSER_LAUNCH_FAILED","returncode":code}
+    return {"ok":True,"mode":"DIRECT_UNPROTECTED",
+            "state":"DISPATCHED_NOT_WINDOW_VERIFIED",
+            "message":"مرورگر عادی از اتصال سیستم استفاده می‌کند؛ تونل FreeNet Hub فعال نشده است."}
+
+
 def open_browser(url=None):
     firefox=legacy.executable("firefox")
     if not firefox: return {"ok":False,"error":"FIREFOX_MISSING"}
     s=legacy.session();mode=str(s.get("mode") or "")
-    if not mode: return {"ok":False,"error":"CONNECT_FIRST"}
+    if not mode: return {"ok":False,"error":"CONNECT_FIRST","message":"ابتدا اتصال سالم برقرار کنید؛ برای مرورگر بدون تونل از دکمه جداگانه استفاده کنید."}
     proxy=None
     if mode=="NODE":
         if not (_node_owner() and _port_open(NODE_PORT)): return {"ok":False,"error":"NODE_NOT_READY"}
@@ -1008,8 +1029,23 @@ def open_browser(url=None):
     stopped=legacy.stop_project_firefox(prof)
     if not stopped.get("ok"): return {"ok":False,"error":"BROWSER_BUSY"}
     target=url or str(settings().get("home") or "https://www.youtube.com/")
-    subprocess.Popen([firefox,"--no-remote","--new-instance","--profile",str(prof),target],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True)
-    return {"ok":True,"mode":mode,"proxy":proxy or "DIRECT_SYSTEM","profile":str(prof)}
+    try:
+        proc=subprocess.Popen([firefox,"--no-remote","--new-instance","--profile",str(prof),target],
+                              stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
+                              stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True)
+    except OSError as exc:
+        return {"ok":False,"error":"BROWSER_LAUNCH_FAILED","detail":str(exc)}
+    launched=[]
+    for _ in range(50):
+        time.sleep(0.1)
+        launched=legacy.project_firefox_pids(prof)
+        if launched or proc.poll() is not None:
+            break
+    if not launched:
+        return {"ok":False,"error":"BROWSER_LAUNCH_FAILED",
+                "returncode":proc.poll(),"browser":firefox,"profile":str(prof)}
+    return {"ok":True,"mode":mode,"proxy":proxy or "DIRECT_SYSTEM",
+            "profile":str(prof),"pids":launched}
 
 def current_snapshot():
     s=legacy.session();mode=str(s.get("mode") or "")
