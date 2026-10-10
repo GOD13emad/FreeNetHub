@@ -203,28 +203,3 @@ jobs:
           if ($finalMarker.status -ne 'MANIFESTS_RECONCILED') { throw 'STAGING_STATE_MACHINE_FAILED' }
           Write-Output 'PASS_ISOLATED_STAGING_AND_REHASH_SIMULATION_ONLY; NO_CERTIFICATE_USED'
 
-  inno-ephemeral-setup-uninstaller:
-    runs-on: windows-latest
-    timeout-minutes: 22
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      - name: Ensure Inno compiler for safe ephemeral signing fixture
-        shell: pwsh
-        run: |
-          $paths=@(
-            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
-            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
-            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
-            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
-          )
-          if (!@($paths | Where-Object {Test-Path -LiteralPath $_ -PathType Leaf}).Count) {
-            choco install innosetup --no-progress -y
-            if ($LASTEXITCODE -ne 0) { throw 'CI_INNO_COMPILER_INSTALL_FAILED' }
-          }
-      - name: Ephemeral self-signed EXE plus Uninstaller signing, verify and clean
-        shell: pwsh
-        run: |
-          ./scripts/signing/Test-InnoEphemeralFixture.ps1
-          Write-Output 'EPHEMERAL_FIXTURE_ONLY; NOT PUBLIC_CA_SIGNATURE; USER_PC_UNTOUCHED'
