@@ -1,0 +1,51 @@
+# Free GitHub/Sigstore provenance for the public SOURCE tree only.
+# Not Windows Authenticode, a signed R52 installer, or a public release.
+name: Free source provenance (not Authenticode)
+
+on:
+  push:
+    branches:
+      - chore/windows-public-signing-gate-20261010
+    paths:
+      - '.github/workflows/zero-cost-source-provenance.yml'
+      - 'scripts/signing/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  attest-source:
+    if: github.repository == 'GOD13emad/FreeNetHub'
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Make an immutable archive from the exact public commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          git archive --format=tar HEAD > "$RUNNER_TEMP/FreeNetHub-source.tar"
+          test -s "$RUNNER_TEMP/FreeNetHub-source.tar"
+          (cd "$RUNNER_TEMP" && sha256sum FreeNetHub-source.tar > FreeNetHub-source.tar.sha256)
+          (cd "$RUNNER_TEMP" && sha256sum -c FreeNetHub-source.tar.sha256)
+          echo "SOURCE_PROVENANCE_ONLY: not a Windows code signature"
+      - name: Sign source provenance using no-cost public Sigstore
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: ${{ runner.temp }}/FreeNetHub-source.tar
+      - name: Verify the attestation and bound bytes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh attestation verify "$RUNNER_TEMP/FreeNetHub-source.tar" --repo "$GITHUB_REPOSITORY"
+          echo "SOURCE_ATTESTATION_PASS; SAC_AND_AUTHENTICODE_NOT_TESTED"

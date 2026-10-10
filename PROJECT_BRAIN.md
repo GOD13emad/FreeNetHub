@@ -785,3 +785,71 @@ Exact Next Action: rebuild current manifests, commit/push the candidate branch, 
 - This patch only improves BROWSER. Full-system global CFON+VPN Gate remains explicitly BLOCKED by unaccepted all-UID live route trial and server privacy/reliability gates. No subscription/server purchase, no implicit volunteer-VPN routing.
 - Release progression: update manifests and hosted CI on exact SHA, merge only if CI green, then publish new R20 Linux asset plus byte-exact Windows R51 and verify latest asset SHA. Do not mutate old R19 asset.
 - Release blocker discovered before R20 acceptance: existing installer SIGTERMs GTK at install start; GTK cleanup may stop currently active CFON/WARP. R20 now fails before touching state when session.mode is active or session JSON unreadable (error FREENET_HUB_ACTIVE_SESSION / exit72), allowing user to intentionally disconnect before upgrading; CI includes active-session no-mutation regression and unparseable JSON fail-closed tests. No live CFON process touched.
+
+## 2026-10-10 — Reusable Windows public-signing gate — PREPARED, not signed
+
+- Previous accepted public Windows baseline remains R51; R52 source commit `5f99c56e294ff225479ee0a828bd0e6050e13740` remains an unpublished candidate.
+- R52 evidence `evidence/V438_R52_STAGED_CANDIDATE_ACCEPTANCE_20261009.json` records unsigned setup 24,260,213 bytes and SHA256 `7214F7AE832539924B58A6750584079DD859DB5CDA53A59A345B5C9DA3D24DD0`, with signing/isolated installation still OPEN. This hash is unsigned pre-sign evidence only.
+- One-blocker preparation on PR #36, branch `chore/windows-public-signing-gate-20261010`: `scripts/signing/Test-PublicAuthenticode.ps1` (read-only fail-closed verification), `.github/workflows/windows-signing-gate.yml` (reject unsigned sample; no public signing claim), `docs/CODE_SIGNING_POLICY.md` (legal providers, accepted baseline, ownership/security, staged signing and DoD).
+- No signing keys, secrets, vendor files, root network state, Smart App Control, or public release mutated.
+- Authoritative independent references collected in `docs/CODE_SIGNING_POLICY.md`. Microsoft Artifact Signing Public Trust unavailable to Iranian individual/organization without independently verified eligible publisher; SignPath Foundation would show Foundation publisher and has stricter OSS eligibility. OV/EV cert issuer and legal eligibility unresolved.
+- Root cause: virtual self-signed CI proves signature mechanics only; R52 Inno pipeline lacks production signing, signed inner files require integrity manifest regeneration, and separate signed uninstaller.
+- Prevention: CI distinguishes a **negative verification regression** from publicly trusted release signature and never auto-promotes unsigned setup.
+- Roadmap ← CURRENT: policy and negative gate PREPARED; hosted PR verification OPEN; publisher legal issuer/identity OPEN; HSM/cloud authorized signing OPEN; signed staging+Inno+uninstaller OPEN; verify/isolated SAC/immutable release OPEN.
+- Brain status: CURRENT for code-signing delta, not a claim of FINAL. Exact Next Action: check hosted CI for PR #36, confirm lawful publisher jurisdiction and issuer eligibility, then implement one chosen provider's signer integration in a signed staging tree; never sign tracked raw R52 sources in-place.
+
+
+## 2026-10-10 — Windows trusted signing Stage-Preparation Milestone (one blocker)
+
+Previous accepted public state: immutable Windows R51, not signed R52; exact R52 source SHA 5f99c56e294ff225479ee0a828bd0e6050e13740. Public R52 admission is still FAIL_HOLD / UNPROVEN.
+
+New evidence and implementation in draft PR #36:
+- Device audit read-only evidence at <PRIVATE_OWNER_LOCAL_CONTROL>/R52_CANDIDATE_GATE_RECEIPT_20261009.json and R52_PUBLIC_SIGNED_RELEASE_GATE_V3_20261010.json: separate, unsigned R52 build bytes/hashes (24,260,213 / 7214F7AE832539924B58A6750584079DD859DB5CDA53A59A345B5C9DA3D24DD0 and 24,273,164 / C3FA52249A0F6B703D45752492AE49E426566BBA39EBBD0C7BAE26C02B60609B). Both are pre-sign QA artifacts, not FINAL.
+- R52_SIGNING_ADMISSION_INVENTORY_20261010.json: 9 packaged PE files, 7 unsigned, 2 valid; 17 unsigned PowerShell among 25 scripts; detected upstream kernel driver signature but /kp and loaded behavior not yet accepted.
+- Azure signing historical readiness R20_TRUSTED_SIGNING_READINESS_20260926.json: Azure CLI/tools present, usable subscriptions = 0, certificate/public identity validation not established. CA legal eligibility unknown.
+- Signing code added under scripts/signing/: New-R52SigningStage.ps1, Sign-FirstPartyStaging.ps1, Update-R52StagedIntegrity.ps1, Invoke-R52SignedInno.ps1, Test-PublicAuthenticode.ps1. These prepare exact-sha isolation, one-use HSM native store signing, staged manifest rehash, signed Inno Setup/Uninstaller configuration, and strict post-sign SHA/trust/code inventory verification. No real credential used; no release made.
+- CI negative guard rejects unsigned, omitted, wrong-SHA and absent-certificate sample. Distinguish script parsing/negative PASS from production signing PASS; hosted jobs must be rechecked at final PR SHA.
+- Failure-root-cause registered: a JS patch helper used replacement-string dollar expansions, multiplying the verifier script and causing PowerShell parse fail. The file was reconstructed from a 4,875-char original with callback-based literal replacements; CI parser succeeded on restored baseline. Prevention: treat all '$' in patch templates literally, add final compiler parse + negative regression, never promote failed commit.
+- Inno source R52 is unsigned and must remain unchanged: signer and SignedUninstaller enabled only in detached one-shot stage. Reconciliation of app/gateway/standalone runtime-hash manifests is mandatory before compile; the installer SHA is external, not embedded into itself.
+- External legal and physical gates: lawful publisher identity and CA eligibility, public-trust RSA certificate/authorized HSM or eligible Azure, third-party unsigned PE rights or upstream signed alternatives, actual timestamp and cryptographic release verification, signed uninstall extraction and SAC disposable VM install/upgrade/uninstall, immutable GitHub asset verification.
+- Status: Signing architecture PREPARED / VERIFICATION_AND_LAWFUL_IDENTITY_HOLD. Brain cumulative CURRENT for recorded staging delta, production public trust UNPROVEN.
+- Exact next action: check final SHA PR #36 CI; receive authoritative legal publisher jurisdiction and real certificate evidence (outside chat); sign one disposable staged probe with that CA, only then enable exact real full-signing integration. Do not merge/publish R52 under any condition while this hold exists.
+
+
+
+## 2026-10-10 — PUBLIC Code Signing legal identity gate — Iran individual
+
+User-selected publisher class: REAL INDIVIDUAL; legal residency IRAN. No names, IDs, payment details, credentials, passports or home addresses stored in repo. Legal eligibility was checked against official CA policies and recorded in docs/CODE_SIGNING_POLICY.md.
+- Azure/Microsoft Artifact Signing Public Trust individual: location restricted to US/Canada -> IRAN INELIGIBLE.
+- Sectigo official no-issuance list: IRAN explicit -> INELIGIBLE.
+- DigiCert official embargo list: IRAN explicit -> INELIGIBLE/RESTRICTED.
+- GlobalSign public code-signing program currently organization-only -> does not meet individual profile.
+- Certum/Asseco Poland officially offers individual Standard Code Signing: €139+ standard and €209+ cloud starting prices; Iran residency eligibility UNKNOWN, awaiting written CA answer. One non-purchase inquiry sent to verified official pre-sales mailbox on 2026-10-10; no payment/document/issuance initiated.
+- Self-signed signing and GPG may provide reproducible dev/test or cryptographic file verification, but neither constitutes default Microsoft Smart App Control public-trust acceptance.
+- Source-policy milestones remain draft PR #36; production signed R52, signed full dependency inventory, SAC, release promotion all BLOCKED. Do not silently switch to another person's identity, fabricated jurisdiction, unverifiable reseller, or untrusted root. Next external action: issuer's written acceptance or refusal; next code action only if valid certificate entitlement is independently confirmed.
+
+
+## 2026-10-10 — ZERO-BUDGET VALIDATED SUPPLY-CHAIN GATE
+
+Cost authority: user has ZERO budget for paid software certificates. Do not create any paid account, buy a certificate, install extra root trust or claim public publisher status. Added docs/ZERO_COST_SIGNING_POLICY.md and .github/workflows/zero-cost-source-provenance.yml. Free source provenance workflow pinned official actions/attest v4 at 1e69f48acb82d1966a394da916b4c1698aa569d6 and GitHub/Windows checkout SHA pin; no PFX/secrets and no Windows policy mutation.
+- Verified CI run: https://github.com/GOD13emad/FreeNetHub/actions/runs/38006098123 : SUCCESS on commit f423086f675fead57a82480815028ff221e46895.
+- SHA256 of actual attested source TAR: ddd4522ce11af01ad6f1b66c1e9dbb115561b233d231997a41b3da47edf86f7a.
+- Public immutable attestation: https://github.com/GOD13emad/FreeNetHub/attestations/54502343. Runner logs show Public Good Sigstore-issued signing certificate, upload into Rekor transparency log, and successful gh attestation verify.
+- Scope: exact SOURCE ARCHIVE only. This is NOT Windows public Authenticode, not signed R52 Setup/Uninstaller, not Smart App Control or rights validation. R52 RELEASE HOLDS remain OPEN. Evidence JSON: evidence/NO_COST_SIGNING_PROVENANCE_20261010.json.
+- Fixed Test-PublicAuthenticode.ps1 upstream .sys kernel policy code path whitelist, previous negative CI had PASS. Updated first-party signer to allow provider-certified RSA or ECC signing certificates, per latest Microsoft SAC documentation (still requires actual signed device test).
+- Free vendor eligibility investigation: Certum responded only with automatic receipt, no human approval. Pre-application nontransactional email to SignPath Foundation official support about Iranian lawful residency, network/VPN functionality and all-OSS rights; separately zero-cost Microsoft Store individual registration eligibility question sent to official onboarding help. No approval, user IDs, credentials, license change or procurement.
+- SignPath eligibility remains HOLD: no project-wide OSI license proven, third-party bundle includes special use and precompiled drivers; owner legal rights and reviews required. Store eligibility for genuine Iranian individual and full-feature WinDivert application also UNKNOWN; MSIX Store signature cannot sign arbitrary standalone EXE/MSI.
+- Next safe gate: await issuer eligibility and establish verified licensing/SBOM for bundled dependencies and hosted SAC test only for a genuinely acceptable signed installer. Keep PR #36 DRAFT; release main and host installations unchanged.
+
+
+
+## 2026-10-10 — Hosted no-cost R52 binary proof and isolated staging verified
+
+- Public R52 is STILL unsigned/unreleased. Frozen R52 source 5f99c56e294ff225479ee0a828bd0e6050e13740; existing public R51 unchanged. No network, Tailscale, SAC, Windows production cert, payment or public release mutation.
+- Windows R52 *QA* provenance SUCCESS: https://github.com/GOD13emad/FreeNetHub/actions/runs/38006640079, generated actual unsigned QA Installer SHA256 5FC313279822FE28B7E48A26A1B6F5753D07968EA1E82ABCB736C27F2DC1426F; verified Sigstore public attestation https://github.com/GOD13emad/FreeNetHub/attestations/54503938. This digest differs from the two earlier unsigned QA compilations; the environment-independent provenance is the workflow plus exact observed digest, NOT reproducible-bit identity.
+- Automated Inno [Files] candidate inventory SUCCESS https://github.com/GOD13emad/FreeNetHub/actions/runs/38006580126 : 26 executable/script payload entries, 8 upstream ownership/license cases, 0 top-level LICENSE/COPYING candidates. The code audit correctly returned OSS_SIGNPATH_ELIGIBILITY_HOLD. No ownership rights or license approval inferred from files.
+- Hosted isolated Windows R52 staging and simulated post-byte-change manifest SHA/size reconciliation PASS https://github.com/GOD13emad/FreeNetHub/actions/runs/38006732972; 45 metadata rows processed across app, gateway, and Windows standalone, source checkout SHA and bytes preserved. The appended PowerShell line was a test byte-change fixture, NOT a real signature; public trust remains unproven.
+- Draft PR #36 README now explicitly links Code signing policy and zero-cost gate; public integrity manifest regenerated with canonical SHA256 and file sizes for all 535 tracked source entries. Must still run exact-head CI before merging; never auto-merge to main.
+- SignPath Foundation allows including some unsigned upstream OSS executables in signed packages subject to all policy/licensing conditions, but signing upstream binary with foundation certificate is disallowed. That exception does not imply those binaries pass Windows SAC. Only rightsholder can approve whole-project OSI license; no automatic LICENSE insertion.
+- Confirmed 2026-10-10 provider responses: Certum only automated ticket acknowledgement; SignPath and Microsoft Store eligibility replies not yet received. No claim that Iranian-resident individual enrollment is allowed.
+- Status: SOURCE_PROVENANCE_PASS; QA_BINARY_PROVENANCE_PASS; DETACHED_STAGE_SIMULATION_PASS; LICENSING_REVIEW_HOLD; LEGAL_PUBLIC_SIGNER_HOLD; INSTALLED_SAC_HOLD; REAL_PUBLIC_SIGNATURE_HOLD; RELEASE_R52_HOLD.

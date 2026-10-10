@@ -1,0 +1,205 @@
+name: Windows public signing gate (no certificate required for CI)
+on:
+  push:
+    paths:
+      - '.github/workflows/windows-signing-gate.yml'
+      - 'scripts/signing/**'
+      - 'docs/CODE_SIGNING_POLICY.md'
+  pull_request:
+    paths:
+      - '.github/workflows/windows-signing-gate.yml'
+      - 'scripts/signing/**'
+      - 'docs/CODE_SIGNING_POLICY.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verifier-regression:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Parse PowerShell verification gate
+        shell: pwsh
+        run: |
+          $tokens = $null; $errors = $null
+          foreach ($path in @('scripts/signing/Test-PublicAuthenticode.ps1','scripts/signing/Sign-FirstPartyStaging.ps1','scripts/signing/Update-R52StagedIntegrity.ps1','scripts/signing/Invoke-R52SignedInno.ps1','scripts/signing/New-R52SigningStage.ps1')) {
+            $tokens=$null; $errors=$null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $path),[ref]$tokens,[ref]$errors) | Out-Null
+            if (@($errors).Count -ne 0) { $errors | ForEach-Object Message; exit 1 }
+          }
+      - name: Reject unsigned PowerShell artifact (negative regression)
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'fnh-sign-gate-fixture'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          Set-Content -LiteralPath (Join-Path $dir 'Unsigned.ps1') -Encoding utf8 -Value 'Write-Output "unsigned"'
+          $unsignedSha = (Get-FileHash -LiteralPath (Join-Path $dir 'Unsigned.ps1') -Algorithm SHA256).Hash
+          $manifest = @{
+            schema = 1
+            publisherSubject = 'CN=Public Verification Fixture (intentionally absent)'
+            publisherThumbprint = '0000000000000000000000000000000000000000'
+            artifacts = @(@{ path='Unsigned.ps1'; ownership='first-party'; expectedSha256=$unsignedSha })
+          } | ConvertTo-Json -Depth 5
+          Set-Content -LiteralPath (Join-Path $dir 'manifest.json') -Encoding utf8 -Value $manifest
+          & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Test-PublicAuthenticode.ps1' -ArtifactRoot $dir -ManifestPath (Join-Path $dir 'manifest.json') -ReportPath (Join-Path $dir 'report.json')
+          if ($LASTEXITCODE -ne 1) { throw 'FAIL_CLOSED_GATE_DID_NOT_REJECT_UNSIGNED_FIXTURE' }
+          $report = Get-Content -LiteralPath (Join-Path $dir 'report.json') -Raw | ConvertFrom-Json
+          if ($report.verdict -ne 'FAIL' -or $report.passed -ne 0 -or $report.count -ne 1) {
+            throw 'FAIL_CLOSED_REPORT_INVALID'
+          }
+          # GitHub's pwsh wrapper propagates a child's nonzero LASTEXITCODE
+          # even when the exit code is the expected negative-test result.
+          $global:LASTEXITCODE = 0
+          Remove-Item -LiteralPath $dir -Recurse -Force
+      - name: Reject omitted runnable artifacts and incorrect SHA pin
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'fnh-sign-gate-missing'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $script = Join-Path $dir 'Declared.ps1'
+          Set-Content -LiteralPath $script -Encoding utf8 -Value 'Write-Output "declared"'
+          Set-Content -LiteralPath (Join-Path $dir 'Undeclared.ps1') -Encoding utf8 -Value 'Write-Output "omitted"'
+          $sha = (Get-FileHash -LiteralPath $script -Algorithm SHA256).Hash
+          $manifest = @{
+            schema = 1
+            publisherSubject = 'CN=Missing Fixture'
+            publisherThumbprint = '0000000000000000000000000000000000000000'
+            artifacts = @(@{path='Declared.ps1';ownership='first-party';expectedSha256=$sha})
+          }
+          $json = Join-Path $dir 'manifest.json'
+          $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $json -Encoding utf8
+          & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Test-PublicAuthenticode.ps1' -ArtifactRoot $dir -ManifestPath $json -ReportPath (Join-Path $dir 'omission.json')
+          if ($LASTEXITCODE -ne 1) { throw 'OMITTED_CODE_NOT_REJECTED' }
+          $o = Get-Content -LiteralPath (Join-Path $dir 'omission.json') -Raw | ConvertFrom-Json
+          if ($o.verdict -ne 'FAIL' -or 'Undeclared.ps1' -notin @($o.missingFromManifest)) { throw 'OMISSION_NOT_RECORDED' }
+          $manifest.artifacts[0].expectedSha256 = ('0' * 64)
+          $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $json -Encoding utf8
+          & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Test-PublicAuthenticode.ps1' -ArtifactRoot $dir -ManifestPath $json -ReportPath (Join-Path $dir 'bad-sha.json')
+          if ($LASTEXITCODE -ne 1) { throw 'SHA_MISMATCH_NOT_REJECTED' }
+          $s = Get-Content -LiteralPath (Join-Path $dir 'bad-sha.json') -Raw | ConvertFrom-Json
+          if ($s.files[0].reasons -notcontains 'FINAL_SIGNED_SHA256_MISMATCH') { throw 'SHA_MISMATCH_NOT_RECORDED' }
+          $global:LASTEXITCODE = 0
+          Remove-Item -LiteralPath $dir -Recurse -Force
+      - name: Reject signing without real certificate and leave staged bytes intact
+        shell: pwsh
+        run: |
+          $src = Join-Path $env:RUNNER_TEMP 'signer-source-fixture'
+          $stage = Join-Path $env:RUNNER_TEMP 'signer-stage-fixture'
+          New-Item -Path $src,$stage -ItemType Directory -Force | Out-Null
+          Set-Content -LiteralPath (Join-Path $stage 'Sample.ps1') -Value 'Write-Output "must stay unsigned"' -Encoding utf8
+          $hash = (Get-FileHash -LiteralPath (Join-Path $stage 'Sample.ps1') -Algorithm SHA256).Hash
+          @{purpose='SINGLE_USE_SIGNED_BUILD';sourceCommit='fixture';status='READY_TO_SIGN'} |
+            ConvertTo-Json | Set-Content -LiteralPath (Join-Path $stage '.signing-staging-authority.json') -Encoding utf8
+          @{schema=1;files=@(@{path='Sample.ps1';ownership='first-party';expectedUnsignedSha256=$hash})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $stage 'signing-plan.json') -Encoding utf8
+          $signArgs = @{
+            StageRoot=$stage
+            SourceRoot=$src
+            PlanPath=(Join-Path $stage 'signing-plan.json')
+            PublisherThumbprint='0000000000000000000000000000000000000000'
+            PublisherSubject='CN=Not A Public Signing Credential'
+            TimestampUrl='http://timestamp.digicert.com'
+            SignToolPath=(Join-Path $PSHOME 'pwsh.exe')
+          }
+          & pwsh.exe -NoProfile -NonInteractive -File 'scripts/signing/Sign-FirstPartyStaging.ps1' -StageRoot $signArgs.StageRoot -SourceRoot $signArgs.SourceRoot -PlanPath $signArgs.PlanPath -PublisherThumbprint $signArgs.PublisherThumbprint -PublisherSubject $signArgs.PublisherSubject -TimestampUrl $signArgs.TimestampUrl -SignToolPath $signArgs.SignToolPath
+          if ($LASTEXITCODE -ne 1) { throw 'MISSING_PUBLIC_SIGNER_NOT_REJECTED' }
+          if ((Get-FileHash -LiteralPath (Join-Path $stage 'Sample.ps1') -Algorithm SHA256).Hash -ne $hash) {
+            throw 'UNAUTHORIZED_STAGE_MUTATION'
+          }
+          $global:LASTEXITCODE = 0
+          Remove-Item -LiteralPath $stage,$src -Recurse -Force
+      - name: Confirm no release or private key was generated
+        shell: pwsh
+        run: |
+          if (Test-Path '.github/workflows/sign-and-release.yml') {
+            Write-Output 'Separate signed release workflow exists; review its authority before enabling'
+          }
+          Write-Output 'VERIFIER_REGRESSION_ONLY: no CA trust or release claimed'
+
+  signpath-readiness-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Audit exact Inno payload ownership and linked license notices
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/signing/audit_signpath_readiness.py
+          python3 scripts/signing/audit_signpath_readiness.py --output "$RUNNER_TEMP/signpath-readiness.json"
+          python3 - "$RUNNER_TEMP/signpath-readiness.json" <<'PY'
+          import json, pathlib, sys
+          o = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert o["result"] == "OSS_SIGNPATH_ELIGIBILITY_HOLD"
+          assert o["artifactCount"] >= 9
+          assert o["upstreamCount"] >= 1
+          assert o["unreviewedUpstreamCount"] == o["upstreamCount"]
+          assert o["licenseApprovedByRightsOwner"] is False
+          assert len({p["path"] for p in o["artifacts"]}) == o["artifactCount"]
+          for row in o["artifacts"]:
+              assert len(row["sha256"]) == 64 and row["bytes"] > 0
+          print("PASS_INVENTORY_EVIDENCE_ONLY_NOT_OSS_ELIGIBILITY")
+          PY
+      - name: Attach read-only legal and upstream inventory evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: signpath-readiness-hold-inventory
+          path: ${{ runner.temp }}/signpath-readiness.json
+          if-no-files-found: error
+          retention-days: 7
+
+  frozen-r52-signing-stage-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout new signing controls on draft branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: controls
+          persist-credentials: false
+      - name: Checkout FROZEN R52 source for isolated test
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: 5f99c56e294ff225479ee0a828bd0e6050e13740
+          path: exact-r52
+          persist-credentials: false
+      - name: Verify stage preflight and hash reconciliation without real signing
+        shell: pwsh
+        run: |
+          $source=Join-Path $env:GITHUB_WORKSPACE 'exact-r52'
+          $controls=Join-Path $env:GITHUB_WORKSPACE 'controls/scripts/signing'
+          $stage=Join-Path $env:RUNNER_TEMP 'fnh-r52-simulated-stage-only'
+          & (Join-Path $controls 'New-R52SigningStage.ps1') -SourceRoot $source -StageRoot $stage
+          if (!(Test-Path -LiteralPath (Join-Path $stage '.signing-staging-authority.json'))) {
+            throw 'STAGING_MARKER_NOT_CREATED'
+          }
+          if (Test-Path -LiteralPath (Join-Path $stage '.git')) { throw 'STAGING_GIT_DIRECTORY_LEAK' }
+          $sourceHash=(Get-FileHash -LiteralPath (Join-Path $source 'app/FreeNetHub.ps1') -Algorithm SHA256).Hash
+          if ((Get-FileHash -LiteralPath (Join-Path $stage 'app/FreeNetHub.ps1') -Algorithm SHA256).Hash -ne $sourceHash) {
+            throw 'STAGING_SOURCE_DIFFERENCE_BEFORE_TEST'
+          }
+          # CI fixture: append a harmless comment to mimic a signature-changing
+          # bytes. This is NOT a signature nor any public-trust acceptance.
+          Add-Content -LiteralPath (Join-Path $stage 'app/FreeNetHub.ps1') -Encoding utf8 -Value '# CI_ONLY_UNSIGNED_SIMULATED_SIGNATURE_DELTA'
+          $marker=Join-Path $stage '.signing-staging-authority.json'
+          $m=Get-Content -LiteralPath $marker -Raw | ConvertFrom-Json
+          $m.status='FILES_SIGNED'
+          $m | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $marker -Encoding utf8
+          & (Join-Path $controls 'Update-R52StagedIntegrity.ps1') -StageRoot $stage -SourceRoot $source
+          $manifest=Get-Content -LiteralPath (Join-Path $stage 'app/manifest.json') -Raw | ConvertFrom-Json
+          $entry=@($manifest.code | Where-Object file -eq 'FreeNetHub.ps1')
+          if ($entry.Count -ne 1) { throw 'STAGED_UI_MANIFEST_ENTRY_MISSING' }
+          $signedStageHash=(Get-FileHash -LiteralPath (Join-Path $stage 'app/FreeNetHub.ps1') -Algorithm SHA256).Hash
+          if ($entry[0].sha256 -ne $signedStageHash) { throw 'STAGED_MANIFEST_NOT_RECONCILED' }
+          $release=Get-Content -LiteralPath (Join-Path $stage 'RELEASE.json') -Raw | ConvertFrom-Json
+          if ($release.uiSha256 -ne $signedStageHash -or $release.installerSha256) {
+            throw 'STAGED_RELEASE_HASH_RECONCILIATION_FAILED'
+          }
+          if ((Get-FileHash -LiteralPath (Join-Path $source 'app/FreeNetHub.ps1') -Algorithm SHA256).Hash -ne $sourceHash) {
+            throw 'TRACKED_SOURCE_MUTATED'
+          }
+          $finalMarker=Get-Content -LiteralPath $marker -Raw | ConvertFrom-Json
+          if ($finalMarker.status -ne 'MANIFESTS_RECONCILED') { throw 'STAGING_STATE_MACHINE_FAILED' }
+          Write-Output 'PASS_ISOLATED_STAGING_AND_REHASH_SIMULATION_ONLY; NO_CERTIFICATE_USED'
+

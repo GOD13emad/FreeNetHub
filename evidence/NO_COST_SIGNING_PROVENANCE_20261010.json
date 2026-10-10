@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "recordedDate": "2026-10-10",
+  "tool": "GitHub Actions / actions/attest / Sigstore Public Good",
+  "sourceCommit": "f423086f675fead57a82480815028ff221e46895",
+  "workflowRunId": 38006098123,
+  "workflowUrl": "https://github.com/GOD13emad/FreeNetHub/actions/runs/38006098123",
+  "workflowConclusion": "success",
+  "subject": "FreeNetHub-source.tar",
+  "subjectSha256": "ddd4522ce11af01ad6f1b66c1e9dbb115561b233d231997a41b3da47edf86f7a",
+  "attestationId": 54502343,
+  "attestationUrl": "https://github.com/GOD13emad/FreeNetHub/attestations/54502343",
+  "positiveGates": [
+    "git archive exact source SHA materialized",
+    "sha256sum local consistency PASS",
+    "Sigstore Public Good short-lived attestation signed",
+    "Rekor transparency log upload confirmed",
+    "gh attestation verify repository and bytes PASS"
+  ],
+  "notClaimed": [
+    "Windows code signing certificate",
+    "public Authenticode on EXE/DLL/PS1/Setup",
+    "Smart App Control enforcement acceptance",
+    "R52 released or production signed",
+    "SignPath Foundation eligible",
+    "legally licensed bundled third-party executables"
+  ],
+  "verdict": "PASS_SOURCE_PROVENANCE_ONLY"
+}

@@ -14,19 +14,34 @@
       "sha256": "06856ABBC8C3EAF81038280BA441E975089B7729FEEBA6776C9ECC041B1B4DE7"
     },
     {
+      "file": ".github/workflows/windows-signing-gate.yml",
+      "bytes": 12572,
+      "sha256": "DC9B097EE740AD0EAD0DF7BB705A7E9D1D8EE9ABF96C23D611C369E278D3B56C"
+    },
+    {
+      "file": ".github/workflows/zero-cost-r52-qa-provenance.yml",
+      "bytes": 3794,
+      "sha256": "35D15500CB7606562A498831656E5152AC886274CC064762CD85CF85D04309EC"
+    },
+    {
+      "file": ".github/workflows/zero-cost-source-provenance.yml",
+      "bytes": 1890,
+      "sha256": "03B1934ECA3A2C634196D697C574D041EA1839605913AB63A55AF082AE9717A0"
+    },
+    {
       "file": ".gitignore",
       "bytes": 953,
       "sha256": "FDF6C2256E896FA294F3D2BCF0D06318C81FBD98C286100832F257C41DF1A456"
     },
     {
-      "file": "app/assets/FreeNetHub.ico",
-      "bytes": 45853,
-      "sha256": "30BDD9DD5BE732C49D5F56BC56DA799158D628A40502479973D6AD3E982175CC"
-    },
-    {
       "file": "app/assets/FreeNetHub_256.png",
       "bytes": 16058,
       "sha256": "1E54C69884D201FE33C507C8F27FA522D2A382438033E7289F433233A8A37CDB"
+    },
+    {
+      "file": "app/assets/FreeNetHub.ico",
+      "bytes": 45853,
+      "sha256": "30BDD9DD5BE732C49D5F56BC56DA799158D628A40502479973D6AD3E982175CC"
     },
     {
       "file": "app/dependencies.example.json",
@@ -224,11 +239,6 @@
       "sha256": "F0D1F6B8B15E9CF848674E393494C5C249887B1383A9A60A8B692EEE0555D4B5"
     },
     {
-      "file": "crossplatform/linux/freenet_hub_linux.py",
-      "bytes": 44276,
-      "sha256": "CE6F7B1D959521FBEEEF8BD1D33E7571ECC2EE88E18203E1350D24EC8F1FF045"
-    },
-    {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
       "bytes": 59862,
       "sha256": "5D16D1F590787EE95895D39041A3AC58183F5C642146B3BC35CF31C1755E36DC"
@@ -239,6 +249,11 @@
       "sha256": "7A29607854E89211B891D2A62A48B77D5F255F982BF87D5F9BEF685B0B9AB154"
     },
     {
+      "file": "crossplatform/linux/freenet_hub_linux.py",
+      "bytes": 44276,
+      "sha256": "CE6F7B1D959521FBEEEF8BD1D33E7571ECC2EE88E18203E1350D24EC8F1FF045"
+    },
+    {
       "file": "crossplatform/linux/freenethub.desktop",
       "bytes": 315,
       "sha256": "103C54EF2EC85DF7911CD685626C184F9E75D12B172347B9105093311384CEE6"
@@ -247,11 +262,6 @@
       "file": "crossplatform/linux/FreeNetHub.svg",
       "bytes": 420,
       "sha256": "B0D6A4B0F9181E13BB18E0EFAE83392419C83D0F3427FD9D40048E52ECBC1A7C"
-    },
-    {
-      "file": "crossplatform/linux/install.sh",
-      "bytes": 6355,
-      "sha256": "0E6B187EF62A61BB86C6F273052EE628D6CB0E2E9933E7685CD42875DCBD296B"
     },
     {
       "file": "crossplatform/linux/install_singbox_pinned.sh",
@@ -267,6 +277,11 @@
       "file": "crossplatform/linux/install_warpplus_pinned.sh",
       "bytes": 2181,
       "sha256": "FD4C9817D7DC584423C996FD3377977E7D488426BD0C5F0FC8608A3FF4F1D2B6"
+    },
+    {
+      "file": "crossplatform/linux/install.sh",
+      "bytes": 6355,
+      "sha256": "0E6B187EF62A61BB86C6F273052EE628D6CB0E2E9933E7685CD42875DCBD296B"
     },
     {
       "file": "crossplatform/linux/nodehub_shared.py",
@@ -354,6 +369,11 @@
       "sha256": "1EF0A8E35FFE9E4603F6E44BE3F81D6C9302B052E1A8EB3098240ED05D5CC217"
     },
     {
+      "file": "docs/CODE_SIGNING_POLICY.md",
+      "bytes": 21576,
+      "sha256": "D704C578961EB76CE2D5A8AB71AB559499D3E8F0A43E4F746A2E88786B62A9A8"
+    },
+    {
       "file": "docs/COMPARISON.html",
       "bytes": 15945,
       "sha256": "8559752074740EF44F8D05068A3F0DD2F6759EAB268F8738ABA291A7D217164D"
@@ -372,6 +392,11 @@
       "file": "docs/research.json",
       "bytes": 15372,
       "sha256": "CC47209A286E6128FEAE469D1CB8AA9D52BADB8FC719B38B1BF203F9639D7D1F"
+    },
+    {
+      "file": "docs/ZERO_COST_SIGNING_POLICY.md",
+      "bytes": 6643,
+      "sha256": "42FDCBA37CCF142D81BECB8834C66A1CD4623C6E5CB929F6A729BE9B083A5D51"
     },
     {
       "file": "evidence/ANDROID_420_BUILD_ACCEPTANCE.json",
@@ -427,6 +452,11 @@
       "file": "evidence/LINUX_WSL_420_TOR_ACCEPTANCE.json",
       "bytes": 1373,
       "sha256": "A8932FE0C2AB70A07D034689D2E18229D9DF733A1E71D37145EB4274CCD4BFDA"
+    },
+    {
+      "file": "evidence/NO_COST_SIGNING_PROVENANCE_20261010.json",
+      "bytes": 1181,
+      "sha256": "880CCD331768B4A6688D5E30CA2CEA1A9C997BE40D7CC81100F8DEB28B039652"
     },
     {
       "file": "evidence/PROJECT_KNOWLEDGE_R22_20260928.json",
@@ -604,14 +634,14 @@
       "sha256": "5FC4643F737F4881049F613173EA583BF7F89F3F101E2C383E1FA0E27550E9B3"
     },
     {
-      "file": "evidence/R28_HERMETIC_PROTOCOL_LOOPBACK2_ACCEPTANCE_20260928.json",
-      "bytes": 1588,
-      "sha256": "786B1F0951F77431A84D27C63B18385B1CF760262BE5820E8B0FB40D9C71A6DA"
-    },
-    {
       "file": "evidence/R28_HERMETIC_PROTOCOL_LOOPBACK_ACCEPTANCE_20260928.json",
       "bytes": 850,
       "sha256": "178C4526FB0B6936ADCE3F80E561788F82D86D79E4D712AB2F3E4E49C1D40F74"
+    },
+    {
+      "file": "evidence/R28_HERMETIC_PROTOCOL_LOOPBACK2_ACCEPTANCE_20260928.json",
+      "bytes": 1588,
+      "sha256": "786B1F0951F77431A84D27C63B18385B1CF760262BE5820E8B0FB40D9C71A6DA"
     },
     {
       "file": "evidence/R28_PAWDROID_TARGETED_NODE_ACCEPTANCE_20260928.json",
@@ -784,14 +814,14 @@
       "sha256": "49B66739B486BFAD62308471654AE2AEB5AC5D16939FAA4E5F6C293C82832560"
     },
     {
-      "file": "evidence/R36_DIRECT_DPI_LIVE_TRIAL2_20260928.json",
-      "bytes": 3414,
-      "sha256": "4B2A446E162D3E203994DE22890625D5796D403BC421CD21BAD87DB07AB94E59"
-    },
-    {
       "file": "evidence/R36_DIRECT_DPI_LIVE_TRIAL_20260928.json",
       "bytes": 3391,
       "sha256": "BC7FF2C095E18DC051C69C36865F288FEB37A84A19F078CFED45A4A3945A3C1E"
+    },
+    {
+      "file": "evidence/R36_DIRECT_DPI_LIVE_TRIAL2_20260928.json",
+      "bytes": 3414,
+      "sha256": "4B2A446E162D3E203994DE22890625D5796D403BC421CD21BAD87DB07AB94E59"
     },
     {
       "file": "evidence/R36_DIRECT_DPI_PACKAGING_FAILURE_20260929.json",
@@ -1174,6 +1204,21 @@
       "sha256": "4229B16D600B7F8FBD30EBCDED3FA7C90FF8A35FF4CB7D952666E0C476772F1A"
     },
     {
+      "file": "evidence/V43_INSTALLER_ACCEPTANCE_20261003.json",
+      "bytes": 4066,
+      "sha256": "424CD816877627D7622C69184B1A88E2812AE9991CBF746D88037D6D20A0B708"
+    },
+    {
+      "file": "evidence/V43_INSTALLER_BUILD_20261003.json",
+      "bytes": 329,
+      "sha256": "0B3D298E7C8548FA022C107933EDEBCAE3D950F72062C87E05DA7A1AB397CAB6"
+    },
+    {
+      "file": "evidence/V43_PROJECT_KNOWLEDGE_20261003.json",
+      "bytes": 5291,
+      "sha256": "589A26A67CE9B51105BA58920B715C8D071E921E4B906F7069F5E50A3F3AC024"
+    },
+    {
       "file": "evidence/V430_SUPERSEDED_RELEASE_ARCHIVE_20261004.json",
       "bytes": 2792,
       "sha256": "82BE3CECE37718DDF5D1D653F6CF1F4D7E6CC87733CD88B01424FCE36BEA4157"
@@ -1429,19 +1474,9 @@
       "sha256": "DA83678B3ECCDFB705AA60C61EC703E9641260B491C17CD4AF34F5B17261983D"
     },
     {
-      "file": "evidence/V43_INSTALLER_ACCEPTANCE_20261003.json",
-      "bytes": 4066,
-      "sha256": "424CD816877627D7622C69184B1A88E2812AE9991CBF746D88037D6D20A0B708"
-    },
-    {
-      "file": "evidence/V43_INSTALLER_BUILD_20261003.json",
-      "bytes": 329,
-      "sha256": "0B3D298E7C8548FA022C107933EDEBCAE3D950F72062C87E05DA7A1AB397CAB6"
-    },
-    {
-      "file": "evidence/V43_PROJECT_KNOWLEDGE_20261003.json",
-      "bytes": 5291,
-      "sha256": "589A26A67CE9B51105BA58920B715C8D071E921E4B906F7069F5E50A3F3AC024"
+      "file": "evidence/ZERO_COST_R52_BINARY_AND_SIGNPATH_GATES_20261010.json",
+      "bytes": 2753,
+      "sha256": "2FDA9C027EC5C1548BB0265208215E4A2F36E3FFE4BE20A5493607D9264BD637"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1529,14 +1564,14 @@
       "sha256": "BD93E217DE54319DE496DFB51A26949B023561BC96D4DB902734A15F7BB8311C"
     },
     {
-      "file": "gateway/Stop-Gateway.ps1",
-      "bytes": 1357,
-      "sha256": "270E9038DC8C136F89B89C85AB3E4FBDF32BB00178C38F7F408E43A0EAA4221E"
-    },
-    {
       "file": "gateway/stop_elevated.ps1",
       "bytes": 5216,
       "sha256": "0B86645215F11150BEC8E8444ADF4E7ED6964D8BB53285FDBF927B2E19EB591F"
+    },
+    {
+      "file": "gateway/Stop-Gateway.ps1",
+      "bytes": 1357,
+      "sha256": "270E9038DC8C136F89B89C85AB3E4FBDF32BB00178C38F7F408E43A0EAA4221E"
     },
     {
       "file": "gateway/tests/build_gateway_manifest.py",
@@ -1559,14 +1594,14 @@
       "sha256": "C6BC633219EBE85FEE164E9164B04927B6641074B127D99259A0D30D7D030781"
     },
     {
-      "file": "gateway/tests/elevated_pc_tunnel_acceptance.ps1",
-      "bytes": 6956,
-      "sha256": "3FA20E418494FD62C46F0D4EAA790D5D743C98C55E942B39791B071AE8C16CC9"
-    },
-    {
       "file": "gateway/tests/elevated_pc_tunnel_acceptance_42c2.ps1",
       "bytes": 11152,
       "sha256": "F2B32004C4060A9C325B1DA6A38FEB5FF924871A1DA6D1C2118594C8B5CB2E94"
+    },
+    {
+      "file": "gateway/tests/elevated_pc_tunnel_acceptance.ps1",
+      "bytes": 6956,
+      "sha256": "3FA20E418494FD62C46F0D4EAA790D5D743C98C55E942B39791B071AE8C16CC9"
     },
     {
       "file": "gateway/tests/parse_all.ps1",
@@ -1625,8 +1660,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 106468,
-      "sha256": "274DFD49F39A25618518ADA3078D026C6D2FC3156474EE6F5D967678ED5C52ED"
+      "bytes": 118938,
+      "sha256": "70088BAC98B61A0D59B7B484A8812A8178EDDCA0484EDBA9F0D6AAF610C20421"
     },
     {
       "file": "pytest.ini",
@@ -1634,19 +1669,54 @@
       "sha256": "B3E333B836E9D7E5726D1A5018CBC9FB32EA0A2E3AD935124C75DD3819B2B1DD"
     },
     {
-      "file": "README.md",
-      "bytes": 3444,
-      "sha256": "C7336E8777B8D00AADDD9F33AF2A7AEB20A245D7D4E69CB16E5C0AD2E2652FF4"
-    },
-    {
       "file": "README_FA.md",
       "bytes": 4023,
       "sha256": "D10667BA842C2D0218DE6F8660C041EA56F816B7DE3668E3869E49749FCD78F0"
     },
     {
+      "file": "README.md",
+      "bytes": 4334,
+      "sha256": "7F6B4CD31DAE6B536B28ABA6170F74045C7CCDDF568542C76CB3EDF0FC11F6AB"
+    },
+    {
       "file": "RELEASE.json",
       "bytes": 42775,
       "sha256": "63909D8E4DC3C80D2F575881BF3695F48CA096034C32E92839D2B67F4B7E4EEA"
+    },
+    {
+      "file": "scripts/signing/audit_signpath_readiness.py",
+      "bytes": 5580,
+      "sha256": "4CAA37FDCB6AB24BDC3418DB18AF1466DAA9F73B1B56AD80D859882CE2573F0B"
+    },
+    {
+      "file": "scripts/signing/Invoke-R52SignedInno.ps1",
+      "bytes": 4157,
+      "sha256": "76DFE2D76174EA0B4062A2CB913984E50D4147B7327DA0568BDC94BDFC3070AF"
+    },
+    {
+      "file": "scripts/signing/New-R52SigningStage.ps1",
+      "bytes": 2935,
+      "sha256": "82A6DA56F3A3DA1DDC1F4A9FAB34DD8322397E25EE563DC7D2F3491802C58A87"
+    },
+    {
+      "file": "scripts/signing/Sign-FirstPartyStaging.ps1",
+      "bytes": 6481,
+      "sha256": "687AD4816683368AFA4734895B01EC2A5226F04A3876903859AC8AC3BD73E411"
+    },
+    {
+      "file": "scripts/signing/Test-InnoEphemeralFixture.ps1",
+      "bytes": 5070,
+      "sha256": "F4CE070C06B8CFA93D0B9E647F518FD3DCBBAB5CBBF31634772F5DFBD9582F33"
+    },
+    {
+      "file": "scripts/signing/Test-PublicAuthenticode.ps1",
+      "bytes": 6804,
+      "sha256": "A5B532AF50D3C2BB8D2BA4C946D28F15C1569A942FF9218C99282710CD05F3B7"
+    },
+    {
+      "file": "scripts/signing/Update-R52StagedIntegrity.ps1",
+      "bytes": 4481,
+      "sha256": "DD6BA9138BC52B8EE76633C9D185EB92657CF79B384DE0DC44059E71F568006D"
     },
     {
       "file": "SECURITY.md",
@@ -1864,6 +1934,11 @@
       "sha256": "A277F7A6F783601D833CB659404F4B330561755D9B6F4987E3166CE7371FD3FC"
     },
     {
+      "file": "tests/build_v43_installer.ps1",
+      "bytes": 2618,
+      "sha256": "8E57C9BB114E1057614F44878413F4591E050772FD5672F00AFF6D3E2D9ED39B"
+    },
+    {
       "file": "tests/build_v431_installer.ps1",
       "bytes": 3518,
       "sha256": "1F30BDD62E7705FFA966BA5EBFCD3B85A367EBF0D11206A655CE1B64B1156ACD"
@@ -1897,11 +1972,6 @@
       "file": "tests/build_v437_installer.ps1",
       "bytes": 3522,
       "sha256": "968EF2A5141B4AC9D0A349F33EF125310DA3B2BBB2BA7AF4D94FC171EAC39C21"
-    },
-    {
-      "file": "tests/build_v43_installer.ps1",
-      "bytes": 2618,
-      "sha256": "8E57C9BB114E1057614F44878413F4591E050772FD5672F00AFF6D3E2D9ED39B"
     },
     {
       "file": "tests/chat4_r37_final_smoke.ps1",
@@ -2324,14 +2394,14 @@
       "sha256": "1121EF9D31D220A198050DE437B22362B866B04F3A97B22734EE8D9D2FAB1CE9"
     },
     {
-      "file": "tests/test_nodehub.py",
-      "bytes": 4623,
-      "sha256": "BC17A525ABF9009853B8DE88A3AA9394800262F00E38DBBAA190CC347F83E252"
-    },
-    {
       "file": "tests/test_nodehub_engine_policy.py",
       "bytes": 3509,
       "sha256": "6323DD2454DD5D9DA53B7A084FD937B8BE63D6E7652522B56EFDB7C6755BD465"
+    },
+    {
+      "file": "tests/test_nodehub.py",
+      "bytes": 4623,
+      "sha256": "BC17A525ABF9009853B8DE88A3AA9394800262F00E38DBBAA190CC347F83E252"
     },
     {
       "file": "tests/test_product_boundary.py",
@@ -2409,6 +2479,11 @@
       "sha256": "D6209F15A6E40137D56E49B6F0379123DDF2C91410C4ADD9A9276DA3F41872BF"
     },
     {
+      "file": "tests/test_v43_installer_fresh_install.py",
+      "bytes": 2286,
+      "sha256": "DD7196C3316909FF63E1700749A79535CC294B6D208E53B08F5273055FDEC96E"
+    },
+    {
       "file": "tests/test_v431_integrity_hotfix.py",
       "bytes": 2355,
       "sha256": "42DFDF41C3DFBEB8B97A4CEFAD9F3E9EE6C67B45384A620ED49E71F5D384FD58"
@@ -2417,11 +2492,6 @@
       "file": "tests/test_v432_preconnect_feedback.py",
       "bytes": 1900,
       "sha256": "82F012E2ECD46BB95295377CA145D72626E00C5516E90D3D8F59D5921A405F94"
-    },
-    {
-      "file": "tests/test_v43_installer_fresh_install.py",
-      "bytes": 2286,
-      "sha256": "DD7196C3316909FF63E1700749A79535CC294B6D208E53B08F5273055FDEC96E"
     },
     {
       "file": "tests/verify_public_tree.py",
