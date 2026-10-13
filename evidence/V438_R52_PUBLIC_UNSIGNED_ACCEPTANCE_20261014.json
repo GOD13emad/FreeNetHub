@@ -1,0 +1,30 @@
+{
+  "version": "4.3.8",
+  "revision": "4.3.8-r52-stale-node-health-ttl",
+  "status": "R52_PUBLIC_UNSIGNED_RELEASE_ACCEPTANCE",
+  "acceptedSourceParent": "c332ccdc4493f76dbc7e0184c6369a44d7e3d458",
+  "sourceCandidate": "5f99c56e294ff225479ee0a828bd0e6050e13740",
+  "ci": [
+    {
+      "run": 37988549646,
+      "result": "10/10 functional PASS"
+    },
+    {
+      "run": 37988557082,
+      "result": "10/10 functional PASS"
+    }
+  ],
+  "scope": "Windows R52 browser-only node-health-freshness; Linux R20 binary unchanged",
+  "installer": "FreeNetHub_4.3.8_R52_Setup.exe",
+  "publicSigning": "None, by owner explicit choice 2026-10-14",
+  "unsignedWindowsCaveat": "SmartScreen may warn and some Smart App Control or enterprise policies may prevent execution. Do not disable OS security.",
+  "installAcceptance": "Real Windows hosted fresh R52, live launcher smoke, isolated R51 to R52 upgrade and explicit R52 to R51 rollback PASS at candidate SHA; repeat on this promotion SHA",
+  "sha256FinalArtifact": "EXTERNAL_RELEASE_ASSET_DIGEST_AFTER_EXACT_BUILD",
+  "linux": "Linux R20 same SHA256 5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B; global Riseup still unaccepted",
+  "notClaims": [
+    "Any Windows Smart App Control policy acceptance",
+    "Ubuntu all-process DNS/IPv6 leak-free VPN",
+    "ChatGPT authenticated browser challenge success"
+  ],
+  "releasePolicy": "Publish only once final exact-SHA CI and per-asset checksum verification succeed"
+}
