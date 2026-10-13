@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.3.7-r51-protocol-expansion-2",
+  "version": "4.3.8-r52-stale-node-health-ttl",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 28329,
-      "sha256": "06856ABBC8C3EAF81038280BA441E975089B7729FEEBA6776C9ECC041B1B4DE7"
+      "bytes": 32784,
+      "sha256": "636CE599AB8507089A9158F36767CC64276BA6DEF4F0B220801AD2734E785491"
     },
     {
       "file": ".gitignore",
@@ -95,8 +95,8 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 116029,
-      "sha256": "EFCC2B558D7620C427F4FC14B95D57BDFFCBC16B0290BF2425FCEC296A9B629B"
+      "bytes": 115842,
+      "sha256": "CEC121B3654BC2526246B5672174FCCE7ECB091F34269E85DA94EC311824CE27"
     },
     {
       "file": "app/FreeNetHub.ps1",
@@ -105,8 +105,8 @@
     },
     {
       "file": "app/manifest.json",
-      "bytes": 4833,
-      "sha256": "6B61F0C85348AB53B23C0D753D5F860907286C3EAF1C40370D1FB4062984BD96"
+      "bytes": 4860,
+      "sha256": "C8A1DF91547454ABC1E1DE2D49EB3E5FE1B9D6DD434A8538AA6726053B61DFA4"
     },
     {
       "file": "app/nodehub.py",
@@ -115,8 +115,8 @@
     },
     {
       "file": "app/View.xaml",
-      "bytes": 73877,
-      "sha256": "8297EC1381CE796F36BBF5AEEF6C43C7B070BED54FDEEF018E15D82E1222E063"
+      "bytes": 73864,
+      "sha256": "3F7A9F5E7D16DEF9F14933009FE090DEB3B5203A0245AE954E9CFC77AAE60C6A"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -1429,6 +1429,11 @@
       "sha256": "DA83678B3ECCDFB705AA60C61EC703E9641260B491C17CD4AF34F5B17261983D"
     },
     {
+      "file": "evidence/V438_R52_STAGED_CANDIDATE_ACCEPTANCE_20261009.json",
+      "bytes": 1070,
+      "sha256": "7BCF967B5FAE6ACC2CA08254092B5F9CC99011877F8F053487A6490582A34D14"
+    },
+    {
       "file": "evidence/V43_INSTALLER_ACCEPTANCE_20261003.json",
       "bytes": 4066,
       "sha256": "424CD816877627D7622C69184B1A88E2812AE9991CBF746D88037D6D20A0B708"
@@ -1645,8 +1650,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 42775,
-      "sha256": "63909D8E4DC3C80D2F575881BF3695F48CA096034C32E92839D2B67F4B7E4EEA"
+      "bytes": 42793,
+      "sha256": "F8E865344DEA6FD003AD6FE2D3C8BC3152CE80F092F6A00132BF46A158648F7D"
     },
     {
       "file": "SECURITY.md",
@@ -1897,6 +1902,11 @@
       "file": "tests/build_v437_installer.ps1",
       "bytes": 3522,
       "sha256": "968EF2A5141B4AC9D0A349F33EF125310DA3B2BBB2BA7AF4D94FC171EAC39C21"
+    },
+    {
+      "file": "tests/build_v438_installer.ps1",
+      "bytes": 3522,
+      "sha256": "A34205E3E9430F97D1A9C090502DBFB146F677EAB5B887C2E363C0098F0AA865"
     },
     {
       "file": "tests/build_v43_installer.ps1",
@@ -2295,8 +2305,8 @@
     },
     {
       "file": "tests/test_engine.py",
-      "bytes": 70878,
-      "sha256": "AF64895FCF987E4150CEFB28BF1AF81AA91C29E070EC94FB4E5E23974EE483CD"
+      "bytes": 71594,
+      "sha256": "AD669EED3FAEF0472BC8258D3B9CD9EDA1D58F5BF993400D5042ED599330A129"
     },
     {
       "file": "tests/test_lifecycle_safety.py",
@@ -2470,8 +2480,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 12496,
-      "sha256": "3C2CDE1D9E94120BA90E73BBC130EA5B2CCB8CA6B210B84682B6E6809D1E4F02"
+      "bytes": 12489,
+      "sha256": "7EE7FA2D4B8A1FB465D2C4CC56CFE1F3AD4EC64CEF0E6D88FFFE54C731FF0C7D"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",

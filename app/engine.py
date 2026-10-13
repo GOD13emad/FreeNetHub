@@ -191,13 +191,9 @@ def node_endpoint_tests_fresh(store=None,ttl_seconds=300):
  if not nodes:return False
  now_utc=dt.datetime.now(dt.timezone.utc)
  for n in nodes:
-  ep=n.get('endpoint_test') if isinstance(n.get('endpoint_test'),dict) else None
-  if not ep or not ep.get('checked'):return False
-  try:
-   stamp=dt.datetime.fromisoformat(str(ep.get('checked')).replace('Z','+00:00'))
-   if stamp.tzinfo is None:stamp=stamp.replace(tzinfo=dt.timezone.utc)
-   if (now_utc-stamp.astimezone(dt.timezone.utc)).total_seconds()>ttl_seconds:return False
-  except ValueError:return False
+  # One proof predicate for both endpoint re-use and node ranking:
+  # missing, naive, stale or future timestamps must not suppress a new scan.
+  if not node_proof_fresh(n.get('endpoint_test'),ttl_seconds,now_utc):return False
  return True
 
 def node_batch_fast():

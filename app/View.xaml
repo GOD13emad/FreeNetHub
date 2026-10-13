@@ -106,7 +106,7 @@
    <DockPanel>
     <StackPanel DockPanel.Dock="Top" FlowDirection="RightToLeft">
      <TextBlock Text="FREENET HUB" FontSize="25" FontWeight="Bold" Foreground="{DynamicResource Accent}" FlowDirection="LeftToRight"/>
-     <TextBlock Text="R28 FINAL · CONNECTION CENTER" FontSize="10" Foreground="{DynamicResource Muted}" FlowDirection="LeftToRight" Margin="0,2,0,18"/>
+     <TextBlock Text="CONNECTION CENTER" FontSize="10" Foreground="{DynamicResource Muted}" FlowDirection="LeftToRight" Margin="0,2,0,18"/>
      <Border Background="{DynamicResource Soft}" CornerRadius="10" Padding="12">
       <StackPanel>
        <TextBlock Text="خلاصه وضعیت" FontSize="11" Foreground="{DynamicResource Muted}"/>

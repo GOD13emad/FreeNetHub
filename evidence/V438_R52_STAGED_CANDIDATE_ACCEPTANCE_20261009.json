@@ -1,0 +1,21 @@
+{
+  "version": "4.3.8",
+  "status": "R52_UNRELEASED_STAGED_INSTALLER_ACCEPTANCE_OPEN",
+  "revision": "4.3.8-r52-stale-node-health-ttl",
+  "intent": "R52 windows stale NODE health TTL candidate, unreleased",
+  "sourceMain": "fcb18d8378fe0a409a61a4e217439fdb96ad24e0",
+  "sourcePR33CI": "11/11 PASS",
+  "installerFilename": "FreeNetHub_4.3.8_R52_Setup.exe",
+  "localWindowsBuild": "PASS",
+  "localBuildSHA256": "7214F7AE832539924B58A6750584079DD859DB5CDA53A59A345B5C9DA3D24DD0",
+  "localBuildBytes": 24260213,
+  "appPayloadSourceHash17": "PASS",
+  "windowsNativeUnitTests": "176/176 PASS on staged R52 working tree",
+  "updaterDowngradeCheck": "PASS no update from R52 to R51",
+  "trustedPublisherSigning": "OPEN: Authenticode NotSigned; development certificates not public trusted",
+  "isolatedHostedFreshInstall": "OPEN",
+  "isolatedHostedR51Upgrade": "OPEN",
+  "realUserGUIAcceptance": "OPEN: host GUI tool blocked",
+  "publish": "NO; keep R51 live and R52 candidate unpublished",
+  "network": "NO network route, DNS, Tailscale or active FreeNet Hub session changed"
+}

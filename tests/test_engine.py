@@ -491,6 +491,19 @@ Network Destination        Netmask          Gateway       Interface  Metric
  def test_node_endpoint_freshness_reuses_recent_fast_scan(self):
   stamp=E.now();store={'schema':1,'selected':'n0','nodes':[{'id':'n0','endpoint_test':{'reachable':True,'checked':stamp}},{'id':'n1','endpoint_test':{'reachable':False,'checked':stamp}}]}
   self.assertTrue(E.node_endpoint_tests_fresh(store,300))
+ def test_node_endpoint_scan_rejects_future_and_undated_proofs(self):
+  import datetime as dt
+  future=(dt.datetime.now(dt.timezone.utc)+dt.timedelta(days=365)).isoformat()
+  valid=E.now()
+  node={'id':'n0','endpoint_test':{'reachable':True,'checked':future}}
+  store={'schema':1,'selected':'n0','nodes':[node]}
+  self.assertFalse(E.node_endpoint_tests_fresh(store,300))
+  node['endpoint_test']['checked']=valid
+  self.assertTrue(E.node_endpoint_tests_fresh(store,300))
+  node['endpoint_test']['checked']=dt.datetime.now().isoformat()
+  self.assertFalse(E.node_endpoint_tests_fresh(store,300))
+  node['endpoint_test']['checked']='2000-01-01T00:00:00+00:00'
+  self.assertFalse(E.node_endpoint_tests_fresh(store,300))
  def test_node_benchmark_reuses_fresh_endpoint_evidence_without_rescan(self):
   stamp=E.now();nodes=[
    {'id':'s','protocol':'ss','source':'AURX_HTTP_VERIFIED','pinned':False,'favorite':False,'endpoint_test':{'reachable':True,'latency_ms':10,'checked':stamp}},
