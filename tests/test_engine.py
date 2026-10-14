@@ -703,6 +703,16 @@ Network Destination        Netmask          Gateway       Interface  Metric
     with self.assertRaisesRegex(RuntimeError,'UPDATE_HASH_MISMATCH'):E.update_download()
    self.assertEqual(prior.read_bytes(),b'old')
 
+ def test_update_cache_prune_fails_closed_on_python_before_312(self):
+  with tempfile.TemporaryDirectory() as td:
+   updates=pathlib.Path(td)/'updates';updates.mkdir()
+   candidate=updates/'v4.3.2';candidate.mkdir()
+   file=candidate/'FreeNetHub_4.3.2_R46_Setup.exe';file.write_bytes(b'keep')
+   # Python <3.12 has no is_junction; never delete without a reliable check.
+   with patch.object(pathlib.Path,'is_junction',None):
+    self.assertEqual(E.prune_stale_installer_cache(updates,'v4.3.10-r54'),[])
+   self.assertEqual(file.read_bytes(),b'keep')
+
  def test_update_cache_prune_skips_windows_junctions(self):
   with tempfile.TemporaryDirectory() as td:
    root=pathlib.Path(td)

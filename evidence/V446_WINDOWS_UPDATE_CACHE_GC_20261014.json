@@ -78,9 +78,10 @@
       "Known stale versioned installer caches pruned only after good download and unknown/user data retained",
       "Mismatched downloaded SHA does not prune previous installer",
       "Symlinked old tag must not be followed",
-      "Path.is_junction(root) and Path.is_junction(child) both abort stale installer deletion"
+      "Path.is_junction(root) and Path.is_junction(child) both abort stale installer deletion",
+      "Older Python missing Path.is_junction must not delete stale cache or break updater"
     ],
-    "localLinux": "PENDING_REVISED_LOCAL_VALIDATION",
+    "localLinux": "PENDING_FINAL_CANDIDATE_VALIDATION",
     "crossPlatformCI": "PENDING exact candidate SHA",
     "security": "PENDING exact candidate and full CI",
     "limitation": "Unit tests are verification, not field update-install validation; installed R53 still uses previously shipped engine binary."
@@ -108,8 +109,8 @@
     ]
   },
   "brain": "Candidate until PR exact-head CI and merge; dual-repo postmerge verification afterward",
-  "status": "CANDIDATE_REVISION_B_UNPROMOTED",
-  "nextAction": "Rebuild PUBLIC_MANIFEST and test revised exact SHA; update PR53 only when local PASS; do not promote old head.",
+  "status": "V446C_CANDIDATE_UNPROMOTED",
+  "nextAction": "Rebuild public manifest, validate and exact-head CI; do not merge previous V446B head.",
   "reuseTargets": [
     "Project Brain",
     "Update release notes",
@@ -117,7 +118,7 @@
     "User documentation",
     "Release V&V"
   ],
-  "revision": "V446B",
+  "revision": "V446C",
   "initialCandidate": {
     "sha": "b5835221991c90cd0094621e2e2fcd0b314003e1",
     "ciRun": 38587597956,
@@ -131,5 +132,16 @@
     "guard": "Hermetic Path.is_junction simulation for root and child candidate, retaining protected file",
     "risk": "User data outside the update cache tree",
     "status": "LOCAL_CANDIDATE_UNPROVEN_HOSTED"
+  },
+  "previousHead": "b20a30ba3d72409d30fa46df515eaa2017c08b46",
+  "pythonCompatibility": {
+    "fact": "Path.is_junction() was added in Python 3.12; older supported-environment Python runtimes may lack this API. App launch script probes installed pythonw.exe/python.exe without strict runtime lower-bound.",
+    "source": [
+      "https://docs.python.org/3.12/library/pathlib.html#pathlib.Path.is_junction",
+      "app/FreeNetHub.ps1"
+    ],
+    "status": "CONFIRMED",
+    "prevention": "If is_junction is unavailable, skip automatic cleanup with no exception and retain every prior installer; new SHA-verified download still returns successfully.",
+    "regression": "Simulate Path.is_junction unavailable; assert no stale installer removed and no runtime exception."
   }
 }

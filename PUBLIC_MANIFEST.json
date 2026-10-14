@@ -95,8 +95,8 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 116920,
-      "sha256": "26E2AB0A45A8BAFF6D284196B4FA6FD6C4D1363E6CBD8C5A627FD57BC154D4A4"
+      "bytes": 116975,
+      "sha256": "5FE26EDF8E9A17CA7AE2F441CC772419E80574B501BCAED0144036BC314FC6A9"
     },
     {
       "file": "app/FreeNetHub.ps1",
@@ -106,7 +106,7 @@
     {
       "file": "app/manifest.json",
       "bytes": 4874,
-      "sha256": "D7301F8E0EB4352E83B5A5B6348B1DEFCF13FACBA9E6E6499F8E17F1C20A536E"
+      "sha256": "E1CF428418754366FB2E8B2D86B4052423812504D9D961CC5C069768BEAC636F"
     },
     {
       "file": "app/nodehub.py",
@@ -1515,8 +1515,8 @@
     },
     {
       "file": "evidence/V446_WINDOWS_UPDATE_CACHE_GC_20261014.json",
-      "bytes": 6546,
-      "sha256": "2BCF26E447288759797BA2EB11030B6A7027ED30A063A32DBD1BE49AD217898B"
+      "bytes": 7383,
+      "sha256": "254600D8B5BD809BA813E0AF1B71CD91C8BC603C2B6D5F36D82CBD25F11A68F6"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1700,8 +1700,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 148072,
-      "sha256": "BE7E19778BDDED98B65CE814B7B43CD37CF4063C2B1F17000A3E35EC12C56526"
+      "bytes": 148993,
+      "sha256": "C3646C736797400AC91E9E4C19ACD951F936B838F36FDFE5F0CADEB3A8DF697A"
     },
     {
       "file": "pytest.ini",
@@ -1721,7 +1721,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "EF5B0664E538CCFE60841129B3E5A888B71ADF1BDA2B986E5B671D9B4213FF39"
+      "sha256": "CF8D8B8129533BAA90012935693C08A3966C657509E7EC2FBB17853B9EB3DFED"
     },
     {
       "file": "SECURITY.md",
@@ -2385,8 +2385,8 @@
     },
     {
       "file": "tests/test_engine.py",
-      "bytes": 75871,
-      "sha256": "A8583AAF8F1CF69A3973B6CC411F18F53EF35CC45BFB96B1E406EC429B0A47C8"
+      "bytes": 76422,
+      "sha256": "EDB439C4471A83761B2FD00926B0A0FEBDF21ACCC00E13128F05E1389B2501FF"
     },
     {
       "file": "tests/test_lifecycle_safety.py",
