@@ -15,8 +15,8 @@
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
-      "bytes": 1307,
-      "sha256": "D6D7386DB8D0E166AF41AF5DA42CE93A6084C9FB75ECD3817E1A1BDB3A92B3BF"
+      "bytes": 3995,
+      "sha256": "9F15A143D88AF82CFD4142FCC69F6602B0C34D9C4C83FFD43509DB40C1946814"
     },
     {
       "file": ".gitignore",
@@ -1529,6 +1529,11 @@
       "sha256": "8B01992D8903D044EBECC94D9B3756669B0A1B32594221055C19C0FA92EBE0A4"
     },
     {
+      "file": "evidence/V448_R54_EXACT_TESTED_ARTIFACT_20261014.json",
+      "bytes": 3147,
+      "sha256": "0A178CC00F58FEBF3B435EA6E2A69AE8C118D5C7D16BCAAF1E73155EF62402D0"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1710,8 +1715,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 152995,
-      "sha256": "F5DC86EB415C5F42110C70E9D1CCBBC9D4549E799D52DE95880B710664672623"
+      "bytes": 154823,
+      "sha256": "352F468646D93F8AA5BD02CDC8DFDDACB33D7D67D7BC87A2F183711DAED5C60B"
     },
     {
       "file": "pytest.ini",
