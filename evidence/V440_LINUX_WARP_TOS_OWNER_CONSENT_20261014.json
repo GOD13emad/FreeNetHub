@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "context": "Linux consumer WARP Terms-of-Service owner consent invariant found by read-only host/code audit",
+  "mainBaselineSha": "d6dc7b27152d8bc2df6b489e17c93614f314368b",
+  "claim": {
+    "fact": "Accepted source invoked warp-cli --accept-tos from read-only status and from connect/disconnect, guard recovery and post-install version query.",
+    "meaning": "Cloudflare CLI documentation defines --accept-tos as accepting legal Terms. Owner agreement must not occur automatically in status/recovery.",
+    "fieldState": "Ubuntu 26.04.1 WARP 2026.7.1377.0; WARP CLI status requests consent; CFON SOCKS5 live; concurrent Tailscale + L2TP Seman active."
+  },
+  "objective": "Single change: fail closed on missing owner WARP ToS; never autoaccept, while preserving consented WARP functionality.",
+  "mutation": {
+    "files": [
+      "crossplatform/linux/freenet_hub_linux.py",
+      "crossplatform/linux/warp_guard.py",
+      "crossplatform/linux/recover_warp_remote.sh",
+      "crossplatform/linux/install_warp_official.sh",
+      "crossplatform/linux/test_warp_tos_owner_consent.py",
+      ".github/workflows/ci.yml"
+    ],
+    "rule": "Remove implicit --accept-tos calls and report WARP_TOS_OWNER_ACTION_REQUIRED before registration/guard/connect.",
+    "test": "Mocked ToS error checks no registration or mutation before consent; existing scope/private-state regression."
+  },
+  "rejected": [
+    "Autoaccept WARP legal terms",
+    "Bypass sudo or UAC",
+    "Alter Linux network routes while PPP and Tailscale operate",
+    "Edit public frozen R20 package under old checksum"
+  ],
+  "verificationVsValidation": "Tests confirm source behavior only. Owner acceptance, physical WARP and DNS route validation unproven. Source edit is not an installed update.",
+  "evidenceStatus": "SOURCE_CANDIDATE_UNMERGED_BEFORE_HOSTED_CI",
+  "methodSources": [
+    {
+      "url": "https://blog.cloudflare.com/announcing-warp-for-linux-and-proxy-mode/",
+      "claim": "--accept-tos means accept Terms of Service"
+    },
+    {
+      "url": "https://developers.cloudflare.com/warp-client/get-started/linux/",
+      "claim": "native registration/connect/trace warp=on"
+    },
+    {
+      "url": "https://tailscale.com/docs/reference/faq/other-vpns",
+      "claim": "overlapping VPNs may conflict"
+    }
+  ],
+  "criticalPath": "Exact SHA CI, qualified new Linux install/update before source-to-binary promotion, owner native consent and OS auth, then bounded route/DNS trial.",
+  "reuseTargets": [
+    "Project Brain",
+    "WARP legal consent audit",
+    "release regression"
+  ],
+  "provenance": {
+    "previousBrainSha256": "52728ED382815F1F5EA7B422889FFE291B19A28B8CFCFD53A75ABD2373BBE15B",
+    "oldBrainBackup": ".git/PROJECT_BRAIN_BEFORE_WARP_TOS_PATCH_20261014.bak"
+  }
+}

@@ -109,8 +109,8 @@
     },
     {
       "file": "linux/freenet_hub_linux.py",
-      "bytes": 44276,
-      "sha256": "CE6F7B1D959521FBEEEF8BD1D33E7571ECC2EE88E18203E1350D24EC8F1FF045"
+      "bytes": 44627,
+      "sha256": "47CEFFCCEF77BB528B08FB8BA4B5A0ED94F492E7774F37A05487D37B402C7ACC"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
@@ -144,8 +144,8 @@
     },
     {
       "file": "linux/install_warp_official.sh",
-      "bytes": 946,
-      "sha256": "71D919FC23EDAB5F9493773B91123C0941C169F5DBBA0803C8904783E2471A43"
+      "bytes": 933,
+      "sha256": "0EB236B45BC8FFC4CD604B60E0C5DCBB1ADF090DDFFBB9ADBC31CED08B1C646F"
     },
     {
       "file": "linux/install_warpplus_pinned.sh",
@@ -164,8 +164,8 @@
     },
     {
       "file": "linux/recover_warp_remote.sh",
-      "bytes": 657,
-      "sha256": "525FB134CCEF73547EE56B9B9CF0C07A37DE60D4829C90C400979ED72F371B95"
+      "bytes": 644,
+      "sha256": "86B342A0BB9767B92512850C68FD378D499AF61E8130369BAA24F9AB63CE9653"
     },
     {
       "file": "linux/selftest.py",
@@ -203,14 +203,19 @@
       "sha256": "8A3877F81D1143159C7588CEE16612F5FB8A8907F233995ACDCD441091503041"
     },
     {
+      "file": "linux/test_warp_tos_owner_consent.py",
+      "bytes": 1842,
+      "sha256": "A929BD57D4ED68E44BEB5433A89F9363FC324AB7C47759DC2628ADBFD585EEB5"
+    },
+    {
       "file": "linux/uninstall.sh",
       "bytes": 3382,
       "sha256": "5F22894AF269D6DE6C2A9C05E2D5D163E55DBAE07784DE09A7A16FF935F9DA64"
     },
     {
       "file": "linux/warp_guard.py",
-      "bytes": 2144,
-      "sha256": "917FF14DF70BB5A859598483E52F36AC12937E551E404990930FD87069503F02"
+      "bytes": 2128,
+      "sha256": "2C8BC4D00AEEF66454E39545D335DE3527003BCE9EF631B35E668FDC075B138A"
     },
     {
       "file": "README_FA.md",

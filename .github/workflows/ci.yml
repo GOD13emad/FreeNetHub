@@ -52,6 +52,7 @@ jobs:
           python3 crossplatform/linux/test_private_state_permissions.py
           python3 crossplatform/linux/test_browser_profile.py
           python3 crossplatform/linux/test_scope_policy.py
+          python3 crossplatform/linux/test_warp_tos_owner_consent.py
           python3 crossplatform/linux/test_r37_parity.py
           python3 crossplatform/linux/test_update_revision.py
           python3 tests/test_linux_browser_action_guards.py

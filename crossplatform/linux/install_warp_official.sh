@@ -23,4 +23,4 @@ apt-get install -y cloudflare-warp
 systemctl enable --now warp-svc
 SH
 pkexec /bin/bash "$tmp"
-warp-cli --accept-tos --version
+warp-cli --version

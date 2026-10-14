@@ -379,9 +379,11 @@ def warp_status():
     cli = executable("warp-cli")
     if not cli:
         return {"ok": False, "error": "warp-cli missing"}
-    p = run([cli, "--accept-tos", "status"], 12)
+    p = run([cli, "status"], 12)
     text = (p.stdout + p.stderr).strip()
+    tos_needed = p.returncode != 0 and "terms of service" in text.lower()
     return {
+        "requires_owner_tos": tos_needed,
         "ok": p.returncode == 0,
         "text": text,
         "connected": "Connected" in text and "Disconnected" not in text,
@@ -392,10 +394,10 @@ def ensure_warp_registration():
     cli = executable("warp-cli")
     if not cli:
         return {"ok": False, "error": "warp-cli missing"}
-    p = run([cli, "--accept-tos", "registration", "show"], 12)
+    p = run([cli, "registration", "show"], 12)
     if p.returncode == 0:
         return {"ok": True, "state": "existing"}
-    p = run([cli, "--accept-tos", "registration", "new"], 30)
+    p = run([cli, "registration", "new"], 30)
     if p.returncode:
         return {
             "ok": False,
@@ -428,6 +430,10 @@ def warp_connect_safe():
     if not cli:
         return {"ok": False, "error": "warp-cli missing"}
     current = warp_status()
+    if not current.get("ok") and current.get("requires_owner_tos"):
+        return {"ok": False, "stage": "owner_consent",
+                "error": "WARP_TOS_OWNER_ACTION_REQUIRED",
+                "detail": "Accept the Cloudflare WARP Terms of Service yourself in its native interactive CLI before SYSTEM scope."}
     if current.get("connected"):
         t = trace(timeout=10)
         if t.get("ok") and (t.get("trace") or {}).get("warp") == "on":
@@ -439,7 +445,7 @@ def warp_connect_safe():
     guard = start_warp_guard()
     if not guard.get("ok"):
         return {"ok": False, "stage": "guard", "error": guard.get("error")}
-    p = run([cli, "--accept-tos", "connect"], 20)
+    p = run([cli, "connect"], 20)
     if p.returncode:
         return {"ok": False, "stage": "connect", "error": (p.stdout + p.stderr).strip(), "guard": guard}
     last = {}
@@ -484,7 +490,7 @@ def warp_disconnect():
             (STATE / f"warp_keep_{token}.ok").write_text("cancelled-after-manual-disconnect\n", encoding="utf-8")
         except Exception:
             pass
-    p = run([cli, "--accept-tos", "disconnect"], 20)
+    p = run([cli, "disconnect"], 20)
     last = {}
     for _ in range(10):
         time.sleep(0.5)

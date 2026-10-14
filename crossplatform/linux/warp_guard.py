@@ -70,7 +70,7 @@ if not trial_is_current():
 
 try:
     p = subprocess.run(
-        ["warp-cli", "--accept-tos", "disconnect"],
+        ["warp-cli", "disconnect"],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
