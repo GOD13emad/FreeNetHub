@@ -59,3 +59,26 @@ def test_windows_upgrade_cleans_only_disconnected_owned_orphan_runtime():
     assert "if(!$sessionKnown){ exit 42 }" in p
     assert "Stop-Process -Id ([int]$proc.ProcessId) -Force" in p
     assert "if((Get-ActiveListeners).Count){ exit 42 }" in p
+
+
+def test_windows_installer_rejects_split_appid_roots_before_any_cleanup():
+    iss=(ROOT/"windows/installer/FreeNetHub.iss").read_text(encoding="utf-8-sig")
+    guard=iss.split("function CheckConflictingInstallRoots: String;",1)[1].split(
+        "function PrepareToInstall",1)[0]
+    prepare=iss.split("function PrepareToInstall(var NeedsRestart: Boolean): String;",1)[1].split(
+        "procedure CurStepChanged",1)[0]
+    assert "RemoveBackslashUnlessRoot" in guard
+    assert "RegQueryStringValue(HKEY_CURRENT_USER" in guard
+    assert "BCE83A4E-8897-4D52-A650-BB67A2BB8142" in guard
+    assert "FileExists(AddBackslash(CanonicalDir) + 'RELEASE.json')" in guard
+    assert "FileExists(AddBackslash(RegisteredDir) + 'unins000.dat')" in guard
+    assert "CompareText(CanonicalDir, SelectedDir)" in guard
+    assert "CompareText(RegisteredDir, SelectedDir)" in guard
+    assert "Result := CheckConflictingInstallRoots;" in prepare
+    assert prepare.index("Result := CheckConflictingInstallRoots;") < prepare.index("P := FindPwsh;")
+    assert prepare.index("Result := CheckConflictingInstallRoots;") < prepare.index(
+        "ExtractTemporaryFile('Prepare-Upgrade.ps1');")
+    workflow=(ROOT/".github/workflows/ci.yml").read_text(encoding="utf-8")
+    assert "Reject duplicate AppId destinations without touching active installs" in workflow
+    assert "DUPLICATE_APPID_ROOT_FAIL_CLOSED_PASS" in workflow
+    assert "DUPLICATE_INSTALL_CHANGED_REGISTRATION" in workflow

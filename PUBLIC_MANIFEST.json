@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 29382,
-      "sha256": "EE1F61BE5E2C272349C94EF1AC7EC213E552B3CD78122D818513454881E1C0C2"
+      "bytes": 31557,
+      "sha256": "30D5538BD6287EF5A60C682BDB48E114B6C08276CF889D1AF22601F3EE834C8F"
     },
     {
       "file": ".gitignore",
@@ -2315,8 +2315,8 @@
     },
     {
       "file": "tests/test_lifecycle_safety.py",
-      "bytes": 3025,
-      "sha256": "0C03AF8A6FCF6A8E6CAB6B30E9E9DA6C002D2B2EAF18AC716155C8B63A78DEDA"
+      "bytes": 4498,
+      "sha256": "BA407C48360346929982EE75C85B4FE42C12074DA7E1D657C66390783D812A50"
     },
     {
       "file": "tests/test_linux_browser_action_guards.py",
@@ -2485,8 +2485,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 12489,
-      "sha256": "7EE7FA2D4B8A1FB465D2C4CC56CFE1F3AD4EC64CEF0E6D88FFFE54C731FF0C7D"
+      "bytes": 14599,
+      "sha256": "1914D0070FB0B427C2DA2B638FDABC41B4EE955E8551215C3A81BE995E861A13"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",

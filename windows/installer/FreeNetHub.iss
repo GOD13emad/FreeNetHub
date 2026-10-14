@@ -136,6 +136,46 @@ begin
   Result := FindPwsh;
 end;
 
+// Fail closed if a previous test/install has left a second installation
+// under the same AppId. Inno normally reuses the registry's old directory,
+// which can otherwise silently redirect a user's upgrade to a test folder.
+function CheckConflictingInstallRoots: String;
+var
+  CanonicalDir, SelectedDir, RegisteredDir, RegistrySubkey: String;
+begin
+  Result := '';
+  CanonicalDir := RemoveBackslashUnlessRoot(
+    ExpandConstant('{localappdata}\Programs\FreeNetHub'));
+  SelectedDir := RemoveBackslashUnlessRoot(ExpandConstant('{app}'));
+
+  // A canonical installed product must never be silently sidelined by
+  // a distinct destination, even when the registry now points elsewhere.
+  if FileExists(AddBackslash(CanonicalDir) + 'RELEASE.json') and
+     (CompareText(CanonicalDir, SelectedDir) <> 0) then begin
+    Result := 'A Free Net Hub installation already exists at ' +
+      CanonicalDir + '. Setup refuses to create a second installation. ' +
+      'Back up the existing profile and reconcile the installation record first.';
+    exit;
+  end;
+
+  RegistrySubkey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' +
+    '{BCE83A4E-8897-4D52-A650-BB67A2BB8142}_is1';
+  if RegQueryStringValue(HKEY_CURRENT_USER, RegistrySubkey,
+                        'InstallLocation', RegisteredDir) then begin
+    RegisteredDir := RemoveBackslashUnlessRoot(RegisteredDir);
+    if (RegisteredDir <> '') and
+       (CompareText(RegisteredDir, SelectedDir) <> 0) and
+       (FileExists(AddBackslash(RegisteredDir) + 'unins000.dat') or
+        FileExists(AddBackslash(CanonicalDir) + 'RELEASE.json')) then begin
+      Result := 'Free Net Hub uninstall registration points to ' +
+        RegisteredDir + ', but Setup selected ' + SelectedDir +
+        '. Setup refuses to split AppId uninstall history. ' +
+        'Preserve both installations and use a controlled maintenance recovery.';
+      exit;
+    end;
+  end;
+end;
+
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
   P, Winget, Helper, Params: String;
@@ -143,6 +183,10 @@ var
 begin
   NeedsRestart := False;
   Result := '';
+  // Directory/AppId ambiguity must abort before prerequisite installation
+  // or any previous app cleanup is attempted.
+  Result := CheckConflictingInstallRoots;
+  if Result <> '' then exit;
   P := FindPwsh;
 
   { PowerShell 7 is a product prerequisite on both fresh install and upgrade. }

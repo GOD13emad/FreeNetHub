@@ -501,6 +501,35 @@ jobs:
           if(!(Test-Path -LiteralPath (Join-Path $probe 'FreeNetHub.exe'))){throw 'R51_ROLLBACK_GUI_MISSING'}
           Write-Host 'R51_TO_R52_UPGRADE_AND_EXPLICIT_R51_ROLLBACK_PASS'
 
+      - name: Reject duplicate AppId destinations without touching active installs
+        shell: pwsh
+        run: |
+          # Only on an isolated ephemeral Windows CI runner, never the user PC.
+          $installer=(Resolve-Path 'delivery\github_v4.3.8\FreeNetHub_4.3.8_R52_Setup.exe').Path
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-r51-to-r52'
+          $canonical=Join-Path $env:LOCALAPPDATA 'Programs\FreeNetHub'
+          $oldRegistry='HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{BCE83A4E-8897-4D52-A650-BB67A2BB8142}_is1'
+          if(Test-Path -LiteralPath $canonical){throw 'CI_CANONICAL_ROOT_UNEXPECTEDLY_PRESENT'}
+          $before=(Get-Content -LiteralPath (Join-Path $probe 'RELEASE.json') -Raw|ConvertFrom-Json).releaseRevision
+          if($before -ne '4.3.7-r51-protocol-expansion-2'){throw 'CI_PRECONDITION_R51_WRONG'}
+          $regBefore=(Get-ItemProperty -LiteralPath $oldRegistry).InstallLocation
+          if(([IO.Path]::GetFullPath($regBefore).TrimEnd('\')) -ne ([IO.Path]::GetFullPath($probe).TrimEnd('\'))){throw 'CI_REGISTERED_ROOT_WRONG'}
+          try {
+            New-Item -ItemType Directory -Path $canonical | Out-Null
+            Set-Content -LiteralPath (Join-Path $canonical 'RELEASE.json') -Value '{"version":"4.3.7"}' -Encoding utf8NoBOM
+            foreach($destination in @($probe,$canonical)){
+              $run=Start-Process -FilePath $installer -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$destination)) -Wait -PassThru
+              if($run.ExitCode -eq 0){throw ('DUPLICATE_INSTALL_GUARD_BYPASSED_'+$destination)}
+              $unchanged=(Get-Content -LiteralPath (Join-Path $probe 'RELEASE.json') -Raw|ConvertFrom-Json).releaseRevision
+              if($unchanged -ne $before){throw 'DUPLICATE_INSTALL_OVERWROTE_R51'}
+              if((Get-ItemProperty -LiteralPath $oldRegistry).InstallLocation -ne $regBefore){throw 'DUPLICATE_INSTALL_CHANGED_REGISTRATION'}
+            }
+            Write-Host 'DUPLICATE_APPID_ROOT_FAIL_CLOSED_PASS'
+          } finally {
+            if(Test-Path -LiteralPath $canonical){Remove-Item -LiteralPath $canonical -Recurse -Force}
+          }
+
+
   virtual-acceptance:
     needs:
       - windows-unit
