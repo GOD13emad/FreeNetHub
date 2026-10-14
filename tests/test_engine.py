@@ -666,6 +666,53 @@ Network Destination        Netmask          Gateway       Interface  Metric
     with self.assertRaisesRegex(RuntimeError,'UPDATE_HASH_MISMATCH'):E.update_download()
     self.assertFalse(any((root/'updates').rglob('*.exe')))
 
+ def test_update_download_prunes_only_known_stale_installers_after_verified_download(self):
+  rel={'tag':'v4.3.10-r54','name':'R54','published':'x','updateAvailable':True,'asset':{'name':'FreeNetHub_4.3.10_R54_Setup.exe','url':'https://example.invalid/r54.exe','bytes':3,'digest':'sha256:ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'}}
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);updates=root/'updates';updates.mkdir()
+   old=[('v4.2.0-r39-final','FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe'),('v4.3.2','FreeNetHub_4.3.2_R46_Setup.exe')]
+   for tag,name in old:
+    (updates/tag).mkdir();(updates/tag/name).write_bytes(b'old')
+   (updates/'v4.3.1-user').mkdir();(updates/'v4.3.1-user'/'notes.txt').write_bytes(b'user')
+   (updates/'v4.3.1-unknown').mkdir()
+   (updates/'v4.3.1-unknown'/'FreeNetHub_4.3.1_R47_Setup.exe').write_bytes(b'old')
+   (updates/'v4.3.1-unknown'/'custom.txt').write_bytes(b'keep')
+   (root/'user_data').mkdir();(root/'user_data'/'settings.json').write_bytes(b'keep')
+   def fake_native(args,timeout):
+    pathlib.Path(args[args.index('-o')+1]).write_bytes(b'abc')
+    return {'exit':0,'out':'','err':''}
+   with patch.object(E,'ROOT',root),patch.object(E,'update_release',return_value=rel),patch.object(E,'root_network_context',return_value={'bound':True,'interface':'192.0.2.10'}),patch.object(E,'native',side_effect=fake_native):
+    result=E.update_download()
+   self.assertTrue(result['verified'])
+   self.assertEqual(result['staleCachePrunedDirs'],sorted([tag for tag,_ in old]))
+   for tag,_ in old:self.assertFalse((updates/tag).exists())
+   self.assertEqual((updates/'v4.3.10-r54'/'FreeNetHub_4.3.10_R54_Setup.exe').read_bytes(),b'abc')
+   self.assertEqual((updates/'v4.3.1-user'/'notes.txt').read_bytes(),b'user')
+   self.assertEqual((updates/'v4.3.1-unknown'/'custom.txt').read_bytes(),b'keep')
+   self.assertEqual((root/'user_data'/'settings.json').read_bytes(),b'keep')
+
+ def test_update_download_hash_failure_never_prunes_existing_installer(self):
+  rel={'tag':'v4.3.10-r54','name':'R54','published':'x','updateAvailable':True,'asset':{'name':'FreeNetHub_4.3.10_R54_Setup.exe','url':'https://example.invalid/r54.exe','bytes':3,'digest':'sha256:'+'0'*64}}
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);old=root/'updates'/'v4.3.2';old.mkdir(parents=True)
+   prior=old/'FreeNetHub_4.3.2_R46_Setup.exe';prior.write_bytes(b'old')
+   def fake_native(args,timeout):
+    pathlib.Path(args[args.index('-o')+1]).write_bytes(b'abc')
+    return {'exit':0}
+   with patch.object(E,'ROOT',root),patch.object(E,'update_release',return_value=rel),patch.object(E,'root_network_context',return_value={'bound':True,'interface':'192.0.2.10'}),patch.object(E,'native',side_effect=fake_native):
+    with self.assertRaisesRegex(RuntimeError,'UPDATE_HASH_MISMATCH'):E.update_download()
+   self.assertEqual(prior.read_bytes(),b'old')
+
+ def test_update_cache_prune_skips_symlink_targets(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td);updates=root/'updates';updates.mkdir()
+   external=root/'personal';external.mkdir()
+   protected=external/'FreeNetHub_4.3.2_R46_Setup.exe';protected.write_bytes(b'private')
+   try:(updates/'v4.3.2').symlink_to(external,target_is_directory=True)
+   except (OSError,NotImplementedError):self.skipTest('Symlink creation unavailable')
+   self.assertEqual(E.prune_stale_installer_cache(updates,'v4.3.10-r54'),[])
+   self.assertEqual(protected.read_bytes(),b'private')
+
  def test_update_download_binds_pre_tun_root_interface(self):
   rel={'tag':'v4.2.0-r29','name':'R29','published':'x','updateAvailable':True,'asset':{'name':'FreeNetHub_R29.exe','url':'https://example.invalid/x.exe','bytes':3,'digest':'sha256:ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'}}
   ctx={'bound':True,'interface':'192.168.20.5','interfaceAlias':'Ethernet 3','proof':'BOUND_PRE_TUN_SOURCE_AND_TRACE_NOT_POST_TUN'}
