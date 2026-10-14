@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "changeSet": "V446",
+  "objective": "Fix repeat accumulation of superseded Windows installer cache following a verified update download, without altering published R53/R21 assets or live system networking.",
+  "baseline": {
+    "acceptedMain": "a7893b5d2f5158dd7b644e029f91f0c955a5b5e1",
+    "officialCI": {
+      "run": 38584377964,
+      "success": 10,
+      "total": 10
+    },
+    "forkCI": {
+      "run": 38584538560,
+      "success": 10,
+      "total": 10
+    },
+    "forkSecurity": {
+      "run": 38584535347,
+      "success": 3,
+      "total": 3
+    },
+    "ownerInstalledWindows": "R53 4.3.9",
+    "ownerInstalledLinux": "R21 4.2.0-linux.21-r54"
+  },
+  "fact": {
+    "rootCause": "app/engine.py update_download previously validated SHA-256 and returned the new installer without pruning prior ROOT/updates/<tag> directories; two stale historical installers R39 and R46 accumulated in the Windows installed runtime.",
+    "source": "app/engine.py update_download pre-V446; Windows physical scoped updates directory",
+    "status": "CONFIRMED",
+    "physicalWindows": {
+      "oldInstallers": [
+        {
+          "name": "FreeNetHub_4.2.0_R39_OnlineNoAdmin_Setup.exe",
+          "sha256": "28D0D9D64F9580F6B800BEA53F3E8310C4A2C52CD052E7F56BF721D4E0927F9F",
+          "bytes": 24264406
+        },
+        {
+          "name": "FreeNetHub_4.3.2_R46_Setup.exe",
+          "sha256": "227881038598CB77CD6F1EB03E4EE0884E11C054A6B1881219BF6B43A678199F",
+          "bytes": 24254909
+        }
+      ],
+      "bytesRemoved": 48519315,
+      "remainingOldUpdateDirectories": 0,
+      "postCleanupCFONGoogleHTTP": 204,
+      "postCleanupMainR53Process": "Running",
+      "rollbackPrestateAndReceipt": "OWNER_PRIVATE_GIT_MAINTENANCE/FNH_R446_CACHE_20261014/RECEIPT.json",
+      "scope": "Exact 2 versioned installer files; current installation/settings/network routes untouched",
+      "status": "PASS"
+    }
+  },
+  "decision": {
+    "method": "Prune only immediate historic tagged cache directories containing exactly one recognized FreeNetHub_*_Setup.exe after a NEW installer has a valid published SHA256; avoid symlinks, unknown files, nested directories, unrelated user data or cleanup on failed download.",
+    "rationale": "Minimum controls prevent accumulation while preserving unknown user files and keeping old installer if the new download fails. No generic recursive purge or forced deletion of locked files.",
+    "rejected": [
+      "Delete entire updates directory unconditionally",
+      "Prune before validating replacement installer",
+      "Follow symlinks or remove directories containing unknown sidecars",
+      "Automatically upgrade the installed R53 binary without a separately accepted release"
+    ]
+  },
+  "mutation": {
+    "source": "app/engine.py",
+    "tests": "tests/test_engine.py",
+    "metadata": [
+      "app/manifest.json",
+      "RELEASE.json",
+      "PUBLIC_MANIFEST.json",
+      "PROJECT_BRAIN.md",
+      "evidence/V446_WINDOWS_UPDATE_CACHE_GC_20261014.json"
+    ],
+    "guard": "prune_stale_installer_cache after successful SHA verification; return pruned directory IDs",
+    "scope": "Source and integrity metadata only; existing user R53 binary unchanged until future tested release."
+  },
+  "vAndV": {
+    "newTests": [
+      "Known stale versioned installer caches pruned only after good download and unknown/user data retained",
+      "Mismatched downloaded SHA does not prune previous installer",
+      "Symlinked old tag must not be followed",
+      "Path.is_junction(root) and Path.is_junction(child) both abort stale installer deletion",
+      "Older Python missing Path.is_junction must not delete stale cache or break updater"
+    ],
+    "localLinux": "PENDING_FINAL_CANDIDATE_VALIDATION",
+    "crossPlatformCI": "PENDING exact candidate SHA",
+    "security": "PENDING exact candidate and full CI",
+    "limitation": "Unit tests are verification, not field update-install validation; installed R53 still uses previously shipped engine binary."
+  },
+  "rootCausePrevention": {
+    "rootCause": "Update installer download saved newest asset under ROOT/updates/tag without bounded lifecycle cleanup",
+    "prevention": "Prune tightly bounded known historic caches only after a validated replacement",
+    "guard": "Filename/tag allowlist + no symlink + single recognized file + skip locked files",
+    "regression": "SHA-failure protection, unrelated user-data preservation, symlink protection, Windows hosted 10-job CI including installer regression"
+  },
+  "roadmap": {
+    "accepted": [
+      "Dual GitHub CI and CodeQL on V445",
+      "Desktop scoped CFON and installed identity",
+      "Physical one-active-install scoped audit",
+      "Physical cleanup of 48.5MB old installer caches"
+    ],
+    "current": "V446 source retention fix & exact-SHA CI",
+    "open": [
+      "Publish/install update with V446 engine logic in a future revision; current Windows R53 binary unaffected",
+      "Windows elevated full PC_TUNNEL",
+      "Linux native WARP owner ToS/sudo and DNS/route rollback",
+      "Mobile actual Android/iOS core and real hardware/signing",
+      "Physical rollback restore"
+    ]
+  },
+  "brain": "Candidate until PR exact-head CI and merge; dual-repo postmerge verification afterward",
+  "status": "V446C_CANDIDATE_UNPROMOTED",
+  "nextAction": "Rebuild public manifest, validate and exact-head CI; do not merge previous V446B head.",
+  "reuseTargets": [
+    "Project Brain",
+    "Update release notes",
+    "Failure prevention",
+    "User documentation",
+    "Release V&V"
+  ],
+  "revision": "V446C",
+  "initialCandidate": {
+    "sha": "b5835221991c90cd0094621e2e2fcd0b314003e1",
+    "ciRun": 38587597956,
+    "status": "SUPERSEDED_BY_FURTHER_JUNCTION_GUARD"
+  },
+  "junctionSafety": {
+    "rootCause": "On Windows NTFS a directory junction is distinct from a symlink, and Python pathlib.Path.is_symlink may not reject it. Cache GC could follow a junction to an unrelated directory containing a syntactically eligible installer.",
+    "prevention": "Skip Path.is_junction() at both updates root and each candidate directory; retain existing symlink and single-file guards.",
+    "primarySource": "https://docs.python.org/3.12/library/pathlib.html#pathlib.Path.is_junction",
+    "evidence": "CPython pathlib is_junction Windows-specific API added Python 3.12.",
+    "guard": "Hermetic Path.is_junction simulation for root and child candidate, retaining protected file",
+    "risk": "User data outside the update cache tree",
+    "status": "LOCAL_CANDIDATE_UNPROVEN_HOSTED"
+  },
+  "previousHead": "b20a30ba3d72409d30fa46df515eaa2017c08b46",
+  "pythonCompatibility": {
+    "fact": "Path.is_junction() was added in Python 3.12; older supported-environment Python runtimes may lack this API. App launch script probes installed pythonw.exe/python.exe without strict runtime lower-bound.",
+    "source": [
+      "https://docs.python.org/3.12/library/pathlib.html#pathlib.Path.is_junction",
+      "app/FreeNetHub.ps1"
+    ],
+    "status": "CONFIRMED",
+    "prevention": "If is_junction is unavailable, skip automatic cleanup with no exception and retain every prior installer; new SHA-verified download still returns successfully.",
+    "regression": "Simulate Path.is_junction unavailable; assert no stale installer removed and no runtime exception."
+  }
+}

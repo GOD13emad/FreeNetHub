@@ -913,6 +913,32 @@ def update_release():
          'currentRevision':local_rev,'currentRevisionNumber':local_n,'remoteRevisionNumber':remote_n,'revisionComparable':revision_comparable,'updateAvailable':update_available,
          'asset':({'name':asset.get('name'),'url':asset.get('browser_download_url'),'bytes':asset.get('size'),'digest':asset.get('digest')} if asset else None),'rootPath':root_network_public(ctx)}
 
+
+def prune_stale_installer_cache(update_root, keep_tag):
+ """After a verified new download, discard only single-file historic installer caches."""
+ def unsafe_path(p):
+  check=getattr(p,'is_junction',None)
+  return p.is_symlink() or check is None or check()
+ update_root=pathlib.Path(update_root)
+ if not update_root.is_dir() or unsafe_path(update_root):return []
+ pruned=[]
+ for candidate in update_root.iterdir():
+  if candidate.name==keep_tag or unsafe_path(candidate) or not candidate.is_dir():continue
+  if not re.fullmatch(r'v[0-9][A-Za-z0-9._-]*',candidate.name,re.I):continue
+  try:
+   items=list(candidate.iterdir())
+   if len(items)!=1:continue
+   installer=items[0]
+   if installer.is_symlink() or not installer.is_file():continue
+   if not re.fullmatch(r'FreeNetHub_[A-Za-z0-9._-]+_Setup[.]exe',installer.name,re.I):continue
+   installer.unlink()
+   candidate.rmdir()
+   pruned.append(candidate.name)
+  except OSError:
+   # Locked installer or concurrent access: never fail the verified new update.
+   continue
+ return sorted(pruned)
+
 def update_download():
  rel=update_release();a=rel.get('asset')
  if not a or not a.get('url'):raise RuntimeError('UPDATE_INSTALLER_ASSET_MISSING')
@@ -932,7 +958,8 @@ def update_download():
  if actual!=expected:
   with contextlib.suppress(Exception):dest.unlink()
   raise RuntimeError('UPDATE_HASH_MISMATCH')
- return {'tag':rel.get('tag'),'name':rel.get('name'),'published':rel.get('published'),'installer':str(dest),'sha256':actual,'bytes':dest.stat().st_size,'verified':True,'rootPath':root_network_public(ctx)}
+ pruned=prune_stale_installer_cache(ROOT/'updates',tag)
+ return {'tag':rel.get('tag'),'name':rel.get('name'),'published':rel.get('published'),'installer':str(dest),'sha256':actual,'bytes':dest.stat().st_size,'verified':True,'staleCachePrunedDirs':pruned,'rootPath':root_network_public(ctx)}
 
 def direct_speed():
  progress('Direct test · verifying physical default route','DIRECT');t=test_timeouts()
