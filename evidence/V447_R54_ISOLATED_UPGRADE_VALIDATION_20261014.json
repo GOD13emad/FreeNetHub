@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "changeSet": "V447",
+  "mainObjective": "Validate a private R54 candidate on disposable Windows GitHub runners, with actual R53-to-R54 in-place installer upgrade, preservation of data, deterministic source integrity and explicit downgrade rollback without touching any live owner's R53 installation.",
+  "baseline": {
+    "sourceSHA": "e4112be36d6cce97863c59a5dbe6a5d0bcdf5786",
+    "mainAndOrganizationCI": "10/10 SUCCESS each",
+    "security": "3/3 SUCCESS",
+    "ownerState": "Windows R53 live CFON204, Linux R21 live CFON204, Tailscale preserved"
+  },
+  "previousPrivateBuild": {
+    "revision": "4.3.10-r54-update-cache-retention",
+    "binaryBytes": 24277407,
+    "sha256": "BBDD67CA274EEDA7486017BD2EDF9EACBF1995405F7913634F4F42E80B9076D8",
+    "source": "OWNER_WINDOWS_PRIVATE_GIT_MAINTENANCE/FNH_R54_ISOLATED",
+    "status": "OFFLINE_BUILD_ONLY_NOT_PUBLISHED_NOT_INSTALLED",
+    "note": "CI will independently build from same pinned accepted source and version-preparation recipe; compiler-generated EXE bytes are not assumed identical unless verified."
+  },
+  "method": {
+    "primarySources": [
+      "https://jrsoftware.org/ishelp/topic_setup_appid.htm",
+      "https://jrsoftware.org/isfaq.php",
+      "https://documentation.help/Inno-Setup/topic_setupcmdline.htm",
+      "https://docs.github.com/en/actions/reference/security/secure-use"
+    ],
+    "choice": "Two isolated Windows GitHub-hosted matrix scenarios fresh and upgrade, with a full-SHA pinned checkout and source-baseline precondition.",
+    "why": "Separate disposable runner state avoids disturbing the sole live R53 installation and makes single-AppId registry assertions meaningful.",
+    "testPlan": [
+      "Pin accepted source SHA and verify all 17 packaged source file hashes; create a detached private worktree",
+      "Set private R54 version/revision and Inno output while preserving original AppId and non-admin privilege",
+      "Compile using Inno on isolated runner, validate file version, app manifest and release checksum chain",
+      "Fresh scenario: install R54 into absent directory and verify code hashes, dependency manifest and exactly one uninstall registry entry",
+      "Upgrade scenario: download immutable public R53 by SHA-256 and install, create user settings and data fixtures, upgrade to R54, recheck hashes and data and single registry location, explicitly roll back to pinned public R53 and ensure profile intact"
+    ],
+    "rejected": [
+      "Change published R53 release bytes or rewrite latest release",
+      "Auto-upgrade running owner Windows R53 while it is maintaining connectivity",
+      "Install a test copy on shared real Windows server with unknown user workload",
+      "Assert Inno source compile alone proves upgrade safety"
+    ],
+    "limitations": [
+      "Hosted runner Windows behavior is not physical owner VPN connection validation",
+      "GitHub CI rebuild hash may differ from one offline private artifact; each exact binary must be audited separately",
+      "Authenticode signing and release licensing still require separate authority",
+      "Runtime post-update reconnection with active physical VPN and rollback remain UNPROVEN"
+    ]
+  },
+  "localVerification": {
+    "privateR54Build": "PASS 24,277,407 bytes SHA BBDD67...",
+    "localLinuxSourcePrep": "PASS 17 files, appManifest SHA 2F76EA81D20FE540459FCC9C6E7B8C399E627DCD907ECE161A3804071C17E4DE",
+    "powershellASTOnOwnerWindows": "PASS",
+    "workflowYAML": "PASS"
+  },
+  "changes": [
+    "tests/prepare_r54_isolated.py",
+    "tests/test_r54_isolated_upgrade.ps1",
+    ".github/workflows/r54-isolated-acceptance.yml",
+    "evidence/V447_R54_ISOLATED_UPGRADE_VALIDATION_20261014.json",
+    "PROJECT_BRAIN.md",
+    "PUBLIC_MANIFEST.json"
+  ],
+  "status": "CANDIDATE_UNPROVEN_HOSTED",
+  "roadmap": {
+    "accepted": [
+      "V446C source accepted, main+org CI 10/10, security 3/3",
+      "Physical temporary Windows junction guard PASS",
+      "R54 isolated offline build metadata PASS"
+    ],
+    "current": "R54 real isolated install/upgrade/rollback CI",
+    "open": [
+      "Promote exact SHA CI with 2/2 matrix PASS",
+      "Versioned R54 actual release line tests and non-overwriting publication",
+      "Owner in-place upgrade/rollback with independent connectivity",
+      "Windows elevated full PC_TUNNEL route/DNS trial",
+      "Linux owner sudo/WARP ToS full-system path",
+      "Android/iOS real VPN forwarding/signing/legal/physical acceptance"
+    ]
+  },
+  "nextAction": "Publish candidate PR, require new exact SHA Windows hosted fresh+upgrade PASS; if failures arise audit logs and preserve source before patching. Only after PASS decide separate R54 release step."
+}
