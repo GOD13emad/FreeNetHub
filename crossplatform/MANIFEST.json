@@ -9,8 +9,8 @@
     },
     {
       "file": "android/app/src/main/AndroidManifest.xml",
-      "bytes": 788,
-      "sha256": "827ABF245B67A52DC89F4295E536F969B4EEB99F1C4BC22F6FD0CE371D4FF416"
+      "bytes": 480,
+      "sha256": "42C1B48195018835B398717F119120AFE0657A36124A3339FF37A7D7C35EE2B9"
     },
     {
       "file": "android/app/src/main/java/com/freenethub/mobile/FreeNetVpnService.kt",

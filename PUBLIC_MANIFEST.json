@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 34296,
-      "sha256": "0D80C29600EC08FBEC26BC2D1FC392BF23A3D3F922172792B0512D3354FDBC10"
+      "bytes": 34082,
+      "sha256": "33D1643172B2CF57CF90E9A9E03BF30E9711601F04669B329CCEAF0E1F33611F"
     },
     {
       "file": ".gitignore",
@@ -125,8 +125,8 @@
     },
     {
       "file": "crossplatform/android/app/src/main/AndroidManifest.xml",
-      "bytes": 788,
-      "sha256": "827ABF245B67A52DC89F4295E536F969B4EEB99F1C4BC22F6FD0CE371D4FF416"
+      "bytes": 480,
+      "sha256": "42C1B48195018835B398717F119120AFE0657A36124A3339FF37A7D7C35EE2B9"
     },
     {
       "file": "crossplatform/android/app/src/main/java/com/freenethub/mobile/FreeNetVpnService.kt",
@@ -336,7 +336,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 7265,
-      "sha256": "01704953D92D27DD872B5144B5F1FC151E96326C925B67D2F25D34C73DE7A187"
+      "sha256": "E74924C3454873E310731C8E38A68FC60BE34AD60F4F72785582983D517FA94C"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1510,8 +1510,8 @@
     },
     {
       "file": "evidence/V445_ANDROID_UNLINKED_ALWAYS_ON_GUARD_20261014.json",
-      "bytes": 5482,
-      "sha256": "FA9FEEDF06CB3EE4D20B1E8387EAD8931F6627686BD9A16972A324F4C0364B94"
+      "bytes": 6052,
+      "sha256": "C49697A74D89AACC2D45C8FEFB357DD2D5A0151FB02512B0CC24B8781AD2DA6E"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1695,8 +1695,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 141634,
-      "sha256": "3E190ECCD365146AB4521E57343C183A02B401E6C125DB8D7596F9C1EEEB8CB3"
+      "bytes": 143001,
+      "sha256": "5F6291466DF61C5F8E56CAFE389C0EC9B7683515A453D8C2F1CF5C76325CC696"
     },
     {
       "file": "pytest.ini",
@@ -1716,7 +1716,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "5B4580E838C6E7F68133EC5C2E201960C8A18F5E22E98634D72EF9DF8D0D7225"
+      "sha256": "B0A280C65FF28B1837FD6D8C4211CD095A134CA0A7670A9415D7844DB6AD7A9B"
     },
     {
       "file": "SECURITY.md",
