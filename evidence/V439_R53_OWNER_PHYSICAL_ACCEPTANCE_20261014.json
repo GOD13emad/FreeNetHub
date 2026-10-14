@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "context": "Owner Windows R51 to official R53 physical in-place upgrade and preservation acceptance after two-root Inno uninstall registration conflict",
+  "objective": "One registered active owner Windows R53 installation with update checks and both distinct Chromium profiles preserved, while keeping unrelated Tailscale connectivity operational.",
+  "projectAuthority": {
+    "sourceMain": "243b2a3085889f9abc5dadd7e4e456aa6254a986",
+    "publicReleaseTag": "v4.3.9-r53-windows-stable",
+    "windowsInstallerSHA256": "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2",
+    "canonicalPostMergeCI": {
+      "run": 38543447337,
+      "passed": 10,
+      "total": 10
+    },
+    "forkPostMergeCI": {
+      "run": 38543700692,
+      "passed": 10,
+      "total": 10
+    },
+    "releaseAssetsChanged": false
+  },
+  "fieldWindows": {
+    "previous": "two active R51 trees with same Inno AppId, HKCU uninstall record incorrectly selecting TEMP; distinct Chromium browser profiles, CFON and NODE sessions active",
+    "backup": "both roots private live pre-copied; final offline copy completed with Robocopy codes 2 and 3, 11/11 sampled critical SHA matches, original registry exported, backup outside tracked tree",
+    "rootCauseOfPriorLockedFile": "stale PowerShell GUI child retained exclusive jobs/ui.lock after wrapper EXE stopped; verified exact parent and app script before targeted stop; independent internet healthy",
+    "actions": [
+      "Stopped TEMP NODE via installed engine Stop action, confirmed canonical CFON remained healthy",
+      "Stopped canonical CFON via installed engine Stop action, confirmed independent Tailscale and direct GitHub HTTP 200",
+      "Stopped only old owner UI process and its exact app-owned PowerShell child",
+      "Completed quiescent two-root delta backup",
+      "Reconciled five precise Inno uninstall metadata fields to canonical existing installation, with HKCU registry export and script rollback",
+      "Ran SHA-pinned published R53 installer silently: exit 0 and physical installed RELEASE version 4.3.9, runtime PASS, registry 4.3.9",
+      "Copied distinct TEMP Chromium profile into canonical data as Browser_Temp_R51 without replacing Browser_Primary",
+      "Started real WPF GUI: GUI child window handle nonzero",
+      "Connected CFON from physically installed R53 engine: exit 0, healthy, connected, country AT; scoped SOCKS HTTPS 200",
+      "Retired old TEMP installation root into private archival storage without deleting user data; no second active process or uninstall entry",
+      "UpdateCheck engine receipt exit 0, updateAvailable false and latest public tag R53",
+      "Headless Chrome real secondary profile about:blank: subprocess exit 0, valid HTML, primary selector unchanged"
+    ],
+    "latestAcceptance": {
+      "totalControls": 15,
+      "passed": 15,
+      "status": "PASS",
+      "oneRegisteredActiveR53": "PASS",
+      "twoProfilesPreserved": "PASS",
+      "gui": "PASS",
+      "CfonScopedProxy": "PASS",
+      "independentConnectivity": "PASS",
+      "updateCheck": "PASS"
+    },
+    "priorFalseNegative": "First acceptance script incorrectly used Free.Net Hub regex which did not match registered FreeNet Hub; corrected optional-space match and obtained 15/15 PASS; preserved superseded failed audit.",
+    "firstBrowserSmokeFailure": "Initial GUI-executable launch with PowerShell did not expose a useful native exit or DOM; corrected with subprocess.run and bounded timeout, resulting in PASS. This is a test-harness issue, not proven Chromium failure.",
+    "privateProvenance": "Windows project .git/maintenance/R53_OWNER_20261014_PRESTATE holds prestate, two-root and registry backups, offline hash receipts, original test failures, transaction logs, accepted v2 audit and retired old root; EXTERNAL, not GitHub.",
+    "limitations": [
+      "No claim all browser credentials/extensions were manually tested; sampled database structures and real second-profile Chrome smoke PASS",
+      "Old TEMP files are privately archived for rollback, not an active registered installation",
+      "Windows full-system/console gateway status read-only: not running; owner session lacks Administrator",
+      "Linux R20 CFON browser SOCKS5 PASS and Tailscale Online, but direct LAN default route/DNS remains, noninteractive sudo unavailable",
+      "Mobile hardware and signing/provider-dependent external tasks not verified; hosted emulator success is not physical acceptance"
+    ]
+  },
+  "verificationVsValidation": "Windows actual installation, WPF window, update check and CFON SOCKS were field-validated. Hosted Android/iOS runtime and Linux static jobs do not establish mobile physical nor Linux full-device behavior.",
+  "methods": [
+    {
+      "source": "https://jrsoftware.org/ishelp/topic_setup_usepreviousappdir.htm",
+      "rationale": "Inno old AppId directory is selected from registry; exact path conflict required guarded reconciliation"
+    },
+    {
+      "source": "https://documentation.help/Inno-Setup/topic_appendnotes.htm",
+      "rationale": "Inno uninstall log append behavior in same directory"
+    },
+    {
+      "source": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy/",
+      "rationale": "Use exit code <8 as success, app quiescence for reliable backup"
+    },
+    {
+      "source": "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md",
+      "rationale": "Profiles contain distinct user data; never overwrite one with another"
+    },
+    {
+      "source": "https://developer.chrome.com/docs/automation-and-testing/headless-cli",
+      "rationale": "Headless dump DOM acceptance on real secondary profile"
+    },
+    {
+      "source": "https://tailscale.com/docs/reference/faq/other-vpns",
+      "rationale": "Avoid overlapping full-system VPN routes without elevated rollback-safe validation"
+    },
+    {
+      "source": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_regular_expressions",
+      "rationale": "Correct optional-space regex for installed display-name acceptance guard"
+    }
+  ],
+  "status": {
+    "WindowsOwnerPhysicalR53": "PASS",
+    "officialReleaseAndBothCIs": "PASS",
+    "LinuxR20InstalledAndScopedCFON": "PASS",
+    "LinuxFullSystemDnsLeakFree": "UNPROVEN_PRIVILEGE_AND_NETWORK_GATE",
+    "WindowsElevatedGateway": "UNPROVEN_ADMIN_GATE",
+    "MobileHardware": "EXTERNAL_UNPROVEN"
+  },
+  "rejectedUnsafePaths": [
+    "delete TEMP while still running",
+    "force setup with AppId conflict and active CFON/NODE",
+    "merge divergent Chromium profiles by directory overwrite",
+    "change Linux default route while Tailscale is in use and sudo unavailable"
+  ],
+  "exactNextAction": "Keep Windows R53 CFON and Tailscale stable. If System/Console tunneling is mandatory, obtain an authorized administrative/elevated maintenance session with independent rollback path, then test route, DNS and console gateway without interfering with Tailscale. Real mobile hardware and signing remain external acceptance gates. Do not mutate the frozen public R53 assets solely for a documentation milestone.",
+  "reuseTargets": [
+    "Project Brain",
+    "release notes and maintenance acceptance",
+    "software failure-prevention record",
+    "future cross-device V&V",
+    "thesis/report technical claims"
+  ],
+  "provenance": {
+    "acceptedPreviousBrainSha256": "ACA476A045A6F5F17CF417F179D22F5BE2EE49989AC980AB02BD647E625E5490",
+    "previousBrainBackup": ".git/PROJECT_BRAIN_PRE_OWNER_ACCEPTANCE_20261014.bak"
+  }
+}
