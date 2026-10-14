@@ -1,5 +1,34 @@
 # PROJECT BRAIN — FreeNet Hub
 
+Status: CANDIDATE / LINUX_R21_VERSIONED_UPGRADE_LOCAL_PASS / NOT YET INSTALLED OR RELEASED
+Brain version: v441-linux-r21-owner-consent-2026-10-14
+Accepted source authority: d0389613f753cddbc90d06e48b790f7672c3b52a; main and Fork exact SHA CI 10/10 each.
+Accepted PUBLIC binaries: Windows R53 / Linux R20; hashes frozen and immutable.
+
+## Current change set — one blocker
+- V440 Linux WARP native Terms-of-Service owner-consent source fix merged, but R20 installed source still old. Qualify **new named** Linux R21 4.2.0-linux.21-r54 rather than silently patching the previous R20 ZIP.
+- New R21 package builder and source revisions; R21 installer checks full package SHA256SUMS before any file or UI mutations, retains R20 active-session guard and existing settings/data, and secures private INSTALL.json to 0600.
+- Isolated HOME R20->R21 true installer execution PASS with 5/5 representative private files unchanged and only one installed app root. Tampered R21 package rejected with exit 75 before backup or mutation, and built package SHA verified.
+- Local source static/parity/update revision tests PASS. Exact SHA hosted CI, owner physical install and public release asset are OPEN. No user/host network mutation yet.
+- Sources and detailed parameters: evidence/V441_LINUX_R21_VERSIONED_OWNER_CONSENT_20261014.json.
+- Current owner Linux R20 CFON + Tailscale + Seman L2TP running. Windows R53 CFON still healthy; do not disturb.
+
+## Roadmap to final
+1. Windows R53 accepted field, old Linux R20 scoped, main/Fork source CI: PASS.
+2. Versioned Linux R21 packaged and rollback/preflight validation: local PASS, exact CI OPEN.
+3. Owner in-place update preserving data, bounded downtime, independent Tailscale/L2TP validation, new app field smoke and update check: OPEN.
+4. New Linux asset attached to official GitHub release with verified digest; updater R20->R21 discovery: OPEN.
+5. Owner-native Cloudflare WARP legal acceptance and sudo/UAC full-system traffic/DNS routing and rollback: EXTERNAL UNPROVEN.
+6. Android/iOS physical-device and Windows elevated console gateway: EXTERNAL UNPROVEN.
+
+## Exact Next Action
+Complete R21 full-source/manifest CI and candidate build, then guarded field install with prestate/backup and post-check. Do not claim source tests represent installed success; do not auto-accept WARP ToS or modify overlapping Tailscale/L2TP system routing.
+
+---
+## Previous cumulative accepted Project Brain — verbatim
+
+# PROJECT BRAIN — FreeNet Hub
+
 Status: CANDIDATE / WARP_TOS_OWNER_CONSENT_FAIL_CLOSED (NOT YET RELEASED)
 Brain version: v440-linux-warp-tos-owner-consent-candidate-2026-10-14
 Accepted baseline main: d6dc7b27152d8bc2df6b489e17c93614f314368b

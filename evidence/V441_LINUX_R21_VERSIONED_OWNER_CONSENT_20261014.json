@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "context": "Linux R21 versioned release candidate to deploy accepted V440 WARP native Terms of Service owner-consent invariant without altering frozen R20",
+  "baseline": {
+    "gitSha": "d0389613f753cddbc90d06e48b790f7672c3b52a",
+    "installedLinux": "4.2.0-linux.20-r47",
+    "publicLinuxR20AssetSHA256": "5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B",
+    "windowsPhysical": "4.3.9 R53 PASS",
+    "sourceAndForkCIs": "10/10 PASS each"
+  },
+  "objective": "One mutation objective: qualify versioned Linux R21 package and guarded in-place upgrade preserving user state while preventing WARP ToS autoaccept",
+  "candidate": {
+    "version": "4.2.0-linux.21-r54",
+    "release": "LINUX_4.2.0_R21_R54_WARP_OWNER_CONSENT",
+    "package": "FreeNetHub_4.2.0_Linux_R21.zip",
+    "localCandidateSHA256": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+    "sourceBranch": "release/linux-r21-owner-consent-20261014",
+    "publicRelease": "NOT_PUBLISHED",
+    "installedOwner": "NOT_YET_UPDATED"
+  },
+  "methods": [
+    {
+      "source": "https://docs.github.com/en/rest/releases/assets",
+      "rationale": "Publish a new uniquely named asset with digest; don't overwrite immutable public R20"
+    },
+    {
+      "source": "https://developers.cloudflare.com/warp-client/get-started/linux/",
+      "rationale": "Native owner agreement/registration; trace warp=on required for system tunnel"
+    },
+    {
+      "source": "https://tailscale.com/docs/reference/faq/other-vpns",
+      "rationale": "Careful rollback preserving active Tailscale and L2TP routes"
+    }
+  ],
+  "tests": {
+    "existingLinuxScope": "PASS",
+    "newToSNegative": "PASS",
+    "updateRevisionNewR21": "PASS",
+    "R20ActiveSessionInstallGuard": "PASS",
+    "R20ToR21IsolatedHome": "PASS",
+    "isolationDetails": {
+      "userFilesPreserved": 5,
+      "oneInstallRoot": true,
+      "oneBackupSnapshot": true,
+      "oldVersion": "4.2.0-linux.20-r47",
+      "newVersion": "4.2.0-linux.21-r54",
+      "R21Integrity": "PASS",
+      "tamperedR21BeforeMutationExit": 75,
+      "externalNetworkUsed": false
+    },
+    "hostedExactSha": "PENDING"
+  },
+  "prevention": {
+    "rootCause": "Old R20 code had auto-consent WARP and branch-independent rebuild of old public archive risk.",
+    "guards": "R21 independent revision, SHA verification before UI termination/mutation, source manifest integrity, frozen R20 public SHA regression and explicit ToS owner-required fail-closed",
+    "limitations": "Isolated fake HOME uses stubbed optional GTK dependency and cached pinned binary executables; not equivalent to actual physical network validation"
+  },
+  "criticalPath": [
+    "Pass exact SHA R21 CI, preserve frozen R20 release",
+    "Physical R20 to R21 upgrade in a bounded offline window: stop only FreeNet Hub CFON, copy private prestate and restore plan, retain Tailscale/L2TP",
+    "Publish only artifact verified against actual installed candidate and GitHub postpublish digest",
+    "Native ToS acceptance and sudo authentication are external prerequisite gates for full-system WARP",
+    "Windows elevated PC gateway and real mobile hardware remain separate unproven gates"
+  ],
+  "projectKnowledgeReuses": [
+    "Release notes",
+    "Project Brain",
+    "failure prevention",
+    "thesis technical V&V"
+  ],
+  "status": "LOCAL_SOURCE_CANDIDATE_PASS_NOT_PROMOTED",
+  "previousBrainSha256": "E897DD7237F6E158562C2C29FAA33CEC55B646E6DEB07DD469E4EBAA7AF70E68"
+}

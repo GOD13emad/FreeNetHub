@@ -1,6 +1,6 @@
-# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.20-r47
+# FreeNet Hub 4.2.0 — Linux 4.2.0-linux.21-r54
 
-نسخهٔ Linux R20 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
+نسخهٔ Linux R21 رابط و معماری محصولی R37 را با GTK4/Libadwaita ارائه می‌کند. بازشدن برنامه هیچ VPN، proxy یا Hotspot را خودکار روشن نمی‌کند.
 
 R20 مسیر Browser برای NODE را به SOCKS محلی همان sing-box (`127.0.0.1:19460`) متصل می‌کند، DNS مرورگر را از همان SOCKS می‌فرستد و اجرای واقعی Firefox را با PID بررسی می‌کند؛ دکمه مرورگر عادی از مرورگر تونلی جداست.
 
@@ -12,6 +12,15 @@ R20 مسیر Browser برای NODE را به SOCKS محلی همان sing-box (`
 - Nodes: import URL/File/Clipboard، دریافت نود عمومی، Test All، Benchmark محدود، sort/filter، Favorite/Pin، metadata، History و Export Raw/Base64.
 - Tools: Update، Node refresh، Inventory/Doctor، Direct speed، Console Gateway و Tor/Bridges.
 - Settings: Theme، IP visibility، test path، timeoutها، country، home، custom proxy و monitor.
+
+## Linux R21 — الزام رضایت مالک برای WARP رسمی
+
+- دستورات داخلی FreeNet Hub دیگر پرچم --accept-tos را به‌صورت خودکار اجرا نمی‌کنند.
+- اگر WARP هنوز نیازمند موافقت با شرایط استفاده باشد، اتصال SYSTEM پیش از تغییر شبکه با خطای WARP_TOS_OWNER_ACTION_REQUIRED رد می‌شود.
+- پذیرش شرایط باید با خواندن متن و اقدام صریح مالک در رابط رسمی Cloudflare WARP انجام شود؛ FreeNet Hub این کار را به‌جای مالک انجام نمی‌دهد.
+- نصب R21 از فایل ZIP با SHA256SUMS معتبر انجام می‌شود و اگر بسته ناقص یا دستکاری‌شده باشد، پیش از توقف رابط یا تغییر فایل‌های نصب‌شده رد می‌شود.
+- هنگامی‌که یک نشست CFON/NODE/سایر روش‌ها فعال است، Installer با کد ۷۲ بدون تغییر متوقف می‌شود؛ برای ارتقای واقعی ابتدا اتصال FreeNet Hub را از خود برنامه قطع کنید. Tailscale و VPNهای دیگر را قطع نکنید.
+- عبور همه ترافیک دستگاه و DNS هنوز به آزمون واقعی سیستم و دسترسی مدیریتی نیاز دارد؛ عملکرد SOCKS5 مرورگر برابر با VPN سراسری نیست.
 
 ## Scopeها و backend واقعی
 

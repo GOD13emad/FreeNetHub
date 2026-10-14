@@ -110,7 +110,7 @@
     {
       "file": "linux/freenet_hub_linux.py",
       "bytes": 44627,
-      "sha256": "47CEFFCCEF77BB528B08FB8BA4B5A0ED94F492E7774F37A05487D37B402C7ACC"
+      "sha256": "45E0FE048A6E09061F492CB6E4E742B53C696D55E8C6CC8E2CCF4F825044CA6D"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
@@ -120,7 +120,7 @@
     {
       "file": "linux/freenet_hub_linux_r37.py",
       "bytes": 59235,
-      "sha256": "7A29607854E89211B891D2A62A48B77D5F255F982BF87D5F9BEF685B0B9AB154"
+      "sha256": "46425984B466E2ADA663A882EEB950F9F8F3AC2DC8CB8EE21F6DF7076889086F"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -134,8 +134,8 @@
     },
     {
       "file": "linux/install.sh",
-      "bytes": 6355,
-      "sha256": "0E6B187EF62A61BB86C6F273052EE628D6CB0E2E9933E7685CD42875DCBD296B"
+      "bytes": 7130,
+      "sha256": "FB5A46506CC186F41F0D6C8C4C7D964C4BBB0B8D27ADEDC471FD59DD063C51A7"
     },
     {
       "file": "linux/install_singbox_pinned.sh",
@@ -159,8 +159,8 @@
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 5419,
-      "sha256": "4E0437902D2A8E995F2633F8FE58CD0F7EB7F74FABA6B421B6AB69CF3105EF6C"
+      "bytes": 6869,
+      "sha256": "EC31D5DE3C9B5CCE8D048F56811350C52ED6C12D6072256BBB3CDAFDA22AAA5D"
     },
     {
       "file": "linux/recover_warp_remote.sh",
@@ -170,7 +170,7 @@
     {
       "file": "linux/selftest.py",
       "bytes": 1829,
-      "sha256": "01BBDE9359F7637185681AFA6717FABDDEE44A834F3052B93E03F642FFB7BE38"
+      "sha256": "68EEAB9B173B6466E8C5817C662FCFAE3BE1AC006EE7C0E2318D94001B86E277"
     },
     {
       "file": "linux/test_browser_profile.py",
@@ -190,7 +190,7 @@
     {
       "file": "linux/test_r37_parity.py",
       "bytes": 9098,
-      "sha256": "9E033833C3260810802D728629476B574AC6AE47103253A08CDE19E66BE39863"
+      "sha256": "BA9A1668CDA55A3E1B6483CC417C9D7D039BCE929B961CF9C873D59CADD9AA7C"
     },
     {
       "file": "linux/test_scope_policy.py",
@@ -200,7 +200,7 @@
     {
       "file": "linux/test_update_revision.py",
       "bytes": 2306,
-      "sha256": "8A3877F81D1143159C7588CEE16612F5FB8A8907F233995ACDCD441091503041"
+      "sha256": "BED2822E1693442C0DA2A6CC495A7B42C58041497CDECDC4B90824D4F829FFC8"
     },
     {
       "file": "linux/test_warp_tos_owner_consent.py",

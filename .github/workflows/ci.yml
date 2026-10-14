@@ -65,6 +65,8 @@ jobs:
             https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.9-r53-windows-stable/FreeNetHub_4.2.0_Linux_R20.zip \
             -o delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip
           python3 tests/verify_frozen_linux_r20_asset.py
+          python3 tests/build_linux_r21_package.py
+          python3 tests/test_linux_r21_upgrade_preserves_data.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
           cd /tmp/fnh-r20-ci/FreeNetHub_4.2.0_Linux_R20
