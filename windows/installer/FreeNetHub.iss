@@ -1,5 +1,5 @@
 #define MyAppName "FreeNet Hub"
-#define MyAppVersion "4.3.8"
+#define MyAppVersion "4.3.9"
 #define MyAppPublisher "FreeNet Hub"
 #define MyAppExeName "FreeNetHub.exe"
 
@@ -13,8 +13,8 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-OutputDir=..\..\delivery\github_v4.3.8
-OutputBaseFilename=FreeNetHub_4.3.8_R52_Setup
+OutputDir=..\..\delivery\github_v4.3.9
+OutputBaseFilename=FreeNetHub_4.3.9_R53_Setup
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -24,9 +24,9 @@ CloseApplications=yes
 RestartApplications=no
 ChangesAssociations=no
 ChangesEnvironment=no
-VersionInfoVersion=4.3.8.0
+VersionInfoVersion=4.3.9.0
 VersionInfoProductName=FreeNet Hub
-VersionInfoDescription=FreeNet Hub 4.3.8 R52 stale node health TTL and fail-closed smart ranking
+VersionInfoDescription=FreeNet Hub 4.3.9 R53 same-AppId install root fail-closed guard
 MinVersion=10.0.19041
 
 [Languages]
