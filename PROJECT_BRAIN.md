@@ -1,5 +1,36 @@
 # PROJECT BRAIN — FreeNet Hub
 
+Status: CURRENT / OWNER_WINDOWS_R53_AND_LINUX_R21_FIELD_PASS / STRICT_SYSTEM_AND_MOBILE_EXTERNAL_OPEN
+Brain version: v442-linux-r21-public-field-acceptance-2026-10-14
+Accepted source main and Fork: bb3237472ced37572934f500c17bd83aaad952e3 (before this docs-only milestone).
+Official Latest Release: v4.3.9-r53-windows-stable, with one current Windows R53 installer and current Linux R21 package. Earlier Linux R20 kept unchanged for rollback.
+
+## Previous accepted state → current delta
+- PR48 candidate SHA a9d7c9d32928278c1c06b8e4187fadd3554c9b43 exact hosted CI 10/10 PASS, new versioned Linux R21 package. Source merged to bb3237472ced37572934f500c17bd83aaad952e3 and same SHA fast-forwarded to fork, Windows and Linux code worktrees.
+- **PHYSICAL owner Linux upgrade R20→R21 4.2.0-linux.21-r54 completed**; INSTALL.sha256 PASS, 4/4 sampled private settings and bridge hashes unchanged, correct GTK program process running, CFON SOCKS5 HTTPS200, Tailscale Running Online, Seman L2TP maintained, LAN default route unchanged.
+- Authoritative quiescent private full-copy R20 rollback snapshot kept (~238MB) and source file hashes PASS; destructive restoration NOT performed. The old Linux R20 public asset stayed unchanged (SHA 5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B).
+- New Linux R21 ZIP SHA 82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A reproducible on Linux and Windows, GitHub public digest identical, separately downloaded ZIP valid. R20 updater sees remote R21 newer; R21 updater sees no update; Windows R53 updater still sees no newer Windows installer.
+- GitHub official release body updated with current R21 note. Fork postmerge CI 10/10 PASS, CodeQL analysis 3/3 PASS. Canonical main postmerge CI status pending when this record was prepared.
+- WARP Terms not accepted automatically. SYSTEM WARP on Linux still requires owner-native ToS review and authorized sudo for route and DNS trial. Windows elevated Gateway and mobile real hardware likewise remain unproven.
+- Three owner-runner harness faults are documented with root cause, prevention and repaired physical outcomes in evidence/V442_LINUX_R21_PUBLIC_FIELD_ACCEPTANCE_20261014.json. After repeated harness faults, we stopped rerunning the same transaction and restored CFON manually via exact installed API. Never claim the private runner itself passed; the **independent post-recovery physical checks passed**.
+- All substantive evidence/reference/reuse targets are in the current V442 record; private backups/raw logs are EXTERNAL under .git/maintenance/FNH_R21_OWNER_20261014, never committed.
+
+## Roadmap to FINAL
+1. Official Windows R53 installation, one canonical uninstall, owner field WPF CFON and updater — COMPLETED PASS.
+2. Versioned Linux R21 ToS-safe package, immutable public artifact digest, actual field in-place upgrade/data preservation, GTK and scoped CFON — COMPLETED PASS.
+3. PR candidate exact CI and postmerge Fork CI — COMPLETED PASS; canonical main postmerge pending when this header was authored.
+4. Linux SYSTEM route/DNS/WARP physical leak-free with owner native consent, sudo, reversible Tailscale+L2TP coexistence — EXTERNAL/UNPROVEN.
+5. Windows privileged Gateway PC/console end-to-end with UDP backend and Tailscale-safe rollback — EXTERNAL/UNPROVEN.
+6. Android/iOS physical-device deployment and production signing/provider gates — EXTERNAL/UNPROVEN. Simulator CI does not validate hardware.
+
+## Exact Next Action
+Confirm pending canonical postmerge CI. If software gates remain passed, refrain from arbitrary new mutations. Systemwide and physical final require native OS owner approvals and actual devices, not a product/source fix. Keep R20 private rollback snapshot until explicit restore validation and preservation policy.
+
+---
+## Previous cumulative Project Brain (verbatim)
+
+# PROJECT BRAIN — FreeNet Hub
+
 Status: CANDIDATE / LINUX_R21_VERSIONED_UPGRADE_LOCAL_PASS / NOT YET INSTALLED OR RELEASED
 Brain version: v441-linux-r21-owner-consent-2026-10-14
 Accepted source authority: d0389613f753cddbc90d06e48b790f7672c3b52a; main and Fork exact SHA CI 10/10 each.

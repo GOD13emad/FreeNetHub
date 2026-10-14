@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "context": "Postpublish source→actual owner runtime→public GitHub Linux R21 equivalence; security consent and rollback evidence",
+  "authorities": {
+    "previousMainSourceSha": "bb3237472ced37572934f500c17bd83aaad952e3",
+    "officialReleaseTag": "v4.3.9-r53-windows-stable",
+    "ownerWindows": "R53 4.3.9",
+    "ownerLinux": "4.2.0-linux.21-r54",
+    "PR48ExactHead": "a9d7c9d32928278c1c06b8e4187fadd3554c9b43",
+    "PR48CI": {
+      "run": 38558486523,
+      "success": 10,
+      "total": 10
+    },
+    "postmergeFork": {
+      "run": 38559644969,
+      "success": 10,
+      "total": 10
+    },
+    "postmergeForkAnalysis": {
+      "run": 38559644974,
+      "success": 3,
+      "total": 3
+    },
+    "postmergeMain": {
+      "run": 38559614207,
+      "status": "PENDING_AT_RECORD"
+    },
+    "frozenOldLinuxR20AssetSha256": "5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B",
+    "newLinuxR21PublicSha256": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+    "windowsR53InstallerSha256": "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2"
+  },
+  "facts": [
+    "Windows and Linux cross-compiled deterministic R21 ZIP hashes match; official GitHub public asset digest and separately downloaded ZIP match.",
+    "Owner Linux R20→R21 physical in-place version, SHA manifest, four sampled private config hashes, GTK process and CFON scoped SOCKS5 HTTPS200 PASS.",
+    "Independent Tailscale Running/Online, Seman L2TP connected and default LAN IPv4 route unchanged.",
+    "Old R20 owner installation snapshot retained in private .git storage after quiescent disconnect; snapshot integrity PASS, restoration itself NOT destructively tested.",
+    "Native Cloudflare WARP CLI still requests owner Terms acceptance; FreeNet Hub R21 read-only WARP status requires_owner_tos=True and did not autoaccept.",
+    "R20 release update checker sees R21 available; R21 sees no new update. Installed Windows R53 update checker sees no newer Windows revision after R21 asset addition.",
+    "Official latest release description updated in place preserving previous historic notes, now correctly identifies Linux R21 current and Linux R20 historic rollback."
+  ],
+  "failureRootCausePrevention": [
+    {
+      "failure": "Initial private owner runner failed before mutation",
+      "rootCause": "importlib spec loaded installed r37 without sys.path app location",
+      "guard": "read-only verified module import and exact CFON process owner before retry",
+      "status": "PREMUTATION_FAILURE_NO_OWNER_INSTALL_DELTA"
+    },
+    {
+      "failure": "Private staging unzip prompted for overwrite",
+      "rootCause": "non-idempotent staging path and non-interactive shell",
+      "guard": "use digest-pinned unzip -oq only to exact private stage then SHA256SUMS verify",
+      "status": "PREMUTATION_FAILURE"
+    },
+    {
+      "failure": "Installer PASS but private runner couldn't restore CFON",
+      "rootCause": "invoked nonexistent r37.connect_mode API instead of warpplus_start, ERR trap not inherited inside shell function",
+      "guard": "Stop replaying after repeated harness failure; inspect installed signatures and restore CFON with documented exact app-scoped warpplus_start(CFON), verify external HTTP200 and real GUI. Future runner must mock/test recovery function and use errtrace + rollback integration test.",
+      "status": "FIXED_BY_MANUAL_VERIFIED_RECOVERY; REPEAT_RUNNER_PROHIBITED"
+    }
+  ],
+  "limitations": {
+    "strictFullDeviceLinux": "UNPROVEN_TOS_OWNER_APPROVAL_AND_SUDO_REQUIRED",
+    "windowsElevatedGateway": "UNPROVEN_UAC_AND_UDP_PROVIDER_REQUIRED",
+    "androidIosHardware": "UNPROVEN_NO_REAL_DEVICE",
+    "rollbackRestore": "NOT_TESTED_ONLY_SNAPSHOT_INTEGRITY_PASS",
+    "realLoginToChatGPT": "UNPROVEN_WEBSITE_CHALLENGES_DISTINCT_FROM_SOCKS_TRANSPORT"
+  },
+  "projectProgress": {
+    "WindowsR53OwnerPhysical": "ACCEPTED_PASS",
+    "LinuxR21SourcePackageFieldRelease": "ACCEPTED_PASS",
+    "mainForkCodeSha": "SYNCED_PASS",
+    "hostedPRCI": "PASS",
+    "hostedForkPostmerge": "PASS",
+    "hostedMainPostmerge": "PENDING",
+    "systemGatewayStrictFinal": "OPEN_OWNER_EXTERNAL",
+    "mobilePhysicalFinal": "OPEN_OWNER_EXTERNAL"
+  },
+  "methodsSources": [
+    {
+      "url": "https://docs.github.com/en/rest/releases/assets",
+      "tradeoff": "New release asset unique filename and digest rather than replacing frozen R20"
+    },
+    {
+      "url": "https://developers.cloudflare.com/warp-client/get-started/linux/",
+      "tradeoff": "Official WARP system tunnel must have native consent and physical warp=on trace"
+    },
+    {
+      "url": "https://tailscale.com/docs/reference/faq/other-vpns",
+      "tradeoff": "Avoid modifying routes in presence of Tailscale and Seman L2TP"
+    }
+  ],
+  "privateRaw": {
+    "ownerReceiptRelative": ".git/maintenance/FNH_R21_OWNER_20261014/r21-field-acceptance.private.json",
+    "ownerReceiptSha256": "7E49BD8D42F8633F8B5732C0307CA0DE437245F2763133B7893F92BCD6D1867F",
+    "postpublishKnowledgeRelative": ".git/maintenance/FNH_R21_OWNER_20261014/r21-postpublish-knowledge.private.json",
+    "postpublishKnowledgeSha256": "28EE3D1164ACAB2AAB097955B298F9324CFBB0143F6281192EBCAF5801207C71",
+    "privateState": "EXTERNAL_NOT_IN_GIT"
+  },
+  "verificationVsValidation": "Hosted simulators support software regression; actual owner Linux install, GUI process and CFON HTTPS traffic constitute field validation only for scoped browser transport. Neither supports claims of global DNS privacy or mobile hardware.",
+  "exactNextAction": "Confirm main postmerge CI then promote accepted cumulative Brain. For strict systemwide DoD, require native Cloudflare Terms acceptance (owner), authorized Linux sudo/Windows UAC and independently recoverable route/DNS/Tailscale/L2TP test; mobile requires actual device attachment.",
+  "reuseTargets": [
+    "Release notes",
+    "Project Brain",
+    "Handoff",
+    "scientific field V&V",
+    "failure prevention history"
+  ],
+  "acceptedPriorBrainSha256": "0FF28FF47CBE4DCAEA1669225A86D0F5800E184FEF6FD018C8AF2EFD682F51DC"
+}
