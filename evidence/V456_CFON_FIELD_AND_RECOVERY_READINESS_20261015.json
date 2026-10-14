@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "project": "FreeNet Hub",
+  "revision": "V456",
+  "oneMainObjective": "Capture scoped CFON field egress and owner Windows recovery-readiness verification while preserving current working connection.",
+  "acceptedBaseline": {
+    "main": "7b2d0514c966b372f766ca2f95db27a55f49022f",
+    "postmergeCIRun": 38635713648,
+    "postmergeCIPassed": 10,
+    "postmergeCITotal": 10,
+    "sourceTreeCleanBothHosts": true,
+    "windowsInstalled": "R53 / 4.3.9",
+    "linuxInstalled": "R21 / 4.2.0-linux.21-r54"
+  },
+  "facts": {
+    "cfonCountry": {
+      "windows": {
+        "direct": "IR",
+        "socks5h": "AT"
+      },
+      "linux": {
+        "direct": "IR",
+        "socks5h": "AT"
+      },
+      "CloudflareTraceWarpFlag": "off in all four observations",
+      "meaning": "Confirmed browser-proxy egress change, NOT full-system VPN, all-destination privacy, or guaranteed country permanence."
+    },
+    "siteProbe": {
+      "ownerLinuxInstalledTest": "test_active_sites(timeout=5)",
+      "mode": "CFON",
+      "scope": "BROWSER",
+      "Google": 204,
+      "GitHub": 200,
+      "NVIDIA": 200,
+      "ChatGPT": 403,
+      "ChatGPTClassification": "HTTP_RESTRICTED_OR_CHALLENGED",
+      "overallIndependentTargets": true
+    },
+    "challenge": {
+      "directAndCFONOnBothHosts": "HTTP403 and cf-mitigated: challenge",
+      "origin": "Cloudflare Challenge Page",
+      "meaning": "Curl client challenge, not proof of a broken CFON transport or successful interactive browser authentication."
+    },
+    "installedFiles": {
+      "linuxIntegrityManifest": "9 of 9 SHA-256 OK",
+      "liveWindowsCFON": "connected true / HTTPS204",
+      "liveLinuxCFON": "HTTPS204",
+      "mainGitHeadSame": true
+    },
+    "independentRecovery": {
+      "tailnetPingLinuxToWindows": "PASS",
+      "tailnetPingWindowsToLinux": "PASS",
+      "ownerWindowsRunningTailscale": true,
+      "authenticatedRemoteWindowsRecovery": "UNPROVEN",
+      "WinRM": "Stopped",
+      "WindowsRDP": "Stopped",
+      "WindowsSSHServer": "Not available",
+      "linuxTailnetProbes": {
+        "port22": "CLOSED",
+        "port3389": "CLOSED",
+        "port5985": "CLOSED",
+        "port5986": "CLOSED"
+      },
+      "WindowsProcessElevated": false,
+      "decision": "Retain active session guard. Do not configure system-wide SSH/WinRM/RDP or force disconnection without a separately proven and authorized recovery route."
+    },
+    "windowsStorageReadOnly": {
+      "dataBytes": 7159078292,
+      "dataFileCount": 33204,
+      "jobsBytes": 486846719,
+      "classifiedBrowserProfilesBytes": 6205151627,
+      "classifiedCacheBytes": 817313401,
+      "caveat": "Name-based classification only; no evidence that those files are safe to remove."
+    },
+    "selectedSnapshot": {
+      "state": "PASS",
+      "type": "Windows DPAPI CurrentUser encrypted ZIP of 9 chosen settings/identity files",
+      "sourceBytes": 2287495,
+      "encryptedBytes": 254134,
+      "encryptedSHA256": "64C6BE6FD6867D6177B64087C09281538BC9234925204FA525AF862835D6A210",
+      "readBackSeparateProcess": "PASS",
+      "entrySHA256Matches": 9,
+      "entrySourceDrift": 0,
+      "scope": "Only selected 9 files; excludes 6+ GiB mutable browser profiles, caches, jobs and session state.",
+      "sensitiveMaterialInPublicRecord": false,
+      "portableCrossUserOrMachine": false
+    }
+  },
+  "evidenceHierarchy": "Local runtime curl and file SHA results, source/tests, accepted GitHub 10/10 CI. Source CI verification distinct from installed field validation.",
+  "methods": {
+    "InnoSetup": "Same AppId/same install mode for updates, validated on hosted Windows fresh and R53->R54->R53 rollback; live owner guard intentionally prevents updating a connected provider.",
+    "Cloudflare": "cf-mitigated: challenge is a server-origin Challenge Page, not a passing HTTP site access test.",
+    "DPAPI": "CryptProtectData CurrentUser generally restricts decryption to the same Windows user and computer; not a general disaster-recovery backup.",
+    "Tailscale": "Tailscale SSH server cannot run on Windows; Tailscale ping only tests peer reachability, not authenticated SSH/RDP/WinRM or failover.",
+    "WindowsOpenSSH": "Microsoft recommends elevated setup/start/firewall controls for Windows OpenSSH Server; Windows host is not elevated and no existing service was found. Adding a privileged service for one test would be disproportionate."
+  },
+  "sources": [
+    "https://developers.cloudflare.com/cloudflare-challenges/challenge-types/challenge-pages/detect-response/",
+    "https://learn.microsoft.com/en-us/windows/desktop/api/Dpapi/nf-dpapi-cryptprotectdata",
+    "https://tailscale.com/docs/features/tailscale-ssh",
+    "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse",
+    "https://jrsoftware.org/ishelp/topic_sameappnotes.htm"
+  ],
+  "rootCause": {
+    "issue": "R54 live in-place install not executed",
+    "reason": "Owner Windows CFON session connected and installer guard active; no independently authenticated recoverable Windows control channel, WinRM/RDP/SSH inactive.",
+    "prevention": "Do not bypass guard, force terminate provider, reroute Tailscale, silently accept WARP ToS, or promote release from CI alone.",
+    "regression": "10/10 postmerge source CI; Windows 2/2 isolated R53->R54->R53 test; live two-host CFON HTTPS204 and country trace. Physical owner upgrade still not tested."
+  },
+  "decisions": {
+    "accepted": [
+      "Scoped live browser CFON egress country changes",
+      "Linux in-app destination diagnostic classification",
+      "Selected owner R53 settings archive DPAPI decrypt-and-hash verified",
+      "Source/CI and current runtime file hashes"
+    ],
+    "blocked": [
+      "Windows owner live R54 upgrade",
+      "PC TUN and Linux WARP native whole-system validation",
+      "Public R54 stable release rights and field testing",
+      "Mobile functional forwarding and Apple entitlements"
+    ],
+    "rejected": [
+      "Unnecessary whole-profile duplicate backups",
+      "Deleting browser caches based on names",
+      "Mislabeling 403 as CFON connectivity failure",
+      "Self-provisioning new privileged Windows remote service as a substitute for independent recovery acceptance"
+    ]
+  },
+  "materialChange": {
+    "gitSource": "Evidence and Brain only",
+    "hostConfigs": "No changes to app, network, DNS or routes",
+    "localWindowsSelectedEncryptedSnapshot": "Created exactly once and separately integrity-verified",
+    "r54Draft": "Previously reconciled, unpublished and unchanged in this phase"
+  },
+  "status": "CANDIDATE_UNTIL_V456_EXACT_HEAD_CI_AND_MERGE",
+  "brainPropagation": "Append-only delta to PROJECT_BRAIN.md",
+  "exactNextAction": "Pass V456 evidence-only exact-head CI, merge and validate postmerge; independently validate owner Windows recovery path and graceful CFON stop, then R54 SHA-pinned physical install with verified preservation and rollback. No owner session disconnection without that proof."
+}
