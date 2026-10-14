@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "context": "New conversation exact-source and two-host continuation, read-only verification plus local tests",
+  "project": "GOD13emad/FreeNetHub",
+  "source_main_sha": "ec2ce34b84b94bdfb0f377ee07008602e4ca277f",
+  "release": {
+    "tag": "v4.3.9-r53-windows-stable",
+    "peeled_sha": "17daff34805b82bcae0c6e8d5e6cbed6258c50ff",
+    "windows": {
+      "name": "FreeNetHub_4.3.9_R53_Setup.exe",
+      "sha256": "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2",
+      "bytes": 24268030
+    },
+    "linux": {
+      "name": "FreeNetHub_4.2.0_Linux_R20.zip",
+      "sha256": "5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B",
+      "bytes": 250013
+    },
+    "publication": "CONFIRMED_FROM_LIVE_GITHUB_REST_API"
+  },
+  "ci": {
+    "pr42": {
+      "run": 38523926557,
+      "jobs": 10,
+      "success": 10
+    },
+    "main_postmerge": {
+      "run": 38525037084,
+      "jobs": 10,
+      "success": 10
+    },
+    "status": "CONFIRMED",
+    "first_candidate_failure": {
+      "sha": "5e8df498a9e620d8ed42285eef635cd6883b4693",
+      "run": 38532606836,
+      "step": "Scan public tree for private/runtime material",
+      "root_cause": "Private absolute Linux home path was unnecessarily emitted to public evidence JSON",
+      "prevention": "Use project-relative sanitized backup provenance; existing security_scan_public.py must PASS before promotion",
+      "status": "SUPERSEDED_FAILED_CANDIDATE"
+    }
+  },
+  "field": {
+    "windows": {
+      "installed_version": "4.3.7-R51",
+      "canonical_path": "%LOCALAPPDATA%/Programs/FreeNetHub",
+      "active_temp_path": "%TEMP%/fnh-v437-r51-final-asset-probe",
+      "app_and_uninstall_registry_point_to_temp": true,
+      "canonical_approx_bytes": 7060381711,
+      "temp_approx_bytes": 1067264687,
+      "upgrade": "BLOCKED_SPLIT_ROOT_ACTIVE_SESSION",
+      "safe_policy": "Do not auto-clean registry, disconnect, or install before consistent backup and controlled owner-idle rollback procedure"
+    },
+    "linux": {
+      "installed": "4.2.0-linux.20-r47",
+      "sha256sum_manifest": "PASS",
+      "cfon_socks_listener": "127.0.0.1:19414",
+      "socks5h_cloudflare": "HTTP_200",
+      "socks5h_github_api": "HTTP_200",
+      "http_proxy_diagnostic": "INVALID_PROTOCOL_NOT_PRODUCT_DEFECT",
+      "route_to_1_1_1_1": "wlp2s0 via 192.168.20.1",
+      "dns": "192.168.20.1",
+      "full_system_leak_free": "UNPROVEN"
+    }
+  },
+  "other": {
+    "mirror": "Usefull-Skills/FreeNetHub main currently e41b3f669a894b1df5f0e84884eeb8600e747224; behind canonical main; sync decision requires separate authority/policy check",
+    "ios_android": "CI simulator/build PASS; production signing and hardware forwarding UNPROVEN",
+    "public_manifest": "Hosted exact-SHA verified; local verifier running when this record was created"
+  },
+  "methods": [
+    {
+      "source": "https://jrsoftware.org/ishelp/topic_setup_usepreviousappdir.htm",
+      "purpose": "registry-selected previous install directory"
+    },
+    {
+      "source": "https://github.com/bepass-org/warp-plus/blob/master/README.md",
+      "purpose": "--bind is SOCKS5, not HTTP"
+    },
+    {
+      "source": "https://github.com/GOD13emad/FreeNetHub/actions/runs/38525037084",
+      "purpose": "postmerge 10/10 CI"
+    },
+    {
+      "source": "https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.9-r53-windows-stable",
+      "purpose": "public release authority"
+    }
+  ],
+  "verification_vs_validation": "CI source/emulator/isolated installer verified; owner Windows upgrade, system-wide DNS and real mobile physical acceptance remain unproven",
+  "reuse_targets": [
+    "Project Brain",
+    "release maintenance notes",
+    "owner field upgrade checklist",
+    "future regression tests"
+  ],
+  "provenance": {
+    "previous_brain_sha256": "274DFD49F39A25618518ADA3078D026C6D2FC3156474EE6F5D967678ED5C52ED",
+    "previous_brain_backup": ".git/PROJECT_BRAIN_PRE_R53_LIVE_AUDIT_20261014.bak",
+    "source": "live remote host and public GitHub API"
+  }
+}
