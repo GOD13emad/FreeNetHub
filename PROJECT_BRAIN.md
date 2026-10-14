@@ -1,5 +1,35 @@
 # PROJECT BRAIN — FreeNet Hub
 
+Status: CANDIDATE / WARP_TOS_OWNER_CONSENT_FAIL_CLOSED (NOT YET RELEASED)
+Brain version: v440-linux-warp-tos-owner-consent-candidate-2026-10-14
+Accepted baseline main: d6dc7b27152d8bc2df6b489e17c93614f314368b
+Frozen published release: Windows R53 + Linux R20. Public installer bytes and installed copies unchanged.
+
+## CURRENT change set
+- Source had the Cloudflare WARP --accept-tos flag even in status and recovery paths; Cloudflare documents this as accepting legal terms.
+- Owner Linux warp-cli status without this flag requests ToS acceptance; no owner agreement was entered.
+- Candidate: remove --accept-tos from Linux app, recovery, guard, install-version; add owner-consent fail-closed error before any WARP registration/route mutation.
+- Added simulated read-only ToS negative regression and hooked Linux hosted CI.
+- Accepted Windows R53 owner physical 15/15, source/main/fork hosted CI 10/10, Linux R20 scoped CFON and dual-host Tailscale unchanged. Linux L2TP Seman continues.
+- Source candidate is not installed, not yet merged, not released. Full-system routing, DNS leak-free, PC gateway and hardware mobile remain UNPROVEN.
+- Release-integrity downstream guard: hosted CI must download publicly published Linux R20, verify SHA-256 5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B and package-manifest sample. Never rebuild a patched source under frozen R20 filename; new source candidate remains distinct from installed/public artifact.
+- Evidence detail: evidence/V440_LINUX_WARP_TOS_OWNER_CONSENT_20261014.json.
+
+## Roadmap to strict FINAL
+1. Frozen official release and accepted physical Windows owner R53 and scoped Linux R20: PASS.
+2. Consent-safe Linux WARP source behavior: local tests PASS; exact SHA hosted CI OPEN.
+3. Qualified versioned Linux update/build/install with profile preservation: OPEN if source fix promoted.
+4. Owner native WARP ToS approval, OS administrative authentication and reversible full-device Tailscale/L2TP/DNS trial: EXTERNAL OPEN.
+5. Windows elevated PC/console gateway and mobile physical device tests: EXTERNAL OPEN.
+
+## Exact Next Action
+Run exact SHA hosted CI; do not auto-promote source edit as production app until versioned install/rollback proof. For actual SYSTEM WARP, owner must accept terms natively and approve sudo; do not bypass OS prompts or change routes until recovery proven.
+
+---
+## Previous accepted cumulative Project Brain (verbatim)
+
+# PROJECT BRAIN — FreeNet Hub
+
 Status: CURRENT / OWNER_WINDOWS_R53_PHYSICAL_PASS_LINUX_R20_SCOPED_PASS_EXTERNAL_GATES_OPEN
 Brain version: v439-r53-owner-physical-acceptance-2026-10-14
 Authoritative source: GOD13emad/FreeNetHub main 243b2a3085889f9abc5dadd7e4e456aa6254a986 (before this docs-only record).

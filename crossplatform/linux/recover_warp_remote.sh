@@ -2,7 +2,7 @@
 set -uo pipefail
 echo "[FreeNet Hub] recovering network/control path..."
 if command -v warp-cli >/dev/null 2>&1; then
-  timeout 20s warp-cli --accept-tos disconnect || true
+  timeout 20s warp-cli disconnect || true
 fi
 if command -v systemctl >/dev/null 2>&1 && systemctl --user list-unit-files 2>/dev/null | grep -q '^chatgpt-remote-commander.service'; then
   systemctl --user restart chatgpt-remote-commander.service || true

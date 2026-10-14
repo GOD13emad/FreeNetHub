@@ -52,13 +52,19 @@ jobs:
           python3 crossplatform/linux/test_private_state_permissions.py
           python3 crossplatform/linux/test_browser_profile.py
           python3 crossplatform/linux/test_scope_policy.py
+          python3 crossplatform/linux/test_warp_tos_owner_consent.py
           python3 crossplatform/linux/test_r37_parity.py
           python3 crossplatform/linux/test_update_revision.py
           python3 tests/test_linux_browser_action_guards.py
           python3 tests/test_linux_site_diagnostics_auto.py
           python3 tests/test_node_health_freshness.py
           python3 tests/test_linux_install_active_guard.py
-          python3 tests/build_linux_r20_package.py
+          # Compare against the immutable PUBLIC R20 release, never repack new source under the old R20 filename.
+          mkdir -p delivery/github_v4.2.0
+          curl -fLsS --retry 2 --max-time 70 \
+            https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.9-r53-windows-stable/FreeNetHub_4.2.0_Linux_R20.zip \
+            -o delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip
+          python3 tests/verify_frozen_linux_r20_asset.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
           cd /tmp/fnh-r20-ci/FreeNetHub_4.2.0_Linux_R20
