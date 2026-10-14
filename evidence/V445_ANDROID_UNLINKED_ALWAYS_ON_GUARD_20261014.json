@@ -48,7 +48,8 @@
   "mutation": {
     "files": [
       "crossplatform/android/app/src/main/AndroidManifest.xml",
-      ".github/workflows/ci.yml"
+      ".github/workflows/ci.yml",
+      "crossplatform/android/README_FA.md"
     ],
     "mainObjective": "Do not expose incomplete VPN service as a system-selectable provider on any supported Android API.",
     "ciGuard": "Parse manifest to assert the unlinked service is absent. Assert core remains unlinked and Activity does not request VpnService.prepare.",
@@ -114,14 +115,21 @@
     ],
     "confidence": "High for manifest and official API behavior; physical UI settings not tested; no real VPN claim."
   },
-  "status": "REVISED_CANDIDATE_UNPROMOTED",
-  "nextAction": "Re-seal manifests+RELEASE+PUBLIC, run local and exact new-head hosted CI 10/10; merge only on PASS and reconcile fork.",
-  "candidateRevision": "V445B",
+  "status": "DOCUMENTATION_RECONCILED_CANDIDATE_PENDING_REBUILD",
+  "nextAction": "Rebuild nested manifest, RELEASE SHA, public manifest, run regression and publish new exact candidate head, replacing superseded PR SHA.",
+  "candidateRevision": "V445C",
   "initialCandidate": {
     "head": "4419c21fc2a3e4417fee13aa9c931b7053ed452b",
     "pr": 52,
     "guard": "explicit SUPPORTS_ALWAYS_ON=false",
     "status": "SUPERSEDED_DUE_TO_ANDROID_API26_LIMITATION",
     "reason": "Official API states SERVICE_META_DATA_SUPPORTS_ALWAYS_ON has effect only on API 27+ while project minSdk=26."
+  },
+  "downstreamDocumentation": {
+    "file": "crossplatform/android/README_FA.md",
+    "prestateSHA256": "9F9DC7E48041270195AA3E89BF3F330D94228E0F1ACAE7A689B96CF850A7534D",
+    "problem": "Readme incorrectly claimed VPN service registered and used outdated Android CI SDK/Gradle versions; historical debug APK could be mistaken for a functional installer.",
+    "decision": "Align source truth, toolchain and explicitly say historic debug artifact not a V445 VPN release.",
+    "status": "CANDIDATE_LOCAL"
   }
 }

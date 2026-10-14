@@ -34,8 +34,8 @@
     },
     {
       "file": "android/README_FA.md",
-      "bytes": 1037,
-      "sha256": "9F9DC7E48041270195AA3E89BF3F330D94228E0F1ACAE7A689B96CF850A7534D"
+      "bytes": 1390,
+      "sha256": "A29BFCBF498CC8BE92C8BEE94436C57DAA40538AC9E0DEFB5403246C42441F4E"
     },
     {
       "file": "android/settings.gradle.kts",
