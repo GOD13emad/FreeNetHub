@@ -14,6 +14,11 @@
       "sha256": "33D1643172B2CF57CF90E9A9E03BF30E9711601F04669B329CCEAF0E1F33611F"
     },
     {
+      "file": ".github/workflows/r54-isolated-acceptance.yml",
+      "bytes": 1307,
+      "sha256": "D6D7386DB8D0E166AF41AF5DA42CE93A6084C9FB75ECD3817E1A1BDB3A92B3BF"
+    },
+    {
       "file": ".gitignore",
       "bytes": 953,
       "sha256": "FDF6C2256E896FA294F3D2BCF0D06318C81FBD98C286100832F257C41DF1A456"
@@ -1519,6 +1524,11 @@
       "sha256": "254600D8B5BD809BA813E0AF1B71CD91C8BC603C2B6D5F36D82CBD25F11A68F6"
     },
     {
+      "file": "evidence/V447_R54_ISOLATED_UPGRADE_VALIDATION_20261014.json",
+      "bytes": 6470,
+      "sha256": "8B01992D8903D044EBECC94D9B3756669B0A1B32594221055C19C0FA92EBE0A4"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1700,8 +1710,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 148993,
-      "sha256": "C3646C736797400AC91E9E4C19ACD951F936B838F36FDFE5F0CADEB3A8DF697A"
+      "bytes": 152995,
+      "sha256": "F5DC86EB415C5F42110C70E9D1CCBBC9D4549E799D52DE95880B710664672623"
     },
     {
       "file": "pytest.ini",
@@ -2032,6 +2042,11 @@
       "file": "tests/normalize_ci_public_text.py",
       "bytes": 905,
       "sha256": "30CF40F6E9B70E97C9E2878A99D8B6ECEA6CC948B10ACFB2147406641C7588FA"
+    },
+    {
+      "file": "tests/prepare_r54_isolated.py",
+      "bytes": 4197,
+      "sha256": "483CA30662C663F92DD2891898B3DC9CDAC1F59F5B1119F68A605852B28AB810"
     },
     {
       "file": "tests/r23_install.ps1",
@@ -2507,6 +2522,11 @@
       "file": "tests/test_r53_release_identity.py",
       "bytes": 2797,
       "sha256": "B12A56676863DE7D4B490BC2A8209DA38DF982D370EAB08CB8B95A1D17ED3FB1"
+    },
+    {
+      "file": "tests/test_r54_isolated_upgrade.ps1",
+      "bytes": 6933,
+      "sha256": "67BCE3D587D22FB4E117FEC01B3EC558F828C8E3787DA8274F5B92A07BD45B1D"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",
