@@ -1,5 +1,35 @@
 # PROJECT BRAIN — FreeNet Hub
 
+Status: CURRENT / R53_PUBLIC_RELEASE_AND_CI_PASS; OWNER_OFFLINE_UPGRADE_BLOCKED
+Brain version: v439-r53-owner-precopy-readiness-2026-10-14
+Accepted source SHA: 9d0fde42d2a7da85056bbc2666074057e370c5bb
+Accepted public release: v4.3.9-r53-windows-stable (Windows R53 installer + Linux R20 ZIP, frozen bytes)
+
+## Current delta — evidence after previous accepted Brain
+- Main and fork postmerge hosted CI on accepted SHA: each 10/10 PASS. Both local source repositories clean. Public release assets unchanged.
+- Windows owner currently R51. Canonical and TEMP same-AppId roots both exist. HKCU uninstall registration points to TEMP; three active app/gateway/helper processes span both roots. Do not force installer or registry overwrite.
+- Private recovery staging: canonical pre-copy Robocopy exit 1, 25,460 files / 7,060,381,711 bytes. TEMP pre-copy initial exit 9 due solely to active runtime jobs/ui.lock; narrowly repeated with this one lock excluded and exit 1. No source files deleted.
+- Distinct Chromium profile data preserved in BOTH private staged roots. 6/6 critical source/destination file hashes agree in each; no recent writes in ten-minute observation; 14/14 copied SQLite quick-check and JSON validations PASS. This does NOT prove app-consistent restore, complete user-state preservation or valid profile merge.
+- Official local R53 installer SHA equals frozen public digest 34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2. Guarded offline-upgrade preflight: source/install/staged copy tests PASS, OWNER_OFFLINE_UPGRADE_READY=FALSE because three processes still active, registry split and rollback not tested.
+- Linux R20 installed integrity + full-system scope-policy regression PASS. Scoped SOCKS5 HTTPS 200; Tailscale running and online. WARP-only full-system path is known from code; no privileged route change, DNS leak-free or Tailscale coexistence validation. No install or network mutation.
+- Detailed source/method/rationale: evidence/V439_R53_OWNER_PRECOPY_READINESS_20261014.json. Private live-profile backups and audit scripts reside under Windows project .git/maintenance and are EXTERNAL/PRIVATE, not in GitHub.
+
+## Roadmap to FINAL (proportional gates)
+1. Official frozen release, exact-SHA CI, mirror repository, Windows and Linux source audits — COMPLETED/PASS.
+2. Owner Windows two-root structural backup and basic database integrity — STAGED/PASS (not app-consistent).
+3. Controlled owner idle recovery: preserve access to BOTH profiles, finalize delta copy, test rollback, reconcile same AppId and upgrade physical R51 to R53 — BLOCKED / CRITICAL PATH.
+4. Linux installed local proxy and coexistence with active Tailscale — COMPLETED/PASS at browser/proxy scope.
+5. Linux WARP full-device/DNS leak-free validation — OPEN/UNPROVEN, root access and rollback prerequisite; do not force a route while connected.
+6. Real mobile/console forwarding and production-signing/provider dependencies — EXTERNAL/UNPROVEN; hosted simulator PASS is not real hardware.
+
+## Exact Next Action
+Maintain active connections. Once owner application is idle with independently recoverable remote access, finalize OFFLINE backup of both distinct Chromium roots, test restoration, then reconcile Inno AppId and upgrade using the frozen R53 installer. Fail closed and preserve R51 if any invariant fails. Continue scoped Linux tests without route mutation.
+
+---
+## Previous accepted cumulative Brain — preserved verbatim
+
+# PROJECT BRAIN — FreeNet Hub
+
 Status: CURRENT / R53_PUBLIC_RELEASE_PASS_OWNER_FIELD_GATES_OPEN
 Brain version: v439-r53-postmerge-field-verified-2026-10-14
 Accepted source baseline: GOD13emad/FreeNetHub main 5c824fc3d800f850edad64d7bf2e0df90294a466; Latest runtime release v4.3.9-r53-windows-stable, peeled tag 17daff34805b82bcae0c6e8d5e6cbed6258c50ff.
