@@ -38,3 +38,43 @@ jobs:
       - name: Isolated R54 Windows install, update, and rollback
         shell: pwsh
         run: ./tests/test_r54_isolated_upgrade.ps1 -Mode ${{ matrix.mode }}
+      - name: Seal exact R54 binary validated by upgrade and rollback
+        if: matrix.mode == 'upgrade'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $source=Join-Path $env:RUNNER_TEMP 'fnh-r54-upgrade-worktree/delivery/private_v4.3.10/FreeNetHub_4.3.10_R54_Setup.exe'
+          $receiptPath=Join-Path $env:RUNNER_TEMP 'r54-upgrade-receipt.json'
+          if(-not (Test-Path -LiteralPath $source) -or -not (Test-Path -LiteralPath $receiptPath)){throw 'TESTED_BINARY_OR_RECEIPT_MISSING'}
+          $receipt=Get-Content -LiteralPath $receiptPath -Raw|ConvertFrom-Json
+          if($receipt.status -ne 'PASS' -or $receipt.mode -ne 'upgrade' -or $receipt.sourceBase -ne 'e4112be36d6cce97863c59a5dbe6a5d0bcdf5786'){throw 'TEST_RECEIPT_NOT_ACCEPTED'}
+          $sha=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
+          if($sha -ne $receipt.r54InstallerSha256 -or (Get-Item $source).Length -ne $receipt.r54InstallerBytes){throw 'TESTED_BINARY_MUTATED'}
+          $out=Join-Path $env:RUNNER_TEMP 'fnh-r54-tested-release-candidate'
+          if(Test-Path $out){throw 'RELEASE_CANDIDATE_PREEXISTS'}
+          New-Item -ItemType Directory -Path $out|Out-Null
+          $target=Join-Path $out 'FreeNetHub_4.3.10_R54_Setup.exe'
+          Copy-Item -LiteralPath $source -Destination $target -ErrorAction Stop
+          if((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $sha){throw 'POST_COPY_BINARY_MISMATCH'}
+          [IO.File]::WriteAllText((Join-Path $out 'SHA256SUMS.txt'),($sha.ToLowerInvariant()+'  FreeNetHub_4.3.10_R54_Setup.exe'+[Environment]::NewLine))
+          $provenance=[ordered]@{
+            status='EXACT_WINDOWS_CI_TESTED_R54_PRIVATE_CANDIDATE'
+            sourceSHA='e4112be36d6cce97863c59a5dbe6a5d0bcdf5786'
+            testedWorkflowCommit='${{ github.sha }}'
+            test='R53-to-R54-to-R53 with data/settings preservation and one AppId'
+            sha256=$sha
+            bytes=(Get-Item $target).Length
+            signed=$false
+            publicRelease=$false
+          }
+          $provenance|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $out 'EVIDENCE.json') -Encoding utf8
+          Write-Host ('R54_EXACT_TESTED_BINARY_READY_SHA256='+$sha)
+      - name: Archive exact Windows-tested R54 candidate (not a public release)
+        if: matrix.mode == 'upgrade'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: R54-Windows-tested-private-candidate
+          path: ${{ runner.temp }}/fnh-r54-tested-release-candidate/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

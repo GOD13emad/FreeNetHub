@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "changeSet": "V448",
+  "objective": "Archive and identify the exact R54 installer bytes that have already passed an isolated Windows R53→R54→R53 upgrade and profile rollback; prevent promoting unrelated private offline rebuilds with divergent SHA256.",
+  "acceptedBase": "03318fa00ba56d625f6178aed517fbaba65d55a4",
+  "priorAcceptance": {
+    "PR": 54,
+    "head": "b991e99eaee49d32db91c34d134ba9999394e927",
+    "mainCI": "38597838417 10/10 PASS",
+    "dedicatedCI": "38597838539 2/2 PASS",
+    "release": "Public R53 unchanged",
+    "ownerWindows": "R53 active, CFON204",
+    "ownerLinux": "R21 active, CFON204"
+  },
+  "observedNonIdentity": {
+    "offlinePrivateSha": "BBDD67CA274EEDA7486017BD2EDF9EACBF1995405F7913634F4F42E80B9076D8",
+    "CI_FreshSha": "E8D3091415CF0EC6B8F8BAF8C5735EE768455730F5D14966E2A181754039A3EC",
+    "CI_UpgradeSha": "7284AF11EA478D3FB23EC5FCE2CF64631AA63EE694FC50A66966AF53C97B0B37",
+    "status": "DIFFERENT_PRIVATE_BUILDS; NO_RELEASE_CANONICAL_BINARY_YET",
+    "hypothesis": "Build metadata / timestamps may differ; unverified reason"
+  },
+  "decision": {
+    "chosen": "Extend disposable Windows upgrade job to check in-run receipt SHA/size after successful install+rollback, copy only that exact binary and archive it with SHA256SUMS and EVIDENCE.json as a private GitHub workflow artifact.",
+    "why": "Uses a CI-proven exact file rather than rebuilding bytes after acceptance. Keeps running Windows R53 and Linux R21 untouched.",
+    "primarySources": [
+      "https://github.com/actions/upload-artifact",
+      "https://github.com/github/docs/blob/main/content/actions/tutorials/store-and-share-data.md"
+    ],
+    "pinnedAction": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 (v4.6.2 verified via GitHub API)",
+    "rejected": [
+      "Publish offline R54 SHA as if tested in Windows CI",
+      "Automatic no-evidence release",
+      "Add generic full-folder workflow upload risking private runner material",
+      "Rebuild installer without re-testing and assume checksum identical"
+    ]
+  },
+  "verification": {
+    "local": "PENDING full workflow YAML parser, script parser, public manifest and code scan",
+    "hosted": "PENDING new exact-PR-head hosted upgrade 2/2 CI and artifact SHA check",
+    "field": "UNPROVEN, installed R53 still active"
+  },
+  "knownLimitations": [
+    "Downloaded artifact is CI-private, not public stable release",
+    "GitHub workflow artifacts expire; publish separately only after dedicated release acceptance",
+    "Full PC_TUNNEL and Android/iOS real networking independent gates",
+    "Unsigned R54 and physical owner live in-place upgrade not performed"
+  ],
+  "status": "CANDIDATE_PENDING_HOSTED",
+  "nextAction": "Run full exact-head Windows 2-mode acceptance, confirm archived artifact name, files and digest equal tested in-run receipt. Then release only this validated binary after versioned metadata/docs/regression approval. No public asset overwrite.",
+  "reuseTargets": [
+    "Project Brain",
+    "Releases",
+    "Build provenance",
+    "Failure prevention"
+  ]
+}
