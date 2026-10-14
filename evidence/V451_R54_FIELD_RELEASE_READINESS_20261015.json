@@ -32,7 +32,7 @@
       "candidateSHA256": "ED9B89C4C228D128229F5C1C98B628D7226E2E3FD784F8990A63494862C83852",
       "bytes": 24267012,
       "hostWindowsDownloadedHashVerified": true,
-      "hostDownloadPath": "C:\\Users\\Aa.Emad\\source\\repos\\FreeNetHub\\.git\\FNH_R54_SMALL_ASSET_PROBE_20261014\\FreeNetHub_4.3.10_R54_Setup.exe",
+      "hostDownloadPath": "OWNER_PRIVATE_GIT_STAGING/FNH_R54_SMALL_ASSET_PROBE_20261014/FreeNetHub_4.3.10_R54_Setup.exe",
       "CITrial": "38605228141, isolated fresh and R53→R54→R53 2/2 PASS",
       "draftAssetId": 641103644
     },
@@ -124,5 +124,14 @@
     "scientific V&V report",
     "technical root-cause history"
   ],
-  "exactNextAction": "Pass V451 documentation-only CI and merge; with verified independent network access and owner-approved maintenance, safely disconnect CFON, run exact SHA-pinned R54 in-place upgrade, validate connected behavior and physical R53 rollback, then determine release authority. For Linux native WARP require explicit owner ToS acceptance and authorized sudo."
+  "exactNextAction": "Pass V451 documentation-only CI and merge; with verified independent network access and owner-approved maintenance, safely disconnect CFON, run exact SHA-pinned R54 in-place upgrade, validate connected behavior and physical R53 rollback, then determine release authority. For Linux native WARP require explicit owner ToS acceptance and authorized sudo.",
+  "ciFailureCorrection": {
+    "initialRunId": 38633992473,
+    "failedJob": "windows-unit",
+    "rootCause": "Publication security scan correctly rejected a private Windows account-specific absolute path in public evidence; product source and public manifest checks passed.",
+    "remediation": "Replace only the public path with an owner-private logical staging locator; retain exact path only in private owner evidence.",
+    "prevention": "Run tests/security_scan_public.py together with verify_public_tree.py before subsequent evidence commits.",
+    "originalCandidateSHA": "10516fe1bbcb5d4ee9552ba82bf9ee9cf20e8aac",
+    "status": "REVISED_LOCAL_CANDIDATE_NEEDS_NEW_EXACT_SHA_CI"
+  }
 }

@@ -1545,8 +1545,8 @@
     },
     {
       "file": "evidence/V451_R54_FIELD_RELEASE_READINESS_20261015.json",
-      "bytes": 6380,
-      "sha256": "347F012A33A74C90E85F528EF8B15361686A6B7D2D15FAC673A4DBD62BCB87C6"
+      "bytes": 7044,
+      "sha256": "16D597E5DADF77759698ECC8B7FB11168D43507980A1F15F19D15DD5CF76EB41"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1730,8 +1730,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 163519,
-      "sha256": "517359FADD4DD03617197C89F7DE5D84C4179693C77B218B4F5BD86014603B8A"
+      "bytes": 164460,
+      "sha256": "B1054131FD3FD0C4138F9AE9E6BFF1AC0ECFB1B4829B3F928A5169DA15F66258"
     },
     {
       "file": "pytest.ini",
