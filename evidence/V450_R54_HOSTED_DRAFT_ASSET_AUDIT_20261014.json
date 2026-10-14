@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "changeSet": "V450",
+  "objective": "Close R54 hosted postmerge and tested GitHub draft asset identity only",
+  "baselineMain": "85869597170ab111c890a26ca3c902a6e87cbacc",
+  "sourceCI": {
+    "run": 38606871791,
+    "jobsPassed": 10,
+    "jobsTotal": 10,
+    "head": "85869597170ab111c890a26ca3c902a6e87cbacc"
+  },
+  "r54WindowsCI": {
+    "run": 38605228141,
+    "sourceHead": "446996a3a6033feabe36506b1ea7e1f42e1673e4",
+    "fresh": "PASS",
+    "upgradeRollback": "PASS",
+    "jobsPassed": 2
+  },
+  "r54Binary": {
+    "name": "FreeNetHub_4.3.10_R54_Setup.exe",
+    "bytes": 24267012,
+    "sha256": "ED9B89C4C228D128229F5C1C98B628D7226E2E3FD784F8990A63494862C83852",
+    "githubAssetId": 641103644,
+    "githubUploadDigest": "sha256:ed9b89c4c228d128229f5c1c98b628d7226e2e3fd784f8990a63494862c83852",
+    "identityVerified": true
+  },
+  "draftRelease": {
+    "id": 412991602,
+    "tag": "v4.3.10-r54-windows-release-review",
+    "draft": true,
+    "public": false
+  },
+  "hostedArtifact": {
+    "id": 11915626213,
+    "zipDigest": "sha256:211b252da57fbe1e3841b517b699a08c7921b3d77a1e7b78320ce96486768530"
+  },
+  "verification": "GitHub upload-computed asset digest and size match the hosted real Windows upgrade-test receipt; locally downloading binary was not completed",
+  "ownerRuntime": {
+    "windows": "R53 4.3.9 unchanged",
+    "linux": "R21 unchanged",
+    "tailscale": "Running 2 peers",
+    "routeDNSChanged": false
+  },
+  "openGates": [
+    "owner rights and third-party distribution review",
+    "public R54 release decision",
+    "physical owner upgrade/rollback and connection recovery",
+    "Windows elevated PC tunnel leak/rollback",
+    "Linux native WARP ToS sudo strict routing",
+    "mobile real forwarding and Apple signing"
+  ],
+  "status": "CANDIDATE_EVIDENCE_AWAITING_EXACT_HEAD_CI",
+  "sources": [
+    "https://github.com/GOD13emad/FreeNetHub/actions/runs/38605228141",
+    "https://github.com/GOD13emad/FreeNetHub/actions/runs/38606871791",
+    "https://docs.github.com/en/rest/releases/assets?apiVersion=2026-03-10"
+  ],
+  "exactNextAction": "Exact-head evidence-only CI then merge/postmerge; separately clear release authority and physical reversible upgrade before stable R54"
+}
