@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 35982,
-      "sha256": "52C0FA8AA200E50369A30B79AE2616DC81172B82FB96DE8A99DB00B54AC71692"
+      "bytes": 33294,
+      "sha256": "F57BE62770059FE3DF7F775AF93874F2FD6B5EAA2AD4679450CC5591792EE813"
     },
     {
       "file": ".gitignore",
@@ -135,8 +135,8 @@
     },
     {
       "file": "crossplatform/android/app/src/main/java/com/freenethub/mobile/MainActivity.kt",
-      "bytes": 1023,
-      "sha256": "5E9CBB5016DEEF5B12BB8347DF862A65D3BA5225348C679AB67E04FAFF6C155E"
+      "bytes": 1005,
+      "sha256": "B867603CF1137B98B00DC5CF84923D9183EDD8EECF0A02F4E1EAF85890F473A3"
     },
     {
       "file": "crossplatform/android/build.gradle.kts",
@@ -336,7 +336,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 7265,
-      "sha256": "CA7C6833E10B20F63B97CFCD3E5372B3C955E883535BDD3DBB46EAC183AC6B72"
+      "sha256": "564FFBC0F165817AD5CEC54F4D9A914D3841D8415862CE333ADF2644BD9122FC"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1505,8 +1505,8 @@
     },
     {
       "file": "evidence/V444_MOBILE_FORWARDING_GAP_BENCHMARK_20261014.json",
-      "bytes": 6273,
-      "sha256": "B1186C6EB88908CDF4344579A2F5BFBD692A2AAAEB4F6B4FE4F4EC7E413F5F76"
+      "bytes": 8565,
+      "sha256": "BFB50E60A4EE446B851A4D0F978F0704AE15B34086643E2E36723448463F6D83"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1690,8 +1690,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 134926,
-      "sha256": "EBAD4E87478C9E0ECA020EB565FE533B8AD713FF8A73568B8E16B2875276C2A6"
+      "bytes": 137438,
+      "sha256": "C507AC96A428A7AF81B6966EB0AE5CE4C7D9E409DB89890BDAB0B5B1793E1B7D"
     },
     {
       "file": "pytest.ini",
@@ -1711,7 +1711,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "B19C9674EEA86EC1BF7C84D20605ED1D73361A3697B9948007A16435C82CC2A3"
+      "sha256": "B9F1473D97985E036FB7CCFAA6E0166D96776077790E967C2355D72F2DDBD7CC"
     },
     {
       "file": "SECURITY.md",
@@ -2330,8 +2330,8 @@
     },
     {
       "file": "tests/rebuild_crossplatform_manifest.py",
-      "bytes": 1254,
-      "sha256": "04BB74B6931BA3B3283767BAC9B47564203E5D473DFFF95B8C9F539B5862E8FE"
+      "bytes": 1398,
+      "sha256": "1A6572B7911000A938EBA28A70E97E049300A63D7FF878EEFD9475A537710397"
     },
     {
       "file": "tests/rebuild_public_manifest.py",

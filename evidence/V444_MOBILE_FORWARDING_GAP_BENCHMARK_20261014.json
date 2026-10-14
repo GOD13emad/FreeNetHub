@@ -121,14 +121,48 @@
     }
   ],
   "verifyVsValidate": "Only code inspection and read-only physical ADB detection was performed in this milestone. No phone install/VPN authorization, TUN, native iOS, DNS-leak, or full-device VPN validation is claimed.",
-  "status": "EVIDENCE_ONLY_MOBILE_CORE_GAP_CONFIRMED",
+  "status": "LOCAL_MUTATION_VALIDATION_OPEN",
   "brain": "CURRENT_ON_CANDIDATE_PENDING_PROMOTION",
-  "nextAction": "Review/merge this evidence-only record after exact-head 10-job hosted CI, then treat functional mobile forwarding as its own scoped implementation change set subject to licensing and physical validation.",
+  "nextAction": "Rebuild PUBLIC_MANIFEST, run full manifest/security/version/scope regression, then exact-head hosted CI for combined Android permission guard; no owner device mutation.",
   "reuseTargets": [
     "PROJECT_BRAIN",
     "mobile architecture decision",
     "release risk summary",
     "technical V&V report",
     "failure prevention"
-  ]
+  ],
+  "changeSetRevision": "V444A_MOBILE_UNLINKED_PERMISSION_REVOCATION_PREVENTION",
+  "priorInitialCandidate": "0d667dedec87954f92859b7f3c6bd4f2fb13b054",
+  "confirmedRisk": {
+    "claim": "Debug Android UI permits VpnService.prepare despite missing forwarding core; approval may revoke a different VPN app",
+    "status": "CONFIRMED",
+    "rawSource": "crossplatform/android/app/src/main/java/com/freenethub/mobile/MainActivity.kt at 4b072d3",
+    "externalPrimary": "https://developer.android.com/reference/android/net/VpnService",
+    "impact": "Other active VPN may lose authorization although FreeNetHub cannot connect"
+  },
+  "mutation": {
+    "objective": "Prevent unlinked FreeNet Hub Android from requesting VPN ownership",
+    "files": [
+      "crossplatform/android/app/src/main/java/com/freenethub/mobile/MainActivity.kt",
+      ".github/workflows/ci.yml",
+      "crossplatform/MANIFEST.json",
+      "PUBLIC_MANIFEST.json",
+      "PROJECT_BRAIN.md",
+      "evidence/V444_MOBILE_FORWARDING_GAP_BENCHMARK_20261014.json",
+      "tests/rebuild_crossplatform_manifest.py",
+      "RELEASE.json"
+    ],
+    "change": "Disabled nonfunctional VPN button with no permission listener; emulator CI now verifies disabled state, no active VPN service and unchanged network interface set.",
+    "phoneChange": "NONE",
+    "sourceCandidate": "UNPROMOTED",
+    "manifestResult": "Rebuild preserves accepted crossplatform version 4.3.7-crossplatform-r51-linux-r20 and updates RELEASE.json crossPlatformManifestSha256 only; published installers unchanged"
+  },
+  "failurePrevention": {
+    "rootCause": "Mobile UI originally offered consent to prove VpnService lifecycle even though no forwarding implementation was available",
+    "prevention": "No VPN authorization prompts until a tested functioning core is linked",
+    "guard": "Real emulator asserts disabled unlinked control and absence of VpnService.prepare",
+    "regression": "Hosted Android emulator and full CI exact SHA required; no blind rerun",
+    "manifestRootCause": "Existing rebuild_crossplatform_manifest.py hardcoded superseded r18 version, rolling back r20 metadata during any rebuild",
+    "manifestGuard": "Rebuild derives version from existing authoritative manifest, fails if schema/version missing, then tests verify crossplatform+RELEASE/public manifest hashes"
+  }
 }

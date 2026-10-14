@@ -1012,3 +1012,15 @@ Exact Next Action: rebuild current manifests, commit/push the candidate branch, 
 **Evidence:** `evidence/V444_MOBILE_FORWARDING_GAP_BENCHMARK_20261014.json`; official Android/Apple VPN documentation, official sing-box platform feature docs and Tailscale other-VPN compatibility. No mobile/network mutations made.
 
 **Exact next action:** Promote this V444 knowledge-only candidate after exact-SHA CI. Begin a separate mobile forwarding implementation only after a license/core pin decision and a reversible test harness preserving other device VPNs.
+
+### V444A corrective delta — Android unlinked VPN permission guard (2026-10-14)
+
+**Previous V444 candidate status superseded:** the initial knowledge-only mobile review identified a user-visible VPN permission request in `MainActivity.kt` despite `providerCoreReady() == false`. Official Android `VpnService.prepare` documentation confirms authorization is exclusive and approving another application revokes the previous VPN right. This is a real disruption risk to other user-installed VPNs even without any FreeNet Hub TUN.
+
+**ONE mutation objective:** stop the nonfunctional Android application from requesting VPN ownership. Android UI now exposes an explicitly disabled control; no `VpnService.prepare` call remains reachable in `MainActivity.kt`. Emulator CI now asserts the visible control is disabled, no misleading permission action is exposed, no FreeNet Hub VPN service starts and interface inventory remains unchanged. No host/device deployment or active user VPN change occurred. Windows, Linux, iOS runtime and accepted public release assets are untouched.
+
+**Root cause -> prevention -> guard -> regression:** premature permission lifecycle demonstration -> withhold permission until functional forwarding core exists -> disabled UI and no source permission invocation -> Android emulator + full exact-SHA hosted CI mandatory. Minimal controls, no extra retries. Status: LOCAL CANDIDATE; hosted/physical acceptance UNPROVEN until results.
+
+**Evidence/authority:** `evidence/V444_MOBILE_FORWARDING_GAP_BENCHMARK_20261014.json`, Android official `https://developer.android.com/reference/android/net/VpnService`. Exact next action: rebuild nested/public manifests, test, promote PR #51 only after exact-head CI passes. Full mobile Internet remains MISSING.
+
+**V444A manifest-rebuild failure prevention:** First local rebuild exposed that `tests/rebuild_crossplatform_manifest.py` hardcoded superseded `4.3.7-crossplatform-r51-linux-r18` and would silently downgrade the accepted manifest version `4.3.7-crossplatform-r51-linux-r20`. Root cause: stale generator constant. Prevention: derive schema/version from the existing authoritative manifest and fail if absent; regenerate the cross-platform file digests without changing its accepted version. Keep Windows R53/Linux R21 public asset hashes frozen; update only source `RELEASE.json` cross-platform SHA, `PUBLIC_MANIFEST.json`, and related evidence. Verification is pending full local and hosted exact-SHA tests; no release promotion implied.
