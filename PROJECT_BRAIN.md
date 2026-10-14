@@ -1,5 +1,36 @@
 # PROJECT BRAIN — FreeNet Hub
 
+Status: CURRENT / R53_PUBLIC_RELEASE_PASS_OWNER_FIELD_GATES_OPEN
+Brain version: v439-r53-live-authority-audit-2026-10-14
+Authority: GOD13emad/FreeNetHub main ec2ce34b84b94bdfb0f377ee07008602e4ca277f; Latest runtime release v4.3.9-r53-windows-stable, peeled tag 17daff34805b82bcae0c6e8d5e6cbed6258c50ff.
+Objective / DoD: one official current Windows installer plus Linux R20 distribution, verifiable public GitHub hashes and hosted CI, safe upgrade preserving user data, working browser proxy, optional full-device tunnel only when validated, and physical host acceptance evidence.
+
+## CURRENT — R53 2026-10-14 field and release audit
+- GitHub Latest release is PUBLIC/CONFIRMED with Windows R53 SHA-256 34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2 and Linux R20 SHA-256 5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B; exactly two assets.
+- PR #42 hosted CI run 38523926557: 10/10 SUCCESS. Merged main exact SHA ec2ce34 postmerge CI 38525037084: 10/10 SUCCESS. Windows local R53 identity and 13/13 installer/lifecycle tests PASS. No runtime code changed by docs PR #42.
+- Windows owner currently on **R51**, not R53. Canonical installed tree and active TEMP R51 with SAME Inno AppId conflict; uninstall registry points to TEMP. ACTIVE connection; 7.06GB canonical + 1.07GB TEMP dynamic tree. R53 guard correctly refuses split-root; physical R53 upgrade is BLOCKED pending idle consistent backup and controlled rollback. No unsafe auto-fix or install.
+- Linux installed R20 manifest SHA-256 checks PASS; CFON SOCKS5 endpoint 127.0.0.1:19414 reaches Cloudflare HTTPS and GitHub API (HTTP 200). Incorrect HTTP-proxy probe produced false negative; no product mutation needed. System default route and DNS still via wlp2s0/192.168.20.1; systemwide DNS-leak-free and optional full-tunnel remain UNPROVEN.
+- External: mobile hardware forwarding/console, production signing, real owner installed R53, full-system DNS routing, and interactive browser acceptance remain OPEN or EXTERNAL. Do not relabel virtual CI as physical validation.
+- Mirror Usefull-Skills/FreeNetHub main remains on e41b3f6, behind source authority; verify intended mirror policy before synchronization. Official public release/primary README remain correct.
+- Evidence: evidence/V439_R53_LIVE_HOST_AUDIT_20261014.json with live results, sources, previous-brain SHA and backup.
+
+## Roadmap to FINAL (evidence gated)
+1. Source and public exact release/CI — COMPLETED/PASS for v4.3.9 R53.
+2. Windows source installer isolation, rollback and preserving profile — COMPLETED/PASS in hosted isolated CI, not owner host.
+3. Linux R20 installed integrity and localhost CFON SOCKS5 — COMPLETED/PASS on owner Linux; no full-system claim.
+4. Owner Windows R51 split-root reconciliation after consistent backup/idle, then R53 in-place installed validation — BLOCKED/critical path.
+5. Linux optional full-tunnel/DNS physical acceptance without breaking Tailscale or owner connectivity — OPEN; do not force-route blindly.
+6. Physical console/mobile/browser and signing/provider-dependent steps — EXTERNAL/UNPROVEN, report individually.
+7. Finish release/post-publish evidence and mirrored repository policy, only promote new code for evidence-backed blocker — OPEN.
+
+## Exact Next Action
+Keep connected sessions intact. Record ownership and rollback-safe consistent backup of BOTH Windows install roots and Inno uninstall history; when idle and verifiably recoverable, reconcile split-root and perform R53 owner-installed upgrade with data comparison. In parallel, validate scoped Linux SOCKS5 vs optional full-device routing and decide whether mirror requires an explicit fast-forward. Never blindly rerun failed commands.
+
+---
+## PREVIOUS HISTORICAL BRAIN — retained verbatim after this heading
+
+# PROJECT BRAIN — FreeNet Hub
+
 Status: CURRENT / V436_R50_LOCAL_GATES_PASS_HOSTED_OPEN
 Brain version: v436-r50-node-selection-quality-local-2026-10-05
 Previous public baseline: v4.3.5 / R49 at merge commit 93fea59d696b69eb5b723e2d6b2033d4fdb879dd.
