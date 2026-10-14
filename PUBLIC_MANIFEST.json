@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.3.8-r52-stale-node-health-ttl",
+  "version": "4.3.9-r53-inno-root-guard",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 31557,
-      "sha256": "30D5538BD6287EF5A60C682BDB48E114B6C08276CF889D1AF22601F3EE834C8F"
+      "bytes": 35390,
+      "sha256": "075FE9D7E6391A90B05C6F7EB12EB5C9EAD77EC46DE7C70221496B96CA3CFC4C"
     },
     {
       "file": ".gitignore",
@@ -105,8 +105,8 @@
     },
     {
       "file": "app/manifest.json",
-      "bytes": 4860,
-      "sha256": "C8A1DF91547454ABC1E1DE2D49EB3E5FE1B9D6DD434A8538AA6726053B61DFA4"
+      "bytes": 4874,
+      "sha256": "0A27D015ED7F43A390D07EFAB7DE11FDA44B69C115DBCD1A155D280ABC80457D"
     },
     {
       "file": "app/nodehub.py",
@@ -365,8 +365,8 @@
     },
     {
       "file": "docs/RELEASE_NOTES_FA.txt",
-      "bytes": 11792,
-      "sha256": "1975F3D9AF6C2D08C5B0BB58319967944BD4DE157F9557F77909EFA88F2DEC02"
+      "bytes": 13544,
+      "sha256": "D79B1C1681BA7C62C5809C40A1FD3F72E4EEBFA52D5C35570F4DA6DA7D463B1E"
     },
     {
       "file": "docs/research.json",
@@ -1439,6 +1439,11 @@
       "sha256": "7BCF967B5FAE6ACC2CA08254092B5F9CC99011877F8F053487A6490582A34D14"
     },
     {
+      "file": "evidence/V439_R53_INSTALLER_CANDIDATE_20261014.json",
+      "bytes": 1305,
+      "sha256": "06A972D055692DC58656BAD1871085B46CBCF978F64E3C7FB899E3855025B8BA"
+    },
+    {
       "file": "evidence/V43_INSTALLER_ACCEPTANCE_20261003.json",
       "bytes": 4066,
       "sha256": "424CD816877627D7622C69184B1A88E2812AE9991CBF746D88037D6D20A0B708"
@@ -1655,8 +1660,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 42783,
-      "sha256": "133C87411BDB11B1241531E6B2688B71F9FF8F2DB05EF596A7AAB27CE298FF42"
+      "bytes": 42767,
+      "sha256": "AD897C9F0CB38C282B27CEB783C2BBA21C8563EE8652C1962A125820AAC576DC"
     },
     {
       "file": "SECURITY.md",
@@ -1912,6 +1917,11 @@
       "file": "tests/build_v438_installer.ps1",
       "bytes": 3522,
       "sha256": "A34205E3E9430F97D1A9C090502DBFB146F677EAB5B887C2E363C0098F0AA865"
+    },
+    {
+      "file": "tests/build_v439_installer.ps1",
+      "bytes": 3522,
+      "sha256": "E6A82BFADDA2DEFAC2987805CAD604126B18339B185CCED5746D354D076F7E26"
     },
     {
       "file": "tests/build_v43_installer.ps1",
@@ -2424,6 +2434,11 @@
       "sha256": "D6209F15A6E40137D56E49B6F0379123DDF2C91410C4ADD9A9276DA3F41872BF"
     },
     {
+      "file": "tests/test_r53_release_identity.py",
+      "bytes": 2282,
+      "sha256": "809B2A01A4092E280377FC94DCB01859B9CCCE03C2B97911FDDE43C7AE54776D"
+    },
+    {
       "file": "tests/test_v431_integrity_hotfix.py",
       "bytes": 2355,
       "sha256": "42DFDF41C3DFBEB8B97A4CEFAD9F3E9EE6C67B45384A620ED49E71F5D384FD58"
@@ -2436,7 +2451,7 @@
     {
       "file": "tests/test_v43_installer_fresh_install.py",
       "bytes": 2286,
-      "sha256": "DD7196C3316909FF63E1700749A79535CC294B6D208E53B08F5273055FDEC96E"
+      "sha256": "314AD3AE12E758F9A0E6E046184091E28FB4491CD98665FB094A4FB85B9117E2"
     },
     {
       "file": "tests/verify_public_tree.py",
@@ -2485,8 +2500,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 14599,
-      "sha256": "1914D0070FB0B427C2DA2B638FDABC41B4EE955E8551215C3A81BE995E861A13"
+      "bytes": 14589,
+      "sha256": "9F84E67277FDBA2BFA7B97A19A73EDDFABC3F6CBE574275C68C763CD8E8C4E6C"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",

@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-14",
+  "status": "R53_UNSIGNED_INSTALLER_RELEASE_LINE",
+  "goal": "Ship previously accepted source-only PR40 Inno split-root fail-closed guard in versioned Windows R53 installer, preserving one Latest release with identical Linux R20 bytes.",
+  "sourceAuthority": "e41b3f669a894b1df5f0e84884eeb8600e747224",
+  "version": "4.3.9",
+  "releaseRevision": "4.3.9-r53-inno-root-guard",
+  "windowsInstaller": "FreeNetHub_4.3.9_R53_Setup.exe",
+  "linuxPinnedAsset": "FreeNetHub_4.2.0_Linux_R20.zip",
+  "linuxPinnedSha256": "5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B",
+  "published": false,
+  "fieldOwnerWindowsR53Installed": false,
+  "linuxFullSystemLeakFreeVerified": false,
+  "rationale": "Official GitHub release should preserve Linux updater asset on same latest release; update revision comparison matches R53 filename and app metadata; no auto registry repair or owner network disruption.",
+  "verificationRequired": [
+    "exact commit CI",
+    "fresh install and R51 to R53 upgrade",
+    "R52 to R53 upgrade",
+    "pinned R53 rollback with settings integrity",
+    "split-root rejection",
+    "Linux R20 pinned bytes in draft",
+    "asset digest and latest API postpublish",
+    "current owner app untouched"
+  ],
+  "verificationStatus": "UNPROVEN_CANDIDATE"
+}

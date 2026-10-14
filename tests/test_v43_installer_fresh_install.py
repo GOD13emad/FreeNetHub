@@ -6,11 +6,11 @@ ISS=(ROOT/"windows/installer/FreeNetHub.iss").read_text(encoding="utf-8-sig")
 def _prepare_block():
     return ISS.split("function PrepareToInstall(var NeedsRestart: Boolean): String;",1)[1].split("procedure CurStepChanged",1)[0]
 
-def test_v437_successor_has_distinct_r51_installer_identity():
-    assert '#define MyAppVersion "4.3.7"' in ISS
-    assert r"OutputDir=..\..\delivery\github_v4.3.7" in ISS
-    assert "OutputBaseFilename=FreeNetHub_4.3.7_R51_Setup" in ISS
-    assert "VersionInfoVersion=4.3.7.0" in ISS
+def test_v439_successor_has_distinct_r53_installer_identity():
+    assert '#define MyAppVersion "4.3.9"' in ISS
+    assert r"OutputDir=..\..\delivery\github_v4.3.9" in ISS
+    assert "OutputBaseFilename=FreeNetHub_4.3.9_R53_Setup" in ISS
+    assert "VersionInfoVersion=4.3.9.0" in ISS
 
 def test_fresh_install_skips_upgrade_guard_before_extracting_helper():
     block=_prepare_block()
