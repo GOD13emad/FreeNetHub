@@ -23,6 +23,10 @@ assert '#define MyAppVersion "4.3.9"' in iss
 assert f"OutputBaseFilename={filename.removesuffix('.exe')}" in iss
 assert filename in builder
 assert "github_v4.3.9" in builder
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+assert "4.3.9-r52-stale-node-health-ttl" not in workflow
+assert workflow.count("4.3.9-r53-inno-root-guard") >= 5
+assert "R52_TO_R53_DATA_PRESERVATION_AND_EXPLICIT_R52_ROLLBACK_PASS" in workflow
 assert "CheckConflictingInstallRoots" in iss
 assert "Result := CheckConflictingInstallRoots;" in iss
 assert "https://api.github.com/repos/GOD13emad/FreeNetHub/releases/latest" in engine
