@@ -1,5 +1,35 @@
 # PROJECT BRAIN — FreeNet Hub
 
+Status: CURRENT / OWNER_WINDOWS_R53_PHYSICAL_PASS_LINUX_R20_SCOPED_PASS_EXTERNAL_GATES_OPEN
+Brain version: v439-r53-owner-physical-acceptance-2026-10-14
+Authoritative source: GOD13emad/FreeNetHub main 243b2a3085889f9abc5dadd7e4e456aa6254a986 (before this docs-only record).
+Frozen published release: v4.3.9-r53-windows-stable (one Windows R53 installer + Linux R20 ZIP). Do not change published binaries.
+
+## Current accepted evidence delta
+- Hosted postmerge exact-SHA canonical CI 38543447337 **10/10 PASS**; fork 38543700692 **10/10 PASS**; same accepted code SHA. Release and runtime executable artifacts unchanged.
+- Windows owner R51 -> official SHA-pinned R53 **PHYSICAL UPGRADE PASS**: baseline two-root data and HKCU uninstall log escrow, app-owned NODE/CFON gracefully disconnected, offline copy 11/11 selected critical hashes, exact Inno AppId location reconciliation, R53 Setup.exe exit 0. Installed RELEASE version 4.3.9, Runtime status PASS, only one registered active Inno uninstall entry at canonical path.
+- WPF GUI physically launched with a real window handle; R53 engine CFON Connect exit 0, healthy/connected, country AT; SOCKS5 HTTPS 200. UpdateCheck exit 0, latest public R53, updateAvailable false. Tailscale Running Online and direct HTTPS remained available throughout maintenance.
+- Distinct original and temporary Chromium profiles preserved as Browser_Primary and Browser_Temp_R51 within canonical R53 data; six initial critical secondary-profile hashes matched, copied SQLite/JSON 14/14 PASS and final quiescent sample 11/11 PASS. Real secondary Chrome Headless about:blank returned code 0 and valid DOM without changing primary selector.
+- Old TEMP R51 root moved to PRIVATE rollback archive (not deleted, not a registered/active installation), verified four archival sample hashes. Public repo contains NO private user profiles or registry backups.
+- Two failed audit probes retained as superseded: PowerShell GUI Chrome attempt produced null native exit, corrected with bounded subprocess; install-count audit regex excluded actual display name, corrected to optional-space pattern and 15/15 physical Windows acceptance PASS. Neither false-negative was an application regression.
+- Public knowledge and references: evidence/V439_R53_OWNER_PHYSICAL_ACCEPTANCE_20261014.json. Raw private rollback receipts: Windows project .git/maintenance/R53_OWNER_20261014_PRESTATE (EXTERNAL/PRIVATE, not transferred).
+
+## Remaining road to strict FINAL
+1. Public R53/R20 frozen release, exact SHA hosted CI and official mirrored source — COMPLETED/PASS.
+2. Windows owner physical R53 installation, one active registration, WPF GUI, CFON, update, dual browser profile preservation, direct/Tailscale regression — COMPLETED/PASS, verified on owner machine.
+3. Linux R20 installed SHA integrity, GTK process and scoped CFON SOCKS5 with Tailscale — COMPLETED/PASS.
+4. Linux full-device WARP routing, DNS leak-free and Tailscale-safe rollback physical validation — OPEN/UNPROVEN; sudo unavailable. Never force system route changes without privilege and recovery.
+5. Windows elevated PC/console gateway physical validation — OPEN/UNPROVEN; gateway status is not running, current Windows session not elevated.
+6. Android/iOS hardware deployment, physical forwarding, production-signing/provider gates — EXTERNAL/UNPROVEN; hosted emulator PASS does not satisfy device acceptance.
+
+## Exact Next Action
+Preserve accepted Windows owner R53 baseline and active CFON. Acquire explicitly authorized elevated capability with independently reversible route/DNS guards for full-system/console scopes only if included in strict final DoD, then conduct physical acceptance on the required real devices. Do not create new release versions or patch binaries absent a reproduced defect. Keep private old R51 recovery archives until restore acceptance and cleanup policy is confirmed.
+
+---
+## Previous accepted cumulative Brain — preserved verbatim
+
+# PROJECT BRAIN — FreeNet Hub
+
 Status: CURRENT / R53_PUBLIC_RELEASE_AND_CI_PASS; OWNER_OFFLINE_UPGRADE_BLOCKED
 Brain version: v439-r53-owner-precopy-readiness-2026-10-14
 Accepted source SHA: 9d0fde42d2a7da85056bbc2666074057e370c5bb
