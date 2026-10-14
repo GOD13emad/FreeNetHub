@@ -1,19 +1,20 @@
-# FreeNet Hub 4.3.8 — public desktop release
+# FreeNet Hub 4.3.9 — public desktop release
 
 FreeNet Hub controls connectivity on Windows and Linux with explicit Browser, Full System, and Console capabilities. Availability differs by provider and platform.
 
 ## Installation authority
 
-**Latest official release:** https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.8-r52-windows-stable
+**Latest official release:** https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.9-r53-windows-stable
 
-### Windows R52 (v4.3.8) — public
+### Windows R53 (v4.3.9) — public
 
-- Asset: `FreeNetHub_4.3.8_R52_Setup.exe`
-- SHA-256: `A48F689B22940C9D752FADB6372B849948B18192F3A30D4FC3971C15827F9883`
-- Release revision: `4.3.8-r52-stale-node-health-ttl`.
-- Upgrade: replaces R51 in place under the same Inno AppId when its safe-upgrade preflight passes; an active FreeNet Hub provider listener blocks upgrade to avoid breaking an ongoing connection.
-- Verified: hosted CI run [#363](https://github.com/GOD13emad/FreeNetHub/actions/runs/38477116892) completed SUCCESS on exact public main commit `0a89fbbab80e603191040471531d6ef1e287df26`, including Windows installer tests and cross-platform virtual acceptance.
-- This installer is **unsigned by publisher choice**. Windows SmartScreen or Smart App Control may warn or block it. Do not disable security protections merely to install.
+- Asset: `FreeNetHub_4.3.9_R53_Setup.exe`
+- SHA-256: `34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2`
+- Release revision: `4.3.9-r53-inno-root-guard`.
+- Upgrade: R51/R52 may upgrade in place under the original Inno AppId only when the registered uninstall root agrees with the selected existing installation and the safe-upgrade preflight passes. Conflicting canonical and temporary install roots **fail closed before file replacement or provider shutdown**; they are not automatically merged or deleted.
+- Verified: exact public-main commit `17daff34805b82bcae0c6e8d5e6cbed6258c50ff` passed [postmerge CI 10/10](https://github.com/GOD13emad/FreeNetHub/actions/runs/38521651247), including fresh Windows install, R51/R52 upgrade, pinned rollback, data/settings preservation, split-root denial, Android/iOS simulator runtime and virtual acceptance.
+- Live Windows R51 `UpdateCheck` independently discovered public R53 and its SHA-256 with `updateAvailable=true`, without disconnecting an active CFON listener. **This does not constitute installing R53 on that owner host.**
+- The Windows installer is **unsigned by publisher choice**. Windows SmartScreen or Smart App Control may warn or block it. Do not disable security protections merely to install.
 
 ### Linux R20 — public
 
@@ -23,10 +24,10 @@ FreeNet Hub controls connectivity on Windows and Linux with explicit Browser, Fu
 - Independent owner-host check (2026-10-14): all 9 installed manifest hashes PASS; HTTPS through the local CFON SOCKS5 proxy returned 200; the physical default route and Tailscale were preserved.
 - **Browser-scoped CFON is not whole-system VPN coverage**. A DNS-leak-free Linux full-system VPN remains unverified.
 
-### Windows R51 — previous release
+### Windows R52 and R51 — previous releases
 
-- R51 (`4.3.7`) remains historical/rollback authority only, not the latest public installer.
-- Do not force an R52 upgrade while a provider listener is active. The installer intentionally fails closed to protect the session.
+- R52 (`4.3.8`) and R51 (`4.3.7`) remain historical/rollback authorities, not the Latest Windows installer. Published assets and SHA-256 digests are retained unchanged.
+- Do not force an R53 upgrade while a provider listener is active or if two installs share one AppId with conflicting uninstall history. Preserve user data and use controlled recovery with verified rollback.
 
 ## Current capabilities
 
@@ -41,12 +42,12 @@ FreeNet Hub controls connectivity on Windows and Linux with explicit Browser, Fu
 
 ## Validation boundary
 
-The public Windows R52 and Linux R20 products are accepted only within the scopes verified by their own tests. Linux whole-system DNS-leak prevention, unsigned-Windows compatibility with Smart App Control, user-host installed R52 field GUI acceptance, physical console testing, production mobile forwarding/signing, and interactive Cloudflare challenge/login remain OPEN. A command-line HTTP 403 with cf-mitigated: challenge is not proof of a broken proxy or successful browser login.
+The public Windows R53 and Linux R20 products are accepted only within the scopes verified by their own tests. Linux whole-system DNS-leak prevention, unsigned-Windows compatibility with Smart App Control, user-host installed R53 field GUI acceptance, physical console testing, production mobile forwarding/signing, and interactive Cloudflare challenge/login remain OPEN. A command-line HTTP 403 with cf-mitigated: challenge is not proof of a broken proxy or successful browser login.
 
 No software can promise Internet access if all underlying paths are unavailable.
 
 ## Source and release authority
 
-The exact asset names and SHA-256 digests of the official v4.3.8-r52-windows-stable release govern installation; later source commits may update documentation without rebuilding the published installers. The repository has **no project-wide software license** (see `THIRD_PARTY_NOTICES.md`); third-party licenses are not a license grant for FreeNet Hub's own source. License choice is an owner/legal gate.
+The exact asset names and SHA-256 digests of the official v4.3.9-r53-windows-stable release govern current installation; later source commits may update documentation without rebuilding the published installers. The repository has **no project-wide software license** (see `THIRD_PARTY_NOTICES.md`); third-party licenses are not a license grant for FreeNet Hub's own source. License choice is an owner/legal gate.
 
 See SECURITY.md, issues #30/#32 and evidence/ for accepted and outstanding proof.
