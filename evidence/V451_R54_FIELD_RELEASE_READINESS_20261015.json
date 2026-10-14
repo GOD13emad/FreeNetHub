@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "project": "FreeNet Hub",
+  "changeSet": "V451",
+  "mainObjective": "Promote evidence-backed V450 CI closure and capture physical R54 release blocker with minimum sufficient safeguards; evidence-only.",
+  "acceptedBaseline": {
+    "mainSHA": "22b5a0e4b8c960e3a601067a891deba10475f4f1",
+    "previousRecord": "evidence/V450_R54_HOSTED_DRAFT_ASSET_AUDIT_20261014.json",
+    "windowsPublicVersion": "4.3.9 R53",
+    "linuxVersion": "4.2.0-linux.21-r54"
+  },
+  "confirmed": {
+    "V450PR": {
+      "number": 57,
+      "merged": true,
+      "mergeCommit": "22b5a0e4b8c960e3a601067a891deba10475f4f1"
+    },
+    "postmergeCI": {
+      "runId": 38630643887,
+      "headSHA": "22b5a0e4b8c960e3a601067a891deba10475f4f1",
+      "passed": 10,
+      "total": 10,
+      "conclusion": "success"
+    },
+    "hosts": {
+      "windowsGit": "clean/main at 22b5a0e",
+      "linuxGit": "clean/main at 22b5a0e",
+      "linuxPublicTree": "PASS"
+    },
+    "R54Exact": {
+      "candidateSHA256": "ED9B89C4C228D128229F5C1C98B628D7226E2E3FD784F8990A63494862C83852",
+      "bytes": 24267012,
+      "hostWindowsDownloadedHashVerified": true,
+      "hostDownloadPath": "C:\\Users\\Aa.Emad\\source\\repos\\FreeNetHub\\.git\\FNH_R54_SMALL_ASSET_PROBE_20261014\\FreeNetHub_4.3.10_R54_Setup.exe",
+      "CITrial": "38605228141, isolated fresh and R53→R54→R53 2/2 PASS",
+      "draftAssetId": 641103644
+    },
+    "R53RecoveryFile": {
+      "sha256": "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2",
+      "bytes": 24268030,
+      "downloadVerified": true
+    },
+    "installedWindows": {
+      "registryHKCUEntries": 1,
+      "appVersion": "4.3.9",
+      "sessionKnown": true,
+      "sessionConnected": true,
+      "mode": "CFON",
+      "listenerPort": 19414,
+      "SOCKS5HGoogleHTTP": 204,
+      "defaultRoute": "Ethernet 3 via 192.168.20.1",
+      "gatewayRunning": false,
+      "consoleInterface": "Missing",
+      "winHttpProxy": "Direct (no proxy)"
+    },
+    "installedLinux": {
+      "warpCliVersion": "2026.7.1377.0",
+      "warpToS": "Explicit prompt to accept terms; not accepted",
+      "noninteractiveSudo": "DENIED",
+      "tailscale": "Running / 2 peers",
+      "defaultRoute": "wlp2s0 via 192.168.20.1",
+      "googleDirectGenerate204": 204
+    },
+    "sourceAuthority": {
+      "mainReleaseVersion": "4.3.9",
+      "R54Build": "Pinned detached source from e4112be; PR56 446996a recipe, tested binary",
+      "draft": "v4.3.10-r54-windows-release-review, unpublished"
+    }
+  },
+  "rootCausePrevention": {
+    "observed": "R54 in-place upgrade is deliberately blocked by current owner Windows live CFON session; source Prepare-Upgrade.ps1 intentionally returns exit code 42 when session connected/listener active.",
+    "prevention": "Preserve live owner Internet and remote control until independent recovery is proven; do not bypass guard or force-kill active provider.",
+    "guard": "Owner network-independent recovery and verified disconnect; exact R53 rollback installer staged and hash-checked.",
+    "regression": "Hosted native Windows isolated same-AppId fresh/upgrade/rollback 2/2 PASS, but live owner rollback remains UNPROVEN."
+  },
+  "methodBenchmark": {
+    "inno": "Keep fixed AppId, equivalent elevation and architecture, use previous directory; official Inno docs confirm single uninstall log/registration when compatible.",
+    "tailscale": "VPN coexistence may fail due to firewall, routing and overlaps; preserve Tailscale and remote control until route rollback capacity proven.",
+    "warp": "Cloudflare Linux procedure registers and connects WARP after owner ToS; do not silently pass --accept-tos.",
+    "license": "No root project-wide LICENSE; copyright owner may distribute own code if rights held, but bundled notices and third-party obligations require review.",
+    "attestation": "GitHub attestation is available as optional provenance hardening, not an additional release blocker when exact CI-to-asset SHA is already verified."
+  },
+  "decision": {
+    "accepted": "Postmerge source CI 10/10, installer identity and isolated installation 2/2, single installed R53 and scoped CFON functionality.",
+    "notAccepted": [
+      "Physical Windows R53→R54 field install and recovery",
+      "Public R54 stable release and release-rights review",
+      "Strict Windows PC_TUNNEL/console route and DNS rollback",
+      "Native Linux WARP ToS/sudo and strict route/DNS/tailscale coexistence",
+      "Android/iOS functional packet forwarding and iOS signing/hardware"
+    ],
+    "rejected": [
+      "Bypassing live connected-session installer guard",
+      "Automating third-party ToS acceptance",
+      "Overwriting published R53 assets",
+      "Declaring stable readiness from emulator or isolated host checks",
+      "Imposing additional attestation gates without measured risk benefit"
+    ]
+  },
+  "references": [
+    "https://jrsoftware.org/ishelp/topic_setup_appid.htm",
+    "https://jrsoftware.org/ishelp/topic_sameappnotes.htm",
+    "https://jrsoftware.org/isfaq.php",
+    "https://tailscale.com/docs/reference/faq/other-vpns",
+    "https://developers.cloudflare.com/warp-client/get-started/linux/",
+    "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository",
+    "https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations"
+  ],
+  "projectStatus": "EVIDENCE_CANDIDATE_UNTIL_V451_EXACT_SHA_CI",
+  "roadmap": [
+    "Source integration CI ACCEPTED",
+    "Binary identity/isolation ACCEPTED",
+    "V451 record CI ← CURRENT",
+    "Owner rights/public release and field upgrade OPEN",
+    "Windows/Linux strict system tunnel OPEN",
+    "Functional mobile forwarding OPEN",
+    "FINAL UNPROVEN"
+  ],
+  "knowledgeReuseTargets": [
+    "PROJECT_BRAIN.md",
+    "release governance",
+    "Windows recovery field plan",
+    "scientific V&V report",
+    "technical root-cause history"
+  ],
+  "exactNextAction": "Pass V451 documentation-only CI and merge; with verified independent network access and owner-approved maintenance, safely disconnect CFON, run exact SHA-pinned R54 in-place upgrade, validate connected behavior and physical R53 rollback, then determine release authority. For Linux native WARP require explicit owner ToS acceptance and authorized sudo."
+}
