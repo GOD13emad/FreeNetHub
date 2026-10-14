@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "changeSet": "V445",
+  "objective": "Prevent an Android prototype VPN without a forwarding core from being selectable as Always-on VPN, without modifying any owner network/device.",
+  "acceptedBaseline": {
+    "main": "14145ac00af934c1405760f086cbd1c3e9272816",
+    "windows": "4.3.9-r53-inno-root-guard",
+    "linux": "4.2.0-linux.21-r54",
+    "officialRelease": "v4.3.9-r53-windows-stable",
+    "dualRepositoryCI": [
+      {
+        "repo": "GOD13emad/FreeNetHub",
+        "run": 38570732401,
+        "head": "14145ac00af934c1405760f086cbd1c3e9272816",
+        "passed": 10,
+        "total": 10,
+        "conclusion": "success"
+      },
+      {
+        "repo": "Usefull-Skills/FreeNetHub",
+        "run": 38571407077,
+        "head": "14145ac00af934c1405760f086cbd1c3e9272816",
+        "passed": 10,
+        "total": 10,
+        "conclusion": "success"
+      },
+      {
+        "repo": "Usefull-Skills/FreeNetHub",
+        "run": 38571407597,
+        "head": "14145ac00af934c1405760f086cbd1c3e9272816",
+        "passed": 3,
+        "total": 3,
+        "conclusion": "success",
+        "kind": "code analysis"
+      }
+    ]
+  },
+  "factualProblem": {
+    "status": "CONFIRMED",
+    "rawFile": "crossplatform/android/app/src/main/AndroidManifest.xml",
+    "prestateSHA256": "962B24AD2FB3F0D9FA2BF5D8490922D4116BB2995124F93A8F62711894B3188A",
+    "finding": "Android VpnService component had no SERVICE_META_DATA_SUPPORTS_ALWAYS_ON false. Android's default for a VpnService supporting Android 8.1+ is true, despite providerCoreReady()=false. In Android settings this could misleadingly appear eligible for Always-on.",
+    "scope": "Risk of user selecting a nonfunctional VPN; actual Always-on enrollment or traffic failure on a physical device was NOT observed.",
+    "primarySource": "https://developer.android.com/reference/android/net/VpnService"
+  },
+  "mutation": {
+    "files": [
+      "crossplatform/android/app/src/main/AndroidManifest.xml",
+      ".github/workflows/ci.yml"
+    ],
+    "mainObjective": "Set android.net.VpnService.SUPPORTS_ALWAYS_ON=false while provider has no packet-forwarding core",
+    "ciGuard": "Parse Android manifest, assert exactly one targeted VPN service and explicit false meta-data, assert forwarding core remains unlinked and Activity does not request VpnService.prepare",
+    "outOfScope": "No real Android VPN core, iOS functional tunnel, Windows/Linux network route or release-asset change"
+  },
+  "readOnlyOwners": {
+    "windows": {
+      "installedR53": true,
+      "appRunning": true,
+      "scopedProxyGoogleHTTP": 204,
+      "isAdministrator": false,
+      "gatewayStatusCode": 0,
+      "gatewayActive": false,
+      "gatewayMode": "none",
+      "tun": "none",
+      "consoleAdapter": "Missing",
+      "sourceGatewayStatusError": "APP_DEPENDENCIES_MISSING in git checkout only; installed runtime Status succeeded"
+    },
+    "linux": {
+      "installedR21": true,
+      "installSHA256": "9/9 PASS",
+      "scopedProxyGoogleHTTP": 204,
+      "tailscale": "Running",
+      "nativeWarpToS": "OWNER_ACCEPTANCE_REQUIRED",
+      "sudoNoninteractive": false
+    },
+    "android": {
+      "adbDeviceConnected": true,
+      "freeNetHubInstalled": false,
+      "otherVpnAppPreserved": true,
+      "installedVpnStateChanged": false
+    }
+  },
+  "verificationVsValidation": "Source/manifest guard + hosted Android emulator will verify intent; no Android real-VPN operation or Always-on behavior is declared validated. Owner gateway Status only verifies disconnected status—not PC_TUNNEL success.",
+  "rootCausePrevention": {
+    "rootCause": "Stub VPN service manifest left Android's implicit Always-on support default while runtime forwarding was intentionally absent",
+    "prevention": "Declare SERVICE_META_DATA_SUPPORTS_ALWAYS_ON=false for all unlinked VPNService stubs",
+    "guard": "Source manifest parse and exact build/emulator CI at pinned SHA",
+    "regression": "Rebuild nested and root integrity manifests, R53 identity and Linux installation guards, full hosted CI"
+  },
+  "roadMap": {
+    "completed": [
+      "PR #50 and #51 merged",
+      "Dual-repo exact-main CI 10/10 success",
+      "Desktop R53/R21 scoped CFON field acceptance"
+    ],
+    "current": "V445 Android Always-on safety mutation, local and hosted V&V",
+    "open": [
+      "Android real forwarding core and physical VPN acceptance",
+      "iOS NetworkExtension packet-forwarding/signing/device validation",
+      "Windows privileged PC_TUNNEL and DNS/rollback trial",
+      "Linux WARP TOS, sudo, full-system DNS/Tailscale/L2TP trial",
+      "Project-wide licensing owner decision"
+    ]
+  },
+  "methodDecision": {
+    "choice": "Explicitly opt out of Always-on for nonfunctional Android VPN stub",
+    "why": "One Android-documented manifest property is sufficient and prevents misleading OS feature support",
+    "rejected": [
+      "Implementing dummy TUN to satisfy Android system",
+      "Auto-revoking another VPN via VpnService.prepare",
+      "Removing service entirely, because keeping fail-closed stub helps future safe core integration"
+    ],
+    "confidence": "High for documented manifest behavior; device-level leak outcome UNPROVEN."
+  },
+  "status": "CANDIDATE_UNPROMOTED",
+  "nextAction": "Regenerate crossplatform/RELEASE/PUBLIC manifests, run local suite; then publish candidate and require exact-head 10/10 hosted CI before merge; postmerge and fork parity checks."
+}

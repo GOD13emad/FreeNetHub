@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 33037,
-      "sha256": "A641A933FB57ADB95164846DE3704323799CDDF0538716F7EBA4AE4E4FC9F4EC"
+      "bytes": 34296,
+      "sha256": "0D80C29600EC08FBEC26BC2D1FC392BF23A3D3F922172792B0512D3354FDBC10"
     },
     {
       "file": ".gitignore",
@@ -125,8 +125,8 @@
     },
     {
       "file": "crossplatform/android/app/src/main/AndroidManifest.xml",
-      "bytes": 694,
-      "sha256": "962B24AD2FB3F0D9FA2BF5D8490922D4116BB2995124F93A8F62711894B3188A"
+      "bytes": 788,
+      "sha256": "827ABF245B67A52DC89F4295E536F969B4EEB99F1C4BC22F6FD0CE371D4FF416"
     },
     {
       "file": "crossplatform/android/app/src/main/java/com/freenethub/mobile/FreeNetVpnService.kt",
@@ -336,7 +336,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 7265,
-      "sha256": "564FFBC0F165817AD5CEC54F4D9A914D3841D8415862CE333ADF2644BD9122FC"
+      "sha256": "01704953D92D27DD872B5144B5F1FC151E96326C925B67D2F25D34C73DE7A187"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1509,6 +1509,11 @@
       "sha256": "CC775CEAEB796F90F3BE20686EB2129F3749DAE1A46745996AC5E03995852454"
     },
     {
+      "file": "evidence/V445_ANDROID_UNLINKED_ALWAYS_ON_GUARD_20261014.json",
+      "bytes": 5482,
+      "sha256": "FA9FEEDF06CB3EE4D20B1E8387EAD8931F6627686BD9A16972A324F4C0364B94"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1690,8 +1695,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 138344,
-      "sha256": "7652D658154D63B0FB1FBA51552A1450C2450DE5294B77E9CFA61DAB1ECA705D"
+      "bytes": 141634,
+      "sha256": "3E190ECCD365146AB4521E57343C183A02B401E6C125DB8D7596F9C1EEEB8CB3"
     },
     {
       "file": "pytest.ini",
@@ -1711,7 +1716,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "B9F1473D97985E036FB7CCFAA6E0166D96776077790E967C2355D72F2DDBD7CC"
+      "sha256": "5B4580E838C6E7F68133EC5C2E201960C8A18F5E22E98634D72EF9DF8D0D7225"
     },
     {
       "file": "SECURITY.md",
