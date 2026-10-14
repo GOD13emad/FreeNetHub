@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "context": "Post-merge R53 source, field proxy and Windows maintenance gate",
+  "objective": "Confirm exact SHA CI on source and fork; independent scoped egress and safe prestate escrow; do not install over connected conflicting roots",
+  "acceptedSourceBaseline": "5c824fc3d800f850edad64d7bf2e0df90294a466",
+  "release": {
+    "tag": "v4.3.9-r53-windows-stable",
+    "windowsSha256": "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2",
+    "localWindowsInstallerMatchingSha256": true,
+    "linuxR20Sha256": "5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B"
+  },
+  "ci": {
+    "canonical": {
+      "run": 38534184216,
+      "initialAttempt": "FAIL_ANDROID_EMULATOR_ADB_OFFLINE_AFTER_PERSISTED_VPN_PERMISSION_UI_PASS",
+      "retry": "TARGETED_FAILED_JOB_ONLY",
+      "finalAttempt": 2,
+      "finalConclusion": "SUCCESS",
+      "jobsPassed": 10
+    },
+    "fork": {
+      "run": 38534293426,
+      "conclusion": "SUCCESS",
+      "jobsPassed": 10
+    },
+    "rootCauseAssessment": "Transient host emulator ADB device offline is probable; not proven application code defect. Do not erase first failure.",
+    "guard": "Stop repeated retries if offline recurs; audit emulator readiness and bounded ADB recovery vs official Android tooling before adding controls"
+  },
+  "field": {
+    "windows": {
+      "installed": "R51",
+      "appFrom": "TEMP",
+      "warpPlusFrom": "canonical",
+      "singBoxFrom": "TEMP",
+      "innoUninstallRegistry": "TEMP",
+      "splitAppIdRisk": "CONFIRMED",
+      "prestateBackup": "PASS_STATIC_ONLY",
+      "filesBackedUp": 8,
+      "registryExport": "PASS",
+      "privateRelativePath": "Windows FreeNetHub project .git/maintenance/R53_OWNER_20261014_PRESTATE",
+      "registryExportSha256": "0B84C5068918BAECD9CCFD59CB59171A5EDE72AEA3C2BBA9DC635ADCD34E082B",
+      "userDataBackup": "MISSING_CONSISTENT_SNAPSHOT",
+      "activeUpgrade": "BLOCKED"
+    },
+    "linux": {
+      "installed": "R20",
+      "sha256sum": "PASS",
+      "GTKProcess": "ACTIVE",
+      "tailscale": "RUNNING_ONLINE",
+      "socks5HTTPS": "PASS",
+      "privilegedNoninteractiveSudo": "UNAVAILABLE",
+      "fullSystem": "UNPROVEN"
+    },
+    "scopedProxyEgress": {
+      "windows": {
+        "directGeo": "IR",
+        "socksGeo": "AT",
+        "ipDiffers": true
+      },
+      "linux": {
+        "directGeo": "IR",
+        "socksGeo": "AT",
+        "ipDiffers": true
+      },
+      "interpretation": "True scoped SOCKS exit; not whole-device routing"
+    }
+  },
+  "status": {
+    "publicRelease": "PASS",
+    "sourceAndForkPostMergeCI": "PASS",
+    "scopedSOCKS": "PASS",
+    "ownerWindowsInstalledR53": "BLOCKED",
+    "linuxSystemwideLeakFree": "UNPROVEN",
+    "productionMobileForwarding": "EXTERNAL_UNPROVEN"
+  },
+  "methods": [
+    {
+      "title": "GitHub official rerun single job same SHA",
+      "url": "https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs"
+    },
+    {
+      "title": "Inno Setup AppId uninstall ownership",
+      "url": "https://jrsoftware.org/ishelp/topic_setup_appid.htm"
+    },
+    {
+      "title": "Inno UsePreviousAppDir",
+      "url": "https://jrsoftware.org/ishelp/topic_setup_usepreviousappdir.htm"
+    },
+    {
+      "title": "warp-plus --bind is SOCKS5",
+      "url": "https://github.com/bepass-org/warp-plus/blob/master/README.md"
+    },
+    {
+      "title": "Tailscale exit node is opt-in",
+      "url": "https://tailscale.com/docs/features/exit-nodes"
+    }
+  ],
+  "limitations": [
+    "Field traces are 1-time network samples, not availability SLAs",
+    "No active Windows process killed, routing changed, or installer invoked",
+    "Windows backup includes only installer metadata and uninstall registry; not user data",
+    "Simulators are not production hardware"
+  ],
+  "reuseTargets": [
+    "Project Brain",
+    "release post-publish acceptance",
+    "owner maintenance runbook",
+    "research appendix and troubleshooting"
+  ],
+  "provenance": {
+    "previousBrainSha256": "6D4890AB77B8E7A6EE2CA0181ADFED46F2680AE8DA689409A29FAF5611DFB8FB",
+    "backupPathRelative": ".git/PROJECT_BRAIN_PRE_R53_POSTMERGE_20261014.bak",
+    "CI": {
+      "canonical": "https://github.com/GOD13emad/FreeNetHub/actions/runs/38534184216",
+      "fork": "https://github.com/Usefull-Skills/FreeNetHub/actions/runs/38534293426"
+    }
+  }
+}

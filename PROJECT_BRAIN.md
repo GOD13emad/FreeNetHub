@@ -1,8 +1,8 @@
 # PROJECT BRAIN — FreeNet Hub
 
 Status: CURRENT / R53_PUBLIC_RELEASE_PASS_OWNER_FIELD_GATES_OPEN
-Brain version: v439-r53-live-authority-audit-2026-10-14
-Authority: GOD13emad/FreeNetHub main ec2ce34b84b94bdfb0f377ee07008602e4ca277f; Latest runtime release v4.3.9-r53-windows-stable, peeled tag 17daff34805b82bcae0c6e8d5e6cbed6258c50ff.
+Brain version: v439-r53-postmerge-field-verified-2026-10-14
+Accepted source baseline: GOD13emad/FreeNetHub main 5c824fc3d800f850edad64d7bf2e0df90294a466; Latest runtime release v4.3.9-r53-windows-stable, peeled tag 17daff34805b82bcae0c6e8d5e6cbed6258c50ff.
 Objective / DoD: one official current Windows installer plus Linux R20 distribution, verifiable public GitHub hashes and hosted CI, safe upgrade preserving user data, working browser proxy, optional full-device tunnel only when validated, and physical host acceptance evidence.
 
 ## CURRENT — R53 2026-10-14 field and release audit
@@ -11,8 +11,11 @@ Objective / DoD: one official current Windows installer plus Linux R20 distribut
 - Windows owner currently on **R51**, not R53. Canonical installed tree and active TEMP R51 with SAME Inno AppId conflict; uninstall registry points to TEMP. ACTIVE connection; 7.06GB canonical + 1.07GB TEMP dynamic tree. R53 guard correctly refuses split-root; physical R53 upgrade is BLOCKED pending idle consistent backup and controlled rollback. No unsafe auto-fix or install.
 - Linux installed R20 manifest SHA-256 checks PASS; CFON SOCKS5 endpoint 127.0.0.1:19414 reaches Cloudflare HTTPS and GitHub API (HTTP 200). Incorrect HTTP-proxy probe produced false negative; no product mutation needed. System default route and DNS still via wlp2s0/192.168.20.1; systemwide DNS-leak-free and optional full-tunnel remain UNPROVEN.
 - External: mobile hardware forwarding/console, production signing, real owner installed R53, full-system DNS routing, and interactive browser acceptance remain OPEN or EXTERNAL. Do not relabel virtual CI as physical validation.
-- Mirror Usefull-Skills/FreeNetHub main remains on e41b3f6, behind source authority; verify intended mirror policy before synchronization. Official public release/primary README remain correct.
+- Mirror Usefull-Skills/FreeNetHub main was safely fast-forwarded to source baseline 5c824fc; its exact-SHA hosted push CI 38534293426: 10/10 PASS. Canonical postmerge CI 38534184216: initial Android emulator ADB offline after VPN consent acceptance; one targeted retry of failed Job succeeded; latest attempt 10/10 PASS. See new evidence record; initial failed attempt remains historical, not erased.
 - Evidence: evidence/V439_R53_LIVE_HOST_AUDIT_20261014.json with live results, sources, previous-brain SHA and backup.
+
+- 2026-10-14 live field extension: Windows installed R51 canonical and TEMP user sessions remain active; official immutable Windows R53 Setup.exe in local delivery has SHA-256 matching public release. Both Windows and Linux Cloudflare trace direct egress reported IR, and SOCKS5 through existing CFON 127.0.0.1:19414 reported AT with a different IP. This verifies scoped proxy routing, NOT full-device tunneling. Windows private backup of eight installation metadata files plus exact HKCU Inno uninstall registry export was independently SHA-256 verified; USER DATA (~8 GB across roots) was not snapshotted and actual owner R53 upgrade remains BLOCKED.
+- Evidence: evidence/V439_R53_POSTMERGE_FIELD_VERIFICATION_20261014.json records hosted attempts, root cause, sources, private escrow boundary and open gates. First Android CI failure was ephemeral ADB-offline on hosted emulator (after UI permission flow), second attempt PASS on same SHA; fork independent emulator PASS. No product-code mutation justified by this one failure.
 
 ## Roadmap to FINAL (evidence gated)
 1. Source and public exact release/CI — COMPLETED/PASS for v4.3.9 R53.
@@ -21,10 +24,10 @@ Objective / DoD: one official current Windows installer plus Linux R20 distribut
 4. Owner Windows R51 split-root reconciliation after consistent backup/idle, then R53 in-place installed validation — BLOCKED/critical path.
 5. Linux optional full-tunnel/DNS physical acceptance without breaking Tailscale or owner connectivity — OPEN; do not force-route blindly.
 6. Physical console/mobile/browser and signing/provider-dependent steps — EXTERNAL/UNPROVEN, report individually.
-7. Finish release/post-publish evidence and mirrored repository policy, only promote new code for evidence-backed blocker — OPEN.
+7. Public R53 release, canonical and mirror CI, and latest source synchronization — COMPLETED/PASS; owner physical acceptance and external capabilities remain separately OPEN.
 
 ## Exact Next Action
-Keep connected sessions intact. Record ownership and rollback-safe consistent backup of BOTH Windows install roots and Inno uninstall history; when idle and verifiably recoverable, reconcile split-root and perform R53 owner-installed upgrade with data comparison. In parallel, validate scoped Linux SOCKS5 vs optional full-device routing and decide whether mirror requires an explicit fast-forward. Never blindly rerun failed commands.
+Keep connected sessions intact. Private Windows prestate static metadata escrow (both uninstall logs/installer metadata plus registry) is verified but is NOT a consistent backup of live user data. Next, acquire a consistent recoverable backup of BOTH data trees and an idle maintenance state before any split-root reconciliation and R53 installed upgrade. The Linux full-device route/DNS gate still requires separate privileged, leak-safe field validation; scoped SOCKS5 egress is PASS on Windows and Linux. Do not blindly force route, delete either tree, or replay failed CI attempts.
 
 ---
 ## PREVIOUS HISTORICAL BRAIN — retained verbatim after this heading
