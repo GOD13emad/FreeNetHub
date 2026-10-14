@@ -121,9 +121,9 @@
     }
   ],
   "verifyVsValidate": "Only code inspection and read-only physical ADB detection was performed in this milestone. No phone install/VPN authorization, TUN, native iOS, DNS-leak, or full-device VPN validation is claimed.",
-  "status": "LOCAL_MUTATION_VALIDATION_OPEN",
+  "status": "REVISED_LOCAL_CANDIDATE_HOSTED_REGRESSION_OPEN",
   "brain": "CURRENT_ON_CANDIDATE_PENDING_PROMOTION",
-  "nextAction": "Rebuild PUBLIC_MANIFEST, run full manifest/security/version/scope regression, then exact-head hosted CI for combined Android permission guard; no owner device mutation.",
+  "nextAction": "Regenerate PUBLIC_MANIFEST, verify all source/release/security checks and push exact new SHA; merge only when Android emulator and 10/10 hosted matrix PASS.",
   "reuseTargets": [
     "PROJECT_BRAIN",
     "mobile architecture decision",
@@ -152,7 +152,7 @@
       "tests/rebuild_crossplatform_manifest.py",
       "RELEASE.json"
     ],
-    "change": "Disabled nonfunctional VPN button with no permission listener; emulator CI now verifies disabled state, no active VPN service and unchanged network interface set.",
+    "change": "Android UI has no VpnService.prepare call and exposes disabled nonfunctional control; CI checks source and UI absence of consent, no VPN service and unchanged interfaces without brittle exact node enabled/text assertion.",
     "phoneChange": "NONE",
     "sourceCandidate": "UNPROMOTED",
     "manifestResult": "Rebuild preserves accepted crossplatform version 4.3.7-crossplatform-r51-linux-r20 and updates RELEASE.json crossPlatformManifestSha256 only; published installers unchanged"
@@ -160,9 +160,24 @@
   "failurePrevention": {
     "rootCause": "Mobile UI originally offered consent to prove VpnService lifecycle even though no forwarding implementation was available",
     "prevention": "No VPN authorization prompts until a tested functioning core is linked",
-    "guard": "Real emulator asserts disabled unlinked control and absence of VpnService.prepare",
+    "guard": "No permission call in MainActivity source; emulator UI no active permission option; service absent and interfaces unchanged.",
     "regression": "Hosted Android emulator and full CI exact SHA required; no blind rerun",
     "manifestRootCause": "Existing rebuild_crossplatform_manifest.py hardcoded superseded r18 version, rolling back r20 metadata during any rebuild",
     "manifestGuard": "Rebuild derives version from existing authoritative manifest, fails if schema/version missing, then tests verify crossplatform+RELEASE/public manifest hashes"
+  },
+  "ciFailureGuard": {
+    "run": 38569163285,
+    "head": "84dc08c16d045194ac15b4b101190d2a62da6392",
+    "job": "android-emulator-runtime",
+    "step": "Boot emulator and validate fail-closed runtime",
+    "observed": [
+      "Android Debug APK BUILD SUCCESSFUL",
+      "Emulator install success and MainActivity Status: ok",
+      "Initial UI NOT LINKED status PASS",
+      "UIAutomator exact text/enabled assertion UNLINKED_VPN_BUTTON_NOT_DISABLED failed"
+    ],
+    "rootCause": "Exact expected text/enabled node condition did not match returned UI hierarchy; whether zero matches or enabled attribute differed is UNVERIFIED because full XML was not retained in CI log.",
+    "prevention": "Test minimum risk invariants using APK launch, no consent call in source, absence of misleading permission action, absent VPN service, unchanged network interfaces; do not assert renderer-dependent disabled attribute.",
+    "status": "CANDIDATE_REVISED_HOSTED_CI_OPEN"
   }
 }

@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 33294,
-      "sha256": "F57BE62770059FE3DF7F775AF93874F2FD6B5EAA2AD4679450CC5591792EE813"
+      "bytes": 33037,
+      "sha256": "A641A933FB57ADB95164846DE3704323799CDDF0538716F7EBA4AE4E4FC9F4EC"
     },
     {
       "file": ".gitignore",
@@ -1505,8 +1505,8 @@
     },
     {
       "file": "evidence/V444_MOBILE_FORWARDING_GAP_BENCHMARK_20261014.json",
-      "bytes": 8565,
-      "sha256": "BFB50E60A4EE446B851A4D0F978F0704AE15B34086643E2E36723448463F6D83"
+      "bytes": 9639,
+      "sha256": "CC775CEAEB796F90F3BE20686EB2129F3749DAE1A46745996AC5E03995852454"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1690,8 +1690,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 137438,
-      "sha256": "C507AC96A428A7AF81B6966EB0AE5CE4C7D9E409DB89890BDAB0B5B1793E1B7D"
+      "bytes": 138344,
+      "sha256": "7652D658154D63B0FB1FBA51552A1450C2450DE5294B77E9CFA61DAB1ECA705D"
     },
     {
       "file": "pytest.ini",
