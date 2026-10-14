@@ -31,6 +31,21 @@ if [ -n "$ACTIVE_SESSION" ]; then
   exit 72
 fi
 
+# Preflight the complete release payload while any existing UI and provider are untouched.
+# A partially downloaded/modified R21 package must fail before the first install mutation.
+for required in freenet_hub_linux.py freenet_hub_linux_r37.py freenet_hub_linux_gtk.py nodehub_shared.py warp_guard.py recover_warp_remote.sh uninstall.sh install_singbox_pinned.sh install_warpplus_pinned.sh; do
+  if [ ! -f "$SRC/$required" ]; then
+    echo "FNH_PAYLOAD_MISSING: $required" >&2
+    exit 74
+  fi
+done
+if [ -f "$SRC/SHA256SUMS.txt" ]; then
+  if ! (cd "$SRC" && sha256sum --status -c SHA256SUMS.txt); then
+    echo "FNH_PAYLOAD_INTEGRITY_FAILED: expected signed/published asset SHA must also be verified before installation" >&2
+    exit 75
+  fi
+fi
+
 if [ -f "$UI_PATH" ]; then
   RESTART_UI="$(python3 - "$UI_PATH" <<'PY'
 from pathlib import Path
@@ -111,13 +126,15 @@ import json,pathlib,sys,time
 p=pathlib.Path(sys.argv[1])
 p.write_text(json.dumps({
   "schema":1,
-  "version":"4.2.0-linux.20-r47",
-  "release":"LINUX_4.2.0_R20_R47_CFON_SMART_SITE_DIAGNOSTIC",
+  "version":"4.2.0-linux.21-r54",
+  "release":"LINUX_4.2.0_R21_R54_WARP_OWNER_CONSENT",
   "installed_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
   "network_mutation_on_install":False,
   "integrity_manifest":"INSTALL.sha256"
 },indent=2)+"\n",encoding="utf-8")
 PY
+
+chmod 0600 "$APP_HOME/INSTALL.json"
 
 cat > "$BIN_HOME/freenethub" <<'EOF'
 #!/usr/bin/env bash
@@ -152,5 +169,5 @@ command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "
 if [ "$RESTART_UI" = "1" ] && command -v gtk-launch >/dev/null 2>&1 && [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
   gtk-launch local.freenethub >/dev/null 2>&1 &
 fi
-echo "Installed FreeNet Hub Linux 4.2.0-linux.20-r47"
+echo "Installed FreeNet Hub Linux 4.2.0-linux.21-r54"
 echo "No network connection was started."
