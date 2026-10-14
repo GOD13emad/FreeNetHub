@@ -27,6 +27,13 @@ workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8
 assert "4.3.9-r52-stale-node-health-ttl" not in workflow
 assert workflow.count("4.3.9-r53-inno-root-guard") >= 5
 assert "R52_TO_R53_DATA_PRESERVATION_AND_EXPLICIT_R52_ROLLBACK_PASS" in workflow
+readme = (ROOT / "README.md").read_text(encoding="utf-8")
+assert "**Latest official release:** https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.9-r53-windows-stable" in readme
+assert "FreeNetHub_4.3.9_R53_Setup.exe" in readme
+assert "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2" in readme
+assert "Windows R53 (v4.3.9) — public" in readme
+assert "**Latest official release:** https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.8-" not in readme
+print("README_LATEST_R53_PASS")
 assert "CheckConflictingInstallRoots" in iss
 assert "Result := CheckConflictingInstallRoots;" in iss
 assert "https://api.github.com/repos/GOD13emad/FreeNetHub/releases/latest" in engine

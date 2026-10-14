@@ -1650,8 +1650,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 3892,
-      "sha256": "A6AB4F309ACD2E5DF7D13F94063220D740AAE36863590C889934F2270C47DF73"
+      "bytes": 4527,
+      "sha256": "C9E95B3967A511C29DFB58BB37EA39E3BC857DEA48BA0CA6D882B803F4C26AA6"
     },
     {
       "file": "README_FA.md",
@@ -2435,8 +2435,8 @@
     },
     {
       "file": "tests/test_r53_release_identity.py",
-      "bytes": 2282,
-      "sha256": "809B2A01A4092E280377FC94DCB01859B9CCCE03C2B97911FDDE43C7AE54776D"
+      "bytes": 2797,
+      "sha256": "B12A56676863DE7D4B490BC2A8209DA38DF982D370EAB08CB8B95A1D17ED3FB1"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",
