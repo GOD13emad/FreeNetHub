@@ -77,9 +77,10 @@
     "newTests": [
       "Known stale versioned installer caches pruned only after good download and unknown/user data retained",
       "Mismatched downloaded SHA does not prune previous installer",
-      "Symlinked old tag must not be followed"
+      "Symlinked old tag must not be followed",
+      "Path.is_junction(root) and Path.is_junction(child) both abort stale installer deletion"
     ],
-    "localLinux": "128 Linux-compatible engine unittest methods PASS; 4 unchanged Win32 process/native tests require Windows and fail as platform-specific on Linux",
+    "localLinux": "PENDING_REVISED_LOCAL_VALIDATION",
     "crossPlatformCI": "PENDING exact candidate SHA",
     "security": "PENDING exact candidate and full CI",
     "limitation": "Unit tests are verification, not field update-install validation; installed R53 still uses previously shipped engine binary."
@@ -107,13 +108,28 @@
     ]
   },
   "brain": "Candidate until PR exact-head CI and merge; dual-repo postmerge verification afterward",
-  "status": "CANDIDATE_LOCAL_VERIFIED",
-  "nextAction": "Reseal public/source manifests, verify local checks, push exact SHA and require Windows test matrix PASS; merge only on SHA-bound evidence.",
+  "status": "CANDIDATE_REVISION_B_UNPROMOTED",
+  "nextAction": "Rebuild PUBLIC_MANIFEST and test revised exact SHA; update PR53 only when local PASS; do not promote old head.",
   "reuseTargets": [
     "Project Brain",
     "Update release notes",
     "Failure prevention",
     "User documentation",
     "Release V&V"
-  ]
+  ],
+  "revision": "V446B",
+  "initialCandidate": {
+    "sha": "b5835221991c90cd0094621e2e2fcd0b314003e1",
+    "ciRun": 38587597956,
+    "status": "SUPERSEDED_BY_FURTHER_JUNCTION_GUARD"
+  },
+  "junctionSafety": {
+    "rootCause": "On Windows NTFS a directory junction is distinct from a symlink, and Python pathlib.Path.is_symlink may not reject it. Cache GC could follow a junction to an unrelated directory containing a syntactically eligible installer.",
+    "prevention": "Skip Path.is_junction() at both updates root and each candidate directory; retain existing symlink and single-file guards.",
+    "primarySource": "https://docs.python.org/3.12/library/pathlib.html#pathlib.Path.is_junction",
+    "evidence": "CPython pathlib is_junction Windows-specific API added Python 3.12.",
+    "guard": "Hermetic Path.is_junction simulation for root and child candidate, retaining protected file",
+    "risk": "User data outside the update cache tree",
+    "status": "LOCAL_CANDIDATE_UNPROVEN_HOSTED"
+  }
 }

@@ -703,6 +703,20 @@ Network Destination        Netmask          Gateway       Interface  Metric
     with self.assertRaisesRegex(RuntimeError,'UPDATE_HASH_MISMATCH'):E.update_download()
    self.assertEqual(prior.read_bytes(),b'old')
 
+ def test_update_cache_prune_skips_windows_junctions(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=pathlib.Path(td)
+   updates=root/'updates';updates.mkdir()
+   junction_like=updates/'v4.3.2';junction_like.mkdir()
+   f=junction_like/'FreeNetHub_4.3.2_R46_Setup.exe';f.write_bytes(b'keep')
+   # Simulate Windows Path.is_junction in a platform-neutral hermetic test.
+   with patch.object(pathlib.Path,'is_junction',lambda p: p.name=='v4.3.2'):
+    self.assertEqual(E.prune_stale_installer_cache(updates,'v4.3.10-r54'),[])
+   self.assertEqual(f.read_bytes(),b'keep')
+   with patch.object(pathlib.Path,'is_junction',lambda p: p==updates):
+    self.assertEqual(E.prune_stale_installer_cache(updates,'v4.3.10-r54'),[])
+   self.assertEqual(f.read_bytes(),b'keep')
+
  def test_update_cache_prune_skips_symlink_targets(self):
   with tempfile.TemporaryDirectory() as td:
    root=pathlib.Path(td);updates=root/'updates';updates.mkdir()

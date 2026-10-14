@@ -917,10 +917,10 @@ def update_release():
 def prune_stale_installer_cache(update_root, keep_tag):
  """After a verified new download, discard only single-file historic installer caches."""
  update_root=pathlib.Path(update_root)
- if not update_root.is_dir() or update_root.is_symlink():return []
+ if not update_root.is_dir() or update_root.is_symlink() or update_root.is_junction():return []
  pruned=[]
  for candidate in update_root.iterdir():
-  if candidate.name==keep_tag or candidate.is_symlink() or not candidate.is_dir():continue
+  if candidate.name==keep_tag or candidate.is_symlink() or candidate.is_junction() or not candidate.is_dir():continue
   if not re.fullmatch(r'v[0-9][A-Za-z0-9._-]*',candidate.name,re.I):continue
   try:
    items=list(candidate.iterdir())
