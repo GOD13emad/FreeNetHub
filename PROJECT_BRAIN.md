@@ -994,3 +994,21 @@ Exact Next Action: rebuild current manifests, commit/push the candidate branch, 
 **Exact next action:** Commit and run exact-SHA CI for this evidence-only checkpoint. For strict full-device FINAL, owner-approved native ToS and authenticated sudo/UAC maintenance plus rollback-safe physical trials are required.
 
 **V443 CI failure and prevention (same change set):** PR #50 initial exact-head run `38564523659` failed `windows-unit` at `Verify public manifests`; raw logs identify only `PROJECT_BRAIN.md` and new V443 evidence as `publicManifestBad`. This is publication metadata drift, not a demonstrated Windows runtime defect. Root cause: missing PUBLIC_MANIFEST regeneration after documentation change. Guard: run deterministic `tests/rebuild_public_manifest.py` and `tests/verify_public_tree.py` before commit; do not re-run the failed SHA blindly. Candidate remedy is scoped to PUBLIC_MANIFEST plus this evidence/Brain delta. New exact-SHA CI remains OPEN until independently observed.
+
+## 2026-10-14 — V444 mobile forwarding truth and benchmark-first architecture gate
+
+**Status:** CURRENT / MOBILE_CORE_MISSING_CONFIRMED; source runtime unchanged; V444 evidence-only candidate.
+
+**Accepted base:** GitHub main `4b072d31531665d69d012b8183b52f85365eacd2`, after PR #50 merge of SHA `753a98f7b800cd7ecb1ebfd01aa6d4ac6a522958` (exact-head PR CI `38564918204` 10/10 PASS). Post-merge main CI `38567225963` in progress at initial V444 observation, do not infer PASS.
+
+**Authoritative facts:** Android `FreeNetVpnService.kt` reports `providerCoreReady() = false` and omits `Builder.establish()`; iOS `PacketTunnelProvider.swift` returns `coreNotLinked` and does not forward packets. These are intentionally fail-closed prototypes, not operational VPNs despite emulated build/runtime PASS. A real Android 13 owner device is detected by read-only ADB; FreeNet Hub itself is absent; unrelated VPN test apps are preserved. No physical app installation, Android VPN permission change or routing mutation was made. `THIRD_PARTY_NOTICES.md` confirms no project-wide source license declaration.
+
+**Method and comparative evidence:** Android official VpnService lifecycle requires upstream socket protection, configured TUN and real forwarding; Apple official NEPacketTunnelProvider requires entitlement, interface settings and packetFlow implementation. SagerNet SFA/SFI offer comparable functional sing-box TUN integration; assess pinned/reproducible libbox/library reuse rather than inventing a new forwarding stack. Compare ABI, lifecycle, upstream compatibility, license terms (including GPL-3.0), and real-device behavior before any implementation/redistribution. Tailscale documentation confirms one active VPN per mobile OS; never displace another app implicitly.
+
+**Decision:** MOBILE CORE INTEGRATION = PROPOSAL, NOT ACCEPTED / NOT IMPLEMENTED. Reject false completion from debug APK and emulator PASS. Minimum sufficient controls when implementing: pinned binary SHA and license, fail-closed start/stop, non-looping protected upstream, IP/DNS/UDP integrity and no leak, real device exit/connection/reconnect, rollback and installation/update; iOS entitlement/provisioning and physical device separately. Additional gates require measured benefit. Desktop owner releases remain frozen.
+
+**Roadmap:** (1) Desktop R53/R21 scoped install/browser — ACCEPTED (V443); (2) Mobile source gap audit and comparable method evidence — COMPLETED/PASS; (3) Android real forwarding + device test — OPEN; (4) iOS real forwarding + entitled physical validation — OPEN; (5) Third-party license and signing/owner authority — OPEN; (6) Windows/Linux strict global tunnel owner elevated gates — OPEN; (7) Cross-device FINAL — UNPROVEN. Verification is distinct from validation.
+
+**Evidence:** `evidence/V444_MOBILE_FORWARDING_GAP_BENCHMARK_20261014.json`; official Android/Apple VPN documentation, official sing-box platform feature docs and Tailscale other-VPN compatibility. No mobile/network mutations made.
+
+**Exact next action:** Promote this V444 knowledge-only candidate after exact-SHA CI. Begin a separate mobile forwarding implementation only after a license/core pin decision and a reversible test harness preserving other device VPNs.
