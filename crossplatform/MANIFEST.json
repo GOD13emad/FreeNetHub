@@ -19,8 +19,8 @@
     },
     {
       "file": "android/app/src/main/java/com/freenethub/mobile/MainActivity.kt",
-      "bytes": 1023,
-      "sha256": "5E9CBB5016DEEF5B12BB8347DF862A65D3BA5225348C679AB67E04FAFF6C155E"
+      "bytes": 1005,
+      "sha256": "B867603CF1137B98B00DC5CF84923D9183EDD8EECF0A02F4E1EAF85890F473A3"
     },
     {
       "file": "android/build.gradle.kts",

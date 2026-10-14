@@ -12,10 +12,12 @@ class MainActivity: Activity() {
   fun text(s:String,size:Float)=TextView(this).apply { text=s; textSize=size; setTextColor(Color.WHITE) }
   val status=text("Provider core: NOT LINKED. No TUN will be established.",16f)
   root.addView(text("FreeNet Hub 4.2.0",28f));root.addView(status)
-  root.addView(Button(this).apply { text="Request VPN permission"; setOnClickListener {
-    val i=android.net.VpnService.prepare(this@MainActivity)
-    if(i!=null) startActivityForResult(i,1001) else status.text="Permission ready; provider core still NOT LINKED."
-  }})
+  // Do not request VPN ownership while no forwarding core exists:
+  // granting this permission may revoke another active VPN app.
+  root.addView(Button(this).apply {
+    text="VPN unavailable until forwarding core is linked"
+    isEnabled=false
+  })
   setContentView(root)
  }
 }

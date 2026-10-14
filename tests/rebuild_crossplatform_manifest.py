@@ -18,7 +18,9 @@ for rel in raw.decode("utf-8").split("\0"):
     if inner=="MANIFEST.json" or "__pycache__" in p.parts or not p.is_file(): continue
     data=canonical_bytes(rel)
     rows.append({"file":inner,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest().upper()})
-m={"schema":1,"version":"4.3.7-crossplatform-r51-linux-r18","files":sorted(rows,key=lambda x:x["file"].lower())}
+prior=json.loads((B/"MANIFEST.json").read_text(encoding="utf-8-sig"))
+assert prior["schema"] == 1 and prior["version"], "CROSSPLATFORM_MANIFEST_AUTHORITY_MISSING"
+m={"schema":1,"version":prior["version"],"files":sorted(rows,key=lambda x:x["file"].lower())}
 (B/"MANIFEST.json").write_text(json.dumps(m,ensure_ascii=False,indent=2)+"\n",encoding="utf-8",newline="\n")
 data=canonical_bytes("crossplatform/MANIFEST.json")
 print(json.dumps({"status":"PASS","files":len(rows),"manifestCanonicalSha256":hashlib.sha256(data).hexdigest().upper()}))

@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "context": "Post-PR50 mobile physical discovery and benchmark-first audit; documentation/authority only",
+  "baseline": {
+    "official": "GOD13emad/FreeNetHub",
+    "sourceMain": "4b072d31531665d69d012b8183b52f85365eacd2",
+    "priorEvidence": "evidence/V443_R21_R53_POSTPUBLISH_VERIFICATION_20261014.json",
+    "pr50": {
+      "merged": true,
+      "exactHead": "753a98f7b800cd7ecb1ebfd01aa6d4ac6a522958",
+      "exactHeadCI": 38564918204,
+      "jobSuccess": 10,
+      "jobTotal": 10
+    },
+    "mainPostmergeAtAudit": {
+      "run": 38567225963,
+      "status": "IN_PROGRESS_AT_AUDIT"
+    }
+  },
+  "facts": [
+    {
+      "claim": "Android native VPN is not operational",
+      "status": "CONFIRMED",
+      "provenance": "crossplatform/android/app/src/main/java/com/freenethub/mobile/FreeNetVpnService.kt",
+      "detail": "providerCoreReady() returns false; no Builder.establish() or forwarding core; MainActivity explicitly displays NOT LINKED"
+    },
+    {
+      "claim": "iOS packet tunnel is deliberately inoperative",
+      "status": "CONFIRMED",
+      "provenance": "crossplatform/ios/PacketTunnel/PacketTunnelProvider.swift",
+      "detail": "startTunnel returns coreNotLinked; no packetFlow forwarding or setTunnelNetworkSettings"
+    },
+    {
+      "claim": "A real authorized Android 13 device is physically attached by USB for read-only ADB diagnosis",
+      "status": "CONFIRMED",
+      "provenance": "ADB USB device and getprop commands on owner Linux host",
+      "detail": "FreeNet Hub package absent, unrelated VPN test application present; no APK installed and no phone VPN settings modified; device identifiers omitted"
+    },
+    {
+      "claim": "Android/iOS CI success tests fail-closed prototype behavior, not actual mobile VPN",
+      "status": "CONFIRMED",
+      "provenance": ".github/workflows/ci.yml, README files and static source"
+    },
+    {
+      "claim": "FreeNet Hub currently has no project-wide software license declaration",
+      "status": "CONFIRMED",
+      "provenance": "THIRD_PARTY_NOTICES.md and root repository license absence"
+    }
+  ],
+  "methodBenchmark": [
+    {
+      "source": "https://developer.android.com/develop/connectivity/vpn",
+      "role": "PRIMARY",
+      "finding": "Actual Android VPN must use VpnService.prepare, protect upstream sockets, configure TUN and establish with a packet-forwarding implementation."
+    },
+    {
+      "source": "https://developer.apple.com/documentation/NetworkExtension/NEPacketTunnelProvider",
+      "role": "PRIMARY",
+      "finding": "Apple packet tunnel requires a functioning extension with virtual interface configuration and packetFlow forwarding plus entitlement."
+    },
+    {
+      "source": "https://sing-box.sagernet.org/clients/android/features/",
+      "role": "COMPARABLE_IMPLEMENTATION",
+      "finding": "SFA has a working unprivileged TUN integration with Android VpnService."
+    },
+    {
+      "source": "https://sing-box.sagernet.org/clients/apple/features/",
+      "role": "COMPARABLE_IMPLEMENTATION",
+      "finding": "SFI uses NetworkExtension for platform TUN; feature availability differs by OS."
+    },
+    {
+      "source": "https://github.com/SagerNet/sing-box-for-android",
+      "role": "COMPARABLE_IMPLEMENTATION",
+      "finding": "Existing maintained client is GPL-3.0; copying/integrating requires compatible license decision."
+    },
+    {
+      "source": "https://tailscale.com/docs/reference/faq/other-vpns",
+      "role": "PRIMARY",
+      "finding": "Mobile platforms permit only one active VPN, so a test must not preempt another user application."
+    }
+  ],
+  "decision": {
+    "status": "PROPOSED_NOT_ACCEPTED",
+    "choice": "Evaluate a pinned, licensed mobile sing-box/libbox reuse rather than writing a raw TUN packet stack or presenting a nonfunctional wrapper as VPN.",
+    "why": "Established protocol/runtime test surface lowers risk and custom networking maintenance; nevertheless license, ABI, upstream pin/hash and native lifecycle compatibility must be verified first.",
+    "rejected": [
+      "Claiming Android emulator build proves Internet tunneling",
+      "Activating empty TUN and blackholing traffic",
+      "Replacing another mobile VPN during physical testing",
+      "Importing GPL source without deciding repository license and distribution obligations"
+    ],
+    "extraControls": "Limit V&V to provenance-pinned core, fail-closed start/stop, no leaks or loops, single install/update, real device upstream exit, DNS, reconnect, rollback, and iOS entitlement validation; do not add redundant gates."
+  },
+  "openGates": [
+    {
+      "gate": "Android real VPN forwarding",
+      "status": "MISSING",
+      "next": "Pinned core integration plus isolated build and device tests; preserve other VPN app"
+    },
+    {
+      "gate": "iOS real VPN forwarding",
+      "status": "MISSING",
+      "next": "PacketFlow core plus Apple provisioning and physical Apple device"
+    },
+    {
+      "gate": "Third-party licensing",
+      "status": "EXTERNAL_OWNER_LEGAL",
+      "next": "Owner selects project license and approves obligations before GPL-derived core reuse"
+    },
+    {
+      "gate": "Linux full-system",
+      "status": "EXTERNAL_OWNER",
+      "next": "WARP native Terms, authenticated sudo, proven rollback-safe DNS/Tailscale/L2TP cohabitation"
+    },
+    {
+      "gate": "Windows full-system",
+      "status": "EXTERNAL_PRIVILEGE",
+      "next": "Elevated UAC and recovery-safe system route and gateway trial"
+    }
+  ],
+  "verifyVsValidate": "Only code inspection and read-only physical ADB detection was performed in this milestone. No phone install/VPN authorization, TUN, native iOS, DNS-leak, or full-device VPN validation is claimed.",
+  "status": "REVISED_LOCAL_CANDIDATE_HOSTED_REGRESSION_OPEN",
+  "brain": "CURRENT_ON_CANDIDATE_PENDING_PROMOTION",
+  "nextAction": "Regenerate PUBLIC_MANIFEST, verify all source/release/security checks and push exact new SHA; merge only when Android emulator and 10/10 hosted matrix PASS.",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "mobile architecture decision",
+    "release risk summary",
+    "technical V&V report",
+    "failure prevention"
+  ],
+  "changeSetRevision": "V444A_MOBILE_UNLINKED_PERMISSION_REVOCATION_PREVENTION",
+  "priorInitialCandidate": "0d667dedec87954f92859b7f3c6bd4f2fb13b054",
+  "confirmedRisk": {
+    "claim": "Debug Android UI permits VpnService.prepare despite missing forwarding core; approval may revoke a different VPN app",
+    "status": "CONFIRMED",
+    "rawSource": "crossplatform/android/app/src/main/java/com/freenethub/mobile/MainActivity.kt at 4b072d3",
+    "externalPrimary": "https://developer.android.com/reference/android/net/VpnService",
+    "impact": "Other active VPN may lose authorization although FreeNetHub cannot connect"
+  },
+  "mutation": {
+    "objective": "Prevent unlinked FreeNet Hub Android from requesting VPN ownership",
+    "files": [
+      "crossplatform/android/app/src/main/java/com/freenethub/mobile/MainActivity.kt",
+      ".github/workflows/ci.yml",
+      "crossplatform/MANIFEST.json",
+      "PUBLIC_MANIFEST.json",
+      "PROJECT_BRAIN.md",
+      "evidence/V444_MOBILE_FORWARDING_GAP_BENCHMARK_20261014.json",
+      "tests/rebuild_crossplatform_manifest.py",
+      "RELEASE.json"
+    ],
+    "change": "Android UI has no VpnService.prepare call and exposes disabled nonfunctional control; CI checks source and UI absence of consent, no VPN service and unchanged interfaces without brittle exact node enabled/text assertion.",
+    "phoneChange": "NONE",
+    "sourceCandidate": "UNPROMOTED",
+    "manifestResult": "Rebuild preserves accepted crossplatform version 4.3.7-crossplatform-r51-linux-r20 and updates RELEASE.json crossPlatformManifestSha256 only; published installers unchanged"
+  },
+  "failurePrevention": {
+    "rootCause": "Mobile UI originally offered consent to prove VpnService lifecycle even though no forwarding implementation was available",
+    "prevention": "No VPN authorization prompts until a tested functioning core is linked",
+    "guard": "No permission call in MainActivity source; emulator UI no active permission option; service absent and interfaces unchanged.",
+    "regression": "Hosted Android emulator and full CI exact SHA required; no blind rerun",
+    "manifestRootCause": "Existing rebuild_crossplatform_manifest.py hardcoded superseded r18 version, rolling back r20 metadata during any rebuild",
+    "manifestGuard": "Rebuild derives version from existing authoritative manifest, fails if schema/version missing, then tests verify crossplatform+RELEASE/public manifest hashes"
+  },
+  "ciFailureGuard": {
+    "run": 38569163285,
+    "head": "84dc08c16d045194ac15b4b101190d2a62da6392",
+    "job": "android-emulator-runtime",
+    "step": "Boot emulator and validate fail-closed runtime",
+    "observed": [
+      "Android Debug APK BUILD SUCCESSFUL",
+      "Emulator install success and MainActivity Status: ok",
+      "Initial UI NOT LINKED status PASS",
+      "UIAutomator exact text/enabled assertion UNLINKED_VPN_BUTTON_NOT_DISABLED failed"
+    ],
+    "rootCause": "Exact expected text/enabled node condition did not match returned UI hierarchy; whether zero matches or enabled attribute differed is UNVERIFIED because full XML was not retained in CI log.",
+    "prevention": "Test minimum risk invariants using APK launch, no consent call in source, absence of misleading permission action, absent VPN service, unchanged network interfaces; do not assert renderer-dependent disabled attribute.",
+    "status": "CANDIDATE_REVISED_HOSTED_CI_OPEN"
+  }
+}
