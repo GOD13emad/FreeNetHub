@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "context": "Owner Windows R53 safe offline upgrade readiness and Linux policy regression",
+  "authority": {
+    "sourceMain": "9d0fde42d2a7da85056bbc2666074057e370c5bb",
+    "canonicalCI": {
+      "run": 38537464651,
+      "pass": 10,
+      "total": 10
+    },
+    "forkCI": {
+      "run": 38537524731,
+      "pass": 10,
+      "total": 10
+    },
+    "releaseTag": "v4.3.9-r53-windows-stable"
+  },
+  "windows": {
+    "installed": "R51 canonical and TEMP; 3 active owner processes",
+    "splitInnoAppId": "CONFIRMED HKCU uninstall points to TEMP; canonical install also exists",
+    "frozenR53SetupSha256": "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2",
+    "localInstallerHash": "MATCH",
+    "canonicalPrecopy": {
+      "robocopyExit": 1,
+      "files": 25460,
+      "bytes": 7060381711
+    },
+    "tempPrecopy": {
+      "initialRobocopyExit": 9,
+      "initialRootCause": "active jobs/ui.lock",
+      "correctiveAction": "robocopy /E excluding only jobs/ui.lock, without source removal",
+      "correctedRobocopyExit": 1,
+      "filesInitiallyCopied": 10100,
+      "status": "PASS_LIVE_PRECOPY"
+    },
+    "profilePreservation": {
+      "twoDistinctProfiles": true,
+      "perRootCriticalSourceDestinationHashChecksPassed": 6,
+      "totalHashChecksPassed": 12,
+      "copiedSQLiteAndJsonTestsPassed": 14,
+      "recentWritesInTenMinutes": 0
+    },
+    "offlineReadiness": {
+      "installerAndBackupPreflight": "PASS",
+      "ownerOfflineUpgradeReady": false,
+      "blockers": [
+        "3 live FreeNet Hub owned processes",
+        "split Inno AppId uninstall record",
+        "no application-consistent restoration and two-profile accessibility validation"
+      ]
+    },
+    "status": "STRUCTURAL_BACKUP_STAGED; REAL_INSTALLED_R53_BLOCKED",
+    "privateEvidence": "EXTERNAL: Windows project .git/maintenance/R53_OWNER_20261014_PRESTATE; not committed or uploaded"
+  },
+  "linux": {
+    "installed": "R20",
+    "integrity": "PASS",
+    "scopePolicyTest": "PASS",
+    "socks5HttpsStatus": 200,
+    "tailscale": "Running Online",
+    "route": "direct via 192.168.20.1",
+    "dns": "LAN resolver",
+    "noninteractiveSudo": "UNAVAILABLE",
+    "systemwide": "WARP-only code path; physical TUN/DNS-leak-free unverified"
+  },
+  "verificationNotValidation": "Snapshot is a live pre-copy. Critical profile hashes and SQLite quick checks verify sampled structure, not full application consistency or a proven restore.",
+  "rejectedUnsafeOptions": [
+    "force overwrite Chromium profiles",
+    "rewrite Inno uninstall registration while current UI is active",
+    "delete either installation before two-profile preservation and rollback validation",
+    "force WARP full-system route over Tailscale without root and rollback"
+  ],
+  "sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy/",
+      "purpose": "Robocopy /XF and exit codes"
+    },
+    {
+      "url": "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md",
+      "purpose": "Chromium profile data semantics"
+    },
+    {
+      "url": "https://jrsoftware.org/ishelp/topic_setup_usepreviousappdir.htm",
+      "purpose": "Inno old installation registry behavior"
+    },
+    {
+      "url": "https://tailscale.com/docs/reference/faq/other-vpns",
+      "purpose": "Risks of overlapping VPN routes"
+    }
+  ],
+  "reuseTargets": [
+    "Project Brain",
+    "owner maintenance procedure",
+    "release acceptance",
+    "failure prevention and rollback guide"
+  ],
+  "exactNextAction": "Only in an independently recoverable idle maintenance state: stop FreeNetHub-owned processes without stopping Tailscale, final offline delta copy of both roots, verify both distinct browser profiles remain accessible, test rollback then reconcile same Inno AppId and install official R53. Never force or delete while gate is blocked.",
+  "provenance": {
+    "previousBrainSha256": "238E4AC5EE2E7A4C6011D94D7409F38A08C1AD7ECFB2FD2D596AABBAC1BA4DCB",
+    "backupRelative": ".git/PROJECT_BRAIN_PRE_OWNER_PRECOPY_20261014.bak"
+  }
+}
