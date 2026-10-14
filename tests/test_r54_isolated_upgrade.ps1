@@ -66,7 +66,8 @@ function Verify-Installed([string]$expected){
   if(-not (Test-Path -LiteralPath (Join-Path $probe 'app\dependencies.json'))){throw 'INSTALLED_DEPENDENCIES_MISSING'}
   $entry=Get-ItemProperty -LiteralPath $reg -ErrorAction Stop
   if(([IO.Path]::GetFullPath($entry.InstallLocation).TrimEnd('\')) -ne ([IO.Path]::GetFullPath($probe).TrimEnd('\'))){throw 'SINGLE_INSTALL_REGISTRY_ROOT_BAD'}
-  $entries=@(Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall' | ForEach-Object{Get-ItemProperty $_.PSPath} | Where-Object{$_.DisplayName -match '^Free Net Hub$'})
+  if([string]$entry.DisplayName -notmatch '^FreeNet Hub version [0-9]+(?:\.[0-9]+){1,3}$'){throw 'INNO_PRODUCT_DISPLAY_NAME_UNEXPECTED'}
+  $entries=@(Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall' | ForEach-Object{Get-ItemProperty $_.PSPath} | Where-Object{$_.DisplayName -match '^FreeNet Hub version [0-9]+(?:\.[0-9]+){1,3}$'})
   if($entries.Count -ne 1){throw ('DUPLICATE_INSTALL_REGISTRATION_'+$entries.Count)}
   if(Test-Path $canonical){throw 'DUPLICATE_CANONICAL_INSTALL'}
 }

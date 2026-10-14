@@ -1525,8 +1525,8 @@
     },
     {
       "file": "evidence/V447_R54_ISOLATED_UPGRADE_VALIDATION_20261014.json",
-      "bytes": 4754,
-      "sha256": "E6D55E54EACFE003D5F42B34DC01B571A509714AD2666F7717BD3C7EA3267B6D"
+      "bytes": 6470,
+      "sha256": "8B01992D8903D044EBECC94D9B3756669B0A1B32594221055C19C0FA92EBE0A4"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1710,8 +1710,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 151898,
-      "sha256": "703DD33AA671EC1F2ACC3FB5F243CAC372DFFA1165D285870C74049A26B33B3E"
+      "bytes": 152995,
+      "sha256": "F5DC86EB415C5F42110C70E9D1CCBBC9D4549E799D52DE95880B710664672623"
     },
     {
       "file": "pytest.ini",
@@ -2525,8 +2525,8 @@
     },
     {
       "file": "tests/test_r54_isolated_upgrade.ps1",
-      "bytes": 6765,
-      "sha256": "08CAF95CB77AA6A86A8EC02AA5AEB6F6D78099FE72440B385BC26B5E4D50B792"
+      "bytes": 6933,
+      "sha256": "67BCE3D587D22FB4E117FEC01B3EC558F828C8E3787DA8274F5B92A07BD45B1D"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",

@@ -50,8 +50,9 @@
   "localVerification": {
     "privateR54Build": "PASS 24,277,407 bytes SHA BBDD67...",
     "localLinuxSourcePrep": "PASS 17 files, appManifest SHA 2F76EA81D20FE540459FCC9C6E7B8C399E627DCD907ECE161A3804071C17E4DE",
-    "powershellASTOnOwnerWindows": "PASS",
-    "workflowYAML": "PASS"
+    "powershellASTOnOwnerWindows": "PASS after final literal-string replacement",
+    "workflowYAML": "PASS",
+    "actualR53HKCUDisplayNameRegex": "PASS"
   },
   "changes": [
     "tests/prepare_r54_isolated.py",
@@ -61,7 +62,7 @@
     "PROJECT_BRAIN.md",
     "PUBLIC_MANIFEST.json"
   ],
-  "status": "CANDIDATE_UNPROVEN_HOSTED",
+  "status": "REVISED_CANDIDATE_UNPROVEN_HOSTED",
   "roadmap": {
     "accepted": [
       "V446C source accepted, main+org CI 10/10, security 3/3",
@@ -78,5 +79,23 @@
       "Android/iOS real VPN forwarding/signing/legal/physical acceptance"
     ]
   },
-  "nextAction": "Publish candidate PR, require new exact SHA Windows hosted fresh+upgrade PASS; if failures arise audit logs and preserve source before patching. Only after PASS decide separate R54 release step."
+  "nextAction": "Verify PowerShell AST, public manifest/security, promote updated PR head and await two fresh GitHub-hosted jobs PASS.",
+  "firstHostedRun": {
+    "run": 38597150753,
+    "candidate": "0289d985e7ae0aa6e80a859be740249d4223a016",
+    "outcome": "FAIL BOTH fresh and upgrade",
+    "failure": "DUPLICATE_INSTALL_REGISTRATION_0 at test script line 70 after installer finished and exact registry AppId path existed",
+    "rootCause": "Test erroneously matched DisplayName '^Free Net Hub$' but actual Inno stores 'FreeNet Hub version 4.3.9' (owner R53 verified from raw HKCU registry).",
+    "classification": "TEST_ASSERTION_DEFECT_NOT_PROVEN_PRODUCT_DEFECT",
+    "prevention": "Assert exact official product display-name pattern and count matching uninstall registrations while separately verifying canonical AppId registry key and InstallLocation.",
+    "guard": "Same hosted fresh and upgrade real installer paths on corrected exact SHA. No blind rerun of old workflow.",
+    "source": "Hosted workflow job logs 115966708132, 115966708535 and owner R53 HKCU AppId registry"
+  },
+  "localEditorFailure": {
+    "fact": "An attempted scripted replacement of a string ending in $' expanded the JavaScript replace-string special token and accidentally duplicated the tail of the PowerShell test file in the local candidate; no such malformed file was pushed to GitHub.",
+    "rootCause": "String.prototype.replace replacement string interprets $' as suffix expansion.",
+    "prevention": "Restore exact tracked prestate and use replacement callback returning literal text, then verify block uniqueness, file length and PowerShell AST on Windows before commit.",
+    "guard": "PowerShell AST PASS and physical R53 HKCU DisplayName regex PASS on owner Windows after corrected revision.",
+    "status": "RESOLVED_BEFORE_COMMIT"
+  }
 }
