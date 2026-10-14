@@ -969,3 +969,26 @@ Exact Next Action: rebuild current manifests, commit/push the candidate branch, 
 - This patch only improves BROWSER. Full-system global CFON+VPN Gate remains explicitly BLOCKED by unaccepted all-UID live route trial and server privacy/reliability gates. No subscription/server purchase, no implicit volunteer-VPN routing.
 - Release progression: update manifests and hosted CI on exact SHA, merge only if CI green, then publish new R20 Linux asset plus byte-exact Windows R51 and verify latest asset SHA. Do not mutate old R19 asset.
 - Release blocker discovered before R20 acceptance: existing installer SIGTERMs GTK at install start; GTK cleanup may stop currently active CFON/WARP. R20 now fails before touching state when session.mode is active or session JSON unreadable (error FREENET_HUB_ACTIVE_SESSION / exit72), allowing user to intentionally disconnect before upgrading; CI includes active-session no-mutation regression and unparseable JSON fail-closed tests. No live CFON process touched.
+
+## 2026-10-14 — V443: R53/R21 exact-CI and installed-state checkpoint
+
+**Status:** CURRENT / CI_AND_SCOPED_FIELD_PASS; strict full-device and mobile physical FINAL remain UNPROVEN.
+
+**Previous accepted state:** public v4.3.9-r53-windows-stable, GitHub main `e542d0d8891a566a14ddb356bb52a730fea41dac`; owner Windows 4.3.9/R53, owner Linux 4.2.0-linux.21-r54; field evidence V442.
+
+**Current delta (read-only audit):**
+- Exact GitHub main run `38562076539`: 10/10 SUCCESS; previously pending main run `38559614207`: 10/10 SUCCESS.
+- Latest public Windows R53 installer SHA256 `34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2`; Linux R21 asset SHA256 `82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A` matches local archive; frozen prior Linux R20 SHA unchanged.
+- Installed Linux R21 integrity 9/9 PASS; install active-session protection 2/2 PASS. Real owner CFON SOCKS5H traffic: Google HTTPS204 and GitHub HEAD200. Tailscale Running, two peers; Linux default Wi-Fi route unchanged.
+- Installed canonical Windows R53 release identity and active app process verified. Tailscale Running, default Ethernet route unchanged. Windows shell not elevated.
+- Linux native WARP client requests owner Terms acceptance; noninteractive sudo unavailable. No claim of systemwide all-UID routing, DNS leak protection or destructive rollback restore.
+
+**Verification versus validation:** Hosted CI verifies software matrix; real owner installs and proxied HTTP establish limited field validation. Mobile CI simulators do not establish actual-device acceptance. No privileged VPN or system networking changes were executed during this audit.
+
+**Roadmap / gates:** (1) Release asset authenticity and SHA-bound main CI: PASS. (2) Windows R53 and Linux R21 installed/scoped browsing: PASS in evidenced scope. (3) Linux full-system WARP, native owner ToS, sudo, route/DNS/Tailscale/L2TP recovery: OPEN/OWNER EXTERNAL. (4) Windows elevated system/console gateway: OPEN/PRIVILEGE. (5) Android/iOS physical testing: OPEN/EXTERNAL. (6) Real restore of private rollback snapshot: UNPROVEN. (7) This V443 documentation-only evidence closure: CURRENT until exact-SHA PR CI/merge.
+
+**Authority:** `evidence/V443_R21_R53_POSTPUBLISH_VERIFICATION_20261014.json` (new) + `evidence/V442_LINUX_R21_PUBLIC_FIELD_ACCEPTANCE_20261014.json` (accepted). Official method sources: Cloudflare WARP Linux setup, Tailscale coexistence docs, GitHub Actions API.
+
+**Failure prevention / decision:** Preserve running CFON, Tailscale, L2TP, routes, DNS and immutable public packages. Do not silently accept third-party ToS or create systemwide route mutations while recovery/privilege conditions remain unsatisfied.
+
+**Exact next action:** Commit and run exact-SHA CI for this evidence-only checkpoint. For strict full-device FINAL, owner-approved native ToS and authenticated sudo/UAC maintenance plus rollback-safe physical trials are required.
