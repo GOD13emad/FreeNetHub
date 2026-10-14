@@ -30,7 +30,15 @@
       "jobs": 10,
       "success": 10
     },
-    "status": "CONFIRMED"
+    "status": "CONFIRMED",
+    "first_candidate_failure": {
+      "sha": "5e8df498a9e620d8ed42285eef635cd6883b4693",
+      "run": 38532606836,
+      "step": "Scan public tree for private/runtime material",
+      "root_cause": "Private absolute Linux home path was unnecessarily emitted to public evidence JSON",
+      "prevention": "Use project-relative sanitized backup provenance; existing security_scan_public.py must PASS before promotion",
+      "status": "SUPERSEDED_FAILED_CANDIDATE"
+    }
   },
   "field": {
     "windows": {
@@ -87,7 +95,7 @@
   ],
   "provenance": {
     "previous_brain_sha256": "274DFD49F39A25618518ADA3078D026C6D2FC3156474EE6F5D967678ED5C52ED",
-    "previous_brain_backup": "/home/aliemad/source/repos/FreeNetHub/.git/PROJECT_BRAIN_PRE_R53_LIVE_AUDIT_20261014.bak",
+    "previous_brain_backup": ".git/PROJECT_BRAIN_PRE_R53_LIVE_AUDIT_20261014.bak",
     "source": "live remote host and public GitHub API"
   }
 }
