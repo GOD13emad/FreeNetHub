@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   isolated-windows:
-    name: R54 private ${{ matrix.mode }}
+    name: R54 versioned ${{ matrix.mode }}
     runs-on: windows-latest
     timeout-minutes: 40
     strategy:
@@ -43,7 +43,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $source=Join-Path $env:RUNNER_TEMP 'fnh-r54-upgrade-worktree/delivery/private_v4.3.10/FreeNetHub_4.3.10_R54_Setup.exe'
+          $source=Join-Path $env:RUNNER_TEMP 'fnh-r54-upgrade-worktree/delivery/release_candidate_v4.3.10/FreeNetHub_4.3.10_R54_Setup.exe'
           $receiptPath=Join-Path $env:RUNNER_TEMP 'r54-upgrade-receipt.json'
           if(-not (Test-Path -LiteralPath $source) -or -not (Test-Path -LiteralPath $receiptPath)){throw 'TESTED_BINARY_OR_RECEIPT_MISSING'}
           $receipt=Get-Content -LiteralPath $receiptPath -Raw|ConvertFrom-Json
@@ -58,7 +58,7 @@ jobs:
           if((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $sha){throw 'POST_COPY_BINARY_MISMATCH'}
           [IO.File]::WriteAllText((Join-Path $out 'SHA256SUMS.txt'),($sha.ToLowerInvariant()+'  FreeNetHub_4.3.10_R54_Setup.exe'+[Environment]::NewLine))
           $provenance=[ordered]@{
-            status='EXACT_WINDOWS_CI_TESTED_R54_PRIVATE_CANDIDATE'
+            status='EXACT_WINDOWS_CI_TESTED_R54_RELEASE_LINE'
             sourceSHA='e4112be36d6cce97863c59a5dbe6a5d0bcdf5786'
             testedWorkflowCommit='${{ github.sha }}'
             test='R53-to-R54-to-R53 with data/settings preservation and one AppId'
@@ -73,7 +73,7 @@ jobs:
         if: matrix.mode == 'upgrade'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: R54-Windows-tested-private-candidate
+          name: R54-Windows-tested-release-line-candidate
           path: ${{ runner.temp }}/fnh-r54-tested-release-candidate/
           if-no-files-found: error
           retention-days: 30
