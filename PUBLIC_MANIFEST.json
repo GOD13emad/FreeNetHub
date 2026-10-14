@@ -15,8 +15,8 @@
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
-      "bytes": 3995,
-      "sha256": "9F15A143D88AF82CFD4142FCC69F6602B0C34D9C4C83FFD43509DB40C1946814"
+      "bytes": 4007,
+      "sha256": "668CFB8C0D5AA3B7306BD6730CB61F4661F4F82A524A8BB18CEE4541D982CCFD"
     },
     {
       "file": ".gitignore",
@@ -1534,6 +1534,11 @@
       "sha256": "0A178CC00F58FEBF3B435EA6E2A69AE8C118D5C7D16BCAAF1E73155EF62402D0"
     },
     {
+      "file": "evidence/V449_R54_RELEASE_METADATA_20261014.json",
+      "bytes": 4282,
+      "sha256": "AD835CDD883AC1827E231B419DD9263E3F235DD4390C84857EA51BF029ABEA6B"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1715,8 +1720,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 154823,
-      "sha256": "352F468646D93F8AA5BD02CDC8DFDDACB33D7D67D7BC87A2F183711DAED5C60B"
+      "bytes": 157587,
+      "sha256": "7544721EF348BFA11C6B19F1463D325968FA6E7DD6AA230B94AE913B6C880D8D"
     },
     {
       "file": "pytest.ini",
@@ -2050,8 +2055,8 @@
     },
     {
       "file": "tests/prepare_r54_isolated.py",
-      "bytes": 4197,
-      "sha256": "483CA30662C663F92DD2891898B3DC9CDAC1F59F5B1119F68A605852B28AB810"
+      "bytes": 4217,
+      "sha256": "20F4E032526B960E06D3F6580146E39A50B29BDE3A3ED2ADC28D2ED07CF495B3"
     },
     {
       "file": "tests/r23_install.ps1",
@@ -2530,8 +2535,8 @@
     },
     {
       "file": "tests/test_r54_isolated_upgrade.ps1",
-      "bytes": 6933,
-      "sha256": "67BCE3D587D22FB4E117FEC01B3EC558F828C8E3787DA8274F5B92A07BD45B1D"
+      "bytes": 7329,
+      "sha256": "464795C9ED7C96EF452505FBB498C59AD3A9341903EFFCCFF3FF9B586FAA6EE7"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",

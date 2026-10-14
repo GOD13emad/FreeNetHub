@@ -1,4 +1,4 @@
-"""Prepare an R54 build only inside a detached, clean, exact-base worktree.
+"""Prepare versioned R54 release-line metadata only in a detached, clean, exact-base worktree.
 This script does NOT install, sign, publish, or change the accepted R53 tree.
 """
 from pathlib import Path
@@ -43,31 +43,31 @@ def main(root: Path) -> None:
     manifest_sha = hashlib.sha256(manifest.read_bytes()).hexdigest().upper()
     r["version"] = VERSION
     r["releaseRevision"] = REVISION
-    r["status"] = "R54_PRIVATE_OFFLINE_CANDIDATE_NOT_PUBLISHED"
-    r["installerStatus"] = "R54_PRIVATE_BUILD_UNVERIFIED_FIELD"
-    r["acceptanceEvidence"] = "evidence/V4310_R54_PRIVATE_BUILD_CANDIDATE_20261014.json"
+    r["status"] = "R54_UNSIGNED_WINDOWS_INSTALLER_RELEASE_LINE"
+    r["installerStatus"] = "R54_UNSIGNED_VERSIONED_INSTALLER"
+    r["acceptanceEvidence"] = "evidence/V449_R54_RELEASE_METADATA_20261014.json"
     r["appManifestSha256"] = manifest_sha
     release.write_text(json.dumps(r, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     replacements = {
         '#define MyAppVersion "4.3.9"': '#define MyAppVersion "4.3.10"',
-        r'OutputDir=..\..\delivery\github_v4.3.9': r'OutputDir=..\..\delivery\private_v4.3.10',
+        r'OutputDir=..\..\delivery\github_v4.3.9': r'OutputDir=..\..\delivery\release_candidate_v4.3.10',
         "OutputBaseFilename=FreeNetHub_4.3.9_R53_Setup": "OutputBaseFilename=FreeNetHub_4.3.10_R54_Setup",
         "VersionInfoVersion=4.3.9.0": "VersionInfoVersion=4.3.10.0",
         "VersionInfoDescription=FreeNet Hub 4.3.9 R53 same-AppId install root fail-closed guard":
-            "VersionInfoDescription=FreeNet Hub 4.3.10 R54 private update cache candidate"
+            "VersionInfoDescription=FreeNet Hub 4.3.10 R54 bounded installer-cache retention"
     }
     for old, new in replacements.items():
         assert script.count(old) == 1, "INNO_PRESTATE_UNEXPECTED:" + old
         script = script.replace(old, new)
     inno.write_text(script, encoding="utf-8")
     receipt = {
-        "schema": 1, "date": "2026-10-14", "status": "PRIVATE_UNPUBLISHED_R54_CI_CANDIDATE",
+        "schema": 1, "date": "2026-10-14", "status": "UNSIGNED_R54_RELEASE_LINE_SOURCE_CANDIDATE",
         "sourceSHA": EXPECTED, "version": VERSION, "revision": REVISION,
         "appManifestSha256": manifest_sha, "engineSha256": r["engineSha256"],
         "fixedAppId": "BCE83A4E-8897-4D52-A650-BB67A2BB8142",
         "scope": "Source transformation only. Inno build, real fresh install, R53 upgrade, rollback separate."
     }
-    evidence = root / "evidence/V4310_R54_PRIVATE_BUILD_CANDIDATE_20261014.json"
+    evidence = root / "evidence/V449_R54_RELEASE_METADATA_20261014.json"
     evidence.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     assert r["appManifestSha256"] == hashlib.sha256(manifest.read_bytes()).hexdigest().upper()
     print("R54_ISOLATED_METADATA_AND_SOURCE_HASHES_PASS", len(a["code"]), manifest_sha)

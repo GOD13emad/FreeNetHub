@@ -40,11 +40,12 @@ if(-not $iscc){
 if(-not $iscc){throw 'CI_INNO_NOT_FOUND'}
 & $iscc /Qp $installScript
 if($LASTEXITCODE){throw ('CI_INNO_BUILD_FAILED_'+$LASTEXITCODE)}
-$r54=Join-Path $work 'delivery\private_v4.3.10\FreeNetHub_4.3.10_R54_Setup.exe'
+$r54=Join-Path $work 'delivery\release_candidate_v4.3.10\FreeNetHub_4.3.10_R54_Setup.exe'
 if(-not (Test-Path $r54)){throw 'R54_PRIVATE_BUILD_MISSING'}
 $release=Get-Content -LiteralPath (Join-Path $work 'RELEASE.json') -Raw|ConvertFrom-Json
 $app=Get-Content -LiteralPath (Join-Path $work 'app\manifest.json') -Raw|ConvertFrom-Json
 if($release.releaseRevision -ne $rev54 -or $app.coreVersion -ne $rev54){throw 'R54_REVISION_MISMATCH'}
+if($release.status -ne 'R54_UNSIGNED_WINDOWS_INSTALLER_RELEASE_LINE' -or $release.installerStatus -ne 'R54_UNSIGNED_VERSIONED_INSTALLER'){throw 'R54_RELEASE_METADATA_NOT_PROMOTABLE'}
 if((Get-FileHash (Join-Path $work 'app\manifest.json') -Algorithm SHA256).Hash -ne $release.appManifestSha256){throw 'R54_MANIFEST_CHAIN_BAD'}
 $info=(Get-Item $r54).VersionInfo
 if($info.FileVersion.Trim() -ne '4.3.10.0'){throw 'R54_FILE_VERSION_BAD'}
@@ -56,6 +57,7 @@ function Verify-Installed([string]$expected){
   $out=Get-Content -LiteralPath (Join-Path $probe 'RELEASE.json') -Raw|ConvertFrom-Json
   $am=Get-Content -LiteralPath (Join-Path $probe 'app\manifest.json') -Raw|ConvertFrom-Json
   if($out.releaseRevision -ne $expected -or $am.coreVersion -ne $expected){throw ('INSTALLED_REV_BAD_'+$expected)}
+  if($expected -eq $rev54 -and ($out.status -ne 'R54_UNSIGNED_WINDOWS_INSTALLER_RELEASE_LINE' -or $out.installerStatus -ne 'R54_UNSIGNED_VERSIONED_INSTALLER')){throw 'INSTALLED_RELEASE_LINE_STATUS_BAD'}
   if((Get-FileHash (Join-Path $probe 'app\manifest.json') -Algorithm SHA256).Hash -ne $out.appManifestSha256){throw 'INSTALLED_MANIFEST_DIGEST_BAD'}
   foreach($row in $am.code){
     $path=Join-Path (Join-Path $probe 'app') $row.file

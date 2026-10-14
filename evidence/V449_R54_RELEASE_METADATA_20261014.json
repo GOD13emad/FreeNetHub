@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "changeSet": "V449",
+  "mainObjective": "Remove the contradictory private-candidate status from the R54 installer's embedded release metadata and independently re-test the exact release-line binary through Windows fresh/upgrade/rollback acceptance, without altering installed R53 or prematurely publishing.",
+  "baseline": {
+    "main": "b9bb40e6e504e1c3eba5bc442c1286782a36eb4e",
+    "R54ProvenPrivateBinary": "6D8DA29328842149371DB862908FB6D1E6079E1FD055DB8450AE7BE51804AE0D",
+    "GitHubDraft": {
+      "id": 412978295,
+      "tag": "v4.3.10-r54-windows-candidate",
+      "draft": true,
+      "prerelease": true
+    },
+    "acceptedHosted": "PR55 CI 10/10 and real Windows upgrade/rollback 2/2 PASS",
+    "publicR53Unchanged": true
+  },
+  "problem": {
+    "fact": "The exact tested R54 private binary embeds RELEASE.json status R54_PRIVATE_OFFLINE_CANDIDATE_NOT_PUBLISHED and VersionInfoDescription 'private update cache candidate'. A production-stable label for unchanged bytes would contradict them.",
+    "status": "CONFIRMED_RAW",
+    "impact": "Unsafe release semantics; can't call it a coherent publicly accepted stable artifact."
+  },
+  "choice": {
+    "method": "Keep the previous SHA-pinned private binary and draft immutable-by-policy, update only the isolated release-preparation recipe to embed an unsigned Windows versioned release-line status and matching version description, then rerun dedicated fresh R54 and R53→R54→R53 tests on GitHub-hosted disposable Windows. Archive only exact newly tested bytes.",
+    "rejected": [
+      "Relabel earlier private installer as stable without modifying actual bytes",
+      "Overwrite existing public R53 assets or installed owner R53 runtime",
+      "Unilaterally select open-source license without owner's rights assessment",
+      "Skip new binary regression because only metadata changed"
+    ],
+    "minimumControls": [
+      "Prepare only exact detached accepted V446C source, verify 17 app file hashes",
+      "R54 source manifest/release metadata hash agreement and fixed Inno AppId",
+      "PowerShell AST, YAML parse, public security and source integrity",
+      "Dedicated real Windows 2/2 fresh/upgrade/rollback with data/settings preservation",
+      "Exact GitHub artifact SHA and byte confirmation before any draft replacement/publication"
+    ]
+  },
+  "mutation": {
+    "files": [
+      "tests/prepare_r54_isolated.py",
+      "tests/test_r54_isolated_upgrade.ps1",
+      ".github/workflows/r54-isolated-acceptance.yml",
+      "evidence/V449_R54_RELEASE_METADATA_20261014.json",
+      "PROJECT_BRAIN.md",
+      "PUBLIC_MANIFEST.json"
+    ],
+    "newEmbeddedStatus": "R54_UNSIGNED_WINDOWS_INSTALLER_RELEASE_LINE",
+    "newInstallerStatus": "R54_UNSIGNED_VERSIONED_INSTALLER",
+    "newVersionInfoDescription": "FreeNet Hub 4.3.10 R54 bounded installer-cache retention",
+    "newCandidateOutput": "delivery/release_candidate_v4.3.10"
+  },
+  "localEvidence": {
+    "pythonStage": "PASS: 17 source files + manifest SHA + correct embedded R54 status",
+    "windowsAST": "PASS",
+    "yamlParse": "PASS",
+    "sourceSecurity": "PENDING final seal",
+    "hostedCI": "PENDING new exact SHA"
+  },
+  "boundaries": {
+    "publicRelease": "NOT PUBLISHED",
+    "ownerInstalledWindows": "R53 untouched",
+    "ownerLinux": "R21 untouched",
+    "network": "CFON and Tailscale untouched",
+    "licenses": "No project-wide source license; owner authority/rights decision remains open",
+    "signature": "Unsigned by current publisher choice, no security bypass",
+    "field": "Physical owner R53→R54 live session recovery not tested"
+  },
+  "primaryDocs": [
+    "https://cli.github.com/manual/gh_release_create",
+    "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository",
+    "https://jrsoftware.org/ishelp/topic_setup_appid.htm"
+  ],
+  "state": "CANDIDATE_LOCAL_VERIFIED_HOSTED_UNPROVEN",
+  "nextAction": "Commit exact V449 source delta; run new 2-job Windows release-line acceptance and full exact-SHA CI, promote only on confirmed PASS, archive new exact release-line bytes with digest, do not publish or upgrade owner until release authority is consistent."
+}
