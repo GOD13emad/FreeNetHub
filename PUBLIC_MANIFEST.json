@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 33037,
-      "sha256": "A641A933FB57ADB95164846DE3704323799CDDF0538716F7EBA4AE4E4FC9F4EC"
+      "bytes": 34082,
+      "sha256": "33D1643172B2CF57CF90E9A9E03BF30E9711601F04669B329CCEAF0E1F33611F"
     },
     {
       "file": ".gitignore",
@@ -125,8 +125,8 @@
     },
     {
       "file": "crossplatform/android/app/src/main/AndroidManifest.xml",
-      "bytes": 694,
-      "sha256": "962B24AD2FB3F0D9FA2BF5D8490922D4116BB2995124F93A8F62711894B3188A"
+      "bytes": 480,
+      "sha256": "42C1B48195018835B398717F119120AFE0657A36124A3339FF37A7D7C35EE2B9"
     },
     {
       "file": "crossplatform/android/app/src/main/java/com/freenethub/mobile/FreeNetVpnService.kt",
@@ -150,8 +150,8 @@
     },
     {
       "file": "crossplatform/android/README_FA.md",
-      "bytes": 1037,
-      "sha256": "9F9DC7E48041270195AA3E89BF3F330D94228E0F1ACAE7A689B96CF850A7534D"
+      "bytes": 1390,
+      "sha256": "A29BFCBF498CC8BE92C8BEE94436C57DAA40538AC9E0DEFB5403246C42441F4E"
     },
     {
       "file": "crossplatform/android/settings.gradle.kts",
@@ -336,7 +336,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 7265,
-      "sha256": "564FFBC0F165817AD5CEC54F4D9A914D3841D8415862CE333ADF2644BD9122FC"
+      "sha256": "E8D5008B12925069E738F54FF9A66548540AEC9FB8F92838A7935BF806C632B0"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1509,6 +1509,11 @@
       "sha256": "CC775CEAEB796F90F3BE20686EB2129F3749DAE1A46745996AC5E03995852454"
     },
     {
+      "file": "evidence/V445_ANDROID_UNLINKED_ALWAYS_ON_GUARD_20261014.json",
+      "bytes": 6645,
+      "sha256": "85693E62E007BA51CBB35AFD25091E0B11943AEA4E7F95BDC0A85023C9947B58"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1690,8 +1695,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 138344,
-      "sha256": "7652D658154D63B0FB1FBA51552A1450C2450DE5294B77E9CFA61DAB1ECA705D"
+      "bytes": 143736,
+      "sha256": "46F5255DE52F32382F1AE530D7477D291040E54560073140FBCD5289ED056CEB"
     },
     {
       "file": "pytest.ini",
@@ -1711,7 +1716,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "B9F1473D97985E036FB7CCFAA6E0166D96776077790E967C2355D72F2DDBD7CC"
+      "sha256": "3E580E543475D7C47FA15016449264F03EF98B5FC419F6E32309BBAB58AD0C8B"
     },
     {
       "file": "SECURITY.md",

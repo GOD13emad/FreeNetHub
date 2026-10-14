@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "changeSet": "V445",
+  "objective": "Prevent an Android prototype VPN without a forwarding core from being selectable as Always-on VPN, without modifying any owner network/device.",
+  "acceptedBaseline": {
+    "main": "14145ac00af934c1405760f086cbd1c3e9272816",
+    "windows": "4.3.9-r53-inno-root-guard",
+    "linux": "4.2.0-linux.21-r54",
+    "officialRelease": "v4.3.9-r53-windows-stable",
+    "dualRepositoryCI": [
+      {
+        "repo": "GOD13emad/FreeNetHub",
+        "run": 38570732401,
+        "head": "14145ac00af934c1405760f086cbd1c3e9272816",
+        "passed": 10,
+        "total": 10,
+        "conclusion": "success"
+      },
+      {
+        "repo": "Usefull-Skills/FreeNetHub",
+        "run": 38571407077,
+        "head": "14145ac00af934c1405760f086cbd1c3e9272816",
+        "passed": 10,
+        "total": 10,
+        "conclusion": "success"
+      },
+      {
+        "repo": "Usefull-Skills/FreeNetHub",
+        "run": 38571407597,
+        "head": "14145ac00af934c1405760f086cbd1c3e9272816",
+        "passed": 3,
+        "total": 3,
+        "conclusion": "success",
+        "kind": "code analysis"
+      }
+    ]
+  },
+  "factualProblem": {
+    "status": "CONFIRMED",
+    "rawFile": "crossplatform/android/app/src/main/AndroidManifest.xml",
+    "prestateSHA256": "962B24AD2FB3F0D9FA2BF5D8490922D4116BB2995124F93A8F62711894B3188A",
+    "finding": "A nonfunctional VpnService was registered in AndroidManifest. Setting SUPPORTS_ALWAYS_ON=false alone cannot prevent Always-on selection on supported Android API26, since the official flag is effective only API27+. Therefore remove the incomplete service registration until a packet-forwarding core exists.",
+    "scope": "Risk of user selecting a nonfunctional VPN; actual Always-on enrollment or traffic failure on a physical device was NOT observed.",
+    "primarySource": "https://developer.android.com/reference/android/net/VpnService"
+  },
+  "mutation": {
+    "files": [
+      "crossplatform/android/app/src/main/AndroidManifest.xml",
+      ".github/workflows/ci.yml",
+      "crossplatform/android/README_FA.md"
+    ],
+    "mainObjective": "Do not expose incomplete VPN service as a system-selectable provider on any supported Android API.",
+    "ciGuard": "Parse manifest to assert the unlinked service is absent. Assert core remains unlinked and Activity does not request VpnService.prepare.",
+    "outOfScope": "Actual mobile packet forwarding is not implemented; no Android install, user VPN consent, routes, or desktop published assets modified."
+  },
+  "readOnlyOwners": {
+    "windows": {
+      "installedR53": true,
+      "appRunning": true,
+      "scopedProxyGoogleHTTP": 204,
+      "isAdministrator": false,
+      "gatewayStatusCode": 0,
+      "gatewayActive": false,
+      "gatewayMode": "none",
+      "tun": "none",
+      "consoleAdapter": "Missing",
+      "sourceGatewayStatusError": "APP_DEPENDENCIES_MISSING in git checkout only; installed runtime Status succeeded"
+    },
+    "linux": {
+      "installedR21": true,
+      "installSHA256": "9/9 PASS",
+      "scopedProxyGoogleHTTP": 204,
+      "tailscale": "Running",
+      "nativeWarpToS": "OWNER_ACCEPTANCE_REQUIRED",
+      "sudoNoninteractive": false
+    },
+    "android": {
+      "adbDeviceConnected": true,
+      "freeNetHubInstalled": false,
+      "otherVpnAppPreserved": true,
+      "installedVpnStateChanged": false
+    }
+  },
+  "verificationVsValidation": "Source/manifest guard + hosted Android emulator will verify intent; no Android real-VPN operation or Always-on behavior is declared validated. Owner gateway Status only verifies disconnected status—not PC_TUNNEL success.",
+  "rootCausePrevention": {
+    "rootCause": "Registered an incomplete VpnService in package manifest before forwarding core existed; API26 cannot use SUPPORTS_ALWAYS_ON metadata opt-out.",
+    "prevention": "Do not register any Android VpnService until forwarding is implemented, license-reviewed and tested; register it only as part of later real VPN-core change set.",
+    "guard": "Hosted build tests assert no service registration while providerCoreReady=false; emulator verifies lack of permission UI, TUN and interface changes.",
+    "regression": "Rebuild nested and root integrity manifests, R53 identity and Linux installation guards, full hosted CI"
+  },
+  "roadMap": {
+    "completed": [
+      "PR #50 and #51 merged",
+      "Dual-repo exact-main CI 10/10 success",
+      "Desktop R53/R21 scoped CFON field acceptance"
+    ],
+    "current": "V445 Android Always-on safety mutation, local and hosted V&V",
+    "open": [
+      "Android real forwarding core and physical VPN acceptance",
+      "iOS NetworkExtension packet-forwarding/signing/device validation",
+      "Windows privileged PC_TUNNEL and DNS/rollback trial",
+      "Linux WARP TOS, sudo, full-system DNS/Tailscale/L2TP trial",
+      "Project-wide licensing owner decision"
+    ]
+  },
+  "methodDecision": {
+    "choice": "Remove Android system service registration for a core-unlinked placeholder",
+    "why": "Single manifest omission is effective on all supported API26+; simpler and more complete than a flag only honored on API27+.",
+    "rejected": [
+      "Flag-only SUPPORTS_ALWAYS_ON=false because Android API26 ignores it",
+      "Raise minSdk to 27 solely to mask incomplete service",
+      "Add a fake TUN or permission dialog without forwarding"
+    ],
+    "confidence": "High for manifest and official API behavior; physical UI settings not tested; no real VPN claim."
+  },
+  "status": "DOCUMENTATION_RECONCILED_CANDIDATE_PENDING_REBUILD",
+  "nextAction": "Rebuild nested manifest, RELEASE SHA, public manifest, run regression and publish new exact candidate head, replacing superseded PR SHA.",
+  "candidateRevision": "V445C",
+  "initialCandidate": {
+    "head": "4419c21fc2a3e4417fee13aa9c931b7053ed452b",
+    "pr": 52,
+    "guard": "explicit SUPPORTS_ALWAYS_ON=false",
+    "status": "SUPERSEDED_DUE_TO_ANDROID_API26_LIMITATION",
+    "reason": "Official API states SERVICE_META_DATA_SUPPORTS_ALWAYS_ON has effect only on API 27+ while project minSdk=26."
+  },
+  "downstreamDocumentation": {
+    "file": "crossplatform/android/README_FA.md",
+    "prestateSHA256": "9F9DC7E48041270195AA3E89BF3F330D94228E0F1ACAE7A689B96CF850A7534D",
+    "problem": "Readme incorrectly claimed VPN service registered and used outdated Android CI SDK/Gradle versions; historical debug APK could be mistaken for a functional installer.",
+    "decision": "Align source truth, toolchain and explicitly say historic debug artifact not a V445 VPN release.",
+    "status": "CANDIDATE_LOCAL"
+  }
+}

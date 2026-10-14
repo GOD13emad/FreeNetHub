@@ -99,6 +99,21 @@ jobs:
           grep -q 'compileSdk=36' crossplatform/android/app/build.gradle.kts
           grep -q 'targetSdk=36' crossplatform/android/app/build.gradle.kts
           grep -q 'version "8.10.1"' crossplatform/android/build.gradle.kts
+      - name: Guard unlinked Android VPN is not registered with the OS
+        run: |
+          python3 - <<'PYNOINACTIVEVPN'
+          import pathlib
+          import xml.etree.ElementTree as ET
+          manifest=ET.parse('crossplatform/android/app/src/main/AndroidManifest.xml').getroot()
+          a='{http://schemas.android.com/apk/res/android}'
+          services=[x for x in manifest.iter('service') if x.get(a+'name')=='.FreeNetVpnService']
+          assert not services, 'UNLINKED_VPN_MUST_NOT_REGISTER_SYSTEM_SERVICE'
+          source=pathlib.Path('crossplatform/android/app/src/main/java/com/freenethub/mobile/FreeNetVpnService.kt').read_text()
+          assert 'providerCoreReady(): Boolean = false' in source, 'PROVIDER_GUARD_SCOPE_CHANGED'
+          activity=pathlib.Path('crossplatform/android/app/src/main/java/com/freenethub/mobile/MainActivity.kt').read_text()
+          assert 'VpnService.prepare' not in activity, 'PREMATURE_VPN_PERMISSION'
+          print('UNLINKED_ANDROID_VPN_UNREGISTERED_PASS')
+          PYNOINACTIVEVPN
       - name: Build fail-closed Android integration pack
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
