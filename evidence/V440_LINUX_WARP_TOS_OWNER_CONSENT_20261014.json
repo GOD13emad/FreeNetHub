@@ -16,7 +16,8 @@
       "crossplatform/linux/recover_warp_remote.sh",
       "crossplatform/linux/install_warp_official.sh",
       "crossplatform/linux/test_warp_tos_owner_consent.py",
-      ".github/workflows/ci.yml"
+      ".github/workflows/ci.yml",
+      "tests/verify_frozen_linux_r20_asset.py"
     ],
     "rule": "Remove implicit --accept-tos calls and report WARP_TOS_OWNER_ACTION_REQUIRED before registration/guard/connect.",
     "test": "Mocked ToS error checks no registration or mutation before consent; existing scope/private-state regression."
@@ -52,5 +53,13 @@
   "provenance": {
     "previousBrainSha256": "52728ED382815F1F5EA7B422889FFE291B19A28B8CFCFD53A75ABD2373BBE15B",
     "oldBrainBackup": ".git/PROJECT_BRAIN_BEFORE_WARP_TOS_PATCH_20261014.bak"
+  },
+  "releaseIntegrityRegression": {
+    "rootCause": "Existing hosted Linux CI invokes a frozen Linux R20 package builder from the current candidate source, which could yield a different un-released ZIP under the accepted old R20 filename.",
+    "prevention": "Hosted CI must download the published frozen R20 asset and verify public SHA-256, version and embedded manifest, while running changed source's new owner-consent test separately.",
+    "guardPath": "tests/verify_frozen_linux_r20_asset.py",
+    "releaseAssetSha256": "5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B",
+    "evidence": "GitHub release API asset digest and independently downloaded exact public ZIP matched SHA and passed ZIP validation",
+    "status": "TESTED_ON_PUBLIC_ASSET_NEEDS_HOSTED_CI"
   }
 }

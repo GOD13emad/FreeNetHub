@@ -12,6 +12,7 @@ Frozen published release: Windows R53 + Linux R20. Public installer bytes and in
 - Added simulated read-only ToS negative regression and hooked Linux hosted CI.
 - Accepted Windows R53 owner physical 15/15, source/main/fork hosted CI 10/10, Linux R20 scoped CFON and dual-host Tailscale unchanged. Linux L2TP Seman continues.
 - Source candidate is not installed, not yet merged, not released. Full-system routing, DNS leak-free, PC gateway and hardware mobile remain UNPROVEN.
+- Release-integrity downstream guard: hosted CI must download publicly published Linux R20, verify SHA-256 5973D721EC2D93F7D500187EBC9BB4A5CA06AD73A937BC9AAD936E7C1D745D3B and package-manifest sample. Never rebuild a patched source under frozen R20 filename; new source candidate remains distinct from installed/public artifact.
 - Evidence detail: evidence/V440_LINUX_WARP_TOS_OWNER_CONSENT_20261014.json.
 
 ## Roadmap to strict FINAL
