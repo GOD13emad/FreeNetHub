@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "date": "2026-10-14",
+  "project": "FreeNet Hub",
+  "objective": "Close pending main CI and read-only cross-host postpublish verification",
+  "baseline": {
+    "main": "e542d0d8891a566a14ddb356bb52a730fea41dac",
+    "previousEvidence": "evidence/V442_LINUX_R21_PUBLIC_FIELD_ACCEPTANCE_20261014.json",
+    "previousBrainSHA256": "D78BA195E2F3F83462A0B813A34F365821B8428B62D992324697DB48F1A73609"
+  },
+  "confirmed": {
+    "mainCi": {
+      "run": 38562076539,
+      "head": "e542d0d8891a566a14ddb356bb52a730fea41dac",
+      "passed": 10,
+      "total": 10
+    },
+    "priorMainCi": {
+      "run": 38559614207,
+      "passed": 10,
+      "total": 10
+    },
+    "publicRelease": "v4.3.9-r53-windows-stable",
+    "linuxR21SHA256": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+    "windowsR53InstallerSHA256": "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2",
+    "ownerLinux": {
+      "version": "4.2.0-linux.21-r54",
+      "installedIntegrity": "9/9 PASS",
+      "guardTests": "2/2 PASS",
+      "frozenR20": "SHA256 PASS",
+      "liveCFON": "Google HTTPS 204 and GitHub HEAD 200 through SOCKS5H",
+      "tailscale": "Running, two peers",
+      "defaultRoute": "Wi-Fi unchanged",
+      "sudoNoninteractive": false,
+      "warpToS": "owner agreement required"
+    },
+    "ownerWindows": {
+      "version": "4.3.9-r53-inno-root-guard",
+      "appRunning": true,
+      "tailscaleRunning": true,
+      "isElevated": false,
+      "defaultRoute": "Ethernet unchanged"
+    }
+  },
+  "verificationValidation": "CI/package checks verify integrity and regression; actual CFON HTTP validates scoped browser transport only. Strict full-device tunnel/DNS, physical mobile tests, and physical restore are unproven.",
+  "openGates": [
+    {
+      "gate": "Linux strict systemwide",
+      "status": "OPEN_EXTERNAL",
+      "blocker": "owner WARP ToS, sudo and recoverable route/DNS/Tailscale/L2TP trial"
+    },
+    {
+      "gate": "Windows system gateway",
+      "status": "OPEN_PRIVILEGE",
+      "blocker": "UAC/admin and recoverable network trial"
+    },
+    {
+      "gate": "Android/iOS physical",
+      "status": "OPEN_EXTERNAL",
+      "blocker": "real hardware acceptance"
+    },
+    {
+      "gate": "Physical rollback",
+      "status": "UNPROVEN",
+      "blocker": "snapshot valid but restore not physically tested"
+    }
+  ],
+  "riskDecision": "Preserve active network routes, sessions, and published assets; never silently accept third-party legal terms or alter privileged VPN routing.",
+  "methods": [
+    {
+      "url": "https://developers.cloudflare.com/warp-client/get-started/linux/",
+      "reason": "Native WARP onboarding"
+    },
+    {
+      "url": "https://tailscale.com/docs/reference/faq/other-vpns",
+      "reason": "VPN coexistence limitations"
+    },
+    {
+      "url": "https://docs.github.com/en/rest/actions/workflow-runs",
+      "reason": "SHA-bound CI verification"
+    }
+  ],
+  "status": "BLOCKED_MANIFEST_MISMATCH_FIX_IN_PROGRESS",
+  "exactNextAction": "Commit V443 and Brain, verify exact SHA CI, merge documentation-only PR if successful; owner-only privileged and hardware validation remains open.",
+  "reuseTargets": [
+    "Brain",
+    "Release handoff",
+    "V&V report",
+    "Failure prevention"
+  ],
+  "ciClosureCandidateFailure": {
+    "run": 38564523659,
+    "job": "windows-unit",
+    "step": "Verify public manifests",
+    "status": "FAIL_ROOT_CAUSE_CONFIRMED",
+    "rootCause": "New PROJECT_BRAIN.md content and V443 evidence file not reflected in tracked PUBLIC_MANIFEST.json",
+    "prevention": "Every documentation/evidence mutation must regenerate PUBLIC_MANIFEST.json using tests/rebuild_public_manifest.py and run tests/verify_public_tree.py before commit",
+    "mutationScope": "public manifest and the V443/Brain failure knowledge only",
+    "newCandidateCI": "PENDING_EXACT_SHA"
+  }
+}
