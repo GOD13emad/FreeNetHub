@@ -33,6 +33,11 @@ def build(mode,provider="WARP",profile_path=None):
    # which collapses the local SOCKS provider after a few seconds.
    tun_in["route_exclude_address"]=["162.159.192.0/24","162.159.193.0/24","162.159.197.0/24"]
  if mode=="PC_TUNNEL":
+  # Keep the independent Tailscale recovery path outside the full-device TUN.
+  # Official Tailscale split-tunnel ranges; do not route this CGNAT/ULA
+  # traffic through another VPN. This intentionally bypasses the provider.
+  tailnet=["100.64.0.0/10","fd7a:115c:a1e0::/48"]
+  tun_in["route_exclude_address"]=list(dict.fromkeys(tun_in.get("route_exclude_address",[])+tailnet))
   cfg["route"]["final"]="provider"
   cfg["inbounds"][0]["dns_mode"]="hijack"
   cfg["dns"]={"servers":[{"type":"udp","tag":"dns-provider","server":"1.1.1.1","server_port":53,"detour":"provider"}],"final":"dns-provider"}

@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "milestone": "V463",
+  "date": "2026-10-15",
+  "previousAccepted": {
+    "main": "7173e1ae48919e02cbd0355ed5d65bd310196874",
+    "postMergeCI": "38684206959:10/10 SUCCESS",
+    "windowsOwner": "Installed R54 4.3.10, CFON connected, HTTPS204, AnyDesk and Tailscale Running",
+    "linuxOwner": "Installed R21, checksum PASS, CFON HTTPS204, AnyDesk/Tailscale active"
+  },
+  "mainBlocker": "Cannot safely start full-device Windows TUN when a tailnet remote recovery channel could be recaptured, bypassed or disrupted; also current Commander is not elevated.",
+  "rootCauseAndRisk": {
+    "observed": "Gateway PC_TUNNEL generated auto_route=true and strict_route=true, with preexisting WARP underlay CIDRs but no explicit Tailnet route exclusions. Gateway installed Status running=false, Windows default route Ethernet, no Wintun adapter, remote process Elevated=false.",
+    "confidence": "CONFIRMED missing config control; potential Tailscale disruption risk supported by primary documentation, NOT physically observed in this trial",
+    "officialTailscale": "Tailscale documents conflicting VPNs and recommends split-tunnel ranges 100.64.0.0/10 and fd7a:115c:a1e0::/48 to preserve Tailscale traffic when non-exit-node VPN coexists.",
+    "officialSingBox": "sing-box inbound TUN supports route_exclude_address when auto_route; Windows strict_route and dns_mode hijack may add firewall/DNS controls; independent actual traffic and MagicDNS coexistence still require elevated live test."
+  },
+  "change": "Source-only for PC_TUNNEL provider WARP, NODE and local WireGuard profile path: preserve already configured WARP underlay route exclusions, append 100.64.0.0/10 and fd7a:115c:a1e0::/48 once to route_exclude_address; Console mode unchanged. This intentionally keeps CGNAT/Tailnet traffic outside provider, which is a documented privacy trade-off. Do not claim all non-Tailscale CGNAT traffic is tunneled.",
+  "verification": {
+    "unit": "gateway.tests.test_gateway 19/19 PASS including WARP/NODE/direct WireGuard and Console regression",
+    "singBoxConfig": "Installed sing-box check on generated PC WARP, PC NODE, Console WARP: exit0 all 3",
+    "metadata": "gateway 17-file manifest regenerated and RELEASE.json gatewayManifestSha256 updated to match, PUBLIC_MANIFEST.json regenerated, verify_public_tree PASS, security_scan_public PASS, git diff --check PASS",
+    "hostMutation": "NONE: no Windows TUN start, route/DNS/firewall change, reboot, uninstall, or version promotion",
+    "androidIOS": "No new functional forwarding",
+    "CI": "PENDING exact-head source CI"
+  },
+  "authority": [
+    "gateway/generate_config.py",
+    "gateway/tests/test_gateway.py",
+    "gateway/manifest.json",
+    "RELEASE.json",
+    "PUBLIC_MANIFEST.json"
+  ],
+  "methodSources": [
+    "https://tailscale.com/docs/reference/faq/other-vpns",
+    "https://tailscale.com/docs/reference/interoperability",
+    "https://sing-box.sagernet.org/configuration/inbound/tun/",
+    "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/settings-and-configuration"
+  ],
+  "controlsAndOpenGates": [
+    "Current Windows non-elevated Commander process cannot execute Gateway StartPc (Require-Admin), no Wintun present; need owner-approved elevated maintenance environment.",
+    "No actual proof that tailnet session survives a newly enabled TUN with Windows WFP strict-route DNS enabled; require authenticated independent recovery, fail-safe timed rollback, before physical acceptance.",
+    "Tailscale exit-node active mode conflicts with split-tunnel workarounds: must detect and block or explicitly test before PC_TUNNEL.",
+    "Windows full system IPv4/IPv6 TCP/UDP DNS route leak and rollback remain UNPROVEN.",
+    "Linux Cloudflare WARP ToS and sudo remain owner gates; Android/iOS packet forwarding core unlinked.",
+    "Original source rights/third-party compliance and public stable R54 decision OPEN."
+  ],
+  "deferred": [
+    "No blind elevation/UAC bypass or direct TUN start; unavailable admin and remote connectivity risk",
+    "No duplicate public draft, no original R54 installer rebranding"
+  ],
+  "status": "LOCAL_SOURCE_VALIDATION_PASS; CI_PENDING; LIVE_FULL_SYSTEM_UNPROVEN",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "Tailscale remote-recovery preservation",
+    "Windows gateway full-device V&V",
+    "release safety/technical guide"
+  ],
+  "nextAction": "Exact-head Windows/GitHub CI for source-only V463 change, then merge if successful. Any physical PC_TUNNEL requires explicitly elevated Windows context and guarded authenticated recovery, route/DNS/leak/rollback evidence. Do not auto-promote old installed R54 binary."
+}

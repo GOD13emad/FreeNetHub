@@ -1579,6 +1579,11 @@
       "sha256": "77CCC797876854B1723DF3079D83359AA264E5A1518EBAFAF427C7457FBDA0DF"
     },
     {
+      "file": "evidence/V463_TAILSCALE_SAFE_PC_TUN_ROUTE_20261015.json",
+      "bytes": 4737,
+      "sha256": "58268D37A5BDB6F6A3131134B8C9C465BAEF3C8DD28E57A3FFC7AF8C886CF06F"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1615,8 +1620,8 @@
     },
     {
       "file": "gateway/generate_config.py",
-      "bytes": 4163,
-      "sha256": "A417D5C90FE2F5E37B3B32538576930E9E9214E64E520863382E67A37ED90827"
+      "bytes": 4540,
+      "sha256": "F17394E38F0F5E80321982EFC9A438988BBC8E8154E5DC35A079E3BE2449B1B6"
     },
     {
       "file": "gateway/import_wireguard.py",
@@ -1626,7 +1631,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 2912,
-      "sha256": "3239178AFC96B4E17A9320B31712E76E3A0096791D5BD3D6462AB8FEA5904AE2"
+      "sha256": "440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1720,8 +1725,8 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 7632,
-      "sha256": "DE29AE80EF511258843B6188A352C9C5409E0A2F7027189B233A9BEEF8393575"
+      "bytes": 8580,
+      "sha256": "B46496F0A5F466A97908AD62569136972881C41A3277820DE6B40E163E9334D3"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
@@ -1760,8 +1765,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 188593,
-      "sha256": "805A1CD22670CD1A2D6B4885612B82BB0D7B03FFE95BA63AEA1AF40329841418"
+      "bytes": 191595,
+      "sha256": "F5C4F31529DE0BC7D72AA90D168F409E5E2E374ACDA790A75FF631ABC0013A44"
     },
     {
       "file": "pytest.ini",
@@ -1781,7 +1786,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "CF8D8B8129533BAA90012935693C08A3966C657509E7EC2FBB17853B9EB3DFED"
+      "sha256": "42B3000DD1345AC3D4E715E68F7D7FA8F031D27C6A2885C006B39466F149BFAA"
     },
     {
       "file": "SECURITY.md",
