@@ -13,5 +13,5 @@ for rel in files:
  if not p.is_file(): raise SystemExit('MISSING '+rel)
  b=p.read_bytes(); rows.append({'file':rel.replace('\\','/'),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest().upper()})
 m={'schema':1,'product':'FreeNet Hub Gateway','version':'4.2.0','scope':'PC_TUNNEL+CONSOLE_GATEWAY','files':rows,'excludes':['runtime/**','tests/*acceptance*','tests/*patch*','tests/*request*','tests/*cleanup*','*.private.*']}
-(G/'manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+(G/'manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
 print(json.dumps({'files':len(rows),'sha256':hashlib.sha256((G/'manifest.json').read_bytes()).hexdigest().upper()},indent=2))

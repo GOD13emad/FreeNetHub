@@ -9,9 +9,9 @@ import json
 import subprocess
 import sys
 
-SOURCE_GATEWAY_SHA = "440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5"
+SOURCE_GATEWAY_SHA = "B37B9EFCD4DFBAE1AB30D008016B3AE39F1A0261879019534FE18BCE1B083D47"
 BASE_SHA = "e4112be36d6cce97863c59a5dbe6a5d0bcdf5786"
-REVIEW_NAME = "FreeNetHub_4.3.10_R54_V465_GATEWAY_REVIEW_DO_NOT_RELEASE"
+REVIEW_NAME = "FreeNetHub_4.3.10_R54_V473_GATEWAY_REVIEW_DO_NOT_RELEASE"
 
 
 def sha(path):
@@ -21,8 +21,8 @@ def sha(path):
 def main(stage: Path) -> None:
     source = Path(__file__).resolve().parents[1]
     stage = stage.resolve(strict=True)
-    if not stage.name.startswith("fnh-r54-v465-"):
-        raise RuntimeError("V465_DISPOSABLE_STAGE_NAME_REQUIRED")
+    if not stage.name.startswith("fnh-r54-v473-"):
+        raise RuntimeError("V473_DISPOSABLE_STAGE_NAME_REQUIRED")
     if subprocess.check_output(["git", "-C", str(stage), "rev-parse", "HEAD"], text=True).strip() != BASE_SHA:
         raise RuntimeError("BASE_SHA_NOT_PINNED")
     manifest = source / "gateway/manifest.json"
@@ -59,10 +59,10 @@ def main(stage: Path) -> None:
         raise RuntimeError("GATEWAY_MANIFEST_POSTCHECK_FAILED")
     if json.loads(release.read_text(encoding="utf-8"))["gatewayManifestSha256"] != SOURCE_GATEWAY_SHA:
         raise RuntimeError("RELEASE_CHAIN_POSTCHECK_FAILED")
-    print("V465_PRIVATE_GATEWAY_STAGE_PREP_PASS", len(m["files"]), SOURCE_GATEWAY_SHA)
+    print("V473_PRIVATE_GATEWAY_STAGE_PREP_PASS", len(m["files"]), SOURCE_GATEWAY_SHA)
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        raise SystemExit("usage: prepare_v465_gateway_review.py <disposable-stage>")
+        raise SystemExit("usage: prepare_private_gateway_review.py <disposable-stage>")
     main(Path(sys.argv[1]))
