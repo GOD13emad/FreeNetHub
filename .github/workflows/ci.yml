@@ -467,8 +467,18 @@ jobs:
           if(!(Test-Path -LiteralPath $installed)){throw 'R53_PRE_ROLLBACK_RELEASE_MISSING'}
           $before=Get-Content -LiteralPath $installed -Raw | ConvertFrom-Json
           if($before.releaseRevision -ne '4.3.9-r53-inno-root-guard'){throw 'R53_PRE_ROLLBACK_REVISION_BAD'}
-          $rollback=Start-Process -FilePath $old -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
-          if($rollback.ExitCode -ne 0){throw ('R51_EXPLICIT_ROLLBACK_EXIT_'+$rollback.ExitCode)}
+          # Preserve the original rollback assertion, but diagnose setup stage
+          # rejections instead of reporting only the Inno return code.
+          $rollbackLog=Join-Path $env:RUNNER_TEMP 'fnh-r51-explicit-rollback-inno.log'
+          $rollback=Start-Process -FilePath $old -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe),("/LOG="+$rollbackLog)) -Wait -PassThru
+          if($rollback.ExitCode -ne 0){
+            Write-Host ('R51_ROLLBACK_EXIT='+$rollback.ExitCode)
+            if(Test-Path -LiteralPath $rollbackLog){
+              Write-Host 'R51_ROLLBACK_SETUP_LOG_LAST_80'
+              Get-Content -LiteralPath $rollbackLog -Tail 80 | ForEach-Object { Write-Host $_ }
+            }else{Write-Host 'R51_ROLLBACK_INNO_LOG_MISSING'}
+            throw ('R51_EXPLICIT_ROLLBACK_EXIT_'+$rollback.ExitCode)
+          }
           $after=Get-Content -LiteralPath $installed -Raw | ConvertFrom-Json
           if($after.releaseRevision -ne '4.3.7-r51-protocol-expansion-2'){throw 'R51_ROLLBACK_REVISION_BAD'}
           $manifest=Get-Content -LiteralPath (Join-Path $probe 'app\manifest.json') -Raw | ConvertFrom-Json
