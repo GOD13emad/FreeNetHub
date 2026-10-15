@@ -56,8 +56,8 @@
     },
     {
       "file": "dns_guard_watchdog.ps1",
-      "bytes": 2366,
-      "sha256": "C3C03415492CB76097A4E5DB5E59BD66DA8F17655A360246FD8BD75D5EBC6C68"
+      "bytes": 2702,
+      "sha256": "C72EA4C8C905E790410B4C5B17CDB429AE718145913530FAAE0A40F4843560E1"
     },
     {
       "file": "console_provider.ps1",

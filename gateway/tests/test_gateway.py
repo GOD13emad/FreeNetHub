@@ -59,6 +59,8 @@ class GatewayTests(unittest.TestCase):
   self.assertIn("TUN_LINGERED_RULES_RETAINED",watcher)
   self.assertIn("if($tun){Write-Receipt 'TUN_LINGERED_RULES_RETAINED'",watcher)
   self.assertIn("while(Is-ExactOwner)",watcher)
+  self.assertIn("if([string]::IsNullOrWhiteSpace($path)){return $true}",watcher)
+  self.assertIn("}catch{return $true}",watcher)
   self.assertIn("EXACT_OWNER_EXITED_AND_RULES_CLEANED",watcher)
   self.assertLess(apply.index("New-NetFirewallRule -Name $spec.name"),apply.index("Start-Process -FilePath $sb"))
   self.assertLess(stop.index("if($tun){Fail 'TUN_ADAPTER_STOP_INCOMPLETE'"),stop.index("foreach($n in $ownedDnsGuard)"))

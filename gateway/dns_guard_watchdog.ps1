@@ -17,8 +17,17 @@ function Write-Receipt([string]$state,[string]$detail=''){
 function Is-ExactOwner {
  $p=Get-Process -Id $TargetPid -ErrorAction SilentlyContinue
  if(!$p){return $false}
- try { return ([long]$p.StartTime.ToUniversalTime().Ticks -eq $StartTicks -and [string]$p.Path -eq $ExpectedExe) }
- catch { return $false }
+ # A running process with unreadable identity is NOT proof that it exited.
+ # Keep the physical-DNS firewall blocks until the exact owner is verifiably gone.
+ try {
+  $ticks=[long]$p.StartTime.ToUniversalTime().Ticks
+  if($ticks -ne $StartTicks){return $false}
+ }catch{return $true}
+ try {
+  $path=[string]$p.Path
+  if([string]::IsNullOrWhiteSpace($path)){return $true}
+  return [string]::Equals($path,$ExpectedExe,[StringComparison]::OrdinalIgnoreCase)
+ }catch{return $true}
 }
 try{
  if(-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'ADMIN_REQUIRED'}
