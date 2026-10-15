@@ -12,6 +12,28 @@ class GatewayTests(unittest.TestCase):
   self.assertIn("162.159.192.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertIn("162.159.193.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertIn("162.159.197.0/24",c["inbounds"][0]["route_exclude_address"])
+ def test_pc_native_dns_explicit_opt_in_preserves_tailnet(self):
+  for provider in ("WARP","NODE"):
+   c,_=M.build("PC_TUNNEL",provider,None,dns_mode="native")
+   self.assertEqual(c["inbounds"][0]["dns_mode"],"native")
+   self.assertTrue(c["inbounds"][0]["strict_route"])
+   self.assertIn("100.64.0.0/10",c["inbounds"][0]["route_exclude_address"])
+   self.assertIn("fd7a:115c:a1e0::/48",c["inbounds"][0]["route_exclude_address"])
+   self.assertEqual(c["route"]["final"],"provider")
+   self.assertEqual(c["dns"]["servers"][0]["detour"],"provider")
+  with self.assertRaisesRegex(ValueError,"PC_DNS_MODE_INVALID"):
+   M.build("PC_TUNNEL","WARP",None,dns_mode="disabled")
+  with self.assertRaisesRegex(ValueError,"PC_ONLY_DNS_MODE"):
+   M.build("CONSOLE_ONLY","WARP",None,dns_mode="native")
+
+ def test_pc_controller_only_selects_native_with_effective_tailscale_quad100(self):
+  src=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("Get-Service -Name 'Tailscale'",src)
+  self.assertIn("Get-DnsClientNrptPolicy -Effective",src)
+  self.assertIn("if($quadPolicies.Count -gt 0){$dnsMode='native'}",src)
+  self.assertIn("--dns-mode $dnsMode",src)
+  self.assertIn("dnsMode=$dnsMode",src)
+
  def test_pc_tunnel_node_provider_uses_node_socks_without_cloudflare_exclusion(self):
   c,p=M.build("PC_TUNNEL","NODE",None)
   provider=next(x for x in c["outbounds"] if x.get("tag")=="provider")

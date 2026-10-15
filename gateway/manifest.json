@@ -6,8 +6,8 @@
   "files": [
     {
       "file": "gateway_control.ps1",
-      "bytes": 16430,
-      "sha256": "52E477CC3508834D5C232E195287FA1BB7B97739BD3F102D9CB0F214597B73AF"
+      "bytes": 17091,
+      "sha256": "BABADC36BD8A2B7840CC522C6BA971D541A5A74F8EB9AE02DC6A64E81D75117C"
     },
     {
       "file": "gateway_request.ps1",
@@ -41,8 +41,8 @@
     },
     {
       "file": "generate_config.py",
-      "bytes": 4540,
-      "sha256": "F17394E38F0F5E80321982EFC9A438988BBC8E8154E5DC35A079E3BE2449B1B6"
+      "bytes": 4871,
+      "sha256": "07FB8A0A6DA1D9B927F495D9D61DCC6BE6875C77A998443F0AD997C59B36A50E"
     },
     {
       "file": "apply_elevated.ps1",

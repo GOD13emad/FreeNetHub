@@ -217,7 +217,16 @@ try{
     $baseRoute=Get-BaseRouteSnapshot
     $before=Trace
     $cfg=Join-Path $Runtime ('pc_product_'+$Provider.ToLowerInvariant()+'.json')
-    & $Python $Generator --mode PC_TUNNEL --provider $Provider --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
+    # sing-box 1.14 hijack+strict_route WFP blocks off-TUN DNS port 53 on Windows.
+    # Only opt into native DNS when a running Tailscale client has an effective
+    # Quad100 NRPT policy. Keep hijack for other devices and unsupported states.
+    $dnsMode='hijack'
+    $tailscaleSvc=Get-Service -Name 'Tailscale' -ErrorAction SilentlyContinue
+    if($tailscaleSvc -and $tailscaleSvc.Status -eq 'Running'){
+     $quadPolicies=@(Get-DnsClientNrptPolicy -Effective -ErrorAction SilentlyContinue | Where-Object { [string]$_.NameServers -match '100\.100\.100\.100' })
+     if($quadPolicies.Count -gt 0){$dnsMode='native'}
+    }
+    & $Python $Generator --mode PC_TUNNEL --provider $Provider --dns-mode $dnsMode --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
     $SB=[string](Get-FnhSingBox).path;& $SB check -c $cfg;Assert ($LASTEXITCODE -eq 0) 'CONFIG_CHECK_FAIL'
     & $Apply -Mode PC_TUNNEL -ConfigPath $cfg -ConfigSha256 ((Get-FileHash $cfg -Algorithm SHA256).Hash)|Out-Null
     $ar=Get-Content (Join-Path $Runtime 'apply_result.json') -Raw -Encoding UTF8|ConvertFrom-Json;Assert ($ar.status -eq 'PASS') 'APPLY_FAIL';Start-Sleep -Seconds 2
@@ -235,7 +244,7 @@ try{
     }
 
     $kind=$(if($Provider -eq 'NODE'){'NODE_SOCKS'}else{'WARP_SOCKS'})
-    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
+    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;dnsMode=$dnsMode;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
     Write-J $Session $sess
     $out.exit=0;$out.result=Get-Status
    }
