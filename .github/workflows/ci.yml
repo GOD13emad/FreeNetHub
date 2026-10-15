@@ -467,6 +467,31 @@ jobs:
           if(!(Test-Path -LiteralPath $installed)){throw 'R53_PRE_ROLLBACK_RELEASE_MISSING'}
           $before=Get-Content -LiteralPath $installed -Raw | ConvertFrom-Json
           if($before.releaseRevision -ne '4.3.9-r53-inno-root-guard'){throw 'R53_PRE_ROLLBACK_REVISION_BAD'}
+          # Forensics only: never alter or skip immutable R51's safety check.
+          # Do not print the full Gateway session (may contain user metadata).
+          $gatewayControl=Join-Path $probe 'gateway\gateway_control.ps1'
+          $pyCheck=Get-Command python.exe -ErrorAction SilentlyContinue
+          Write-Host ('R51_ROLLBACK_STATUS_DIAG_GATEWAY_PRESENT='+(Test-Path -LiteralPath $gatewayControl))
+          Write-Host ('R51_ROLLBACK_STATUS_DIAG_DEPENDENCIES_PRESENT='+(Test-Path -LiteralPath (Join-Path $probe 'app\dependencies.json')))
+          Write-Host ('R51_ROLLBACK_STATUS_DIAG_PYTHON_COMMAND_PRESENT='+[bool]$pyCheck)
+          if(Test-Path -LiteralPath $gatewayControl){
+            $diagOutput=@(& pwsh.exe -NoProfile -NonInteractive -File $gatewayControl -Action Status 2>&1)
+            $diagExit=$LASTEXITCODE
+            $diagText=($diagOutput|Out-String).Trim()
+            Write-Host ('R51_ROLLBACK_STATUS_DIAG_EXIT='+$diagExit)
+            try {
+              $parsed=$diagText|ConvertFrom-Json -ErrorAction Stop
+              Write-Host ('R51_ROLLBACK_STATUS_DIAG_JSON_EXIT='+[string]$parsed.exit)
+              Write-Host ('R51_ROLLBACK_STATUS_DIAG_JSON_ERROR='+[string]$parsed.result.error)
+            }catch{
+              # Exact errors only; redact any line resembling encoded token/key.
+              foreach($line in @($diagOutput)|Select-Object -First 8){
+                $safe=[string]$line
+                $safe=$safe -replace '(?i)(token|password|secret|api_key|key)\s*[=:]\s*[^\s,]+','$1=[REDACTED]'
+                Write-Host ('R51_ROLLBACK_STATUS_DIAG_STDERR='+$safe.Substring(0,[Math]::Min($safe.Length,300)))
+              }
+            }
+          }
           # Preserve the original rollback assertion, but diagnose setup stage
           # rejections instead of reporting only the Inno return code.
           $rollbackLog=Join-Path $env:RUNNER_TEMP 'fnh-r51-explicit-rollback-inno.log'
