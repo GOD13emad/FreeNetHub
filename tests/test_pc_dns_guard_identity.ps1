@@ -73,3 +73,64 @@ Verify-Tun @('error','absent','absent') $true 'TUN_RECOVERY_REQUIRES_TWO_CLEAN'
 Verify-Tun @('present','absent') $false 'TUN_LINGERED_ONE_ABSENT_NOT_ENOUGH'
 Verify-Tun @('error','error') $false 'TUN_ALL_QUERY_ERRORS_RETAIN_GUARD'
 'WATCHDOG_TUN_SNAPSHOT_SOURCE_MOCK_ALL_PASS'
+
+
+# Exact-source firewall cleanup regression. All NetSecurity calls here are
+# mocks, not a request to modify the owner's real firewall.
+$names=@('FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired','FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless')
+$script:ownedRules=@{}
+$script:deleteMode='normal'
+$script:readFails=$false
+$script:deleteCount=0
+function Get-NetFirewallRule {
+ param([string]$PolicyStore,[string]$ErrorAction)
+ if($script:readFails){throw 'SIMULATED_FIREWALL_READ_ERROR'}
+ foreach($n in @($script:ownedRules.Keys)){[pscustomobject]@{Name=$n}}
+}
+function Remove-NetFirewallRule {
+ param([string]$Name,[string]$PolicyStore,[string]$ErrorAction)
+ $script:deleteCount++
+ if($script:deleteMode -eq 'concurrent' -and $script:deleteCount -eq 1){
+  [void]$script:ownedRules.Remove($Name)
+  throw 'SIMULATED_CONCURRENT_RULE_DISAPPEARED'
+ }
+ if($script:deleteMode -eq 'persistentFailure'){throw 'SIMULATED_FIREWALL_REMOVE_FAILED'}
+ if($script:deleteMode -eq 'readbackFailure'){
+  [void]$script:ownedRules.Remove($Name)
+  $script:readFails=$true
+  throw 'SIMULATED_CONCURRENT_RULE_DISAPPEARED'
+ }
+ [void]$script:ownedRules.Remove($Name)
+}
+function Reset-FirewallMock([string]$mode){
+ $script:deleteMode=$mode;$script:deleteCount=0;$script:readFails=$false
+ $script:ownedRules=@{}
+ foreach($n in $names){$script:ownedRules[$n]=$true}
+}
+Reset-FirewallMock 'normal'
+if(@(Remove-OwnedDnsRulesConvergent).Count -ne 0 -or $script:ownedRules.Count -ne 0){throw 'RULE_NORMAL_CLEANUP_BAD'}
+'OWNED_RULE_NORMAL_STOP_PASS'
+Reset-FirewallMock 'concurrent'
+if(@(Remove-OwnedDnsRulesConvergent).Count -ne 0 -or $script:ownedRules.Count -ne 0){throw 'RULE_CONCURRENT_CLEANUP_BAD'}
+'OWNED_RULE_CONCURRENT_REMOVAL_CONVERGENCE_PASS'
+Reset-FirewallMock 'normal'
+[void]$script:ownedRules.Remove($names[0])
+if(@(Remove-OwnedDnsRulesConvergent).Count -ne 0){throw 'RULE_ALREADY_ABSENT_BAD'}
+'OWNED_RULE_ALREADY_ABSENT_NOOP_PASS'
+Reset-FirewallMock 'persistentFailure'
+$failed=$false
+try{[void](Remove-OwnedDnsRulesConvergent)}catch{if($_.Exception.Message -like 'OWNED_RULE_REMOVE_FAILED_*'){$failed=$true}else{throw}}
+if(!$failed -or $script:ownedRules.Count -ne 4){throw 'PERSISTENT_RULE_MUST_NOT_REPORT_PASS'}
+'OWNED_RULE_PERSISTENT_REMOVE_FAILURE_CLOSED_PASS'
+Reset-FirewallMock 'normal'
+$script:readFails=$true
+$failed=$false
+try{[void](Remove-OwnedDnsRulesConvergent)}catch{if($_.Exception.Message -eq 'SIMULATED_FIREWALL_READ_ERROR'){$failed=$true}else{throw}}
+if(!$failed -or $script:deleteCount -ne 0){throw 'FIREWALL_READ_FAILURE_NOT_CLOSED'}
+'OWNED_RULE_STORE_READ_ERROR_CLOSED_PASS'
+Reset-FirewallMock 'readbackFailure'
+$failed=$false
+try{[void](Remove-OwnedDnsRulesConvergent)}catch{if($_.Exception.Message -eq 'SIMULATED_FIREWALL_READ_ERROR'){$failed=$true}else{throw}}
+if(!$failed){throw 'FIREWALL_READBACK_FAILURE_NOT_CLOSED'}
+'OWNED_RULE_RACE_READBACK_ERROR_CLOSED_PASS'
+'WATCHDOG_OWNED_RULE_SOURCE_MOCK_ALL_PASS'

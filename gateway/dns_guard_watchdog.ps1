@@ -55,6 +55,25 @@ function Test-TunAbsentStable([int]$Checks=50,[int]$PollMs=500){
  }
  return $false
 }
+function Remove-OwnedDnsRulesConvergent {
+ # Enumerate the ActiveStore with terminating query errors. Missing exact
+ # names are not exceptional; inaccessible store is never proof of absence.
+ $active=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+ foreach($n in $names){
+  if(@($active|Where-Object{$_.Name -eq $n}).Count -eq 0){continue}
+  try{
+   Remove-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction Stop
+  }catch{
+   $attemptError=$_.Exception.Message
+   # The main stop path may have concurrently removed the same exact rule.
+   # Only an independently successful readback proving absence is benign.
+   $after=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+   if(@($after|Where-Object{$_.Name -eq $n}).Count){throw ('OWNED_RULE_REMOVE_FAILED_'+$n+': '+$attemptError)}
+  }
+ }
+ $current=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+ return @($names|Where-Object{ $name=$_; @($current|Where-Object{$_.Name -eq $name}).Count -gt 0 })
+}
 try{
  if(-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'ADMIN_REQUIRED'}
  if($names.Count -ne 4 -or $UdpRule -ne 'FreeNetHub-PC-DNS53-Guard-UDP-Wired' -or $TcpRule -ne 'FreeNetHub-PC-DNS53-Guard-TCP-Wired' -or $UdpWirelessRule -ne 'FreeNetHub-PC-DNS53-Guard-UDP-Wireless' -or $TcpWirelessRule -ne 'FreeNetHub-PC-DNS53-Guard-TCP-Wireless'){throw 'RULE_IDENTITY_MISMATCH'}
@@ -65,11 +84,7 @@ try{
   Write-Receipt 'TUN_LINGERED_RULES_RETAINED' 'TUN absence not proven in two successive clean snapshots'
   exit 23
  }
- foreach($n in $names) {
-  $r=Get-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction SilentlyContinue
-  if($r){$r|Remove-NetFirewallRule -ErrorAction Stop}
- }
- $remain=@($names|Where-Object{Get-NetFirewallRule -Name $_ -PolicyStore ActiveStore -ErrorAction SilentlyContinue})
+ $remain=@(Remove-OwnedDnsRulesConvergent)
  if($remain.Count){Write-Receipt 'RULE_CLEANUP_FAILED' ($remain -join ',');exit 24}
  Write-Receipt 'EXACT_OWNER_EXITED_AND_RULES_CLEANED'
  exit 0

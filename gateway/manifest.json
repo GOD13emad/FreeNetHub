@@ -51,13 +51,13 @@
     },
     {
       "file": "stop_elevated.ps1",
-      "bytes": 7423,
-      "sha256": "F21FFD52CE869E008A6EF77334F336296DE516F6E6BDE8B5EE0F37C987236924"
+      "bytes": 8140,
+      "sha256": "BCEBDA9909DA261E3C041B6D466ECA1A894D1CCC88EC081FCF47629B90CBEC4A"
     },
     {
       "file": "dns_guard_watchdog.ps1",
-      "bytes": 3721,
-      "sha256": "6AC735E6C60C9CD96DA670D597929F700178E131D0B74604F1DA3AFE36AD3D5E"
+      "bytes": 4489,
+      "sha256": "878856C715D7AF552AB3F0529AE94E699E9EBFB6A35E26E5A59133179FD4DA72"
     },
     {
       "file": "console_provider.ps1",

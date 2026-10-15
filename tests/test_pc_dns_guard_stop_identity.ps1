@@ -46,3 +46,34 @@ Check UNVERIFIED 'STOP_PROCESS_STARTTIME_UNREADABLE_RETENTION'
 $processFake=[pscustomobject]@{StartTime=$time};$throwCim=$true
 Check UNVERIFIED 'STOP_CIM_THROW_RETENTION'
 'STOP_IDENTITY_EXACT_SOURCE_ALL_PASS'
+
+
+# Exercise exact source cleanup guard without Windows network mutation.
+$stableStart=$txt.IndexOf('function Test-OwnedTunAbsentStable(',[StringComparison]::Ordinal)
+$stableEnd=$txt.IndexOf('$admin=',[Math]::Max(0,$stableStart),[StringComparison]::Ordinal)
+if($stableStart -lt 0 -or $stableEnd -le $stableStart){throw 'STOP_TUN_ABSENCE_GUARD_MISSING'}
+. ([ScriptBlock]::Create($txt.Substring($stableStart,$stableEnd-$stableStart)))
+if(-not $txt.Contains("if(-not (Test-OwnedTunAbsentStable)){")){throw 'STOP_TUN_ABSENCE_CHECK_NOT_IN_LIFECYCLE'}
+$script:adapterSteps=@()
+$script:adapterStep=0
+function Get-NetAdapter {
+ param([switch]$IncludeHidden,[string]$ErrorAction)
+ if($script:adapterStep -ge $script:adapterSteps.Count){throw 'NO_MORE_MOCK_STEPS'}
+ $value=$script:adapterSteps[$script:adapterStep];$script:adapterStep++
+ if($value -eq 'error'){throw 'TRANSIENT_ADAPTER_QUERY_ERROR'}
+ if($value -eq 'present'){return [pscustomobject]@{Name='FreeNetHub'}}
+ return @()
+}
+function Start-Sleep { param([int]$Milliseconds) }
+function Check-Tun([string[]]$snapshots,[bool]$want,[string]$name){
+ $script:adapterSteps=$snapshots;$script:adapterStep=0
+ $actual=Test-OwnedTunAbsentStable -Checks $snapshots.Count -PollMs 0
+ if($actual -ne $want){throw ($name+' unexpected='+$actual)}
+ $name+'_PASS'
+}
+Check-Tun @('absent','absent') $true 'STOP_TUN_TWO_CLEAN_ABSENT'
+Check-Tun @('absent','error','absent') $false 'STOP_TUN_RACE_RETAINS_DNS_GUARD'
+Check-Tun @('error','absent','absent') $true 'STOP_TUN_QUERY_RECOVERY'
+Check-Tun @('present','absent') $false 'STOP_TUN_LINGER_RETAINS_GUARD'
+Check-Tun @('error','error') $false 'STOP_TUN_QUERY_UNKNOWN_RETAINS_GUARD'
+'STOP_TUN_ABSENCE_SOURCE_MOCK_ALL_PASS'

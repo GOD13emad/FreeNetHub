@@ -41,6 +41,24 @@ function Process-Identity($o){
  return 'EXACT'
 }
 function Process-Matches($o){return (Process-Identity $o) -eq 'EXACT'}
+function Test-OwnedTunAbsentStable([int]$Checks=8,[int]$PollMs=250){
+ # A transient NetAdapter/CIM read error during Wintun teardown is not
+ # proof of removal. Preserve the physical DNS block until two clean
+ # consecutive snapshots confirm that the dedicated name is absent.
+ $clear=0
+ for($k=0;$k -lt $Checks;$k++){
+  try{
+   $found=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object{$_.Name -eq 'FreeNetHub'})
+   if($found.Count -eq 0){
+    $clear++
+    if($clear -ge 2){return $true}
+   }else{$clear=0}
+  }catch{$clear=0}
+  if($k+1 -lt $Checks){Start-Sleep -Milliseconds $PollMs}
+ }
+ return $false
+}
+
 $admin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if(!$admin){throw 'ADMIN_REQUIRED'}
 Remove-Item $Result -Force -ErrorAction SilentlyContinue
@@ -96,6 +114,9 @@ if($tun){
 }
 $tun=Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$o.tun.name -and $_.InterfaceDescription -eq [string]$o.tun.description}|Select-Object -First 1
 if($tun){Fail 'TUN_ADAPTER_STOP_INCOMPLETE' $o}
+if(-not (Test-OwnedTunAbsentStable)){
+ Fail 'OWNED_TUN_ABSENCE_UNVERIFIED_DNS_RULES_RETAINED' $o
+}
 
 if($o.firewallRule){
  Get-NetFirewallRule -DisplayName ([string]$o.firewallRule) -ErrorAction SilentlyContinue|Remove-NetFirewallRule -ErrorAction SilentlyContinue
