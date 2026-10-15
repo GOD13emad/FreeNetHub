@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "date": "2026-10-15",
+  "milestone": "V465",
+  "objective": "Build a non-release, exact-identity R54 Windows package with accepted V463 Gateway scripts, and require hosted disposable fresh/upgrade/rollback acceptance before owner TUN deployment.",
+  "authority": {
+    "priorAcceptedMain": "66e439ebcbe73ebb3b06d764d9cd5eefb236057d",
+    "V464PR": 66,
+    "V464ExactHeadCI": "38691823708 10/10 PASS; 38691848518 10/10 PASS",
+    "V464PostmergeCI": "38692415207 10/10 PASS",
+    "ownerWindowsInstalled": "R54 4.3.10, CFON HTTPS204, Tailscale/AnyDesk running",
+    "ownerLinuxInstalled": "R21, CFON HTTPS204"
+  },
+  "privateLocalReviewBuild": {
+    "status": "COMPILED_OFFLINE_NOT_FIELD_ACCEPTED",
+    "filename": "FreeNetHub_4.3.10_R54_V465_GATEWAY_REVIEW_DO_NOT_RELEASE.exe",
+    "sha256": "3FF751472142340828F0CA2193A344E2BC878EEF25F831B9CE0E9CCD821129E1",
+    "bytes": 24268761,
+    "authenticode": "NotSigned",
+    "candidateBasedOnR54Source": "e4112be36d6cce97863c59a5dbe6a5d0bcdf5786",
+    "gatewayAcceptedMain": "66e439ebcbe73ebb3b06d764d9cd5eefb236057d",
+    "gatewayManifestSHA256": "440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5",
+    "gatewayFilesSHAValidated": 17,
+    "installerHelperSHA256": "98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C",
+    "appManifestSHA256": "391A6B910903F73AF8E047FFC12134B92E845A2637A034133F683221055629AD",
+    "stage": "Owner Windows private project .git/maintenance/fnh-r54-v465-tun-dryrun",
+    "ownerInstalledFilesChanged": false,
+    "publishedAssetsChanged": false
+  },
+  "testDesign": {
+    "trackedScript": "tests/prepare_v465_gateway_review.py",
+    "existingTestExtension": "tests/test_r54_isolated_upgrade.ps1 optional -PrivateGatewayReview switch; default accepted R54 behavior unchanged",
+    "workflow": ".github/workflows/v465-private-gateway-review.yml",
+    "disposableCIJobs": [
+      "fresh",
+      "upgrade R53->private R54->R53 explicit rollback"
+    ],
+    "checks": [
+      "source exact 17 hashes",
+      "V458 installer helper hash",
+      "source R54 base pinned",
+      "installed release/gateway 17-file manifest+app 17-file manifest",
+      "single AppId",
+      "selected profile and settings retained on upgrade and rollback",
+      "private binary SHA and bytes from hosted tested file"
+    ],
+    "artifactPolicy": "Only small test receipts as CI artifacts, never public executable or draft, and not yet released",
+    "status": "INITIAL_2_OF_2_CI_PASS; EXACT_BINARY_DUAL_SCENARIO_RECHECK_PENDING"
+  },
+  "failureHistory": {
+    "observed": "A private local one-shot packaging script stopped before compiler because PowerShell WriteAllText was called with four arguments. Subsequent resume guards wrongly rejected exact valid Git SHA prestate due to in-expression evaluation behavior; no product/runtime files changed.",
+    "rootCause": "PowerShell expression evaluation/native-command output and invalid function-argument syntax in private operational scripts, not the application's release code",
+    "prevention": "Inspect exact stage/read-only SHA; use separate variables for native Git command output and string comparisons, unique private stage with fail-closed receipt, and never blindly restart full-stage build",
+    "regression": "Private stage exact R53 base, V458 helper and 17 V463 gateway files independently verified; compiler succeeded once after guarded resume",
+    "status": "RECOVERED_LOCAL_BUILD_PASS; reuse scripts private for audit"
+  },
+  "officialMethodSources": [
+    "https://jrsoftware.org/ishelp/topic_setupcmdline.htm",
+    "https://jrsoftware.org/ishelp/topic_scriptevents.htm",
+    "https://jrsoftware.org/ishelp/topic_setupexitcodes.htm",
+    "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_operator_precedence",
+    "https://sing-box.sagernet.org/configuration/inbound/tun/",
+    "https://tailscale.com/docs/reference/reserved-ip-addresses"
+  ],
+  "remainingGates": [
+    "Hosted CI exact-head 2/2 for Gateway-inclusive package is REQUIRED; local compilation alone is not install acceptance.",
+    "The privately built candidate is same installed version 4.3.10 but a DIFFERENT binary, so must NEVER replace old R54 Draft asset without explicit version/channel decision. A separate new version identity likely needed for updater-visible live promotion.",
+    "Owner Windows PC_TUN test requires elevated maintenance/UAC, installed candidate promoted through verified AppId and selected-data safeguards, independent Tailscale/AnyDesk channel and bounded recovery; test MagicDNS Quad100 before/during/after, route/DNS/IPv4/IPv6/leak/stop.",
+    "Linux WARP native ToS and sudo, actual Android/iOS packet forwarding/signing, owner source rights and third-party binary license obligations remain OPEN.",
+    "Public R54 Draft remains exactly previous four known good assets, not this private test binary."
+  ],
+  "decision": "ONE_MAIN_OBJECTIVE source-only and private staging packaging, not owner install or public release",
+  "confidence": "CONFIRMED private compilation/hash; CI acceptance still UNPROVEN",
+  "reuseTargets": [
+    "Project Brain",
+    "reproducible CI",
+    "installer and Gateway maintenance guide",
+    "failure-prevention regression",
+    "future owner TUN release decision"
+  ],
+  "nextAction": "Run V465 fresh and R53-upgrade/rollback acceptance on disposable GitHub-hosted Windows runners; only after success consider owner elevated stage with signed-off maintenance and recovery, not a blind same-version reinstall.",
+  "hostedCIObserved": {
+    "runId": 38696556232,
+    "result": "2/2 PASS (first attempt)",
+    "fresh": {
+      "receiptSha256": "C6BD55861CC6D599D1C253D573F7F88C3B288904493808BABCD05CAD45746D28",
+      "compiledSha256": "CA18D7D938F496C028C97AD0497A0EE1E1388E7BD7EB47E5CB6E39824DC6B10C",
+      "bytes": 24267316
+    },
+    "upgradeAndRollback": {
+      "receiptSha256": "004C32D8ABE20132561E6D03AC61D64D74552C0A8C6CAF216EEFF398235DA2E5",
+      "compiledSha256": "2BEF1D4DDDD9FCBDD607B1107DFE5C486923B979F6B261231D56914D6DC5D33C",
+      "bytes": 24267315
+    },
+    "rawReceipts": "Owner Windows private project .git/maintenance/FNH_V465_HOSTED_RECEIPTS_20261015",
+    "importantLimitation": "Both jobs PASS but each job built a DIFFERENT SHA256 binary; cannot assign either a dual-scenario acceptance identity or assume bit-reproducible Inno outputs."
+  },
+  "additionalSameBinarySafeguard": {
+    "objective": "In upgrade job, after R53->private R54->R53 with fixture retention PASS, uninstall ephemeral R53, verify single AppId registration is gone, wipe disposable probe under RUNNER_TEMP only, and freshly install the SAME $r54 compiled binary; verify installed 17 app files, gateway 17 files, original AppId and release/manifest hash chains.",
+    "scope": "ONLY GITHUB_ACTIONS ephemeral worker and PrivateGatewayReview switch; no owner or public release mutation",
+    "ciStatus": "PENDING revalidated exact-head PR #67",
+    "method": "Tests exact same installer within one hosted job, avoids mistaking compiler variation for identical artifact."
+  },
+  "status": "SOURCE_AND_OFFLINE_BUILD_PASS; HOSTED_2_OF_2_PER_MODE_PASS; SAME_BINARY_DUAL_TEST_PENDING"
+}

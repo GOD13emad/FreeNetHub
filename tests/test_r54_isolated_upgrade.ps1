@@ -1,5 +1,6 @@
 param(
-  [ValidateSet('fresh','upgrade')][string]$Mode='upgrade'
+  [ValidateSet('fresh','upgrade')][string]$Mode='upgrade',
+  [switch]$PrivateGatewayReview
 )
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
@@ -17,13 +18,18 @@ if((git -C $root rev-list -n 1 $base) -ne $base){throw 'BASE_COMMIT_UNAVAILABLE'
 if(Test-Path $reg){throw 'CI_APP_REGISTRY_PREEXISTS'}
 $canonical=Join-Path $env:LOCALAPPDATA 'Programs\FreeNetHub'
 if(Test-Path $canonical){throw 'CI_CANONICAL_INSTALL_PREEXISTS'}
-$work=Join-Path $env:RUNNER_TEMP ('fnh-r54-'+$Mode+'-worktree')
-$probe=Join-Path $env:RUNNER_TEMP ('fnh-r54-'+$Mode+'-install')
+$stageName=if($PrivateGatewayReview){'fnh-r54-v465-'+$Mode}else{'fnh-r54-'+$Mode}
+$work=Join-Path $env:RUNNER_TEMP ($stageName+'-worktree')
+$probe=Join-Path $env:RUNNER_TEMP ($stageName+'-install')
 if((Test-Path $work) -or (Test-Path $probe)){throw 'CI_STAGING_ALREADY_EXISTS'}
 git -C $root worktree add --detach $work $base
 if($LASTEXITCODE){throw 'WORKTREE_SETUP_FAILED'}
 python (Join-Path $root 'tests\prepare_r54_isolated.py') $work
 if($LASTEXITCODE){throw 'R54_SOURCE_PREP_FAILED'}
+if($PrivateGatewayReview){
+  python (Join-Path $root 'tests\prepare_v465_gateway_review.py') $work
+  if($LASTEXITCODE){throw 'V465_GATEWAY_PREP_FAILED'}
+}
 $stagedHelper=Join-Path $work 'windows\installer\Prepare-Upgrade.ps1'
 $helperDigest='98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C'
 if((Get-FileHash -LiteralPath $stagedHelper -Algorithm SHA256).Hash -ne $helperDigest){throw 'V458_HELPER_IN_TESTED_INSTALLER_NOT_VERIFIED'}
@@ -43,7 +49,8 @@ if(-not $iscc){
 if(-not $iscc){throw 'CI_INNO_NOT_FOUND'}
 & $iscc /Qp $installScript
 if($LASTEXITCODE){throw ('CI_INNO_BUILD_FAILED_'+$LASTEXITCODE)}
-$r54=Join-Path $work 'delivery\release_candidate_v4.3.10\FreeNetHub_4.3.10_R54_Setup.exe'
+$installerName=if($PrivateGatewayReview){'FreeNetHub_4.3.10_R54_V465_GATEWAY_REVIEW_DO_NOT_RELEASE.exe'}else{'FreeNetHub_4.3.10_R54_Setup.exe'}
+$r54=Join-Path $work ('delivery\release_candidate_v4.3.10\'+$installerName)
 if(-not (Test-Path $r54)){throw 'R54_PRIVATE_BUILD_MISSING'}
 $release=Get-Content -LiteralPath (Join-Path $work 'RELEASE.json') -Raw|ConvertFrom-Json
 $app=Get-Content -LiteralPath (Join-Path $work 'app\manifest.json') -Raw|ConvertFrom-Json
@@ -66,6 +73,17 @@ function Verify-Installed([string]$expected){
     $path=Join-Path (Join-Path $probe 'app') $row.file
     if(-not (Test-Path -LiteralPath $path)){throw ('INSTALLED_FILE_MISSING_'+$row.file)}
     if((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne [string]$row.sha256){throw ('INSTALLED_FILE_SHA_BAD_'+$row.file)}
+  }
+  if($expected -eq $rev54 -and $PrivateGatewayReview){
+    $gmanifest=Join-Path $probe 'gateway\manifest.json'
+    $gsha='440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5'
+    if((Get-FileHash $gmanifest -Algorithm SHA256).Hash -ne $gsha -or $out.gatewayManifestSha256 -ne $gsha){throw 'V465_INSTALLED_GATEWAY_MANIFEST_CHAIN_BAD'}
+    $gm=Get-Content $gmanifest -Raw|ConvertFrom-Json
+    if(@($gm.files).Count -ne 17){throw 'V465_GATEWAY_FILECOUNT_CHANGED'}
+    foreach($e in $gm.files){
+      $f=Join-Path (Join-Path $probe 'gateway') ([string]$e.file)
+      if(!(Test-Path $f) -or (Get-FileHash $f -Algorithm SHA256).Hash -ne [string]$e.sha256){throw 'V465_INSTALLED_GATEWAY_SOURCE_MISMATCH'}
+    }
   }
   if(-not (Test-Path -LiteralPath (Join-Path $probe 'FreeNetHub.exe'))){throw 'INSTALLED_UI_MISSING'}
   if(-not (Test-Path -LiteralPath (Join-Path $probe 'app\dependencies.json'))){throw 'INSTALLED_DEPENDENCIES_MISSING'}
@@ -97,6 +115,22 @@ if($Mode -eq 'upgrade'){
   Verify-Installed $rev53
   if([IO.File]::ReadAllText($fixture) -ne 'r54-owner-profile-keep' -or [IO.File]::ReadAllText($settings) -ne '{"userProvided":"keep","proxy":"unchanged"}'){throw 'ROLLBACK_LOST_PROFILE'}
   Write-Output 'R53_TO_R54_INPLACE_UPDATE_AND_R53_EXPLICIT_ROLLBACK_PROFILE_PASS'
+  if($PrivateGatewayReview){
+    # The SAME exact compiled binary must pass fresh and upgrade/rollback,
+    # not two similar binaries built separately on different runners.
+    $uninstaller=Join-Path $probe 'unins000.exe'
+    if(!(Test-Path -LiteralPath $uninstaller)){throw 'PRIVATE_CI_R53_UNINSTALLER_MISSING'}
+    $un=Start-Process -FilePath $uninstaller -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -Wait -PassThru
+    if($un.ExitCode -ne 0){throw ('PRIVATE_CI_R53_UNINSTALL_FAILED_'+$un.ExitCode)}
+    if(Test-Path -LiteralPath $reg){throw 'PRIVATE_CI_R53_REGISTRY_RESIDUE'}
+    $safeRoot=[IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\')+'\'
+    $safePath=[IO.Path]::GetFullPath($probe)
+    if(!$safePath.StartsWith($safeRoot,[StringComparison]::OrdinalIgnoreCase)){throw 'PRIVATE_CI_PROBE_NOT_UNDER_RUNNER_TEMP'}
+    if(Test-Path -LiteralPath $probe){Remove-Item -LiteralPath $probe -Recurse -Force}
+    Install-Exact $r54 $probe
+    Verify-Installed $rev54
+    Write-Output 'V465_EXACT_SAME_BINARY_R53_UPGRADE_ROLLBACK_AND_FRESH_PASS'
+  }
 }else{
   Install-Exact $r54 $probe
   Verify-Installed $rev54
@@ -106,10 +140,15 @@ $receipt=[ordered]@{
   status='PASS';mode=$Mode;sourceBase=$base;releaseRevision=$rev54
   r54InstallerBytes=(Get-Item $r54).Length
   r54InstallerSha256=(Get-FileHash $r54 -Algorithm SHA256).Hash
+  gatewayReview=[bool]$PrivateGatewayReview
+  sameExactBinaryFreshAndRollbackValidated=([bool]$PrivateGatewayReview -and $Mode -eq 'upgrade')
+  gatewayManifestSHA256=if($PrivateGatewayReview){'440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5'}else{$null}
+  reviewInstallerName=$installerName
   testedInstallerHelperSha256=$helperDigest
   officialR53PinnedHash=$oldSha
   physicalHost='GitHub hosted isolated Windows runner'
   updatedOwnerMachine=$false;scopedVPNMutation=$false
 }
-$receipt|ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP ('r54-'+$Mode+'-receipt.json')) -Encoding utf8
+$receiptName=if($PrivateGatewayReview){'v465-'+$Mode+'-receipt.json'}else{'r54-'+$Mode+'-receipt.json'}
+$receipt|ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP $receiptName) -Encoding utf8
 $receipt|ConvertTo-Json -Depth 4
