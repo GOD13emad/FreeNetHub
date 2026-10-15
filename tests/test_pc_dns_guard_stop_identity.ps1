@@ -77,3 +77,25 @@ Check-Tun @('error','absent','absent') $true 'STOP_TUN_QUERY_RECOVERY'
 Check-Tun @('present','absent') $false 'STOP_TUN_LINGER_RETAINS_GUARD'
 Check-Tun @('error','error') $false 'STOP_TUN_QUERY_UNKNOWN_RETAINS_GUARD'
 'STOP_TUN_ABSENCE_SOURCE_MOCK_ALL_PASS'
+
+
+# Source-branch test: a missing owner/apply receipt cannot yield a false
+# NOT_OWNED PASS while TUN enumeration is broken or TUN still exists.
+$recoverStart=$txt.IndexOf('$o=$null;$recovered=$false',[StringComparison]::Ordinal)
+$recoverEnd=$txt.IndexOf('# Refuse destructive rollback',[Math]::Max(0,$recoverStart),[StringComparison]::Ordinal)
+if($recoverStart -lt 0 -or $recoverEnd -le $recoverStart){throw 'STOP_RECOVERY_SOURCE_FRAGMENT_MISSING'}
+$recover=([ScriptBlock]::Create($txt.Substring($recoverStart,$recoverEnd-$recoverStart)))
+$Owner='X:\source-mock\owner.json'
+$ApplyResult='X:\source-mock\apply_result.json'
+function Test-Path {param([string]$Path);return $false}
+function Fail {param([string]$m);throw $m}
+$script:adapterSteps=@('error');$script:adapterStep=0
+$expectedFailure=$false
+try{. $recover}catch{if($_.Exception.Message -eq 'UNOWNED_TUN_QUERY_UNVERIFIED'){$expectedFailure=$true}else{throw}}
+if(!$expectedFailure){throw 'STOP_UNOWNED_QUERY_ERROR_WAS_NOT_BLOCKED'}
+'STOP_UNOWNED_TUN_QUERY_ERROR_FAIL_CLOSED_PASS'
+$script:adapterSteps=@('present');$script:adapterStep=0
+$expectedFailure=$false
+try{. $recover}catch{if($_.Exception.Message -eq 'UNOWNED_TUN_PRESENT_REFUSE_FALSE_CLEAN_STOP'){$expectedFailure=$true}else{throw}}
+if(!$expectedFailure){throw 'STOP_UNOWNED_PRESENT_TUN_WAS_NOT_BLOCKED'}
+'STOP_UNOWNED_TUN_PRESENT_FAIL_CLOSED_PASS'

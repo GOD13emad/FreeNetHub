@@ -70,11 +70,19 @@ if(Test-Path $Owner){
  $a=Get-Content $ApplyResult -Raw -Encoding UTF8|ConvertFrom-Json
  if($a.status -eq 'PASS' -and $a.owner){
   $candidate=$a.owner
-  $tun=Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$candidate.tun.name -and $_.InterfaceDescription -eq [string]$candidate.tun.description}|Select-Object -First 1
+  # Fail closed when owner.json disappeared during a transient adapter query.
+  # A missing/failed query must never masquerade as a clean stop.
+  try{
+   $tun=Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object{$_.Name -eq [string]$candidate.tun.name -and $_.InterfaceDescription -eq [string]$candidate.tun.description}|Select-Object -First 1
+  }catch{Fail 'APPLY_OWNER_TUN_QUERY_UNVERIFIED'}
   if((Process-Matches $candidate) -or $tun){$o=$candidate;$recovered=$true}
  }
 }
 if(!$o){
+ try{
+  $orphan=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object{$_.Name -eq 'FreeNetHub'})
+ }catch{Fail 'UNOWNED_TUN_QUERY_UNVERIFIED'}
+ if($orphan.Count){Fail 'UNOWNED_TUN_PRESENT_REFUSE_FALSE_CLEAN_STOP'}
  Out-J $Result ([ordered]@{status='PASS';state='NOT_OWNED';utc=[DateTimeOffset]::UtcNow.ToString('o')})
  exit 0
 }
