@@ -4,13 +4,15 @@ param(
  [Parameter(Mandatory)][long]$StartTicks,
  [Parameter(Mandatory)][string]$ExpectedExe,
  [Parameter(Mandatory)][string]$UdpRule,
- [Parameter(Mandatory)][string]$TcpRule
+ [Parameter(Mandatory)][string]$TcpRule,
+ [Parameter(Mandatory)][string]$UdpWirelessRule,
+ [Parameter(Mandatory)][string]$TcpWirelessRule
 )
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
 $Runtime=Join-Path $PSScriptRoot 'runtime'
 $Receipt=Join-Path $Runtime 'dns-guard-watchdog-result.json'
-$names=@($UdpRule,$TcpRule)
+$names=@($UdpRule,$TcpRule,$UdpWirelessRule,$TcpWirelessRule)
 function Write-Receipt([string]$state,[string]$detail=''){
  [ordered]@{utc=[DateTimeOffset]::UtcNow.ToString('o');status=$state;targetPid=$TargetPid;startTicks=$StartTicks;rules=$names;detail=$detail}|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $Receipt -Encoding UTF8
 }
@@ -31,7 +33,7 @@ function Is-ExactOwner {
 }
 try{
  if(-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'ADMIN_REQUIRED'}
- if($names.Count -ne 2 -or $UdpRule -ne 'FreeNetHub-PC-DNS53-Guard-UDP' -or $TcpRule -ne 'FreeNetHub-PC-DNS53-Guard-TCP'){throw 'RULE_IDENTITY_MISMATCH'}
+ if($names.Count -ne 4 -or $UdpRule -ne 'FreeNetHub-PC-DNS53-Guard-UDP-Wired' -or $TcpRule -ne 'FreeNetHub-PC-DNS53-Guard-TCP-Wired' -or $UdpWirelessRule -ne 'FreeNetHub-PC-DNS53-Guard-UDP-Wireless' -or $TcpWirelessRule -ne 'FreeNetHub-PC-DNS53-Guard-TCP-Wireless'){throw 'RULE_IDENTITY_MISMATCH'}
  # Keep the physical-DNS deny in place for the exact owned sing-box lifetime.
  while(Is-ExactOwner){Start-Sleep -Seconds 2}
  # A lingering virtual NIC is not an accepted safe state for removing the deny.

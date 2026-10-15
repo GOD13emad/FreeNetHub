@@ -46,9 +46,11 @@ if($console){
 }
 Out-J $Pre $prestate
 $fwName='FreeNetHub Console Leak Guard'
-$pcDnsGuardNames=@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP')
+$pcDnsGuardNames=@('FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired','FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless')
 $cfgObject=Get-Content -LiteralPath $cfg -Raw -Encoding UTF8|ConvertFrom-Json
 $pcNative=($Mode -eq 'PC_TUNNEL' -and @($cfgObject.inbounds|Where-Object { $_.type -eq 'tun' -and $_.dns_mode -eq 'native' }).Count -eq 1)
+# Reject unknown/nonphysical default routes rather than assert DNS53 protection on an unsupported uplink.
+if($pcNative -and (-not $uplink.HardwareInterface -or [int]$uplink.InterfaceType -notin @(6,71))){Fail 'PC_NATIVE_DEFAULT_UPLINK_NOT_WIRED_OR_WIFI'}
 $p=$null
 $guardProc=$null
 $ownedCreatedDnsRules=@()
@@ -66,19 +68,28 @@ try{
  if($pcNative){
   $exists=@($pcDnsGuardNames|Where-Object{Get-NetFirewallRule -Name $_ -PolicyStore ActiveStore -ErrorAction SilentlyContinue})
   if($exists.Count -gt 0){Fail 'PC_DNS_GUARD_PREEXISTS_REFUSE_TO_OVERWRITE'}
-  foreach($spec in @(@{name=$pcDnsGuardNames[0];protocol='UDP'},@{name=$pcDnsGuardNames[1];protocol='TCP'})){
-   New-NetFirewallRule -Name $spec.name -DisplayName $spec.name -Direction Outbound -Action Block -Protocol $spec.protocol -RemotePort 53 -InterfaceAlias $uplink.Name -Enabled True -Profile Any -PolicyStore ActiveStore -ErrorAction Stop|Out-Null
+  # Protect both physical media types across route changes. The overlay Tailscale
+  # tunnel is not a Wired/Wireless egress. Never pin only the initial uplink alias.
+  foreach($spec in @(
+   @{name=$pcDnsGuardNames[0];protocol='UDP';interfaceType='Wired'},
+   @{name=$pcDnsGuardNames[1];protocol='TCP';interfaceType='Wired'},
+   @{name=$pcDnsGuardNames[2];protocol='UDP';interfaceType='Wireless'},
+   @{name=$pcDnsGuardNames[3];protocol='TCP';interfaceType='Wireless'}
+  )){
+   New-NetFirewallRule -Name $spec.name -DisplayName $spec.name -Direction Outbound -Action Block -Protocol $spec.protocol -RemotePort 53 -InterfaceType $spec.interfaceType -Enabled True -Profile Any -PolicyStore ActiveStore -ErrorAction Stop|Out-Null
    $ownedCreatedDnsRules+= $spec.name
+   $actualType=Get-NetFirewallInterfaceTypeFilter -AssociatedNetFirewallRule (Get-NetFirewallRule -Name $spec.name -PolicyStore ActiveStore -ErrorAction Stop) -ErrorAction Stop
+   if([string]$actualType.InterfaceType -ne [string]$spec.interfaceType){Fail 'PC_DNS_GUARD_INTERFACE_TYPE_MISMATCH'}
   }
   $active=@($pcDnsGuardNames|Where-Object{Get-NetFirewallRule -Name $_ -PolicyStore ActiveStore -ErrorAction SilentlyContinue})
-  if($active.Count -ne 2){Fail 'PC_DNS_GUARD_RULE_COUNT_WRONG'}
+  if($active.Count -ne 4){Fail 'PC_DNS_GUARD_RULE_COUNT_WRONG'}
  }
  $stdout=Join-Path $Runtime 'singbox.stdout.log';$stderr=Join-Path $Runtime 'singbox.stderr.log'
  $p=Start-Process -FilePath $sb -ArgumentList @('run','-c',$cfg) -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
  if($pcNative){
   $watch=Join-Path $PSScriptRoot 'dns_guard_watchdog.ps1'
   $gp=Get-Process -Id $p.Id -ErrorAction Stop
-  $watchArgs=@('-NoProfile','-NonInteractive','-File',('"' + $watch + '"'),'-TargetPid',([string]$p.Id),'-StartTicks',([string]$gp.StartTime.ToUniversalTime().Ticks),'-ExpectedExe',('"' + $sb + '"'),'-UdpRule',$pcDnsGuardNames[0],'-TcpRule',$pcDnsGuardNames[1])
+  $watchArgs=@('-NoProfile','-NonInteractive','-File',('"' + $watch + '"'),'-TargetPid',([string]$p.Id),'-StartTicks',([string]$gp.StartTime.ToUniversalTime().Ticks),'-ExpectedExe',('"' + $sb + '"'),'-UdpRule',$pcDnsGuardNames[0],'-TcpRule',$pcDnsGuardNames[1],'-UdpWirelessRule',$pcDnsGuardNames[2],'-TcpWirelessRule',$pcDnsGuardNames[3])
   $guardProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList $watchArgs -WindowStyle Hidden -PassThru
   Start-Sleep -Milliseconds 250
   if(!$guardProc -or $guardProc.HasExited){Fail 'PC_DNS_GUARD_WATCHDOG_DID_NOT_START'}

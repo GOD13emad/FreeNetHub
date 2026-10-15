@@ -21,7 +21,7 @@
     {
       "file": ".github/workflows/v481-private-gateway-review.yml",
       "bytes": 3667,
-      "sha256": "9E6D7EA9F1669D5E51371261B7A191AB794399265D839FCC3B787AC8F6128ACE"
+      "sha256": "21542607AAE1A4F820B521CEC07B95CD850E8F5D79EF649FFEB1E532536FD4DE"
     },
     {
       "file": ".gitignore",
@@ -1605,8 +1605,8 @@
     },
     {
       "file": "gateway/apply_elevated.ps1",
-      "bytes": 10727,
-      "sha256": "E8345C91455C94904F9301D72E6F35CB5A15B4F071C0FDA8C2F47E0411BFE69F"
+      "bytes": 11820,
+      "sha256": "5910B92A708B6FE1FBC4B088528280A719FE35A6FFDB432DA71DF141AF977B8B"
     },
     {
       "file": "gateway/build_isolated_mihomo.py",
@@ -1625,8 +1625,8 @@
     },
     {
       "file": "gateway/dns_guard_watchdog.ps1",
-      "bytes": 2702,
-      "sha256": "C72EA4C8C905E790410B4C5B17CDB429AE718145913530FAAE0A40F4843560E1"
+      "bytes": 2978,
+      "sha256": "09BB8CCD5EE711B40327AD7E871E929A9E31E6D478C04012DF83AADEB7748DF0"
     },
     {
       "file": "gateway/gateway_control.ps1",
@@ -1656,7 +1656,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3070,
-      "sha256": "5D6D632EAB12C15252C4EAFCDCDF717CC327F39A9AE85E0CFE883FF43C152111"
+      "sha256": "AF0EE55C67F70CFEC9C14207CBC4A8FAEC834169BB323938DDCB68FC9F28C51B"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1700,8 +1700,8 @@
     },
     {
       "file": "gateway/stop_elevated.ps1",
-      "bytes": 7265,
-      "sha256": "2084FEC0BB1A2720926B6DEB7C8BFB94516DCDCA15304D4ADB665CE7F04F7046"
+      "bytes": 7423,
+      "sha256": "F21FFD52CE869E008A6EF77334F336296DE516F6E6BDE8B5EE0F37C987236924"
     },
     {
       "file": "gateway/tests/build_gateway_manifest.py",
@@ -1750,8 +1750,8 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 12344,
-      "sha256": "7660A6BDBEBFFB6588EA81DC799F20BAEAC21C712473D1461B0F3F28CB86CC21"
+      "bytes": 12848,
+      "sha256": "CC5AB5B59E6B5054A04C9EF1E46C56633826C471F9785F5858CF550DD0990435"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
@@ -1811,7 +1811,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "81DA68714B66E01EAD9179B0E8D47F2E03BC63A50113672812301FC02AA9175E"
+      "sha256": "7D2D9AE463ED848B4E5D899EAFF0998FE89CD80D6D48E528AD0DBF3E3469436B"
     },
     {
       "file": "SECURITY.md",
@@ -2126,7 +2126,7 @@
     {
       "file": "tests/prepare_private_gateway_review.py",
       "bytes": 4136,
-      "sha256": "A81BC6CB7B30D5F34DDFBFC5F736C9A7A8735A8D6370D4EBAAD0ADFC7520BA74"
+      "sha256": "EDE7918671E17484B3B6E8A6A4846B9F7D9A971B83B4606861271BF3045B71DF"
     },
     {
       "file": "tests/prepare_r54_isolated.py",
@@ -2530,8 +2530,8 @@
     },
     {
       "file": "tests/test_pc_dns_guard_failstart.ps1",
-      "bytes": 3114,
-      "sha256": "93EC258C6925DFF3510713D153BA1252E9766E69F28E097DE04F90A47A499808"
+      "bytes": 3208,
+      "sha256": "D49EE5B9DCD1841E86A51BE0ED47FB4194E56D8031CC07FD82DC079703397CC2"
     },
     {
       "file": "tests/test_pc_dns_guard_identity.ps1",
@@ -2545,8 +2545,8 @@
     },
     {
       "file": "tests/test_pc_dns_guard_watchdog_hosted.ps1",
-      "bytes": 5235,
-      "sha256": "1FF955B7AF449931F6F0FB7133C6C51CE4811A7DC5649E4C73C2013FF99A76F6"
+      "bytes": 5883,
+      "sha256": "95DFDAEB1FCB8D140A0F02EBCF9FA12FDA7766DFA41C9C78674DA4F21C1F7479"
     },
     {
       "file": "tests/test_prepare_upgrade_wait.ps1",
@@ -2636,7 +2636,7 @@
     {
       "file": "tests/test_r54_isolated_upgrade.ps1",
       "bytes": 10242,
-      "sha256": "1AEFB39AFEC90B3B0D4E315458D10DCCE8AC582E7F5CA4352D1B3E6D89E3ACEB"
+      "sha256": "589069BE93FF129905CCC3711CB64A665C65DBB59228C9A09E5097C63FDF9EA8"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",

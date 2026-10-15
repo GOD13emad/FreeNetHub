@@ -38,7 +38,7 @@ function Run-Test([bool]$tunPresent,[bool]$expectFail){
  $script:virtualTunPresent=$tunPresent
  $script:rules=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
  $script:removeCalls=@()
- $ownedCreatedDnsRules=@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP')
+ $ownedCreatedDnsRules=@('FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired','FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless')
  foreach($n in @($ownedCreatedDnsRules+'Unrelated-Never-Touch')){[void]$script:rules.Add($n)}
  $pcNative=$true
  $D=[pscustomobject]@{tun=[pscustomobject]@{interface_name='FreeNetHub'}}
@@ -48,11 +48,11 @@ function Run-Test([bool]$tunPresent,[bool]$expectFail){
  if($expectFail){
   if($err -notlike 'APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED*'){throw 'LINGERING_TUN_FAILED_OPEN_OR_WRONG_FAILURE'}
   if($script:removeCalls.Count -ne 0){throw 'LINGERING_TUN_REMOVED_GUARD'}
-  if($script:rules.Count -ne 3){throw 'LINGERING_TUN_MUTATED_RULE_SET'}
+  if($script:rules.Count -ne 5){throw 'LINGERING_TUN_MUTATED_RULE_SET'}
   'MOCK_PERSISTING_TUN_RULES_RETAINED_PASS'
  }else{
   if($err){throw ('ABSENT_TUN_UNEXPECTED_ERROR '+$err)}
-  if($script:removeCalls.Count -ne 2){throw 'ABSENT_TUN_OWNED_CLEANUP_MISSING'}
+  if($script:removeCalls.Count -ne 4){throw 'ABSENT_TUN_OWNED_CLEANUP_MISSING'}
   if(!$script:rules.Contains('Unrelated-Never-Touch') -or $script:rules.Count -ne 1){throw 'ABSENT_TUN_TOUCHED_UNRELATED_FIREWALL'}
   'MOCK_ABSENT_TUN_ONLY_OWNED_RULES_REMOVED_PASS'
  }

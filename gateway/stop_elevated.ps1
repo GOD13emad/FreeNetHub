@@ -107,7 +107,7 @@ if($o.firewallRule){
 $ownedDnsGuard=@()
 if($o.PSObject.Properties['dnsGuardNames']){$ownedDnsGuard=@($o.dnsGuardNames)}
 if([string]$o.mode -eq 'PC_TUNNEL' -and $ownedDnsGuard.Count){
- $allowed=@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP')
+ $allowed=@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP','FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired','FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless')
  if(@($ownedDnsGuard|Where-Object{$_ -notin $allowed}).Count){Fail 'PC_DNS_GUARD_RULE_IDENTITY_MISMATCH' $o}
  foreach($n in $ownedDnsGuard){
   $rule=Get-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction SilentlyContinue
