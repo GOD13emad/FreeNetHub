@@ -46,7 +46,7 @@
       "private binary SHA and bytes from hosted tested file"
     ],
     "artifactPolicy": "Only small test receipts as CI artifacts, never public executable or draft, and not yet released",
-    "status": "TRACKED_CI_PENDING"
+    "status": "INITIAL_2_OF_2_CI_PASS; EXACT_BINARY_DUAL_SCENARIO_RECHECK_PENDING"
   },
   "failureHistory": {
     "observed": "A private local one-shot packaging script stopped before compiler because PowerShell WriteAllText was called with four arguments. Subsequent resume guards wrongly rejected exact valid Git SHA prestate due to in-expression evaluation behavior; no product/runtime files changed.",
@@ -79,5 +79,28 @@
     "failure-prevention regression",
     "future owner TUN release decision"
   ],
-  "nextAction": "Run V465 fresh and R53-upgrade/rollback acceptance on disposable GitHub-hosted Windows runners; only after success consider owner elevated stage with signed-off maintenance and recovery, not a blind same-version reinstall."
+  "nextAction": "Run V465 fresh and R53-upgrade/rollback acceptance on disposable GitHub-hosted Windows runners; only after success consider owner elevated stage with signed-off maintenance and recovery, not a blind same-version reinstall.",
+  "hostedCIObserved": {
+    "runId": 38696556232,
+    "result": "2/2 PASS (first attempt)",
+    "fresh": {
+      "receiptSha256": "C6BD55861CC6D599D1C253D573F7F88C3B288904493808BABCD05CAD45746D28",
+      "compiledSha256": "CA18D7D938F496C028C97AD0497A0EE1E1388E7BD7EB47E5CB6E39824DC6B10C",
+      "bytes": 24267316
+    },
+    "upgradeAndRollback": {
+      "receiptSha256": "004C32D8ABE20132561E6D03AC61D64D74552C0A8C6CAF216EEFF398235DA2E5",
+      "compiledSha256": "2BEF1D4DDDD9FCBDD607B1107DFE5C486923B979F6B261231D56914D6DC5D33C",
+      "bytes": 24267315
+    },
+    "rawReceipts": "Owner Windows private project .git/maintenance/FNH_V465_HOSTED_RECEIPTS_20261015",
+    "importantLimitation": "Both jobs PASS but each job built a DIFFERENT SHA256 binary; cannot assign either a dual-scenario acceptance identity or assume bit-reproducible Inno outputs."
+  },
+  "additionalSameBinarySafeguard": {
+    "objective": "In upgrade job, after R53->private R54->R53 with fixture retention PASS, uninstall ephemeral R53, verify single AppId registration is gone, wipe disposable probe under RUNNER_TEMP only, and freshly install the SAME $r54 compiled binary; verify installed 17 app files, gateway 17 files, original AppId and release/manifest hash chains.",
+    "scope": "ONLY GITHUB_ACTIONS ephemeral worker and PrivateGatewayReview switch; no owner or public release mutation",
+    "ciStatus": "PENDING revalidated exact-head PR #67",
+    "method": "Tests exact same installer within one hosted job, avoids mistaking compiler variation for identical artifact."
+  },
+  "status": "SOURCE_AND_OFFLINE_BUILD_PASS; HOSTED_2_OF_2_PER_MODE_PASS; SAME_BINARY_DUAL_TEST_PENDING"
 }

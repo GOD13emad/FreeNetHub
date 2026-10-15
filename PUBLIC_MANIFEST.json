@@ -20,8 +20,8 @@
     },
     {
       "file": ".github/workflows/v465-private-gateway-review.yml",
-      "bytes": 3511,
-      "sha256": "E2CD126627EDE5329207C85CFB8C9BD3AA21EC99288258CB45F224658E5A0741"
+      "bytes": 3661,
+      "sha256": "D2DE3D53D17E7DF4B5BDE9FE677C35F0CE91356D0306B1F9DDEE57787BBE53FC"
     },
     {
       "file": ".gitignore",
@@ -1595,8 +1595,8 @@
     },
     {
       "file": "evidence/V465_PRIVATE_GATEWAY_PACKAGE_READINESS_20261015.json",
-      "bytes": 5530,
-      "sha256": "7E6713176AAC07251D834B2249F2A8980C48CB934A272FA19BB21326C488BB28"
+      "bytes": 7244,
+      "sha256": "E372B525718F95743C39A470961995FF915321E93502E4F34FEF9692676DF825"
     },
     {
       "file": "gateway/apply_elevated.ps1",
@@ -1780,8 +1780,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 198574,
-      "sha256": "44DCEDBFBC8D540506D9636B970985AF15E7DA5FC29C67609B27960912906362"
+      "bytes": 199873,
+      "sha256": "9B71E41B208C2A794B790FB886BAA1B6E6DAC6FD0DEC2AA49C27056DEB36E829"
     },
     {
       "file": "pytest.ini",
@@ -2605,8 +2605,8 @@
     },
     {
       "file": "tests/test_r54_isolated_upgrade.ps1",
-      "bytes": 9070,
-      "sha256": "588E81F9E48A213CB90F2F12288E6B09FAF9331107ABD736189162DEED7A7AD0"
+      "bytes": 10239,
+      "sha256": "9AD33F322616C9101278FA9F7EA64C733621B19DC5C44B81788B4EF9044BAFEB"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",

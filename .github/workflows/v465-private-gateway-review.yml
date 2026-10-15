@@ -50,6 +50,7 @@ jobs:
           $receipt=Get-Content (Join-Path $env:RUNNER_TEMP ('v465-'+$m+'-receipt.json')) -Raw|ConvertFrom-Json
           if($receipt.status -ne 'PASS' -or $receipt.gatewayReview -ne $true -or $receipt.mode -ne $m) { throw 'V465_DISPOSABLE_INSTALL_NOT_ACCEPTED' }
           if($receipt.gatewayManifestSHA256 -ne '440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5') { throw 'V465_RECEIPT_GATEWAY_NOT_VALIDATED' }
+          if($m -eq 'upgrade' -and $receipt.sameExactBinaryFreshAndRollbackValidated -ne $true) { throw 'V465_SAME_BINARY_DUAL_SCENARIO_NOT_TESTED' }
           if((Get-FileHash $exe -Algorithm SHA256).Hash -ne $receipt.r54InstallerSha256 -or (Get-Item $exe).Length -ne $receipt.r54InstallerBytes) { throw 'V465_TESTED_BINARY_DIGEST_MISMATCH' }
           if((Get-Content (Join-Path $stage 'RELEASE.json') -Raw|ConvertFrom-Json).gatewayManifestSha256 -ne $receipt.gatewayManifestSHA256) { throw 'V465_RELEASE_GATEWAY_CHAIN_MISMATCH' }
           Write-Host ('V465_PRIVATE_REVIEW_'+$m+'_PASS_SHA256='+$receipt.r54InstallerSha256)

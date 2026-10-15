@@ -115,6 +115,22 @@ if($Mode -eq 'upgrade'){
   Verify-Installed $rev53
   if([IO.File]::ReadAllText($fixture) -ne 'r54-owner-profile-keep' -or [IO.File]::ReadAllText($settings) -ne '{"userProvided":"keep","proxy":"unchanged"}'){throw 'ROLLBACK_LOST_PROFILE'}
   Write-Output 'R53_TO_R54_INPLACE_UPDATE_AND_R53_EXPLICIT_ROLLBACK_PROFILE_PASS'
+  if($PrivateGatewayReview){
+    # The SAME exact compiled binary must pass fresh and upgrade/rollback,
+    # not two similar binaries built separately on different runners.
+    $uninstaller=Join-Path $probe 'unins000.exe'
+    if(!(Test-Path -LiteralPath $uninstaller)){throw 'PRIVATE_CI_R53_UNINSTALLER_MISSING'}
+    $un=Start-Process -FilePath $uninstaller -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -Wait -PassThru
+    if($un.ExitCode -ne 0){throw ('PRIVATE_CI_R53_UNINSTALL_FAILED_'+$un.ExitCode)}
+    if(Test-Path -LiteralPath $reg){throw 'PRIVATE_CI_R53_REGISTRY_RESIDUE'}
+    $safeRoot=[IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\')+'\'
+    $safePath=[IO.Path]::GetFullPath($probe)
+    if(!$safePath.StartsWith($safeRoot,[StringComparison]::OrdinalIgnoreCase)){throw 'PRIVATE_CI_PROBE_NOT_UNDER_RUNNER_TEMP'}
+    if(Test-Path -LiteralPath $probe){Remove-Item -LiteralPath $probe -Recurse -Force}
+    Install-Exact $r54 $probe
+    Verify-Installed $rev54
+    Write-Output 'V465_EXACT_SAME_BINARY_R53_UPGRADE_ROLLBACK_AND_FRESH_PASS'
+  }
 }else{
   Install-Exact $r54 $probe
   Verify-Installed $rev54
@@ -125,6 +141,7 @@ $receipt=[ordered]@{
   r54InstallerBytes=(Get-Item $r54).Length
   r54InstallerSha256=(Get-FileHash $r54 -Algorithm SHA256).Hash
   gatewayReview=[bool]$PrivateGatewayReview
+  sameExactBinaryFreshAndRollbackValidated=([bool]$PrivateGatewayReview -and $Mode -eq 'upgrade')
   gatewayManifestSHA256=if($PrivateGatewayReview){'440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5'}else{$null}
   reviewInstallerName=$installerName
   testedInstallerHelperSha256=$helperDigest
