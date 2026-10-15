@@ -1790,8 +1790,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 214684,
-      "sha256": "6B134861F6EF010AB2BE506DC53AF371EE424021045A45C4696995805ACBDBCB"
+      "bytes": 215685,
+      "sha256": "071AB924C489294E7674536A24E7261123A34A7F87A1B0A5587D67B546820CC4"
     },
     {
       "file": "pytest.ini",
@@ -2641,7 +2641,7 @@
     {
       "file": "tests/test_r54_isolated_upgrade.ps1",
       "bytes": 10242,
-      "sha256": "B1108C6A759262AF74DF1DBC968F4520BE9013E726D121652885A6B8397E0A54"
+      "sha256": "3A5FD5AF23EF0C086A0C78BB2478A5B5CA60C026934F48C00E73CA97BE6E2843"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",
