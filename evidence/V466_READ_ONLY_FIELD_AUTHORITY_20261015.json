@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-15",
+  "milestone": "V466",
+  "status": "READ_ONLY_VERIFIED",
+  "project": "FreeNet Hub",
+  "main": "19aded55745cb8d7396a383eabdbefc87cc0c319",
+  "ci": {
+    "postmerge": "38698020583 10/10 PASS",
+    "privateV465": "38697122720 2/2 PASS",
+    "sameBinaryFreshUpgradeRollback": "PASS within upgrade job"
+  },
+  "installerIdentity": {
+    "ownerLocalSHA256": "3FF751472142340828F0CA2193A344E2BC878EEF25F831B9CE0E9CCD821129E1",
+    "hostedFreshSHA256": "CF0ADB1ECA1B2B465DC1BCA2B3B71D0AB35CAB153972BC96419CF24A9DDDE95D",
+    "hostedUpgradeSHA256": "E873C624A5DE366DBED78F66E41282E49E8938410376EAFAFE02423AC0DDFC43",
+    "identityMatches": false
+  },
+  "field": {
+    "Windows": "R54 scoped CFON 204",
+    "Linux": "R21 scoped CFON 204",
+    "installedGatewayUpdated": false,
+    "WindowsElevation": false,
+    "fullDeviceTunnelValidated": false
+  },
+  "open": [
+    "Supervised elevated Windows field installation and Gateway network test",
+    "MagicDNS and Tailscale preservation",
+    "Linux native WARP authority",
+    "Mobile packet forwarding",
+    "Distribution rights"
+  ],
+  "methodSources": [
+    "https://tailscale.com/docs/reference/faq/other-vpns",
+    "https://tailscale.com/docs/reference/quad100",
+    "https://sing-box.sagernet.org/configuration/inbound/tun/"
+  ],
+  "nextAction": "Obtain supervised elevated owner maintenance session and exact test-binary acceptance; only then perform bounded full-device test with independent recovery."
+}
