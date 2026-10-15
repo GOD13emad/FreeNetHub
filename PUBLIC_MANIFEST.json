@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 38012,
-      "sha256": "58317D0E8A91846DC93B969BE50DCDCCCFEE8128FFE76061B0582FD8DD95B192"
+      "bytes": 38199,
+      "sha256": "0DA85A7C5B050B4E71CB8FC86E7F85C570560B924F6475E4B58BF78A53B9F5CA"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -2527,6 +2527,11 @@
       "file": "tests/test_nodehub_engine_policy.py",
       "bytes": 3509,
       "sha256": "6323DD2454DD5D9DA53B7A084FD937B8BE63D6E7652522B56EFDB7C6755BD465"
+    },
+    {
+      "file": "tests/test_pc_dns_guard_failstart.ps1",
+      "bytes": 3114,
+      "sha256": "93EC258C6925DFF3510713D153BA1252E9766E69F28E097DE04F90A47A499808"
     },
     {
       "file": "tests/test_prepare_upgrade_wait.ps1",
