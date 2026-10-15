@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 34302,
-      "sha256": "5AF209662CC8244521913211BEDA5444DA34CF44500A421CA7CA6BF956068CE5"
+      "bytes": 34360,
+      "sha256": "A6A94F38ADB428BC72F59C7278989D93278C51AD3B479EDC99984C6101AAF765"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1574,6 +1574,11 @@
       "sha256": "4187AFF8649C20D14AF15DBADECBBD6D0D476A56CFBD807631060EF663C61367"
     },
     {
+      "file": "evidence/V462_LINUX_R21_RELEASE_UPDATER_CONTINUITY_20261015.json",
+      "bytes": 6443,
+      "sha256": "77CCC797876854B1723DF3079D83359AA264E5A1518EBAFAF427C7457FBDA0DF"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1755,8 +1760,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 184444,
-      "sha256": "97D578BF51ABB6785F9DAEB0D1039BFAA6D37D782760DA3FB464A26A1590781D"
+      "bytes": 188593,
+      "sha256": "805A1CD22670CD1A2D6B4885612B82BB0D7B03FFE95BA63AEA1AF40329841418"
     },
     {
       "file": "pytest.ini",
@@ -2592,6 +2597,11 @@
       "file": "tests/test_v43_installer_fresh_install.py",
       "bytes": 2286,
       "sha256": "314AD3AE12E758F9A0E6E046184091E28FB4491CD98665FB094A4FB85B9117E2"
+    },
+    {
+      "file": "tests/test_v462_mixed_release_update.py",
+      "bytes": 2511,
+      "sha256": "1B97A42977B1E4FF37A54290F210775E840F3CA8C8306B3FD686318211C6DD17"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",
