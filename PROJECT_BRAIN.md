@@ -1,5 +1,35 @@
 # PROJECT BRAIN — FreeNet Hub
 
+Status: CURRENT / V484_EXACT_HEAD_HOSTED_ALL_PASS / OWNER_PHYSICAL_DNS_ROAMING_HOLD
+Authority: this existing versionless PROJECT_BRAIN.md is the single current Brain/Knowledge/Roadmap/State record. Historical records below are evidence provenance, not current release authority.
+Updated: 2026-10-15. Event: FNH-V484-20261015-HOSTED-AND-OWNER-READINESS.
+Public baseline: GOD13emad/FreeNetHub main R53 v4.3.9 Windows Stable plus Linux R21; published installer assets unchanged.
+Private candidate branch: feature/v473-magicdns-native-guard; accepted product-code GitHub commit 37f3814a2f995c9bb932712e97bdd6d5cae22316. Local commit 58c22feb348e9660173d324ceb4f40cef5a92c7d and GitHub head share exact tree 609b5b89ccd785c682653b510bba7bb24ed3f3b4; different commit metadata, same content.
+
+## Current authority — V484
+- **Confirmed, source-only:** after V481 Wired/Wireless TCP/UDP53 scoped DNS guards, guarded native PC TUN refuses to start with missing/disabled Windows Firewall Domain, Private or Public ActiveStore profiles. Six exact-source mock cases PASS; Gateway units 22/22, watchdog identity 7/7, failstart 2/2, stop owner identity 10/10 PASS. This startup check does not prove ongoing firewall integrity or leak-free routing.
+- **Exact GitHub head hosted PASS:** general CI 38799526608 completed 10/10 SUCCESS including Windows, Linux, Android/iOS virtual runners and final virtual acceptance; private R54 Gateway fresh/upgrade+rollback 38799526027 2/2 SUCCESS; independent R54 fresh/upgrade 38799526104 2/2 SUCCESS. These test hosted binaries, not the owner's locally built EXE.
+- **Private owner-built artifact, static chain PASS ONLY:** filename FreeNetHub_4.3.10_R54_V481_GATEWAY_REVIEW_DO_NOT_RELEASE.exe in detached fnh-r54-v481-v484-firewall-review; 24,269,311 bytes; SHA256 BA623959D5632975A77FF8881989D48895B1DAE582009DB9D4853D4C868F4414; Gateway 18/18 file/hash chain PASS, manifest SHA256 8B64302C63354D8B8D150B207C6781127284A633E189B784D6E9EFDBA23B68AE; Authenticode NotSigned; uninstalled/unreleased. PUBLIC_MANIFEST for code head before this Brain update SHA256 77A31AC6171888049DCB9C6C497A862BA52E599756DA4E94707B91872F2E4D35. The previous D17405... EXE is source-superseded.
+- **Owner read-only pre-UAC V484 readiness:** same existing .fnh-control/FNH_V481_PRE_UAC_READINESS.ps1 updated in place (not installed or elevated); 13/14 PASS, sole FAIL secondPhysicalWifiConnectedForRoaming. Candidate hash, source tree, firewall three enabled profiles, no active FreeNetHub TUN/owned DNS53 guards, Tailscale and Quad100 NRPT verified; AnyDesk process-owned established TCP observed, not a proof of remote recovery. Receipt in existing private-audit/FNH_V481_PRE_UAC_READINESS.json SHA256 5D82E5C7815A9AA560804AB201681DCD8FA34262EF01FD2C51B80E40EFBFE925. Wi-Fi disconnected and no SSIDs seen; Ethernet 3 Up. Current Commander not Administrator. No OS network mutation.
+- **Historical Windows field limits:** V476 native-only physical DNS53 leak observed on Ethernet; V479 temporary two-rule firewall feasibility yielded zero router DNS53 capture lines in calibrated narrow scope, not V484 owner source-integrated acceptance. Source/hosted green != physical DNS-no-leak.
+- **Historical Linux scope preserved:** Linux R21 actual installation and scoped proxy acceptance V442 remains applicable only to its tested instance; recent Linux read-only check showed Ethernet/default route and Tailscale Running. Linux SYSTEM WARP ToS/privileged DNS routing and physical mobile platform acceptance remain independent EXTERNAL gates. No new native ToS acceptance implied.
+
+## Dependency path to release
+1. Source tests/virtual installer CI, exact GitHub tree and local owner EXE static chain: PASS, properly scoped above.
+2. Establish real secondary Wi-Fi uplink and separately demonstrable independent recovery; bounded owner elevation/UAC with explicit local approval, no bypass: OPEN. Do not modify default route/network while Wi-Fi absent.
+3. Install the **exact SHA-pinned owner EXE** with preserved settings/rollback, real WARP/native TUN and NIC PktMon positive-control/negative capture, DNS53 TCP+UDP/Quad100/MagicDNS + Tailscale/AnyDesk coexistence, Ethernet→Wi-Fi→Ethernet, abrupt failure and cleanup: UNPROVEN. Check WWAN, IPv6, DoH/DoT against declared scope.
+4. Review #69, resolve #70 with physical evidence, signing decision and controlled public release promotion only after acceptance. PR remains DRAFT, release HOLD; no FINAL assertion.
+
+## Evidence/lineage and next action
+- Public tracking: PR https://github.com/GOD13emad/FreeNetHub/pull/69 ; security acceptance https://github.com/GOD13emad/FreeNetHub/issues/70 ; CI https://github.com/GOD13emad/FreeNetHub/actions/runs/38799526608 .
+- FNH-V484-20261015-HOSTED-AND-OWNER-READINESS: V442 accepted baseline → V484 private hosted PASS and exact local artifact static PASS; independently observed Wi-Fi absence prevents physical roaming acceptance; preserve R53 and Tailscale.
+- Next: if owner establishes secondary Wi-Fi and working remote recovery, request bounded native UAC and capture hash-linked physical acceptance; otherwise continue non-network verification only. Do not treat PRE-UAC 13/14 as FINAL or consent to Cloudflare terms.
+
+---
+
+## Historical accepted baseline and R0 lineage (provenance; not a second active Brain)
+# PROJECT BRAIN — FreeNet Hub
+
 Status: CURRENT / OWNER_WINDOWS_R53_AND_LINUX_R21_FIELD_PASS / STRICT_SYSTEM_AND_MOBILE_EXTERNAL_OPEN
 Brain version: v442-linux-r21-public-field-acceptance-2026-10-14
 Accepted source main and Fork: bb3237472ced37572934f500c17bd83aaad952e3 (before this docs-only milestone).
