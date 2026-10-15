@@ -397,9 +397,27 @@ jobs:
           }
           if(-not $iscc){ throw 'ISCC_NOT_FOUND_AFTER_INSTALL' }
           Write-Host "ISCC=$iscc"
-      - name: Build exact FreeNet Hub 4.3.9 R53 candidate installer
+      - name: Checkout immutable R53 baseline for historical installer compatibility
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: 17daff34805b82bcae0c6e8d5e6cbed6258c50ff
+          path: r53-baseline
+          persist-credentials: false
+      - name: Build exact immutable FreeNet Hub 4.3.9 R53 installer
         shell: pwsh
-        run: ./tests/build_v439_installer.ps1
+        run: |
+          $baseline=Join-Path $PWD 'r53-baseline'
+          $expected='17daff34805b82bcae0c6e8d5e6cbed6258c50ff'
+          if((git -C $baseline rev-parse HEAD).Trim() -ne $expected){throw 'R53_IMMUTABLE_BASELINE_COMMIT_MISMATCH'}
+          & pwsh.exe -NoProfile -NonInteractive -File (Join-Path $baseline 'tests\build_v439_installer.ps1')
+          if($LASTEXITCODE -ne 0){throw 'R53_IMMUTABLE_BASELINE_BUILD_FAIL'}
+          $source=Join-Path $baseline 'delivery\github_v4.3.9\FreeNetHub_4.3.9_R53_Setup.exe'
+          $target=Join-Path $PWD 'delivery\github_v4.3.9\FreeNetHub_4.3.9_R53_Setup.exe'
+          if(!(Test-Path -LiteralPath $source)){throw 'R53_IMMUTABLE_BASELINE_BINARY_MISSING'}
+          New-Item -ItemType Directory -Path (Split-Path $target -Parent) -Force|Out-Null
+          Copy-Item -LiteralPath $source -Destination $target -Force
+          if((Get-FileHash $target).Hash -ne (Get-FileHash $source).Hash){throw 'R53_IMMUTABLE_BINARY_COPY_MISMATCH'}
+          Write-Host ('R53_IMMUTABLE_BASELINE_PACKAGE_PASS_SHA256='+(Get-FileHash $target).Hash)
       - name: Fresh install exact artifact into absent app directory
         shell: pwsh
         run: |
