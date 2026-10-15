@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "milestone": "V461",
+  "date": "2026-10-15",
+  "objective": "Replace exactly the stale unpublished R54 Draft release assets with the new SHA-pinned CI- and owner-validated V458 R54 binary, without creating duplicate releases or publishing prematurely.",
+  "acceptedAuthority": {
+    "mainAtStart": "20c8213d3aec822e5deb6a2df7a483d9cfdd8ce9",
+    "V460PR": 62,
+    "V460PRCI": "10/10 SUCCESS",
+    "V460PostmergeCI": "IN_PROGRESS_AS_OF_RECORD_CREATION",
+    "ownerWindowsInstalled": "4.3.10 R54 scoped CFON HTTPS204",
+    "LinuxInstalled": "R21 scoped CFON HTTPS204"
+  },
+  "release": {
+    "repository": "GOD13emad/FreeNetHub",
+    "releaseID": 412991602,
+    "tag": "v4.3.10-r54-windows-release-review",
+    "before": {
+      "draft": true,
+      "prerelease": true,
+      "target": "85869597170ab111c890a26ca3c902a6e87cbacc",
+      "assetCount": 3,
+      "installerSHA256": "ED9B89C4C228D128229F5C1C98B628D7226E2E3FD784F8990A63494862C83852",
+      "installerBytes": 24267012,
+      "sha256SumsDigest": "4A72E81CABEE438A44E9FE7BCC773340CD3E5E65D7A7FE3435CAA86736A03296",
+      "evidenceDigest": "7A2C10C14424D8BC46DE47F98DA750D102A583A7EDA1F547C20A7B975FF85DDF"
+    },
+    "backup": "Prestate REST response/body and ALL THREE old draft attachments downloaded and SHA-verified, held privately under Windows project .git/maintenance/FNH_V461_OLD_R54_DRAFT_EXACT_BACKUP. Rollback capability supported prior to mutation.",
+    "mutation": "gh release upload --clobber on the existing draft for exact same three asset names; update draft notes and target commit only.",
+    "after": {
+      "draft": true,
+      "prerelease": true,
+      "target": "7dd485267221f617beb48e09357e0321cd03510b",
+      "assetCount": 3,
+      "installerSHA256": "6D3F46C952EFCB0BB653454DA39F6E80754997BD15CB11376FC19E4535BF2DB5",
+      "installerBytes": 24272803,
+      "helperSHA256": "98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C",
+      "sha256SumsDigest": "26821B6E0A08AB3AC32DBB11748A55923F0ECD3D0DBD0D582D70D6B3766A69F1",
+      "evidenceDigest": "BEE138DA752F7213E6F99FCDDB39E4ADCD4F6D415B8C4CD0FD0C94AF028FC455",
+      "downloadAgainVerified": "Independent GitHub download of exact attached setup SHA256 matches 6D3F46..."
+    },
+    "publishedStableLatest": "v4.3.9-r53-windows-stable",
+    "publicPromotionPerformed": false
+  },
+  "ownerUpdateChannel": {
+    "action": "Installed R54 engine UpdateCheck, read-only",
+    "engineExit": 0,
+    "localRevision": "4.3.10-r54-update-cache-retention",
+    "localR": 54,
+    "remoteLatestPublishedTag": "v4.3.9-r53-windows-stable",
+    "remoteR": 53,
+    "revisionComparable": true,
+    "updateAvailable": false,
+    "downloadAttempted": false,
+    "installerAttempted": false,
+    "interpretation": "Installed R54 does not erroneously offer an R53 downgrade while corrected R54 is still Draft. R55 future update needs separate physical acceptance."
+  },
+  "scopeAndGates": {
+    "accepted": [
+      "One tested and physically owner accepted Windows browser-scoped R54 installation and one Draft candidate",
+      "Exact release assets and GitHub download hash",
+      "Read-only updater downgrade refusal",
+      "Previous R53 public stable remains Latest unchanged"
+    ],
+    "open": [
+      "Owner rights and actual third-party binary distribution obligations before public Stable promotion (root project has no top-level LICENSE, but omission alone is not proof of prohibited proprietary distribution)",
+      "Windows full-system TUN: gateway installed status PASS/running false/console Missing, default route physical Ethernet unchanged",
+      "Linux native WARP owner ToS unaccepted, sudo -n exit1, default route Wi-Fi with Tailscale running",
+      "Android/iOS forwarding not linked/real hardware, Apple entitlement/signing",
+      "Physical owner downgrade R54->R53 deferred to avoid disrupting working R54 (hosted isolated rollback 2/2 PASSED)",
+      "Complete content-level preservation of 7GB+ mutable browser profiles unproven"
+    ],
+    "rejected": [
+      "Automatically publishing Draft as Stable from successful CI alone",
+      "Choosing a source license or accepting WARP Terms without explicit owner decision",
+      "Creating duplicate R54 releases/drafts",
+      "Mutating system-wide routes or rebooting to check one scope",
+      "Attaching old known-physically-failed SHA to the new release notes"
+    ]
+  },
+  "methodSources": [
+    "https://cli.github.com/manual/gh_release_upload",
+    "https://cli.github.com/manual/gh_release_edit",
+    "https://cli.github.com/manual/gh_release_download",
+    "https://docs.github.com/en/rest/releases/assets",
+    "https://jrsoftware.org/ishelp/topic_setup_appid.htm",
+    "https://support.anydesk.com/docs/settings"
+  ],
+  "provenance": "Private V461 draft backup/receipt and redownload verification under owner Windows project .git; source public 3-file hashed V461 evidence and cumulative Brain only. No credentials/remote IDs/IPs in public evidence.",
+  "status": "DRAFT_ASSET_RECONCILIATION_ACCEPTED_PUBLIC_RELEASE_OPEN",
+  "exactNextAction": "After V461 exact-head CI and clean merge, conduct owner rights/third-party attribution review for scoped Windows release. Only publish with a truthful scope and explicit rights decision; separately validate Windows/Linux native global tunnel and mobile real forwarding."
+}
