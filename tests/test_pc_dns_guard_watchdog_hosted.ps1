@@ -62,6 +62,15 @@ try {
  Check (@(CurrentGuardRules).Count -eq 4) 'RULES_NOT_RETAINED_FOR_LIVE_OWNER'
  'HOSTED_WIRED_WIRELESS_TYPED_GUARDS_COVER_BOTH_MEDIA_PASS'
  'HOSTED_GUARD_RULES_RETAINED_FOR_EXACT_OWNER_PASS'
+ # Deterministically model partial cleanup by a second exact-name owner.
+ # All rules are TEST-NET-only on an ephemeral GitHub runner; before deleting
+ # re-validate remote address scope and leave unrelated firewall state alone.
+ $priorDeleted=Get-NetFirewallRule -Name $ruleNames[0] -PolicyStore ActiveStore -ErrorAction Stop
+ $priorAddress=Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $priorDeleted -ErrorAction Stop
+ Check (@($priorAddress.RemoteAddress) -contains $testAddress) 'PREDELETE_ADDRESS_SCOPE_CHANGED'
+ Remove-NetFirewallRule -Name $ruleNames[0] -PolicyStore ActiveStore -ErrorAction Stop
+ Check (@(CurrentGuardRules).Count -eq 3) 'HOSTED_PARTIAL_RULE_REMOVAL_NOT_OBSERVED'
+ 'HOSTED_WATCHDOG_PREDELETED_EXACT_RULE_CONVERGENCE_SETUP_PASS'
  Stop-Process -Id $owned.Id -Force -ErrorAction Stop
  $deadline=[DateTime]::UtcNow.AddSeconds(28)
  $receiptData=$null

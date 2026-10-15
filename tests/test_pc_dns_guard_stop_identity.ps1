@@ -99,3 +99,58 @@ $expectedFailure=$false
 try{. $recover}catch{if($_.Exception.Message -eq 'UNOWNED_TUN_PRESENT_REFUSE_FALSE_CLEAN_STOP'){$expectedFailure=$true}else{throw}}
 if(!$expectedFailure){throw 'STOP_UNOWNED_PRESENT_TUN_WAS_NOT_BLOCKED'}
 'STOP_UNOWNED_TUN_PRESENT_FAIL_CLOSED_PASS'
+
+
+# Execute the exact source-owned DNS53 cleanup phase with only in-memory
+# firewall mocks. Never mutate actual Windows Firewall or host networking.
+$guardStart=$txt.IndexOf("if([string]"+'$o'+".mode -eq 'PC_TUNNEL' -and "+'$ownedDnsGuard'+".Count){",[StringComparison]::Ordinal)
+$guardEnd=$txt.IndexOf("if([string]"+'$o'+".mode -eq 'CONSOLE_ONLY'",[Math]::Max(0,$guardStart),[StringComparison]::Ordinal)
+if($guardStart -lt 0 -or $guardEnd -le $guardStart){throw 'STOP_DNS_GUARD_PHASE_NOT_FOUND'}
+if($txt.IndexOf('Remove-Item $Owner -Force',$guardEnd) -lt 0){throw 'OWNER_DELETED_BEFORE_GUARD_PHASE'}
+$exactGuard=[ScriptBlock]::Create($txt.Substring($guardStart,$guardEnd-$guardStart))
+$guardNames=@('FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired','FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless')
+$script:firewallRules=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$script:guardScenario='normal'
+$script:firewallReadCount=0
+$script:removeCalls=0
+function Get-NetFirewallRule {
+ param([string]$PolicyStore,[string]$ErrorAction)
+ $script:firewallReadCount++
+ if($script:guardScenario -eq 'readError' -or ($script:guardScenario -in @('readbackError','finalReadError') -and $script:firewallReadCount -ge 2)){
+  throw 'SIMULATED_ACTIVE_STORE_UNREADABLE'
+ }
+ foreach($n in @($script:firewallRules)){[pscustomobject]@{Name=$n}}
+}
+function Remove-NetFirewallRule {
+ param([string]$Name,[string]$PolicyStore,[string]$ErrorAction)
+ $script:removeCalls++
+ if($script:guardScenario -eq 'removeFailed' -and $script:removeCalls -eq 1){throw 'SIMULATED_REMOVE_FAILED'}
+ if(!$script:firewallRules.Remove($Name)){throw 'SIMULATED_ALREADY_ABSENT'}
+ if($script:guardScenario -in @('concurrent','readbackError') -and $script:removeCalls -eq 1){throw 'SIMULATED_CONCURRENT_REMOVAL'}
+}
+function Check-Guard([string]$scenario,[string]$expected,[int]$remainingCount,[string]$name){
+ $script:guardScenario=$scenario;$script:firewallReadCount=0;$script:removeCalls=0
+ $script:firewallRules=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+ foreach($n in $guardNames){[void]$script:firewallRules.Add($n)}
+ [void]$script:firewallRules.Add('Unrelated-Rule-Never-Delete')
+ if($scenario -eq 'alreadyAbsent'){[void]$script:firewallRules.Remove($guardNames[0])}
+ $o=[pscustomobject]@{mode='PC_TUNNEL'}
+ $ownedDnsGuard=@($guardNames)
+ $err=''
+ try{& $exactGuard}catch{$err=$_.Exception.Message}
+ if($expected -eq 'PASS'){
+  if($err){throw ($name+'_UNEXPECTED_'+$err)}
+ }else{
+  if($err -ne $expected){throw ($name+'_WRONG_ERROR_'+$err)}
+ }
+ if(!$script:firewallRules.Contains('Unrelated-Rule-Never-Delete') -or $script:firewallRules.Count -ne $remainingCount){throw ($name+'_RULE_STATE_MISMATCH')}
+ $name+'_PASS'
+}
+Check-Guard 'normal' 'PASS' 1 'STOP_DNS_GUARD_NORMAL'
+Check-Guard 'alreadyAbsent' 'PASS' 1 'STOP_DNS_GUARD_PREDELETED'
+Check-Guard 'concurrent' 'PASS' 1 'STOP_DNS_GUARD_CONCURRENT_REMOVE'
+Check-Guard 'removeFailed' 'PC_DNS_GUARD_STOP_INCOMPLETE' 5 'STOP_DNS_GUARD_REMOVE_FAILURE_RETAINED'
+Check-Guard 'readError' 'PC_DNS_GUARD_STORE_UNREADABLE' 5 'STOP_DNS_GUARD_QUERY_ERROR_RETAINED'
+Check-Guard 'readbackError' 'PC_DNS_GUARD_STORE_UNREADABLE' 4 'STOP_DNS_GUARD_RACE_READBACK_ERROR'
+Check-Guard 'finalReadError' 'PC_DNS_GUARD_STORE_UNREADABLE' 1 'STOP_DNS_GUARD_FINAL_READ_ERROR_FAIL_CLOSED'
+'STOP_DNS_GUARD_EXACT_SOURCE_MOCK_ALL_PASS'

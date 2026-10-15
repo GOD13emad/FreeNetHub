@@ -76,7 +76,7 @@ function Verify-Installed([string]$expected){
   }
   if($expected -eq $rev54 -and $PrivateGatewayReview){
     $gmanifest=Join-Path $probe 'gateway\manifest.json'
-    $gsha='45373E16612DED36132DA4DDA7673E3AADB4E182A88221EEBB7DD4B78DC45DF1'
+    $gsha='3844A172E5B57399ABC3977358D0774D66A9140825A6B1A8B05013EC25CE44BE'
     if((Get-FileHash $gmanifest -Algorithm SHA256).Hash -ne $gsha -or $out.gatewayManifestSha256 -ne $gsha){throw 'V481_INSTALLED_GATEWAY_MANIFEST_CHAIN_BAD'}
     $gm=Get-Content $gmanifest -Raw|ConvertFrom-Json
     if(@($gm.files).Count -ne 18){throw 'V481_GATEWAY_FILECOUNT_CHANGED'}
@@ -142,7 +142,7 @@ $receipt=[ordered]@{
   r54InstallerSha256=(Get-FileHash $r54 -Algorithm SHA256).Hash
   gatewayReview=[bool]$PrivateGatewayReview
   sameExactBinaryFreshAndRollbackValidated=([bool]$PrivateGatewayReview -and $Mode -eq 'upgrade')
-  gatewayManifestSHA256=if($PrivateGatewayReview){'45373E16612DED36132DA4DDA7673E3AADB4E182A88221EEBB7DD4B78DC45DF1'}else{$null}
+  gatewayManifestSHA256=if($PrivateGatewayReview){'3844A172E5B57399ABC3977358D0774D66A9140825A6B1A8B05013EC25CE44BE'}else{$null}
   reviewInstallerName=$installerName
   testedInstallerHelperSha256=$helperDigest
   officialR53PinnedHash=$oldSha

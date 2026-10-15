@@ -138,11 +138,27 @@ if($o.PSObject.Properties['dnsGuardNames']){$ownedDnsGuard=@($o.dnsGuardNames)}
 if([string]$o.mode -eq 'PC_TUNNEL' -and $ownedDnsGuard.Count){
  $allowed=@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP','FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired','FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless')
  if(@($ownedDnsGuard|Where-Object{$_ -notin $allowed}).Count){Fail 'PC_DNS_GUARD_RULE_IDENTITY_MISMATCH' $o}
+ # ActiveStore enumeration errors are UNKNOWN, not evidence that the
+ # owned DNS53 rules are absent. Never emit STOPPED/PASS on a failed read.
+ try{$allActive=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+ catch{Fail 'PC_DNS_GUARD_STORE_UNREADABLE' $o}
  foreach($n in $ownedDnsGuard){
-  $rule=Get-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction SilentlyContinue
-  if($rule){$rule|Remove-NetFirewallRule -ErrorAction SilentlyContinue}
+  if(@($allActive|Where-Object{$_.Name -eq $n}).Count -eq 0){continue}
+  try{
+   Remove-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction Stop
+  }catch{
+   # Another exact owner cleanup may already have deleted the rule.
+   # Converge only when a new successful read verifies name absence.
+   try{$afterDelete=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+   catch{Fail 'PC_DNS_GUARD_STORE_UNREADABLE' $o}
+   if(@($afterDelete|Where-Object{$_.Name -eq $n}).Count){
+    Fail 'PC_DNS_GUARD_STOP_INCOMPLETE' $o
+   }
+  }
  }
- if(@($ownedDnsGuard|Where-Object{Get-NetFirewallRule -Name $_ -PolicyStore ActiveStore -ErrorAction SilentlyContinue}).Count){
+ try{$remaining=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+ catch{Fail 'PC_DNS_GUARD_STORE_UNREADABLE' $o}
+ if(@($ownedDnsGuard|Where-Object{$name=$_;@($remaining|Where-Object{$_.Name -eq $name}).Count -gt 0}).Count){
   Fail 'PC_DNS_GUARD_STOP_INCOMPLETE' $o
  }
 }
