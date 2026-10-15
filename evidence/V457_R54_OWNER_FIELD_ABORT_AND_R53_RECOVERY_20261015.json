@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "project": "FreeNet Hub",
+  "milestone": "V457",
+  "objective": "Record bounded physical owner Windows R54 installer abort, root-cause evidence and verified R53 scoped CFON restoration; no source or network mutation.",
+  "previousAccepted": {
+    "mainSHA": "2c7f368ae9ac2f6e3c015327a545345abd1881fa",
+    "V456CI": {
+      "pushRun": 38638733000,
+      "prRun": 38638806618,
+      "eachPassed": "10/10"
+    },
+    "R54Hosted": {
+      "run": 38605228141,
+      "freshAndUpgradeRollback": "2/2 success"
+    },
+    "installedWindowsBefore": "4.3.9 R53 connected CFON",
+    "installedLinux": "4.2.0-linux.21-r54"
+  },
+  "facts": {
+    "recoveryControl": {
+      "WindowsAnyDeskService": "Running",
+      "LinuxAnyDeskService": "active",
+      "previousAuthSession": "Client session started with saved authenticated token and input permission, observed on Linux",
+      "sessionLivenessAfterCFONStop": "A later client Session stopped event occurred and Windows status became OFFLINE, so independent unattended recovery NOT accepted.",
+      "afterCFONReconnected": "Windows AnyDesk status returned online",
+      "Tailscale": "Running and peer ping available"
+    },
+    "officialStop": {
+      "method": "Installed R53 engine --action Stop --mode CFON",
+      "engineExit": 0,
+      "sessionStopped": true,
+      "ownedCFONPort19414": "closed",
+      "reportingWrapperFailure": "Attempt to read absent optional connected property; only reporting failed after successful stop."
+    },
+    "dataSnapshot": {
+      "encryptedProtectedSnapshot": "9 selected config identity files encrypted Windows DPAPI CurrentUser",
+      "duringStop": {
+        "unchanged": 8,
+        "changed": 1,
+        "changedFile": "last.json",
+        "reason": "Ephemeral last-operation metadata updated by the Stop action"
+      },
+      "verification": "All critical nonvolatile files unchanged, snapshot entry hashes independently verified; browser profiles excluded."
+    },
+    "firstSetup": {
+      "r54InstallerSha256": "ED9B89C4C228D128229F5C1C98B628D7226E2E3FD784F8990A63494862C83852",
+      "installerExit": 7,
+      "InnoPrepareUpgradeHelperExit": 43,
+      "InnoLogMessage": "Could not close the previous installation safely (code 43). Close the app and run Setup again.",
+      "phase": "Preparing to Install (before copying files)",
+      "postInstalledVersion": "4.3.9 R53",
+      "registeredAppCount": 1,
+      "preexistingProfileDirsPresent": true,
+      "possibleRootCause": "Previous GUI/pwsh process had not fully shut down by the helper's 400ms post-stop check; exact root cause UNPROVEN.",
+      "binaryModification": false
+    },
+    "guardedRetry": {
+      "changedPrestate": "After first abort zero owned processes and zero owned listener ports",
+      "result": "Blocked by preflight ANYDESK_OFFLINE, before launching any installer",
+      "thirdAttempt": false
+    },
+    "recovery": {
+      "method": "Original installed R53 engine --action Connect --mode CFON, budget 90",
+      "engineExit": 0,
+      "healthy": true,
+      "sessionConnected": true,
+      "sessionMode": "CFON",
+      "port19414Listeners": 1,
+      "GoogleViaSOCKS5h": 204,
+      "registeredVersion": "4.3.9",
+      "anydesk": "online",
+      "tailscale": "Running",
+      "postResult": "R53_CFON_SCOPED_CONNECTION_RESTORED",
+      "systemRebootOrNetReset": false
+    }
+  },
+  "verificationValidation": {
+    "passed": [
+      "Original R53 scoped browser CFON reconnected and re-validated physically",
+      "Prior V456 source CI 10/10",
+      "Host installer SHA and rollback SHA preserved",
+      "Critical selected config and existing browser-profile top directory presence",
+      "No reboot, DNS or default route change initiated"
+    ],
+    "notAccepted": [
+      "Physical R54 installed/upgraded (installer aborted before install)",
+      "Physical R53<-R54 rollback (R54 never installed)",
+      "Durable independently recovered Windows remote session while CFON off",
+      "Windows full-PC tunnel, Linux native WARP, mobile forwarding",
+      "Public R54 stable release and rights review"
+    ]
+  },
+  "failurePrevention": {
+    "rootCauseConfirmed": "Helper returned 43 when previous GUI/process shutdown not completed; retrial independently blocked by AnyDesk offline",
+    "proposedMinimumGuard": "Keep active-connection stop guard. Hermetically test whether bounded wait for exact-owned process exit resolves code43; require known-good independent remote recovery that survives CFON stop before new owner attempt.",
+    "rejected": [
+      "Repeated real installer attempts without resolving blockers",
+      "Bypassing AnyDesk offline preflight",
+      "Manual force process kill/uninstall",
+      "Bulk browser-profile copying or cache deletion",
+      "Changing system DNS, routes, drivers or WARP Terms"
+    ]
+  },
+  "citations": [
+    "https://jrsoftware.org/ishelp/topic_setupexitcodes.htm",
+    "https://support.anydesk.com/session-has-ended-unexpectedly",
+    "https://support.anydesk.com/docs/unattended-access",
+    "windows/installer/Prepare-Upgrade.ps1",
+    "windows/installer/FreeNetHub.iss"
+  ],
+  "knowledgePath": "Additional detailed private record retained in owner project .git/FNH_V457_PHYSICAL_R54_ABORT_R53_RESTORE_20261015.md; installer logs and sensitive owner evidence kept locally, not published.",
+  "state": "CANDIDATE_UNTIL_EXACT_HEAD_CI",
+  "exactNextAction": "Verify AnyDesk uninterrupted authenticated control for a measured maintenance window independently of CFON, reproduce and correct Inno 43 with isolated process-shutdown tests without weakening guard, then one future controlled SHA-pinned R54 owner upgrade and rollback. Until then keep R53 functioning."
+}
