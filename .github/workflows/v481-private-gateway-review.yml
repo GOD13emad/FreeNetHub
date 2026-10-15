@@ -35,7 +35,7 @@ jobs:
         run: |
           python -m py_compile tests/prepare_private_gateway_review.py tests/prepare_r54_isolated.py
           if ($LASTEXITCODE -ne 0) { throw 'PREPARATION_PYTHON_SYNTAX_FAILED' }
-          if ((Get-FileHash gateway/manifest.json -Algorithm SHA256).Hash -ne 'E5EBC009609A6DC41C8F80DF55468C925008E6FB578E69E4A6405CC14DEF4307') { throw 'V485_GATEWAY_MANIFEST_NOT_PINNED' }
+          if ((Get-FileHash gateway/manifest.json -Algorithm SHA256).Hash -ne '45373E16612DED36132DA4DDA7673E3AADB4E182A88221EEBB7DD4B78DC45DF1') { throw 'V485_GATEWAY_MANIFEST_NOT_PINNED' }
           if ((Get-FileHash windows/installer/Prepare-Upgrade.ps1 -Algorithm SHA256).Hash -ne '98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C') { throw 'V458_INSTALLER_HELPER_NOT_PINNED' }
       - name: Build, install and verify private R54 Gateway candidate on disposable runner
         shell: pwsh
@@ -49,7 +49,7 @@ jobs:
           $exe=Join-Path $stage 'delivery/release_candidate_v4.3.10/FreeNetHub_4.3.10_R54_V481_GATEWAY_REVIEW_DO_NOT_RELEASE.exe'
           $receipt=Get-Content (Join-Path $env:RUNNER_TEMP ('v481-'+$m+'-receipt.json')) -Raw|ConvertFrom-Json
           if($receipt.status -ne 'PASS' -or $receipt.gatewayReview -ne $true -or $receipt.mode -ne $m) { throw 'V481_DISPOSABLE_INSTALL_NOT_ACCEPTED' }
-          if($receipt.gatewayManifestSHA256 -ne 'E5EBC009609A6DC41C8F80DF55468C925008E6FB578E69E4A6405CC14DEF4307') { throw 'V481_RECEIPT_GATEWAY_NOT_VALIDATED' }
+          if($receipt.gatewayManifestSHA256 -ne '45373E16612DED36132DA4DDA7673E3AADB4E182A88221EEBB7DD4B78DC45DF1') { throw 'V481_RECEIPT_GATEWAY_NOT_VALIDATED' }
           if($m -eq 'upgrade' -and $receipt.sameExactBinaryFreshAndRollbackValidated -ne $true) { throw 'V481_SAME_BINARY_DUAL_SCENARIO_NOT_TESTED' }
           if((Get-FileHash $exe -Algorithm SHA256).Hash -ne $receipt.r54InstallerSha256 -or (Get-Item $exe).Length -ne $receipt.r54InstallerBytes) { throw 'V481_TESTED_BINARY_DIGEST_MISMATCH' }
           if((Get-Content (Join-Path $stage 'RELEASE.json') -Raw|ConvertFrom-Json).gatewayManifestSha256 -ne $receipt.gatewayManifestSHA256) { throw 'V481_RELEASE_GATEWAY_CHAIN_MISMATCH' }

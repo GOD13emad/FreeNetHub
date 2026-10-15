@@ -17,7 +17,10 @@ function Fail([string]$m){Out-J $Result ([ordered]@{status='FAIL';error=$m;utc=[
 $admin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if(!$admin){Fail 'ADMIN_REQUIRED'}
 if(Test-Path $Owner){Fail 'GATEWAY_ALREADY_OWNED'}
-if(Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq 'FreeNetHub'}){Fail 'STALE_TUN_PRESENT'}
+try{
+ $existingTun=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object{$_.Name -eq 'FreeNetHub'})
+}catch{Fail 'TUN_PREFLIGHT_QUERY_UNVERIFIED'}
+if($existingTun.Count){Fail 'STALE_TUN_PRESENT'}
 $D=Get-Content (Join-Path $PSScriptRoot 'gateway_defaults.json') -Raw -Encoding UTF8|ConvertFrom-Json
 $S=Get-FnhSingBox;$sb=[string]$S.path
 $ConsoleCfg=if($Mode -eq 'CONSOLE_ONLY'){Get-FnhConsoleConfig $D}else{Get-FnhConsoleConfig $D -AllowUnconfigured}
@@ -141,18 +144,34 @@ try{
    # Fail closed: never release physical DNS blocks while a TUN can still
    # route traffic, even if sing-box terminated before owner.json was written.
    $tunRollbackDeadline=[DateTime]::UtcNow.AddSeconds(15)
-   $lingeringTun=$null
+   $confirmedAbsent=0
    do{
-    $lingeringTun=Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$D.tun.interface_name}|Select-Object -First 1
-    if(!$lingeringTun){break}
+    try{
+     $seen=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object{$_.Name -eq [string]$D.tun.interface_name})
+     if($seen.Count -eq 0){$confirmedAbsent++}else{$confirmedAbsent=0}
+     if($confirmedAbsent -ge 2){break}
+    }catch{$confirmedAbsent=0}
     Start-Sleep -Milliseconds 250
    }while([DateTime]::UtcNow -lt $tunRollbackDeadline)
-   if($lingeringTun){Fail ('APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED: '+$primaryError)}
+   if($confirmedAbsent -lt 2){Fail ('APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED: '+$primaryError)}
+   # The watchdog/source stop may concurrently delete a matching rule.
+   # Treat that race as success only after an exact ActiveStore readback;
+   # any unreadable firewall state or retained owned rule must fail closed.
+   $activeRules=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
    foreach($n in $ownedCreatedDnsRules){
-    $r=Get-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction SilentlyContinue
-    if($r){$r|Remove-NetFirewallRule -ErrorAction SilentlyContinue}
+    if(@($activeRules|Where-Object{$_.Name -eq $n}).Count -eq 0){continue}
+    try{
+     Remove-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction Stop
+    }catch{
+     $removeError=$_.Exception.Message
+     $readback=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+     if(@($readback|Where-Object{$_.Name -eq $n}).Count){
+      Fail ('APPLY_FAILED_PC_DNS_GUARD_ROLLBACK_INCOMPLETE: '+$primaryError+' / '+$removeError)
+     }
+    }
    }
-   if(@($ownedCreatedDnsRules|Where-Object{Get-NetFirewallRule -Name $_ -PolicyStore ActiveStore -ErrorAction SilentlyContinue}).Count){
+   $remainingRules=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+   if(@($ownedCreatedDnsRules|Where-Object{$name=$_;@($remainingRules|Where-Object{$_.Name -eq $name}).Count -gt 0}).Count){
     Fail ('APPLY_FAILED_PC_DNS_GUARD_ROLLBACK_INCOMPLETE: '+$primaryError)
    }
   }
