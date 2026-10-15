@@ -14,13 +14,33 @@ function Fail([string]$m,$o=$null){
  Out-J $Result $r
  throw $m
 }
-function Process-Matches($o){
- $c=Get-CimInstance Win32_Process -Filter ("ProcessId="+[int]$o.pid) -ErrorAction SilentlyContinue
+function Process-Identity($o){
+ # A live PID with unreadable owner evidence is NOT proof of process exit.
+ # Fail closed: do not remove its TUN or DNS firewall rules until identity is clear.
  $g=Get-Process -Id ([int]$o.pid) -ErrorAction SilentlyContinue
- if(!$c -and !$g){return $false}
- if(!$c -or !$g){return $false}
- return ($c.ExecutablePath -eq [string]$o.path -and $g.StartTime.ToUniversalTime().Ticks -eq [long]$o.startTicks)
+ if(!$g){
+  # A single process-query miss is not sufficient evidence of exit if CIM
+  # still observes the PID or the independent query cannot be completed.
+  try{
+   $seen=Get-CimInstance Win32_Process -Filter ("ProcessId="+[int]$o.pid) -ErrorAction SilentlyContinue
+   if($seen){return 'UNVERIFIED'}
+  }catch{return 'UNVERIFIED'}
+  return 'ABSENT'
+ }
+ try{
+  $ticks=[long]$g.StartTime.ToUniversalTime().Ticks
+  if($ticks -ne [long]$o.startTicks){return 'DIFFERENT'}
+ }catch{return 'UNVERIFIED'}
+ try{
+  $c=Get-CimInstance Win32_Process -Filter ("ProcessId="+[int]$o.pid) -ErrorAction SilentlyContinue
+  if(!$c){return 'UNVERIFIED'}
+  $path=[string]$c.ExecutablePath
+  if([string]::IsNullOrWhiteSpace($path)){return 'UNVERIFIED'}
+  if(-not [string]::Equals($path,[string]$o.path,[StringComparison]::OrdinalIgnoreCase)){return 'DIFFERENT'}
+ }catch{return 'UNVERIFIED'}
+ return 'EXACT'
 }
+function Process-Matches($o){return (Process-Identity $o) -eq 'EXACT'}
 $admin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if(!$admin){throw 'ADMIN_REQUIRED'}
 Remove-Item $Result -Force -ErrorAction SilentlyContinue
@@ -41,6 +61,9 @@ if(!$o){
  exit 0
 }
 
+# Refuse destructive rollback while the recorded PID is alive but its identity
+# is unreadable; this may be the owned sing-box, not a safely stopped process.
+if((Process-Identity $o) -eq 'UNVERIFIED'){Fail 'OWNED_SINGBOX_IDENTITY_UNVERIFIED' $o}
 # Kill only the exact process recorded by apply.
 if(Process-Matches $o){
  Stop-Process -Id ([int]$o.pid) -Force -ErrorAction SilentlyContinue
@@ -54,6 +77,7 @@ if(Process-Matches $o){
   Start-Sleep -Milliseconds 500
  }
 }
+if((Process-Identity $o) -eq 'UNVERIFIED'){Fail 'OWNED_SINGBOX_IDENTITY_UNVERIFIED_AFTER_STOP' $o}
 if(Process-Matches $o){Fail 'OWNED_SINGBOX_STOP_INCOMPLETE' $o}
 
 # Wait for Wintun to be released. If it lingers after the exact process is gone,
