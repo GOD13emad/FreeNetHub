@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 38199,
-      "sha256": "0DA85A7C5B050B4E71CB8FC86E7F85C570560B924F6475E4B58BF78A53B9F5CA"
+      "bytes": 38413,
+      "sha256": "AB9A0305BEF8C7CA6114CC2A0CACE91C4C4C7875432E9DF025EB1605BD44550A"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -2532,6 +2532,11 @@
       "file": "tests/test_pc_dns_guard_failstart.ps1",
       "bytes": 3114,
       "sha256": "93EC258C6925DFF3510713D153BA1252E9766E69F28E097DE04F90A47A499808"
+    },
+    {
+      "file": "tests/test_pc_dns_guard_watchdog_hosted.ps1",
+      "bytes": 5235,
+      "sha256": "1FF955B7AF449931F6F0FB7133C6C51CE4811A7DC5649E4C73C2013FF99A76F6"
     },
     {
       "file": "tests/test_prepare_upgrade_wait.ps1",
