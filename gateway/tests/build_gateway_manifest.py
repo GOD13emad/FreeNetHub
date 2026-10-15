@@ -4,7 +4,7 @@ G=Path(__file__).resolve().parents[1]
 R=G.parent
 files=[
  'gateway_control.ps1','gateway_request.ps1','Setup-GatewayCore.ps1','Setup-ConsoleGateway.ps1','gateway_defaults.json','runtime_config.ps1','preflight.ps1','generate_config.py',
- 'apply_elevated.ps1','stop_elevated.ps1','console_provider.ps1','wsl_console.ps1','build_isolated_mihomo.py',
+ 'apply_elevated.ps1','stop_elevated.ps1','dns_guard_watchdog.ps1','console_provider.ps1','wsl_console.ps1','build_isolated_mihomo.py',
  'import_wireguard.py','validate_console_profile.ps1','tests/direct_stun.py','socks_udp_probe.py'
 ]
 rows=[]

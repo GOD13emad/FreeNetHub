@@ -78,6 +78,22 @@ if($o.firewallRule){
  if(Get-NetFirewallRule -DisplayName ([string]$o.firewallRule) -ErrorAction SilentlyContinue){Fail 'FIREWALL_RULE_STOP_INCOMPLETE' $o}
 }
 
+# Release only the exact PC DNS guard rules after the owned TUN is gone.
+# Older installed owner.json records do not have this optional field.
+$ownedDnsGuard=@()
+if($o.PSObject.Properties['dnsGuardNames']){$ownedDnsGuard=@($o.dnsGuardNames)}
+if([string]$o.mode -eq 'PC_TUNNEL' -and $ownedDnsGuard.Count){
+ $allowed=@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP')
+ if(@($ownedDnsGuard|Where-Object{$_ -notin $allowed}).Count){Fail 'PC_DNS_GUARD_RULE_IDENTITY_MISMATCH' $o}
+ foreach($n in $ownedDnsGuard){
+  $rule=Get-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction SilentlyContinue
+  if($rule){$rule|Remove-NetFirewallRule -ErrorAction SilentlyContinue}
+ }
+ if(@($ownedDnsGuard|Where-Object{Get-NetFirewallRule -Name $_ -PolicyStore ActiveStore -ErrorAction SilentlyContinue}).Count){
+  Fail 'PC_DNS_GUARD_STOP_INCOMPLETE' $o
+ }
+}
+
 if([string]$o.mode -eq 'CONSOLE_ONLY' -and -not (Test-Path $Pre)){Fail 'PRESTATE_MISSING_FOR_CONSOLE_ROLLBACK' $o}
 if(Test-Path $Pre){
  $x=Get-Content $Pre -Raw -Encoding UTF8|ConvertFrom-Json
