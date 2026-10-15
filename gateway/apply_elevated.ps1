@@ -118,6 +118,16 @@ try{
   if($p -and -not $p.HasExited){Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue}
   if($p -and (Get-Process -Id $p.Id -ErrorAction SilentlyContinue)){Fail ('APPLY_FAILED_PROCESS_ROLLBACK_INCOMPLETE: '+$primaryError)}
   if($pcNative){
+   # Fail closed: never release physical DNS blocks while a TUN can still
+   # route traffic, even if sing-box terminated before owner.json was written.
+   $tunRollbackDeadline=[DateTime]::UtcNow.AddSeconds(15)
+   $lingeringTun=$null
+   do{
+    $lingeringTun=Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$D.tun.interface_name}|Select-Object -First 1
+    if(!$lingeringTun){break}
+    Start-Sleep -Milliseconds 250
+   }while([DateTime]::UtcNow -lt $tunRollbackDeadline)
+   if($lingeringTun){Fail ('APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED: '+$primaryError)}
    foreach($n in $ownedCreatedDnsRules){
     $r=Get-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction SilentlyContinue
     if($r){$r|Remove-NetFirewallRule -ErrorAction SilentlyContinue}
