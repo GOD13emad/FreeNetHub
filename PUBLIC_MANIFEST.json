@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 38791,
-      "sha256": "201E9D66FA140A1AEA30860E9AEAA8B710B61E076CC59B757054544C2A902956"
+      "bytes": 38999,
+      "sha256": "1EC979BE4E0EC13C1588B90C5E2A85CAA5CB8C13182E64F56285DA095302F331"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1605,8 +1605,8 @@
     },
     {
       "file": "gateway/apply_elevated.ps1",
-      "bytes": 11820,
-      "sha256": "5910B92A708B6FE1FBC4B088528280A719FE35A6FFDB432DA71DF141AF977B8B"
+      "bytes": 12196,
+      "sha256": "3CB5D7A142280609B7F252D5E9399BD0783D99492D96CE30BC155A8802AF2AB4"
     },
     {
       "file": "gateway/build_isolated_mihomo.py",
@@ -1656,7 +1656,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3070,
-      "sha256": "AF0EE55C67F70CFEC9C14207CBC4A8FAEC834169BB323938DDCB68FC9F28C51B"
+      "sha256": "8B64302C63354D8B8D150B207C6781127284A633E189B784D6E9EFDBA23B68AE"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1811,7 +1811,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "7D2D9AE463ED848B4E5D899EAFF0998FE89CD80D6D48E528AD0DBF3E3469436B"
+      "sha256": "AFD033E054C6DF8E7713B125A6125D31D26998E8ECDA156208A4FDDBE54A1D00"
     },
     {
       "file": "SECURITY.md",
@@ -2126,7 +2126,7 @@
     {
       "file": "tests/prepare_private_gateway_review.py",
       "bytes": 4136,
-      "sha256": "EDE7918671E17484B3B6E8A6A4846B9F7D9A971B83B4606861271BF3045B71DF"
+      "sha256": "96BDAEF41EE71B345EF1CAD6BFD5DC53707A022103308321CEADE524FBAF8A5F"
     },
     {
       "file": "tests/prepare_r54_isolated.py",
@@ -2532,6 +2532,11 @@
       "file": "tests/test_pc_dns_guard_failstart.ps1",
       "bytes": 3208,
       "sha256": "D49EE5B9DCD1841E86A51BE0ED47FB4194E56D8031CC07FD82DC079703397CC2"
+    },
+    {
+      "file": "tests/test_pc_dns_guard_firewall_profiles.ps1",
+      "bytes": 2417,
+      "sha256": "D8EDF46F66E359C40B838F53AED4169C529192CF2FF2908D4E40D52709042E05"
     },
     {
       "file": "tests/test_pc_dns_guard_identity.ps1",

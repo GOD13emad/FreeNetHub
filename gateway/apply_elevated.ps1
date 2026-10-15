@@ -50,6 +50,13 @@ $pcDnsGuardNames=@('FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Gu
 $cfgObject=Get-Content -LiteralPath $cfg -Raw -Encoding UTF8|ConvertFrom-Json
 $pcNative=($Mode -eq 'PC_TUNNEL' -and @($cfgObject.inbounds|Where-Object { $_.type -eq 'tun' -and $_.dns_mode -eq 'native' }).Count -eq 1)
 # Reject unknown/nonphysical default routes rather than assert DNS53 protection on an unsupported uplink.
+if($pcNative){
+ $activeProfiles=@(Get-NetFirewallProfile -PolicyStore ActiveStore -ErrorAction Stop)
+ $requiredProfiles=@('Domain','Private','Public')
+ if($activeProfiles.Count -ne $requiredProfiles.Count -or @($activeProfiles|Where-Object{$_.Name -notin $requiredProfiles -or [string]$_.Enabled -ne 'True'}).Count -ne 0){
+  Fail 'PC_NATIVE_FIREWALL_PROFILE_NOT_ENABLED'
+ }
+}
 if($pcNative -and (-not $uplink.HardwareInterface -or [int]$uplink.InterfaceType -notin @(6,71))){Fail 'PC_NATIVE_DEFAULT_UPLINK_NOT_WIRED_OR_WIFI'}
 $p=$null
 $guardProc=$null

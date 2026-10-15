@@ -46,8 +46,8 @@
     },
     {
       "file": "apply_elevated.ps1",
-      "bytes": 11820,
-      "sha256": "5910B92A708B6FE1FBC4B088528280A719FE35A6FFDB432DA71DF141AF977B8B"
+      "bytes": 12196,
+      "sha256": "3CB5D7A142280609B7F252D5E9399BD0783D99492D96CE30BC155A8802AF2AB4"
     },
     {
       "file": "stop_elevated.ps1",
