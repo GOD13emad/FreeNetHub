@@ -18,7 +18,15 @@ function Write-Receipt([string]$state,[string]$detail=''){
 }
 function Is-ExactOwner {
  $p=Get-Process -Id $TargetPid -ErrorAction SilentlyContinue
- if(!$p){return $false}
+ if(!$p){
+  # One process API miss must not disable the DNS guard if CIM still sees
+  # the PID or the independent identity query itself fails.
+  try{
+   $c=Get-CimInstance Win32_Process -Filter ("ProcessId="+$TargetPid) -ErrorAction Stop
+   if($c){return $true}
+  }catch{return $true}
+  return $false
+ }
  # A running process with unreadable identity is NOT proof that it exited.
  # Keep the physical-DNS firewall blocks until the exact owner is verifiably gone.
  try {
@@ -31,19 +39,32 @@ function Is-ExactOwner {
   return [string]::Equals($path,$ExpectedExe,[StringComparison]::OrdinalIgnoreCase)
  }catch{return $true}
 }
+function Test-TunAbsentStable([int]$Checks=50,[int]$PollMs=500){
+ # Two independent clean adapter snapshots are required; an adapter-provider
+ # exception during Wintun teardown is UNKNOWN, never evidence of removal.
+ $consecutiveAbsent=0
+ for($attempt=0;$attempt -lt $Checks;$attempt++){
+  try{
+   $present=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object{$_.Name -eq 'FreeNetHub'})
+   if($present.Count -eq 0){
+    $consecutiveAbsent++
+    if($consecutiveAbsent -ge 2){return $true}
+   }else{$consecutiveAbsent=0}
+  }catch{$consecutiveAbsent=0}
+  if($attempt+1 -lt $Checks){Start-Sleep -Milliseconds $PollMs}
+ }
+ return $false
+}
 try{
  if(-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'ADMIN_REQUIRED'}
  if($names.Count -ne 4 -or $UdpRule -ne 'FreeNetHub-PC-DNS53-Guard-UDP-Wired' -or $TcpRule -ne 'FreeNetHub-PC-DNS53-Guard-TCP-Wired' -or $UdpWirelessRule -ne 'FreeNetHub-PC-DNS53-Guard-UDP-Wireless' -or $TcpWirelessRule -ne 'FreeNetHub-PC-DNS53-Guard-TCP-Wireless'){throw 'RULE_IDENTITY_MISMATCH'}
  # Keep the physical-DNS deny in place for the exact owned sing-box lifetime.
  while(Is-ExactOwner){Start-Sleep -Seconds 2}
  # A lingering virtual NIC is not an accepted safe state for removing the deny.
- $deadline=[DateTime]::UtcNow.AddSeconds(25)
- do{
-  $tun=Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq 'FreeNetHub'}|Select-Object -First 1
-  if(!$tun){break}
-  Start-Sleep -Milliseconds 500
- }while([DateTime]::UtcNow -lt $deadline)
- if($tun){Write-Receipt 'TUN_LINGERED_RULES_RETAINED';exit 23}
+ if(-not (Test-TunAbsentStable)){
+  Write-Receipt 'TUN_LINGERED_RULES_RETAINED' 'TUN absence not proven in two successive clean snapshots'
+  exit 23
+ }
  foreach($n in $names) {
   $r=Get-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction SilentlyContinue
   if($r){$r|Remove-NetFirewallRule -ErrorAction Stop}

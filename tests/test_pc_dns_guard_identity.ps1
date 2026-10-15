@@ -13,6 +13,9 @@ $TargetPid=41444
 $StartTicks=[datetime]::UtcNow.Ticks
 $ExpectedExe='C:\Test\sing-box.exe'
 $script:mockProcess=$null
+$script:mockCim=$null
+$script:cimThrows=$false
+function Get-CimInstance { param([string]$ClassName,[string]$Filter,[string]$ErrorAction) if($script:cimThrows){throw 'SIMULATED_CIM_QUERY_FAILED'};return $script:mockCim }
 function Get-Process { param([int]$Id) if($Id -eq $TargetPid){$script:mockProcess} }
 function Verify([bool]$wanted,[string]$name) {
  $result=Is-ExactOwner
@@ -35,5 +38,38 @@ Verify $false 'IDENTITY_PID_REUSE_PROVEN'
 $script:mockProcess=[pscustomobject]@{StartTime=$time;Path='C:\Other\unrelated.exe'}
 Verify $false 'IDENTITY_DIFFERENT_EXECUTABLE_PROVEN'
 $script:mockProcess=$null
+$script:mockCim=[pscustomobject]@{ProcessId=$TargetPid}
+Verify $true 'IDENTITY_PROCESS_MISS_CIM_PID_LIVE_FAIL_CLOSED'
+$script:mockCim=$null
+$script:cimThrows=$true
+Verify $true 'IDENTITY_PROCESS_MISS_CIM_EXCEPTION_FAIL_CLOSED'
+$script:cimThrows=$false
 Verify $false 'IDENTITY_PROCESS_GONE_PROVEN'
 'WATCHDOG_IDENTITY_SOURCE_MOCK_ALL_PASS'
+
+# Direct source test: transient adapter enumeration errors must not make
+# firewall guards disappear before two clean TUN-absent snapshots.
+$script:snapshots=@()
+$script:snapshotIndex=0
+function Get-NetAdapter {
+ param([switch]$IncludeHidden,[string]$ErrorAction)
+ if($script:snapshotIndex -ge $script:snapshots.Count){throw 'MISSING_MOCK_SNAPSHOT'}
+ $next=$script:snapshots[$script:snapshotIndex];$script:snapshotIndex++
+ if($next -eq 'error'){throw 'SIMULATED_ADAPTER_QUERY_ERROR'}
+ if($next -eq 'present'){return [pscustomobject]@{Name='FreeNetHub'}}
+ return @()
+}
+function Start-Sleep { param([int]$Milliseconds) }
+function Verify-Tun([string[]]$snapshots,[bool]$expected,[string]$name){
+ $script:snapshots=$snapshots
+ $script:snapshotIndex=0
+ $got=Test-TunAbsentStable -Checks $snapshots.Count -PollMs 0
+ if($got -ne $expected){throw ($name+'_EXPECTED_'+$expected+'_GOT_'+$got)}
+ $name+'_PASS'
+}
+Verify-Tun @('absent','absent') $true 'TUN_TWO_CLEAN_SNAPSHOTS'
+Verify-Tun @('absent','error','absent') $false 'TUN_ERROR_BREAKS_ABSENCE_STREAK'
+Verify-Tun @('error','absent','absent') $true 'TUN_RECOVERY_REQUIRES_TWO_CLEAN'
+Verify-Tun @('present','absent') $false 'TUN_LINGERED_ONE_ABSENT_NOT_ENOUGH'
+Verify-Tun @('error','error') $false 'TUN_ALL_QUERY_ERRORS_RETAIN_GUARD'
+'WATCHDOG_TUN_SNAPSHOT_SOURCE_MOCK_ALL_PASS'

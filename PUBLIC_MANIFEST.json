@@ -1625,8 +1625,8 @@
     },
     {
       "file": "gateway/dns_guard_watchdog.ps1",
-      "bytes": 2978,
-      "sha256": "09BB8CCD5EE711B40327AD7E871E929A9E31E6D478C04012DF83AADEB7748DF0"
+      "bytes": 3721,
+      "sha256": "6AC735E6C60C9CD96DA670D597929F700178E131D0B74604F1DA3AFE36AD3D5E"
     },
     {
       "file": "gateway/gateway_control.ps1",
@@ -1656,7 +1656,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3070,
-      "sha256": "8B64302C63354D8B8D150B207C6781127284A633E189B784D6E9EFDBA23B68AE"
+      "sha256": "710B6F7F1FD8BA08D4330241F3F43E45AE43DCDF6FD5AEF7DB412B19C51B8527"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1750,8 +1750,8 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 12848,
-      "sha256": "CC5AB5B59E6B5054A04C9EF1E46C56633826C471F9785F5858CF550DD0990435"
+      "bytes": 12938,
+      "sha256": "746B5E21657BAE9059EA8063663256E2A5479839B6AC743F791B21311125DF20"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
@@ -1790,8 +1790,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 212406,
-      "sha256": "B5DEB679E9B8D525A6CB281CD3E1D0C4E6C7D8719520904E69747AF603821A96"
+      "bytes": 213896,
+      "sha256": "27852F565B7CE6FCEBEF4CBD3E8EED4D3B4433BE6E74744772ADD635E9B096F1"
     },
     {
       "file": "pytest.ini",
@@ -1811,7 +1811,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "AFD033E054C6DF8E7713B125A6125D31D26998E8ECDA156208A4FDDBE54A1D00"
+      "sha256": "EDF563FAE08818AE0E50BDEF31C1154A04210711638EEC165D53744F705CF963"
     },
     {
       "file": "SECURITY.md",
@@ -2540,8 +2540,8 @@
     },
     {
       "file": "tests/test_pc_dns_guard_identity.ps1",
-      "bytes": 2251,
-      "sha256": "F6B388CAD9A51591834E4D9AB6FCD92AA53CA1D7A86CDF5BBE574322D7214437"
+      "bytes": 4045,
+      "sha256": "2CB216A7198DACDCF06417142EF99F9E11FE85D4DDB819785AE1C9B861737F25"
     },
     {
       "file": "tests/test_pc_dns_guard_stop_identity.ps1",
