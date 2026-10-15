@@ -21,7 +21,7 @@
     {
       "file": ".github/workflows/v481-private-gateway-review.yml",
       "bytes": 3667,
-      "sha256": "21542607AAE1A4F820B521CEC07B95CD850E8F5D79EF649FFEB1E532536FD4DE"
+      "sha256": "A6CCC5EA11F07DB0D38A9E25153DC3677188DC7C65537D5FE0786CAE9400F697"
     },
     {
       "file": ".gitignore",
@@ -2641,7 +2641,7 @@
     {
       "file": "tests/test_r54_isolated_upgrade.ps1",
       "bytes": 10242,
-      "sha256": "589069BE93FF129905CCC3711CB64A665C65DBB59228C9A09E5097C63FDF9EA8"
+      "sha256": "B1108C6A759262AF74DF1DBC968F4520BE9013E726D121652885A6B8397E0A54"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",
