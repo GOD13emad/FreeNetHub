@@ -54,7 +54,20 @@ def main(stage: Path) -> None:
     before = "OutputBaseFilename=FreeNetHub_4.3.10_R54_Setup"
     if text.count(before) != 1:
         raise RuntimeError("INNO_OUTPUT_ANCHOR_CHANGED")
-    script.write_text(text.replace(before, "OutputBaseFilename=" + REVIEW_NAME), encoding="utf-8")
+    # R54 baseline Inno has an explicit Gateway file list (not a glob).
+    # Only patch the disposable NONRELEASE stage to include the newly
+    # hash-pinned DNS watchdog; never mutate the public R53 installer source.
+    stop_line = r'Source: "..\..\gateway\stop_elevated.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion'
+    watchdog_line = stop_line.replace("stop_elevated.ps1", "dns_guard_watchdog.ps1")
+    if text.count(stop_line) != 1 or "dns_guard_watchdog.ps1" in text:
+        raise RuntimeError("INNO_GATEWAY_WATCHDOG_ENTRY_ANCHOR_CHANGED")
+    if not any(e["file"] == "dns_guard_watchdog.ps1" for e in m["files"]):
+        raise RuntimeError("DNS_WATCHDOG_NOT_IN_GATEWAY_MANIFEST")
+    text = text.replace(stop_line, stop_line + "\n" + watchdog_line)
+    text = text.replace(before, "OutputBaseFilename=" + REVIEW_NAME)
+    script.write_text(text, encoding="utf-8")
+    if watchdog_line not in script.read_text(encoding="utf-8"):
+        raise RuntimeError("PRIVATE_INNO_WATCHDOG_NOT_PACKAGED")
     if sha(stage / "gateway/manifest.json") != SOURCE_GATEWAY_SHA:
         raise RuntimeError("GATEWAY_MANIFEST_POSTCHECK_FAILED")
     if json.loads(release.read_text(encoding="utf-8"))["gatewayManifestSha256"] != SOURCE_GATEWAY_SHA:

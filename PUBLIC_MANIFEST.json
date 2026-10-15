@@ -2125,8 +2125,8 @@
     },
     {
       "file": "tests/prepare_private_gateway_review.py",
-      "bytes": 3222,
-      "sha256": "E0C9DBB4D79F9D2B231BDB615941680BCCDE3DEF531F2CE5C56BD2C8ADE04E35"
+      "bytes": 4136,
+      "sha256": "12143EFC0C7D0CB703D7254D9AE31B2499B443C819C1859B3CF33B5E7D4BA65E"
     },
     {
       "file": "tests/prepare_r54_isolated.py",
