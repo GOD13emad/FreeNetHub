@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "milestone": "V462",
+  "date": "2026-10-15",
+  "objective": "Preserve cross-platform Linux R21 updater discovery in the single unpublished Windows R54 release candidate, without installing a new Linux version or promoting a public release.",
+  "stateBefore": {
+    "mainSHA": "4529690e223183394357ed182f3352ac66c3fa04",
+    "V461PR": 63,
+    "exactHeadCI": [
+      "38681897829:10/10 SUCCESS",
+      "38681873814:10/10 SUCCESS"
+    ],
+    "postmergeCI": "38683335791 RUNNING at initial observation",
+    "physicalWindows": "R54 4.3.10 scoped CFON HTTPS204",
+    "physicalLinux": "R21 4.2.0-linux.21-r54 scoped CFON HTTPS204",
+    "publicLatest": "v4.3.9-r53-windows-stable"
+  },
+  "authoritativeReleaseEvidence": {
+    "releaseID": 412991602,
+    "tag": "v4.3.10-r54-windows-release-review",
+    "draft": true,
+    "prerelease": true,
+    "sourceTarget": "7dd485267221f617beb48e09357e0321cd03510b",
+    "assetCount": 4,
+    "assets": [
+      {
+        "name": "FreeNetHub_4.3.10_R54_Setup.exe",
+        "sha256": "6D3F46C952EFCB0BB653454DA39F6E80754997BD15CB11376FC19E4535BF2DB5",
+        "bytes": 24272803
+      },
+      {
+        "name": "FreeNetHub_4.2.0_Linux_R21.zip",
+        "sha256": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+        "bytes": 254833
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "sha256": "26821B6E0A08AB3AC32DBB11748A55923F0ECD3D0DBD0D582D70D6B3766A69F1",
+        "bytes": 99
+      },
+      {
+        "name": "EVIDENCE.json",
+        "sha256": "BEE138DA752F7213E6F99FCDDB39E4ADCD4F6D415B8C4CD0FD0C94AF028FC455",
+        "bytes": 557
+      }
+    ],
+    "previousThreeAssetsUnchanged": true,
+    "previousPublicStableUnchanged": true,
+    "originalLinuxSource": "Same file already publicly attached to R53 stable; GitHub original and Linux local archive SHA equality"
+  },
+  "physicalAndReproducibleVerification": {
+    "archiveIntegrity": "ZIP testzip PASS, PACKAGE_MANIFEST.json version=4.2.0-linux.21-r54, 24 payload entries byte sizes and SHA256 24/24 PASS, no embedded runtime binaries",
+    "linuxInstalledManifest": "9/9 PASS",
+    "linuxLiveCFON": "HTTPS204, Tailscale Running",
+    "linuxLiveUpdateCheck": "localRevision21, latestPublished remoteRevision21, updateAvailable=false",
+    "isolatedUpgrade": "tests/test_linux_r21_upgrade_preserves_data.py PASS; isolated HOME R20->R21, 5 user files preserved, corruption rejected exit75, one install root, offline",
+    "trackedRegression": "tests/test_v462_mixed_release_update.py: synthetic future Latest with Windows R54 EXE + frozen Linux R21 ZIP; R21 no redundant update; old R20 offers R21; missing Linux ZIP fails closed and never ranks Windows EXE; original crossplatform/linux/test_update_revision.py left unchanged to preserve immutable Linux R21 package payload hash.",
+    "regressionResult": "PASS: python3 tests/test_v462_mixed_release_update.py and original crossplatform/linux/test_update_revision.py; CI linux-static workflow includes the new external regression.",
+    "releaseMutation": "One pre-authorized unique Linux R21 ZIP added to original unpublished Draft with gh release upload WITHOUT --clobber; old 3 assets unchanged; before+after REST verification; explicit scope notes; private prestate snapshot and mutation receipt",
+    "failurePrevention": "Future Latest GitHub release endpoint excludes draft/prerelease and returns a published full release; adding frozen R21 to prospective R54 avoids Linux update asset disappearance; no need to rebuild, install, or change remote routes.",
+    "manifestGuard": "First insertion into frozen Linux R21 package source test caused crossPlatformManifest FAIL. Reverted exact original file from accepted HEAD; moved added regression outside frozen package to tests/; prevents stale archive manifest hashes or unintended repackaging."
+  },
+  "methodChoice": {
+    "officialSources": [
+      "https://docs.github.com/en/rest/releases/releases#get-the-latest-release",
+      "https://cli.github.com/manual/gh_release_upload",
+      "https://developers.cloudflare.com/warp-client/get-started/linux/",
+      "https://developer.android.com/reference/android/net/VpnService.Builder",
+      "https://developer.apple.com/documentation/networkextension/packet-tunnel-provider"
+    ],
+    "alternatives": [
+      {
+        "option": "Publish R54 Windows-only",
+        "rejected": "Latest would no longer include Linux R21; updater cannot discover installed platform lineage"
+      },
+      {
+        "option": "Rebuild Linux version R22 merely for release",
+        "rejected": "No Linux runtime blocker warrants new release; adds unnecessary regression surface"
+      },
+      {
+        "option": "Attach frozen current public Linux R21 to same Draft",
+        "accepted": "Minimal mutation; SHA identical, existing R21 test PASS"
+      }
+    ]
+  },
+  "openGates": [
+    "Public Windows R54 Stable release requires owner rights/distribution decision; root project has no source LICENSE and third-party obligations exist; do not infer waiver or choose license",
+    "Windows gateway full-device routing Status running=false; no TUN/route/DNS leak acceptance",
+    "Linux native WARP --accept-tos not authorized; sudo -n exit1; Tailscale already active",
+    "Android VpnService packet forwarding and iOS NetworkExtension packet-tunnel-provider/entitlements require actual runtime verification; CI mock/emulator unit tests do not prove end-to-end real traffic",
+    "Owner full mutable browser-profile bytewise data preservation remains unproven, but selected settings SHA and existing dirs PASS"
+  ],
+  "knowledgeBoundary": {
+    "classification": "FACT exact source hashes, CI and physical scoped tests; PROPOSAL public R54 stable and full-device/mobile gates; UNPROVEN global product FINAL",
+    "projectBrain": "Cumulative append-only in PROJECT_BRAIN.md; raw owner private logs and backups remain under .git and are not shared",
+    "reuseTargets": [
+      "Release governance",
+      "Linux updater compatibility",
+      "Cross-platform future stable scope",
+      "Technical maintenance documentation"
+    ]
+  },
+  "status": "V462_SINGLE_R54_DRAFT_CROSS_PLATFORM_CONTINUITY_VERIFIED; TRACKED_REGRESSION_PR_CI_PENDING",
+  "exactNextAction": "Publish sanitized evidence plus one Linux updater regression, run exact-head CI and merge; do not promote Draft until rights and scope release gates independently pass."
+}
