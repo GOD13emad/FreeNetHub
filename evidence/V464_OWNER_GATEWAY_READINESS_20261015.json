@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "milestone": "V464",
+  "date": "2026-10-15",
+  "changeSet": "Read-only owner Windows full-PC Gateway readiness and independent recovery audit (no Gateway mutation)",
+  "priorAccepted": {
+    "main": "7257efd982a1b585f23630483eaf3fceff083c74",
+    "V463PR": 65,
+    "postmergeCI": "38690509266, 10/10 SUCCESS",
+    "mainSynchronizedWindowsLinux": true
+  },
+  "ownerRuntime": {
+    "windows": "R54 4.3.10 installed with CFON connected=true and HTTPS204; AnyDesk and Tailscale services running",
+    "linux": "R21 installed manifest checks PASS, CFON HTTPS204, Tailscale and AnyDesk services active; sudo -n denied",
+    "release": "R54 remains unpublished draft/prerelease with 4 SHA-pinned assets; latest public stable R53"
+  },
+  "windowsGateway": {
+    "installedStatus": "running=false, PC_TUN null, console Missing, host default IPv4 route Ethernet",
+    "officialInstalledPreflightExit": 0,
+    "adminElevated": false,
+    "singBoxPinned": true,
+    "gatewayOwnerExists": false,
+    "projectTunExists": false,
+    "installationVersionDifference": {
+      "installedGeneratorSha256": "A417D5C90FE2F5E37B3B32538576930E9E9214E64E520863382E67A37ED90827",
+      "mainV463GeneratorSha256": "F17394E38F0F5E80321982EFC9A438988BBC8E8154E5DC35A079E3BE2449B1B6",
+      "installedGatewayManifestSha256": "3239178AFC96B4E17A9320B31712E76E3A0096791D5BD3D6462AB8FEA5904AE2",
+      "mainGatewayManifestSha256": "440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5",
+      "interpretation": "Installed R54 Gateway predates V463; synchronizing source main does NOT update installed executable or gateway scripts. Do not live-test it as if it contains Tailnet split route fix."
+    }
+  },
+  "remoteRecovery": {
+    "tailscaleBackend": "Running",
+    "tailscaleExitNodeStatus": null,
+    "tailnetPingToWindows": "PASS direct over LAN endpoint in 49 ms",
+    "anydeskInitialActiveSession": false,
+    "action": "Opened existing Linux AnyDesk GUI against existing Windows tailnet address; no service install, no network configuration change",
+    "after": {
+      "linuxLastSessionEvent": "START",
+      "linuxEstablishedTCP7070": true,
+      "windowsEstablishedTCP7070": 1,
+      "windowsAnyDeskOnline": true,
+      "windowsCFONConnected": true
+    },
+    "scope": "Restored authenticated independent remote session; NOT tested under new full-PC TUN"
+  },
+  "dnsRisk": {
+    "nrptPolicies": 68,
+    "nrptRulesMatchingQuad100": 67,
+    "tailnetInterfaceDnsHasExplicitQuad100": false,
+    "observation": "Many Windows NRPT policies target Tailscale Quad100 (100.100.100.100). Tailscale exit node currently absent.",
+    "inference": "Windows sing-box 1.14 PC_TUN strict_route+dns_mode=hijack may block non-TUN port 53 even when destination IP falls within route_exclude_address; therefore V463 CIDR bypass does NOT alone prove MagicDNS survives.",
+    "confidence": "PROBABLE risk from official sing-box and Tailscale primary documentation; physical behavior UNVERIFIED because PC_TUN not started",
+    "minControl": "Under elevated protected test, verify MagicDNS and direct tailnet session both before/during and after rollback, including actual UDP/TCP DNS port 53 behavior; fail closed rather than assume CIDR route exclusion fixes WFP DNS."
+  },
+  "methodSources": [
+    "https://sing-box.sagernet.org/configuration/inbound/tun/",
+    "https://tailscale.com/docs/reference/faq/other-vpns",
+    "https://tailscale.com/docs/reference/quad100",
+    "https://tailscale.com/docs/features/magicdns",
+    "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/settings-and-configuration"
+  ],
+  "verification": "Previous V463 exact installed Windows sing-box 1.14 offline check PASS WARP/NODE/Console 3/3; original V463 unit tests 19/19 PASS on Linux and Windows; exact postmerge CI 10/10; additional V464 owner Gateway official preflight and independent AnyDesk reconnection PASS; no live PC TUN, route/DNS or firewall manipulation.",
+  "criticalPath": [
+    "A packaged, exact SHA-pinned candidate containing V463 Gateway generator/manifest (not merely updated source) required before physical TUN test; must preserve one installed app and current configs.",
+    "Elevated Windows maintenance session with visible UAC authority required (current remote process non-admin).",
+    "Independent authenticated Tailscale/AnyDesk and rollback must be guarded through PC TUN start+traffic+stop with tests for IPv4/IPv6 TCP/UDP, MagicDNS, default routes, DNS leak and original CFON restoration.",
+    "Separate native Linux WARP ToS/sudo, Android/iOS real forwarding+Apple entitlements and distribution rights/Stable authorization remain OPEN."
+  ],
+  "decision": {
+    "status": "OWNER_FULL_TUN_UNPROVEN; V464_READ_ONLY_READINESS_AUDIT_COMPLETE",
+    "rejected": [
+      "Trigger RunAs/UAC from unattended remote session without physical approval",
+      "Patch installed R54 Gateway files by copying source without updating full release manifest/reinstall integration",
+      "Claim MagicDNS coexistence from address exclusions alone",
+      "Publish Stable R54 before rights and supported feature scope review"
+    ],
+    "deferred": "No live TUN start; owner authenticated session restored but no elevation and installed Gateway still old",
+    "confidence": "Confirmed physical observations vs probable DNS risk separately recorded",
+    "reuseTargets": [
+      "Project Brain",
+      "full-system Windows V&V manual",
+      "release risk matrix",
+      "next exact packaged installer candidate"
+    ],
+    "exactNextAction": "Build and validate V463-inclusive in-place installer under hosted isolation, then owner-approved elevated field test with independent AnyDesk/Tailscale recovery and MagicDNS verification; no system-wide network change from current non-admin remote context."
+  }
+}
