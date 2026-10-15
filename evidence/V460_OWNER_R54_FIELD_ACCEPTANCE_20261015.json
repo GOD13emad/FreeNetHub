@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "project": "FreeNet Hub",
+  "milestone": "V460",
+  "date": "2026-10-15",
+  "changeSet": "Real owner Windows R53-to-R54 in-place field update and scoped CFON preservation/acceptance",
+  "authority": {
+    "sourceMain": "7dd485267221f617beb48e09357e0321cd03510b",
+    "PR61": "MERGED",
+    "CIpostmergeRun": 38678432093,
+    "CIpostmerge": "10/10 SUCCESS",
+    "isolatedWindowsRun": 38677740422,
+    "isolatedWindowsModes": "fresh SUCCESS; R53->R54->R53 SUCCESS",
+    "newHostedTestedWindowsInstallerSHA256": "6D3F46C952EFCB0BB653454DA39F6E80754997BD15CB11376FC19E4535BF2DB5",
+    "newInstallerBytes": 24272803,
+    "installerHelperSHA256": "98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C",
+    "originalKnownFieldFailInstallerSHA256": "ED9B89C4C228D128229F5C1C98B628D7226E2E3FD784F8990A63494862C83852",
+    "R53RecoverySetupSHA256": "34A1A45383F8E35F7D23CBD12A76440D063CE43D49E3A5CC23A3518F947353A2"
+  },
+  "verified": {
+    "latestOwnerWindows": {
+      "installationMethod": "exact SHA-pinned Inno per-user same AppId, prior R53 4.3.9",
+      "setupExit": 0,
+      "regDisplayVersion": "4.3.10",
+      "releaseRevision": "4.3.10-r54-update-cache-retention",
+      "registrations": 1,
+      "UIProcesses": 1,
+      "settingsSha256Preserved": true,
+      "previousTopBrowserProfileDirectoriesPresent": 2,
+      "profileContentsFullyHashed": false,
+      "installerLogSavedPrivately": true,
+      "manifestAndInstalledCodeSha256": "PASS, 17 files",
+      "CFONReconnectEngineExit": 0,
+      "sessionConnected": true,
+      "scope": "BROWSER",
+      "loopbackSOCKS5H": "127.0.0.1:19414",
+      "GoogleHttps204": true,
+      "GitHubAPI200": true,
+      "NVIDIA307RedirectTo200": true,
+      "CloudflareTraceDirectCountry": "IR",
+      "CloudflareTraceCFONCountry": "AT",
+      "CloudflareWarpFlag": "off in direct and scoped CFON",
+      "AnyDeskService": "Running",
+      "TailscaleService": "Running",
+      "rebootPerformed": false,
+      "dnsOrDefaultRouteModifiedByChange": false
+    },
+    "LinuxOwner": {
+      "installed": "R21 4.2.0-linux.21-r54",
+      "installSha256Manifest": "PASS 9/9",
+      "CFONHttps204": true,
+      "TailscaleRunning": true,
+      "installationChanged": false
+    },
+    "independentWindowsRecovery": {
+      "directAuthenticatedAnyDeskViaTailnet": "PASS: Linux authenticated session started and established TCP/7070 over Tailscale survived official CFON Stop",
+      "remoteCommanderAfterStop": "PASS",
+      "WindowsTailscalePing": "PASS",
+      "fullNetworkLossRecoverability": "UNPROVEN",
+      "oneShotFallbackTest1": {
+        "status": "FAIL",
+        "cause": "Strict PowerShell property access to absent 'connected' in stopped session",
+        "manualInstalledR53EngineCFONRestoration": "PASS exit0, HTTPS204",
+        "rootCauseEvidence": "PropertyNotFoundException in raw one-shot result"
+      },
+      "offlineFix": {
+        "change": "Guard optional connected/stopped fields with PSObject.Properties existence checks; no watcher service install",
+        "strictModeOriginalErrorReproduced": true,
+        "mockedCasesPassed": 5
+      },
+      "oneShotFallbackTest2": {
+        "status": "AUTO_RECOVERY_PASS",
+        "delaySeconds": 70,
+        "engineExit": 0,
+        "sessionConnected": true,
+        "httpsCode": 204
+      },
+      "ownerUpgradeFallback": {
+        "delaySeconds": 180,
+        "termination": "SKIP_VERSION_CHANGED",
+        "why": "R54 installed successfully; watcher deliberately did not reconnect old R53",
+        "noInterference": true
+      }
+    },
+    "criticalSelectedSettingsBackup": {
+      "type": "Windows DPAPI CurrentUser encrypted 9 file limited backup; not complete user profile backup",
+      "newCipherSHA256": "49E44E86520BE761AF300A22D0EF8ECEDE220F1DCEB570DCA75441DAC02F81C3",
+      "newOriginalBytes": 2287167,
+      "newEncryptedBytes": 254678,
+      "separateProcessDecryptAndHashAllNine": "PASS 9/9",
+      "initialSnapshot": "Older selected settings outdated after legitimate nodes.json/node_public_refresh.json mutations",
+      "freshBaselineBeforeUpgrade": true,
+      "credentialsAndArchiveNotPublished": true
+    }
+  },
+  "validationBoundary": {
+    "accepted": [
+      "Physical owner in-place R53->V458 R54 versioned installation",
+      "One active installation and one GUI",
+      "Original settings SHA identical and previous top profile dirs present",
+      "Original scoped CFON connectivity and egress on Windows",
+      "Owner independent control during scoped CFON stop with a working local fallback",
+      "Source and hosted isolated fresh/upgrade/rollback CI"
+    ],
+    "unproven": [
+      "Byte-level audit of all 7GB+ browser profile contents",
+      "Physical downgrade on currently healthy owner (deliberately deferred as disproportionate vs hosted rollback PASS and exact R53 binary staged)",
+      "Full-device Windows PC tunnel route/DNS/leak/rollback",
+      "Linux native WARP ToS/sudo/full-system validation",
+      "Real Android/iOS forwarding and Apple signing/distribution",
+      "Interactive ChatGPT browser account login (curl 403 is Cloudflare bot challenge)",
+      "Legal provenance and owner choice of project source-code license before public stable release"
+    ],
+    "rejected": [
+      "Blind third repeated physical installer run",
+      "Rebaking existing SHA-labelled old Draft binary",
+      "Claiming entire machine tunneled based on SOCKS5H",
+      "Bulk profile backup/cleanup with no deletion safety evidence",
+      "Downgrading healthy owner R54 solely to inflate test counts"
+    ]
+  },
+  "sources": [
+    "https://jrsoftware.org/ishelp/topic_setup_appid.htm",
+    "https://jrsoftware.org/ishelp/topic_scriptevents.htm",
+    "https://jrsoftware.org/ishelp/topic_setupexitcodes.htm",
+    "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/wait-process",
+    "https://support.anydesk.com/docs/settings",
+    "https://support.anydesk.com/anydesk-is-slow-despite-having-a-lan-connection",
+    "https://developers.cloudflare.com/cloudflare-challenges/challenge-types/challenge-pages/detect-response/"
+  ],
+  "privateProvenance": "Owner Windows .git V459 stop and watchdog first FAIL, corrected watchdog PASS, V460 protected DPAPI snapshot receipt, SHA-pinned owner install Inno log/prestate/transaction result, independent installed manifest-code verification, post-upgrade destination tests. Original private files stay outside Git source tree.",
+  "confidence": "CONFIRMED for recorded field tests, UNPROVEN for remaining gates",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "Release review notes",
+    "Technical maintenance guide",
+    "Failure-prevention regression",
+    "Windows owner installation acceptance"
+  ],
+  "status": "CANDIDATE_PUBLIC_EVIDENCE_PENDING_CI",
+  "exactNextAction": "Promote this sanitized evidence to main after exact-head CI, reconcile original unpublished R54 Draft asset to the exact V458 field-tested binary if retaining one Draft, obtain rights/third-party attribution release clearance, then scope-release Windows R54 without claiming full-system/mobile FINAL; continue separately on global tunnel and mobile runtime."
+}
