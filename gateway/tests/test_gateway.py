@@ -45,6 +45,8 @@ class GatewayTests(unittest.TestCase):
   self.assertIn("dns_guard_watchdog.ps1",apply)
   self.assertIn("PC_DNS_GUARD_WATCHDOG_DID_NOT_START",apply)
   self.assertIn("APPLY_FAILED_PC_DNS_GUARD_ROLLBACK_INCOMPLETE",apply)
+  self.assertIn("if($Mode -eq 'CONSOLE_ONLY'){\n   Get-NetFirewallRule -DisplayName $fwName",apply)
+  self.assertLess(apply.index("if($Mode -eq 'CONSOLE_ONLY'){\n   Get-NetFirewallRule -DisplayName $fwName"),apply.index("if($pcNative){\n   # Fail closed:"))
   self.assertIn("$ownedCreatedDnsRules=@()",apply)
   self.assertIn("APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED",apply)
   self.assertIn("if($lingeringTun){Fail ('APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED:",apply)

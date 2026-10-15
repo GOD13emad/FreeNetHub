@@ -113,8 +113,10 @@ try{
   if(Test-Path $stopResult){try{$stopRecord=Get-Content $stopResult -Raw -Encoding UTF8|ConvertFrom-Json}catch{}}
   if($stopExit -ne 0 -or !$stopRecord -or [string]$stopRecord.status -ne 'PASS'){Fail ('APPLY_FAILED_PROMOTED_ROLLBACK_INCOMPLETE: '+$primaryError)}
  } else {
-  Get-NetFirewallRule -DisplayName $fwName -ErrorAction SilentlyContinue|Remove-NetFirewallRule -ErrorAction SilentlyContinue
-  if(Get-NetFirewallRule -DisplayName $fwName -ErrorAction SilentlyContinue){Fail ('APPLY_FAILED_FIREWALL_ROLLBACK_INCOMPLETE: '+$primaryError)}
+  if($Mode -eq 'CONSOLE_ONLY'){
+   Get-NetFirewallRule -DisplayName $fwName -ErrorAction SilentlyContinue|Remove-NetFirewallRule -ErrorAction SilentlyContinue
+   if(Get-NetFirewallRule -DisplayName $fwName -ErrorAction SilentlyContinue){Fail ('APPLY_FAILED_FIREWALL_ROLLBACK_INCOMPLETE: '+$primaryError)}
+  }
   if($p -and -not $p.HasExited){Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue}
   if($p -and (Get-Process -Id $p.Id -ErrorAction SilentlyContinue)){Fail ('APPLY_FAILED_PROCESS_ROLLBACK_INCOMPLETE: '+$primaryError)}
   if($pcNative){
