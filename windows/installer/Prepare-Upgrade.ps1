@@ -78,7 +78,13 @@ $owned=Get-CimInstance Win32_Process | Where-Object {
 foreach($p in @($owned | Sort-Object { if($_.Name -ieq 'pwsh.exe'){0}else{1} })){
   Stop-Process -Id $p.ProcessId -Force -ErrorAction Stop
 }
-Start-Sleep -Milliseconds 400
+# Stop-Process is asynchronous. Allow only these already-identified owned PIDs
+# a bounded exit window; never wait for or terminate arbitrary processes.
+if(@($owned).Count){
+  $ownedIds=@($owned | ForEach-Object { [int]$_.ProcessId })
+  Wait-Process -Id $ownedIds -Timeout 8 -ErrorAction SilentlyContinue
+}
+# Authoritative postcondition below still fails closed if an owned process remains.
 $left=Get-CimInstance Win32_Process | Where-Object {
   ($_.Name -ieq 'pwsh.exe' -and $_.CommandLine -and
    $_.CommandLine.IndexOf($script,[StringComparison]::OrdinalIgnoreCase) -ge 0) -or

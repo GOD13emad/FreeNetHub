@@ -24,6 +24,9 @@ git -C $root worktree add --detach $work $base
 if($LASTEXITCODE){throw 'WORKTREE_SETUP_FAILED'}
 python (Join-Path $root 'tests\prepare_r54_isolated.py') $work
 if($LASTEXITCODE){throw 'R54_SOURCE_PREP_FAILED'}
+$stagedHelper=Join-Path $work 'windows\installer\Prepare-Upgrade.ps1'
+$helperDigest='98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C'
+if((Get-FileHash -LiteralPath $stagedHelper -Algorithm SHA256).Hash -ne $helperDigest){throw 'V458_HELPER_IN_TESTED_INSTALLER_NOT_VERIFIED'}
 $installScript=Join-Path $work 'windows\installer\FreeNetHub.iss'
 $candidates=@(
   (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
@@ -103,6 +106,7 @@ $receipt=[ordered]@{
   status='PASS';mode=$Mode;sourceBase=$base;releaseRevision=$rev54
   r54InstallerBytes=(Get-Item $r54).Length
   r54InstallerSha256=(Get-FileHash $r54 -Algorithm SHA256).Hash
+  testedInstallerHelperSha256=$helperDigest
   officialR53PinnedHash=$oldSha
   physicalHost='GitHub hosted isolated Windows runner'
   updatedOwnerMachine=$false;scopedVPNMutation=$false

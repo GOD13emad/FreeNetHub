@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "date": "2026-10-15",
+  "project": "FreeNet Hub",
+  "changeSet": "V458",
+  "mainObjective": "Prevent false Inno Prepare-Upgrade code43 from asynchronous exit of exact already-owned application process while keeping active provider and foreign process safety guards intact.",
+  "previousAccepted": "GitHub main SHA 28f3572e550f4e4a7e9baaa9582dddbc25df2795; V457 physical R54 first setup exit7/helper43 and R53 browser CFON restored; old R54 draft SHA ed9b89c4... remains unpublished.",
+  "classification": "PROPOSAL/TESTED_ISOLATED_NOT_YET_CI_ACCEPTED",
+  "rootCause": {
+    "observed": "Owner physical Inno PrepareToInstall abort exit7, helper returned43 when installed UI/pwsh process persisted after only 400ms. Post-abort inspection showed zero owned processes.",
+    "hypothesis": "PowerShell Stop-Process asynchronously terminates owned processes and the 400ms single check was shorter than actual shutdown; process ownership/race exact cause not observed via process trace.",
+    "externalMethod": "Microsoft PowerShell Stop-Process docs explicitly say process termination is asynchronous and recommend Wait-Process; official Wait-Process supports numeric timeout, and Inno event docs say PrepareToInstall may abort before file updates.",
+    "alternatives": [
+      {
+        "option": "Force-close or bypass guard",
+        "rejected": "Would risk active tunnel, foreign processes, remote session"
+      },
+      {
+        "option": "Blind rerun same installer",
+        "rejected": "No process-timing guard and past session became unstable"
+      },
+      {
+        "option": "Bounded wait only exact-owned PID",
+        "selected": "Small code change and explicit postcondition remains enforced"
+      }
+    ]
+  },
+  "delta": {
+    "helper": "windows/installer/Prepare-Upgrade.ps1 adds Wait-Process -Id $ownedIds -Timeout 8 -ErrorAction SilentlyContinue only after Stop-Process -Force on exact owned processes. Final CIM ownership and port fail-closed checks unchanged.",
+    "hermeticTest": "tests/test_prepare_upgrade_wait.ps1 five isolated mocked Windows execution scenarios: quiescent exit0, delayed-owned-exit exit0 after wait, still-owned exit43, active connection exit42, foreign 19414 listener exit42; assertions for no unexpected stop/wait effects.",
+    "hostedWorkflow": "ci.yml adds one bounded Windows test; r54-isolated-acceptance.yml triggers rebuild of immutable R54 app recipe but injects exact V458 helper via source hash control; hosted 2-mode fresh/upgrade/rollback gate must PASS. Artifact name changed to R54-V458-Windows-tested-replacement-candidate; no auto publication.",
+    "reproducibleHash": {
+      "frozenBaseHelper": "39f01a2cbcef9e15ae0d2b279a1965f8ec82f53d7c33527565417aa9e9274614",
+      "V458CandidateHelper": "98bd0a564ea8055960d3a5b6c8cb3b5737da391d88846f7562621b8e8dc1656c"
+    },
+    "manualWindowsTests": {
+      "quiescent": "PASS 0",
+      "delayed": "PASS 0",
+      "stuck": "PASS 43",
+      "activeSession": "PASS 42",
+      "foreignListener": "PASS 42"
+    },
+    "staticLinux": {
+      "prepareScriptSyntax": "PASS",
+      "publicManifest": "PASS",
+      "securityScan": "PASS",
+      "diffCheck": "PASS"
+    },
+    "stillUnproven": [
+      "Hosted Windows rebuilt binary fresh/upgrade/rollback",
+      "Physical owner R53->corrected R54",
+      "Independent stable AnyDesk recovery after CFON off",
+      "Real owner rollback",
+      "Public distribution/license",
+      "Full system/mobile forwarding"
+    ]
+  },
+  "methodSources": [
+    "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/stop-process",
+    "https://learn.microsoft.com/powershell/module/microsoft.powershell.management/wait-process",
+    "https://jrsoftware.org/ishelp/topic_scriptevents.htm",
+    "https://jrsoftware.org/ishelp/topic_setupexitcodes.htm"
+  ],
+  "sourceAuthority": [
+    "evidence/V457_R54_OWNER_FIELD_ABORT_AND_R53_RECOVERY_20261015.json",
+    "windows/installer/Prepare-Upgrade.ps1",
+    "tests/test_prepare_upgrade_wait.ps1",
+    "tests/prepare_r54_isolated.py",
+    "tests/test_r54_isolated_upgrade.ps1"
+  ],
+  "controls": [
+    "Old R54 draft and binary unchanged, no automatic version promotion",
+    "No owner Windows process/net mutation performed by V458 source/test",
+    "Exact old pinned base e4112be preserved and distinct helper hash recorded to prevent original R54 binary identity confusion",
+    "STOP new owner install attempts until separate recovery channel proven"
+  ],
+  "status": "ISOLATED_REGRESSION_PASS_CI_UNPROVEN",
+  "reuseTargets": [
+    "PROJECT_BRAIN",
+    "release engineering",
+    "Windows field upgrade guard",
+    "root-cause and prevention documentation"
+  ],
+  "exactNextAction": "Publish PR for source fix, run exact-head CI plus two-mode hosted R54 isolated acceptance; only after acceptance consider a distinct SHA-pinned draft candidate. Do not modify owner active R53 or original draft."
+}
