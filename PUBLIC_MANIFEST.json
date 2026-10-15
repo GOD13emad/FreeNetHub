@@ -19,6 +19,11 @@
       "sha256": "D934F9A83BE1484372B0F8F41D164A61E9E532F7CF10F3C15C721DC8FDD8C958"
     },
     {
+      "file": ".github/workflows/v465-private-gateway-review.yml",
+      "bytes": 3511,
+      "sha256": "E2CD126627EDE5329207C85CFB8C9BD3AA21EC99288258CB45F224658E5A0741"
+    },
+    {
       "file": ".gitignore",
       "bytes": 953,
       "sha256": "FDF6C2256E896FA294F3D2BCF0D06318C81FBD98C286100832F257C41DF1A456"
@@ -1589,6 +1594,11 @@
       "sha256": "F6B488C2C744CB43042C6569B86B8636A1F11920C8FBB04D3CB9DFA3328D942B"
     },
     {
+      "file": "evidence/V465_PRIVATE_GATEWAY_PACKAGE_READINESS_20261015.json",
+      "bytes": 5530,
+      "sha256": "7E6713176AAC07251D834B2249F2A8980C48CB934A272FA19BB21326C488BB28"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1770,8 +1780,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 194986,
-      "sha256": "8AC296AB41579846DCB272F4640F790F4D7CB5780086571A2ACB9F6867A39CC4"
+      "bytes": 198574,
+      "sha256": "44DCEDBFBC8D540506D9636B970985AF15E7DA5FC29C67609B27960912906362"
     },
     {
       "file": "pytest.ini",
@@ -2107,6 +2117,11 @@
       "file": "tests/prepare_r54_isolated.py",
       "bytes": 5356,
       "sha256": "2581BA064F8929668C4252B5812FEC54A95E9379EF04C9188D6EAFEFBB9F4992"
+    },
+    {
+      "file": "tests/prepare_v465_gateway_review.py",
+      "bytes": 3219,
+      "sha256": "D86B422659C720EF7889EFCC9169857162D3BF68A7F17A8587A5E6091CD72D90"
     },
     {
       "file": "tests/r23_install.ps1",
@@ -2590,8 +2605,8 @@
     },
     {
       "file": "tests/test_r54_isolated_upgrade.ps1",
-      "bytes": 7665,
-      "sha256": "ED68C359F7B06B8188598A5E0C229FA9AB007514320896DAE8436D95D85FB6EE"
+      "bytes": 9070,
+      "sha256": "588E81F9E48A213CB90F2F12288E6B09FAF9331107ABD736189162DEED7A7AD0"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",
