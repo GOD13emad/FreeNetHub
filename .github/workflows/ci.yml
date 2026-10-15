@@ -22,6 +22,9 @@ jobs:
         run: python crossplatform/common/verify_fail_closed.py
       - name: R53 revision-aware update and installer identity
         run: python tests/test_r53_release_identity.py
+      - name: Installer owned-process shutdown bounded-wait regression
+        shell: pwsh
+        run: ./tests/test_prepare_upgrade_wait.ps1
       - name: Engine unit tests
         run: python tests/test_engine.py
       - name: Reject stale Windows node health and throughput data
@@ -33,7 +36,7 @@ jobs:
       - name: Parse PowerShell sources
         shell: pwsh
         run: |
-          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1')
+          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1','windows/installer/Prepare-Upgrade.ps1','tests/test_prepare_upgrade_wait.ps1')
           $files += Get-ChildItem gateway -Filter *.ps1 -File | ForEach-Object FullName
           foreach($f in $files){
             $t=$null;$e=$null

@@ -8,6 +8,8 @@ import subprocess
 import sys
 
 EXPECTED = "e4112be36d6cce97863c59a5dbe6a5d0bcdf5786"
+BASE_HELPER_SHA = "39f01a2cbcef9e15ae0d2b279a1965f8ec82f53d7c33527565417aa9e9274614"
+V458_HELPER_SHA = "98bd0a564ea8055960d3a5b6c8cb3b5737da391d88846f7562621b8e8dc1656c"
 VERSION = "4.3.10"
 REVISION = "4.3.10-r54-update-cache-retention"
 
@@ -60,12 +62,23 @@ def main(root: Path) -> None:
         assert script.count(old) == 1, "INNO_PRESTATE_UNEXPECTED:" + old
         script = script.replace(old, new)
     inno.write_text(script, encoding="utf-8")
+    # The immutable R54 app recipe is reused, but the installer-only helper is
+    # replaced by the independently tested V458 safety correction. Never
+    # misidentify the result as the original R54 candidate SHA/artifact.
+    helper = root / "windows/installer/Prepare-Upgrade.ps1"
+    fix = Path(__file__).resolve().parents[1] / "windows/installer/Prepare-Upgrade.ps1"
+    assert hashlib.sha256(helper.read_bytes()).hexdigest().lower() == BASE_HELPER_SHA, "BASE_INSTALLER_HELPER_CHANGED"
+    assert hashlib.sha256(fix.read_bytes()).hexdigest().lower() == V458_HELPER_SHA, "V458_INSTALLER_HELPER_NOT_ACCEPTED"
+    helper.write_bytes(fix.read_bytes())
+    assert hashlib.sha256(helper.read_bytes()).hexdigest().lower() == V458_HELPER_SHA, "STAGED_HELPER_MISMATCH"
     receipt = {
         "schema": 1, "date": "2026-10-14", "status": "UNSIGNED_R54_RELEASE_LINE_SOURCE_CANDIDATE",
-        "sourceSHA": EXPECTED, "version": VERSION, "revision": REVISION,
+        "sourceSHA": EXPECTED, "installerHelperSha256": V458_HELPER_SHA,
+        "helperFixSource": "V458 bounded owned-process shutdown wait",
+        "version": VERSION, "revision": REVISION,
         "appManifestSha256": manifest_sha, "engineSha256": r["engineSha256"],
         "fixedAppId": "BCE83A4E-8897-4D52-A650-BB67A2BB8142",
-        "scope": "Source transformation only. Inno build, real fresh install, R53 upgrade, rollback separate."
+        "scope": "Candidate recipe with V458 verified installer helper. This is a NEW binary identity; old R54 draft stays unchanged. Fresh/upgrade/rollback and physical field tests separate."
     }
     evidence = root / "evidence/V449_R54_RELEASE_METADATA_20261014.json"
     evidence.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")

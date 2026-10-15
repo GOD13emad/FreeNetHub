@@ -10,13 +10,13 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 34082,
-      "sha256": "33D1643172B2CF57CF90E9A9E03BF30E9711601F04669B329CCEAF0E1F33611F"
+      "bytes": 34302,
+      "sha256": "5AF209662CC8244521913211BEDA5444DA34CF44500A421CA7CA6BF956068CE5"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
-      "bytes": 4007,
-      "sha256": "668CFB8C0D5AA3B7306BD6730CB61F4661F4F82A524A8BB18CEE4541D982CCFD"
+      "bytes": 4602,
+      "sha256": "D934F9A83BE1484372B0F8F41D164A61E9E532F7CF10F3C15C721DC8FDD8C958"
     },
     {
       "file": ".gitignore",
@@ -1559,6 +1559,11 @@
       "sha256": "F8D0B6B671A0DEEB07DBEE4984217FAA4F7DC6EED9E491DE346F4CCB5FA8C238"
     },
     {
+      "file": "evidence/V458_INNO_BOUNDED_OWNER_EXIT_20261015.json",
+      "bytes": 4923,
+      "sha256": "17E97C96937C30A383FD5F0F5356E19888098F8A8608BC5F273534625928A863"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
       "bytes": 7764,
       "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
@@ -1740,8 +1745,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 172902,
-      "sha256": "97CA7E9FB6CCB9B0FD0F9350485EBD1B05BC3F822D885191F23C25CFC2B4CA81"
+      "bytes": 175826,
+      "sha256": "8F1DFE909424BA0708AAE0BC97E44292391072469AB8C3FF99AB23B5C99737ED"
     },
     {
       "file": "pytest.ini",
@@ -2075,8 +2080,8 @@
     },
     {
       "file": "tests/prepare_r54_isolated.py",
-      "bytes": 4217,
-      "sha256": "20F4E032526B960E06D3F6580146E39A50B29BDE3A3ED2ADC28D2ED07CF495B3"
+      "bytes": 5356,
+      "sha256": "2581BA064F8929668C4252B5812FEC54A95E9379EF04C9188D6EAFEFBB9F4992"
     },
     {
       "file": "tests/r23_install.ps1",
@@ -2474,6 +2479,11 @@
       "sha256": "6323DD2454DD5D9DA53B7A084FD937B8BE63D6E7652522B56EFDB7C6755BD465"
     },
     {
+      "file": "tests/test_prepare_upgrade_wait.ps1",
+      "bytes": 3986,
+      "sha256": "1178E55CDBA9DF4179021DFE196BA214A3192D3AAB374DF65CA932A9C1575F62"
+    },
+    {
       "file": "tests/test_product_boundary.py",
       "bytes": 1779,
       "sha256": "F7BA03F2F9C492075895AE5ECFB2F7D12FC4602F7D8A6E835149232C2E491E46"
@@ -2555,8 +2565,8 @@
     },
     {
       "file": "tests/test_r54_isolated_upgrade.ps1",
-      "bytes": 7329,
-      "sha256": "464795C9ED7C96EF452505FBB498C59AD3A9341903EFFCCFF3FF9B586FAA6EE7"
+      "bytes": 7665,
+      "sha256": "ED68C359F7B06B8188598A5E0C229FA9AB007514320896DAE8436D95D85FB6EE"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",
@@ -2630,8 +2640,8 @@
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",
-      "bytes": 3984,
-      "sha256": "39F01A2CBCEF9E15AE0D2B279A1965F8EC82F53D7C33527565417AA9E9274614"
+      "bytes": 4345,
+      "sha256": "98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",
