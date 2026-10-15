@@ -17,8 +17,24 @@ class GatewayTests(unittest.TestCase):
   provider=next(x for x in c["outbounds"] if x.get("tag")=="provider")
   self.assertEqual(provider["type"],"socks");self.assertEqual(provider["server"],"127.0.0.1");self.assertEqual(provider["server_port"],19460)
   self.assertEqual(c["route"]["final"],"provider");self.assertTrue(c["route"]["auto_detect_interface"])
-  self.assertNotIn("route_exclude_address",c["inbounds"][0])
+  self.assertIn("100.64.0.0/10",c["inbounds"][0]["route_exclude_address"])
+  self.assertIn("fd7a:115c:a1e0::/48",c["inbounds"][0]["route_exclude_address"])
+  self.assertNotIn("162.159.192.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertTrue(any("sing-box.exe" in x.get("process_name",[]) and x["outbound"]=="direct" for x in c["route"]["rules"]))
+ def test_tailscale_bypass_pc_only_preserves_original_warp_cidrs(self):
+  for provider in ("WARP","NODE"):
+   c,_=M.build("PC_TUNNEL",provider,None)
+   excludes=c["inbounds"][0]["route_exclude_address"]
+   self.assertEqual(excludes.count("100.64.0.0/10"),1)
+   self.assertEqual(excludes.count("fd7a:115c:a1e0::/48"),1)
+   self.assertTrue(c["inbounds"][0]["auto_route"] and c["inbounds"][0]["strict_route"])
+   if provider=="WARP":
+    self.assertIn("162.159.192.0/24",excludes)
+   else:
+    self.assertNotIn("162.159.192.0/24",excludes)
+  console,_=M.build("CONSOLE_ONLY","WARP",None)
+  self.assertNotIn("100.64.0.0/10",console["inbounds"][0].get("route_exclude_address",[]))
+  self.assertEqual(console["route"]["final"],"direct")
  def test_pc_tunnel_controller_supports_node_strict_udp_and_dynamic_stop(self):
   text=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
   self.assertIn("[ValidateSet('WARP','NODE')][string]$Provider='WARP'",text)
@@ -56,7 +72,7 @@ class GatewayTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as td:
    q=pathlib.Path(td)/"p.json";q.write_text(json.dumps(prof),encoding="utf-8")
    c,p=M.build("PC_TUNNEL","WARP",str(q))
-   self.assertNotIn("route_exclude_address",c["inbounds"][0])
+   self.assertEqual(c["inbounds"][0]["route_exclude_address"],["100.64.0.0/10","fd7a:115c:a1e0::/48"])
  def test_console_only_source_rule_and_pc_direct(self):
   c,p=M.build("CONSOLE_ONLY","WARP",None)
   self.assertEqual(c["route"]["final"],"direct");self.assertEqual(c["inbounds"][0]["dns_mode"],"disabled");self.assertNotIn("dns",c)
