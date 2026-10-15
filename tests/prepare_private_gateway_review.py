@@ -1,4 +1,4 @@
-"""Build an isolated NONRELEASE R54 package with accepted V463 Gateway sources.
+"""Build an isolated NONRELEASE R54 package with V485 hash-pinned Gateway sources.
 
 Run only after prepare_r54_isolated.py in a detached R53-base worktree.
 Never mutates the owner's active app, routes, published assets or accepted R54 draft.
@@ -9,7 +9,7 @@ import json
 import subprocess
 import sys
 
-SOURCE_GATEWAY_SHA = "8B64302C63354D8B8D150B207C6781127284A633E189B784D6E9EFDBA23B68AE"
+SOURCE_GATEWAY_SHA = "710B6F7F1FD8BA08D4330241F3F43E45AE43DCDF6FD5AEF7DB412B19C51B8527"
 BASE_SHA = "e4112be36d6cce97863c59a5dbe6a5d0bcdf5786"
 REVIEW_NAME = "FreeNetHub_4.3.10_R54_V481_GATEWAY_REVIEW_DO_NOT_RELEASE"
 
@@ -27,7 +27,7 @@ def main(stage: Path) -> None:
         raise RuntimeError("BASE_SHA_NOT_PINNED")
     manifest = source / "gateway/manifest.json"
     if sha(manifest) != SOURCE_GATEWAY_SHA:
-        raise RuntimeError("V463_GATEWAY_MANIFEST_NOT_PINNED")
+        raise RuntimeError("V485_GATEWAY_MANIFEST_NOT_PINNED")
     m = json.loads(manifest.read_text(encoding="utf-8"))
     if len(m["files"]) != 18:
         raise RuntimeError("GATEWAY_FILE_COUNT_CHANGED")
