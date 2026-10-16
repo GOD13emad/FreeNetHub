@@ -93,6 +93,17 @@ try{
 }catch{Add-Err ('engine: '+$_.Exception.Message)}
 try{
  $left=@()
+ $selective=Join-Path $Root 'data\selective_windows\policy.json'
+ if(Test-Path -LiteralPath $selective){
+  try{
+   $d=Get-Content -LiteralPath $selective -Raw -Encoding UTF8 | ConvertFrom-Json
+   if($null -eq $d -or $null -eq $d.schema -or $null -eq $d.enabled){throw 'SELECTIVE_STATE_INVALID'}
+   if([bool]$d.enabled -or [bool]$d.inFlight){$left+='Selective Windows user PAC still active or interrupted'}
+   if(@(Get-NetTCPConnection -State Listen -LocalPort @(19416,19417) -ErrorAction SilentlyContinue).Count){
+    $left+='Selective Windows PAC/HTTP bridge listener still present'
+   }
+  }catch{$left+='Selective Windows user PAC ownership/status unresolved'}
+ }
  if(Get-Process sing-box -ErrorAction SilentlyContinue|Where-Object{$_.Path -and $_.Path.StartsWith($Root,[StringComparison]::OrdinalIgnoreCase)}){$left+='sing-box'}
  if(Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq 'FreeNetHub'}){$left+='FreeNetHub TUN'}
  if(Test-Path -LiteralPath (Join-Path $Root 'gateway\runtime\wsl-console-owner.json')){$left+='WSL console owner'}

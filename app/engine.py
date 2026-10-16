@@ -10,7 +10,7 @@ _dnspec=importlib.util.spec_from_file_location("freenethub_directnet",APP/"direc
 DN=importlib.util.module_from_spec(_dnspec);_dnspec.loader.exec_module(DN)
 PORTS={'NODE':19460,'WARP':19410,'GOOL':19413,'CFON':19414,'TOR':19450,'WEBTUNNEL':19452,'OBFS4':19453}
 BRIDGE_MODES=('WEBTUNNEL','OBFS4')
-DEFAULT={'theme':'dark','country':'AUTO','home':'https://www.youtube.com/','monitor':False,'autoRepair':False,'showIp':False,'minimizeToTray':True,'order':['NODE','WARP','TOR','GOOL','CFON'],'localProxy':'socks5h://127.0.0.1:9909','includeDirect':False,'testPathMode':'BASE','pingTimeoutSec':10,'downloadTimeoutSec':30,'uploadTimeoutSec':30}
+DEFAULT={'theme':'dark','country':'AUTO','home':'https://www.youtube.com/','monitor':False,'autoRepair':False,'showIp':False,'minimizeToTray':True,'order':['NODE','WARP','TOR','GOOL','CFON'],'localProxy':'socks5h://127.0.0.1:9909','includeDirect':False,'testPathMode':'BASE','pingTimeoutSec':10,'downloadTimeoutSec':30,'uploadTimeoutSec':30,'selectiveDomains':'brave.com\nbravesoftware.com\nstripe.com\nstripe.network'}
 ALLOWED_COUNTRIES={'AT','DE','NL','US','CA','GB','FR','SG','JP','AUTO'}
 PUBLIC_REFRESH_TTL_SECONDS=1800
 PUBLIC_NODE_SOURCES=(
@@ -74,6 +74,13 @@ def dep_path(name):
  d=deps();x=d.get(name)
  if isinstance(x,dict):return str(x.get('path') or '')
  return str(x or '')
+def _selective_route():
+ p=APP/'selective_route_windows.py'
+ spec=importlib.util.spec_from_file_location('fnh_selective_route_windows',p)
+ m=importlib.util.module_from_spec(spec)
+ spec.loader.exec_module(m)
+ return m
+
 def validate_settings(s):
  if s.get('theme') not in ('dark','light'):raise ValueError('INVALID_THEME')
  if s.get('country') not in ALLOWED_COUNTRIES:raise ValueError('INVALID_COUNTRY')
@@ -89,6 +96,7 @@ def validate_settings(s):
   if not lo<=v<=hi:raise ValueError('INVALID_'+k.upper())
   s[k]=v
  s['testPathMode']=str(s.get('testPathMode','BASE')).upper()
+ s['selectiveDomains']='\n'.join(_selective_route().normalize_domains(s.get('selectiveDomains',DEFAULT['selectiveDomains'])))
  return {k:s.get(k,v) for k,v in DEFAULT.items()}
 def test_timeouts():
  s=settings()
@@ -1497,6 +1505,24 @@ def safe_export():
  return {'path':str(path),'sha256':digest(path)}
 
 def dispatch(action,mode,payload):
+ if action in ('SelectiveEnable','SelectiveDisable','SelectiveStatus'):
+  sr=_selective_route()
+  if action=='SelectiveStatus':return sr.status()
+  if action=='SelectiveDisable':
+   outcome=sr.disable()
+   if not outcome.get('ok'):raise RuntimeError(outcome.get('error','SELECTIVE_DISABLE_FAILED'))
+   return outcome
+  if mode not in ('NODE','WARP','GOOL','CFON','TOR','WEBTUNNEL','OBFS4'):
+   raise ValueError('SELECTIVE_LOCAL_PROVIDER_REQUIRED')
+  q=pathlib.Path(payload).resolve()
+  if not q.is_relative_to((ROOT/'jobs').resolve()) or not q.is_file() or q.stat().st_size > 16384:
+   raise ValueError('SELECTIVE_REQUEST_NOT_OWNED')
+  request=read(q,{})
+  if not isinstance(request,dict):
+   raise ValueError('SELECTIVE_REQUEST_INVALID')
+  if not owned(mode) or not verify(mode).get('healthy'):
+   raise ValueError('SELECTIVE_PROVIDER_NOT_HEALTHY_AND_OWNED')
+  return sr.enable(request.get('domains',''),PORTS[mode],mode)
  if action=='Inventory':return inventory()
  if action=='Settings':
   new=validate_settings(read(payload));write(ROOT/'settings.json',new);return {'saved':True,'settings':new}
@@ -1546,9 +1572,18 @@ def dispatch(action,mode,payload):
   h={'healthy':False,'connected':False,'state':'CONNECT_FAILED','mode':'CHATGPT','scope':'CHATGPT_WEB_EDGE','ip':'','country':'','warp':'','seconds':None,'checked':now(),'checks':[],'countryPolicy':'','error':'ALL_CHATGPT_PATHS_FAILED','attempts':failed,'applicationAcceptance':'NOT_TESTED'}
   write(ROOT/'session.json',h);return h
  if action=='Stop':
+  if os.name=='nt':
+   r=_selective_route().disable()
+   if not r.get('ok'):raise RuntimeError('SELECTIVE_RESTORE_REQUIRED_BEFORE_STOP')
   stopped=[m for m in PORTS if stop(m)];write(ROOT/'session.json',{'healthy':False,'stopped':True,'checked':now()});return {'stopped':stopped}
  if action=='StopOne':
   if mode not in PORTS:raise ValueError('INVALID_STOP_MODE')
+  if os.name=='nt':
+   sr=_selective_route()
+   sel=sr.status()
+   if sel.get('enabled') and sel.get('method')==mode:
+    r=sr.disable()
+    if not r.get('ok'):raise RuntimeError('SELECTIVE_RESTORE_REQUIRED_BEFORE_STOP')
   did=stop(mode);return {'stopped':[mode] if did else [],'mode':mode}
  if action=='Scan':
   old=[m for m in PORTS if owned(m)];rows=[]

@@ -3,12 +3,12 @@ Set-StrictMode -Version Latest
 $Root=Split-Path $PSScriptRoot -Parent
 Set-Location $Root
 $FreezeFiles=@(
- 'app\engine.py','app\directnet.py','app\nodehub.py','app\FreeNetHub.ps1','app\View.xaml','app\manifest.json',
+ 'app\engine.py','app\selective_route_windows.py','app\selective_http_bridge.py','app\directnet.py','app\nodehub.py','app\FreeNetHub.ps1','app\View.xaml','app\manifest.json',
  'app\directdpi\Start-DirectDpi.ps1','app\directdpi\Stop-DirectDpi.ps1','app\directdpi\hosts.txt',
  'app\directdpi\tools\winws.exe','app\directdpi\tools\WinDivert.dll','app\directdpi\tools\WinDivert64.sys','app\directdpi\tools\cygwin1.dll',
  'app\directdns\ctrld.exe','app\directdns\ctrld.toml','app\directdns\LICENSE-ctrld.txt',
  'gateway\manifest.json','windows\standalone\FreeNetHub.exe','windows\standalone\FreeNetHubShell.cs','windows\standalone\FreeNetHubShell.manifest','windows\standalone\MANIFEST.json',
- 'windows\installer\FreeNetHub.iss','windows\installer\Prepare-Upgrade.ps1','Uninstall-FreeNetHub.ps1','RELEASE.json'
+ 'windows\installer\FreeNetHub.iss','windows\installer\Prepare-Upgrade.ps1','windows\installer\Prepare-SelectiveUpgrade.ps1','Uninstall-FreeNetHub.ps1','RELEASE.json'
 )
 $Freeze=@{}
 foreach($rel in $FreezeFiles){$Freeze[$rel]=(Get-FileHash -LiteralPath (Join-Path $Root $rel) -Algorithm SHA256).Hash}

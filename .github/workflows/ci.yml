@@ -25,8 +25,16 @@ jobs:
       - name: Installer owned-process shutdown bounded-wait regression
         shell: pwsh
         run: ./tests/test_prepare_upgrade_wait.ps1
+      - name: Selective Windows PAC pre-upgrade native fail-closed cases
+        shell: pwsh
+        run: ./tests/test_prepare_selective_upgrade.ps1
       - name: Engine unit tests
         run: python tests/test_engine.py
+      - name: Selective Windows PAC policy and UI integration
+        run: |
+          python tests/test_windows_selective_routing.py
+          python tests/test_windows_selective_http_bridge.py
+          python tests/test_windows_selective_integration.py
       - name: Reject stale Windows node health and throughput data
         run: python tests/test_node_health_freshness.py
       - name: Gateway unit tests
@@ -36,7 +44,7 @@ jobs:
       - name: Parse PowerShell sources
         shell: pwsh
         run: |
-          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1','windows/installer/Prepare-Upgrade.ps1','tests/test_prepare_upgrade_wait.ps1')
+          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1','windows/installer/Prepare-Upgrade.ps1','windows/installer/Prepare-SelectiveUpgrade.ps1','tests/test_prepare_upgrade_wait.ps1','tests/test_prepare_selective_upgrade.ps1')
           $files += Get-ChildItem gateway -Filter *.ps1 -File | ForEach-Object FullName
           foreach($f in $files){
             $t=$null;$e=$null
@@ -60,6 +68,9 @@ jobs:
           python3 crossplatform/linux/test_update_revision.py
           python3 crossplatform/linux/test_selective_tunnel.py
           python3 crossplatform/linux/test_selective_integration.py
+          python3 tests/test_windows_selective_routing.py
+          python3 tests/test_windows_selective_http_bridge.py
+          python3 tests/test_windows_selective_integration.py
           python3 tests/test_v462_mixed_release_update.py
           python3 tests/test_linux_browser_action_guards.py
           python3 tests/test_linux_site_diagnostics_auto.py

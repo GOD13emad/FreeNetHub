@@ -10,13 +10,18 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 35220,
-      "sha256": "0310FB4D1A80D164D84C896E195BA8A360E13F22EF33A0BECAFEB34388A87B1B"
+      "bytes": 35899,
+      "sha256": "A5B2FBEA48AAA706EF09680DA5ECB2838B04D309268D28E237313BFA7C32A9CB"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
       "bytes": 4602,
       "sha256": "D934F9A83BE1484372B0F8F41D164A61E9E532F7CF10F3C15C721DC8FDD8C958"
+    },
+    {
+      "file": ".github/workflows/r55-selective-candidate.yml",
+      "bytes": 7028,
+      "sha256": "0744E0C327401630B304ED5FCC4EDD6D160877FE47B9682D7968B70C5E88E3F7"
     },
     {
       "file": ".github/workflows/v465-private-gateway-review.yml",
@@ -105,18 +110,18 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 116975,
-      "sha256": "5FE26EDF8E9A17CA7AE2F441CC772419E80574B501BCAED0144036BC314FC6A9"
+      "bytes": 118678,
+      "sha256": "DAFB1E09602408B8ECDC7DE05955E13E8B04EF0CE5BD373DB49331EC08B83925"
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 106287,
-      "sha256": "AAC1DE833EE86917CD5A35002CFBADDEEBA164BB7E72B4D8034C53215AEDA348"
+      "bytes": 109646,
+      "sha256": "0D7C47285926A370DD49D40BCE5242C8AE2EFD845FE12AC4273EDAB6CC37C6C2"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 4874,
-      "sha256": "E1CF428418754366FB2E8B2D86B4052423812504D9D961CC5C069768BEAC636F"
+      "bytes": 5440,
+      "sha256": "8B6F912DF8A846244AC5CD1450F057E66B3F5D9773811D300FCB6A59911F1516"
     },
     {
       "file": "app/nodehub.py",
@@ -124,9 +129,19 @@
       "sha256": "12E6790E933C91AFACCE0A82CCFFEF19DBBB1FC31D7308D75AA902EAF69B4F5C"
     },
     {
+      "file": "app/selective_http_bridge.py",
+      "bytes": 6652,
+      "sha256": "7D9280D02D0C6742D474C8044D9A1E9DE55C1603CC3F4A85F28B6CD85646CE8B"
+    },
+    {
+      "file": "app/selective_route_windows.py",
+      "bytes": 19913,
+      "sha256": "6E3021784A328E936B8780AFE2114EE73BA3FB4BCF592398C48C5252DD684DFC"
+    },
+    {
       "file": "app/View.xaml",
-      "bytes": 73864,
-      "sha256": "3F7A9F5E7D16DEF9F14933009FE090DEB3B5203A0245AE954E9CFC77AAE60C6A"
+      "bytes": 76813,
+      "sha256": "C2DB59DFA16C8AB503F7481AB37E9E117470BF747F9955E6A7ABF7BEF14EC00D"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -1800,8 +1815,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 205195,
-      "sha256": "E1AFFE22633CA84AC31D84A2C20B00FE5D39A14F988C1084EACFD22A9E6A07E7"
+      "bytes": 211990,
+      "sha256": "1634FFC9EB1D46AFF10072D7FD6C047A032648BCCE63B739491BFA52638ECD15"
     },
     {
       "file": "pytest.ini",
@@ -1820,8 +1835,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 42767,
-      "sha256": "D3890F890B6D20590B21C4E8F758E8E506F245632794A482155AC2685CE0316C"
+      "bytes": 43563,
+      "sha256": "283C88122574B4BE97BB2276F0C8CD7EBDF695465E22E9EE95269CE8A037381E"
     },
     {
       "file": "SECURITY.md",
@@ -2090,8 +2105,8 @@
     },
     {
       "file": "tests/build_v439_installer.ps1",
-      "bytes": 3522,
-      "sha256": "E6A82BFADDA2DEFAC2987805CAD604126B18339B185CCED5746D354D076F7E26"
+      "bytes": 3635,
+      "sha256": "E3EB1CDD1CD7FDBA861B7F7E723902A3B902C22DB880B28BDF813F65EE642017"
     },
     {
       "file": "tests/build_v43_installer.ps1",
@@ -2142,6 +2157,11 @@
       "file": "tests/prepare_r54_isolated.py",
       "bytes": 5356,
       "sha256": "2581BA064F8929668C4252B5812FEC54A95E9379EF04C9188D6EAFEFBB9F4992"
+    },
+    {
+      "file": "tests/prepare_r55_selective_candidate.py",
+      "bytes": 8483,
+      "sha256": "96378331ACB2B4FEFB35FC1E0E76727A536B0720531BC921D4A3FE23FD8D7134"
     },
     {
       "file": "tests/prepare_v465_gateway_review.py",
@@ -2549,6 +2569,11 @@
       "sha256": "6323DD2454DD5D9DA53B7A084FD937B8BE63D6E7652522B56EFDB7C6755BD465"
     },
     {
+      "file": "tests/test_prepare_selective_upgrade.ps1",
+      "bytes": 2071,
+      "sha256": "FAB5227311A68B4E87092AEF26AC5A5EAA952E2BBB5D401E45DDA7E490EED885"
+    },
+    {
       "file": "tests/test_prepare_upgrade_wait.ps1",
       "bytes": 3986,
       "sha256": "1178E55CDBA9DF4179021DFE196BA214A3192D3AAB374DF65CA932A9C1575F62"
@@ -2659,6 +2684,26 @@
       "sha256": "2DB19477918BCED1FA83315C793E7CA274167BC4AC60A34CFC2C69F505ECD580"
     },
     {
+      "file": "tests/test_windows_r55_isolated.ps1",
+      "bytes": 8257,
+      "sha256": "F6752FCB687638674EFB6A34D662D1AF9C701EC963772E47F6E03746679B3232"
+    },
+    {
+      "file": "tests/test_windows_selective_http_bridge.py",
+      "bytes": 6607,
+      "sha256": "890FACD89E6823DF6889D7F38193B5C461680DCA43F22FA3F4C09CA78048E5D4"
+    },
+    {
+      "file": "tests/test_windows_selective_integration.py",
+      "bytes": 6697,
+      "sha256": "3D37BFAADD865235848F652145AADFC36706D22165666000FF2B2C8017D28046"
+    },
+    {
+      "file": "tests/test_windows_selective_routing.py",
+      "bytes": 9299,
+      "sha256": "FB9FF7A8150BAFD416BA9E84EEFF2A92DA40864A507D602ADE8093A178021D91"
+    },
+    {
       "file": "tests/verify_frozen_linux_r20_asset.py",
       "bytes": 1420,
       "sha256": "BB49B8E13A8887B29DAC244732F467B4519F933A6891B0E5CC5914D855679FCE"
@@ -2705,13 +2750,18 @@
     },
     {
       "file": "Uninstall-FreeNetHub.ps1",
-      "bytes": 7107,
-      "sha256": "EB7773B2495FEA4C8E3A30A8E31A73E0CE036DA07B159B0B6DDA1EC36CC8AC52"
+      "bytes": 7773,
+      "sha256": "135BD8082A0CCC0DEE5DE3929DEA95226B665BFDD4B3F014B1547FE3907DEA3C"
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 14589,
-      "sha256": "9F84E67277FDBA2BFA7B97A19A73EDDFABC3F6CBE574275C68C763CD8E8C4E6C"
+      "bytes": 15726,
+      "sha256": "11B7510C1FE86E5F9283AD1E1D427373CB55F9857F633BEAE9AD68C70B463FCE"
+    },
+    {
+      "file": "windows/installer/Prepare-SelectiveUpgrade.ps1",
+      "bytes": 1207,
+      "sha256": "9B5AE7C12E90B933D2795D9881B8B9B3EF20E35D517A52824B05F042DA59DDE8"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",
