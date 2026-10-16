@@ -180,6 +180,12 @@ jobs:
                   $code=if($stop){[string]$stop.result.error}else{'NO_CONTROLLER_STOP_RECEIPT'}
                   if($code -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$code='GATEWAY_STOP_UNCLASSIFIED'}
                   Write-Host ('R55_NATIVE_STOP_GATEWAY_ERROR='+$code)
+                  $stopReceipt=Join-Path $root 'gateway\runtime\stop_result.json'
+                  $firstNative=$null
+                  if(Test-Path $stopReceipt){try{$firstNative=Get-Content $stopReceipt -Raw|ConvertFrom-Json}catch{}}
+                  $firstError=if($firstNative){[string]$firstNative.error}else{'NATIVE_STOP_RECEIPT_MISSING'}
+                  if($firstError -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$firstError='NATIVE_STOP_DETAIL_UNCLASSIFIED'}
+                  Write-Host ('R55_NATIVE_FIRST_STOP_ELEVATED_ERROR='+$firstError)
                   $direct=Join-Path $root 'gateway\stop_elevated.ps1'
                   $directProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList @('-NoProfile','-NonInteractive','-File',('"'+$direct+'"')) -PassThru -WindowStyle Hidden
                   if(!$directProc.WaitForExit(60000)){
@@ -190,6 +196,11 @@ jobs:
                   $nativeStop=$null
                   if(Test-Path $stopReceipt){try{$nativeStop=Get-Content $stopReceipt -Raw|ConvertFrom-Json}catch{}}
                   Write-Host ('R55_NATIVE_DIRECT_CLEANUP='+$(if($directProc.ExitCode -eq 0 -and $nativeStop -and $nativeStop.status -eq 'PASS'){'PASS'}else{'UNVERIFIED'}))
+                  if($nativeStop -and $nativeStop.status -ne 'PASS'){
+                    $directError=[string]$nativeStop.error
+                    if($directError -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$directError='DIRECT_STOP_DETAIL_UNCLASSIFIED'}
+                    Write-Host ('R55_NATIVE_DIRECT_STOP_ERROR='+$directError)
+                  }
                   throw ('R55_NATIVE_STOP_CONTROLLER_REJECTED_'+$code)
                 }
               }else{
