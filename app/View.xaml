@@ -587,7 +587,7 @@
    <Border Style="{StaticResource Card}" Padding="14,12" Margin="0,0,0,8">
      <StackPanel>
        <TextBlock Text="◇ تونل انتخابی دامنه‌ها" FontSize="20" FontWeight="Bold" />
-       <TextBlock Text="فقط مقصدهای مشخص از SOCKS5 روش متصل عبور می‌کنند؛ بقیه DIRECT می‌مانند. فقط برنامه‌های سازگار با PAC/WinINet، نه TUN کل سیستم." Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,4,0,10"/>
+       <TextBlock Text="دامنه‌های انتخابی HTTPS از پراکسی HTTP محلی به SOCKS5 عبور می‌کنند؛ بقیه DIRECT. فقط برنامه‌های سازگار با PAC؛ بارگیری‌نشدن PAC ممکن است موجب اتصال مستقیم شود. نه TUN کل سیستم." Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,4,0,10"/>
        <TextBlock Text="لیست دامنه‌ها (هر خط یک دامنه؛ شامل زیردامنه‌ها)" />
        <TextBox Name="SelectiveDomains" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="112" FontFamily="Consolas" FlowDirection="LeftToRight" Margin="0,5,0,8" />
        <WrapPanel>

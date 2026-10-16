@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 35776,
-      "sha256": "D0E46692ABA3B5D86FB420C64B00774DCD9CD0E8B3B18B9F97FC1C9CE5E68348"
+      "bytes": 35899,
+      "sha256": "A5B2FBEA48AAA706EF09680DA5ECB2838B04D309268D28E237313BFA7C32A9CB"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -115,8 +115,8 @@
     },
     {
       "file": "app/manifest.json",
-      "bytes": 5174,
-      "sha256": "B8302A831F8CD986F691D683772F2622CD7FF5237FD2320483C48462CD716AE9"
+      "bytes": 5440,
+      "sha256": "8B6F912DF8A846244AC5CD1450F057E66B3F5D9773811D300FCB6A59911F1516"
     },
     {
       "file": "app/nodehub.py",
@@ -124,14 +124,19 @@
       "sha256": "12E6790E933C91AFACCE0A82CCFFEF19DBBB1FC31D7308D75AA902EAF69B4F5C"
     },
     {
+      "file": "app/selective_http_bridge.py",
+      "bytes": 6652,
+      "sha256": "7D9280D02D0C6742D474C8044D9A1E9DE55C1603CC3F4A85F28B6CD85646CE8B"
+    },
+    {
       "file": "app/selective_route_windows.py",
-      "bytes": 18309,
-      "sha256": "F5D971A361F7F37E6B30CFA701B901DDA13BA15F6561F1C6BC4D19D3C83B22DD"
+      "bytes": 19913,
+      "sha256": "6E3021784A328E936B8780AFE2114EE73BA3FB4BCF592398C48C5252DD684DFC"
     },
     {
       "file": "app/View.xaml",
-      "bytes": 76726,
-      "sha256": "0375FACE5BE6544528D163FD08CC6E1E89D5E4AA784258E777DAB64085FB8462"
+      "bytes": 76813,
+      "sha256": "C2DB59DFA16C8AB503F7481AB37E9E117470BF747F9955E6A7ABF7BEF14EC00D"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -1805,8 +1810,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 209238,
-      "sha256": "B38EA7A5CD5B93AA0F065329FD94B2C1687EB93CB0F0C19EC34CFF8EDDE86FCF"
+      "bytes": 210464,
+      "sha256": "E2726CC8A6B15AFFA5DF6189B3BF27AE1040430597200835269D6E06EF4B433F"
     },
     {
       "file": "pytest.ini",
@@ -1825,8 +1830,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 43187,
-      "sha256": "1E8BE4D86A2B8F1C2EDFC7DE72610167136D67A16E20F1B2B1535BC03426548B"
+      "bytes": 43563,
+      "sha256": "283C88122574B4BE97BB2276F0C8CD7EBDF695465E22E9EE95269CE8A037381E"
     },
     {
       "file": "SECURITY.md",
@@ -2095,8 +2100,8 @@
     },
     {
       "file": "tests/build_v439_installer.ps1",
-      "bytes": 3604,
-      "sha256": "01EBA96FE77324F6425E2218DF7ABF4B72FA679C41CBBBE276D955A959DADF48"
+      "bytes": 3635,
+      "sha256": "E3EB1CDD1CD7FDBA861B7F7E723902A3B902C22DB880B28BDF813F65EE642017"
     },
     {
       "file": "tests/build_v43_installer.ps1",
@@ -2669,14 +2674,19 @@
       "sha256": "2DB19477918BCED1FA83315C793E7CA274167BC4AC60A34CFC2C69F505ECD580"
     },
     {
+      "file": "tests/test_windows_selective_http_bridge.py",
+      "bytes": 6607,
+      "sha256": "890FACD89E6823DF6889D7F38193B5C461680DCA43F22FA3F4C09CA78048E5D4"
+    },
+    {
       "file": "tests/test_windows_selective_integration.py",
-      "bytes": 6404,
-      "sha256": "81340ACE141842442B79554956B481B259A7452DF8611A53267EAD6E4089A07E"
+      "bytes": 6697,
+      "sha256": "3D37BFAADD865235848F652145AADFC36706D22165666000FF2B2C8017D28046"
     },
     {
       "file": "tests/test_windows_selective_routing.py",
-      "bytes": 8997,
-      "sha256": "480B52B21B1817B9001E5F9DD3F2739667F6FE386DD244D7099C52938A23B35C"
+      "bytes": 9147,
+      "sha256": "127BC5164772112ADBE9CF5D834BFC4ED40FBC025B924B04B3FD6F9F760E8E62"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",
@@ -2725,18 +2735,18 @@
     },
     {
       "file": "Uninstall-FreeNetHub.ps1",
-      "bytes": 7553,
-      "sha256": "42EC8EACA7CD97E39E7E99C26DE8837579EA9542D90AAD234CDE4E45E39208EE"
+      "bytes": 7773,
+      "sha256": "135BD8082A0CCC0DEE5DE3929DEA95226B665BFDD4B3F014B1547FE3907DEA3C"
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 15637,
-      "sha256": "B54B8DE157AD2FF072B0E71365BB2C0DF21582FE66D75023808C5DB41C504BA5"
+      "bytes": 15726,
+      "sha256": "11B7510C1FE86E5F9283AD1E1D427373CB55F9857F633BEAE9AD68C70B463FCE"
     },
     {
       "file": "windows/installer/Prepare-SelectiveUpgrade.ps1",
-      "bytes": 1198,
-      "sha256": "228FA305E8BF485EDB3404E27B4DFF06F27EBB9CA0C44044B3C6129B4192BE47"
+      "bytes": 1207,
+      "sha256": "9B5AE7C12E90B933D2795D9881B8B9B3EF20E35D517A52824B05F042DA59DDE8"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",

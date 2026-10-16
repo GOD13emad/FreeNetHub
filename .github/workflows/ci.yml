@@ -33,6 +33,7 @@ jobs:
       - name: Selective Windows PAC policy and UI integration
         run: |
           python tests/test_windows_selective_routing.py
+          python tests/test_windows_selective_http_bridge.py
           python tests/test_windows_selective_integration.py
       - name: Reject stale Windows node health and throughput data
         run: python tests/test_node_health_freshness.py
@@ -68,6 +69,7 @@ jobs:
           python3 crossplatform/linux/test_selective_tunnel.py
           python3 crossplatform/linux/test_selective_integration.py
           python3 tests/test_windows_selective_routing.py
+          python3 tests/test_windows_selective_http_bridge.py
           python3 tests/test_windows_selective_integration.py
           python3 tests/test_v462_mixed_release_update.py
           python3 tests/test_linux_browser_action_guards.py

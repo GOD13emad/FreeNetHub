@@ -24,12 +24,20 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+import importlib.util
+
 APP = pathlib.Path(__file__).resolve().parent
+_BH = importlib.util.spec_from_file_location("fnh_selective_http_bridge", APP / "selective_http_bridge.py")
+if _BH is None or _BH.loader is None:
+    raise ImportError("SELECTIVE_HTTP_BRIDGE_MISSING")
+bridge = importlib.util.module_from_spec(_BH)
+_BH.loader.exec_module(bridge)
 ROOT = APP.parent
 STATE = ROOT / "data" / "selective_windows"
 POLICY = STATE / "policy.json"
 PAC_FILE = STATE / "route.pac"
 PORT = 19416
+BRIDGE_PORT = 19417
 URL = f"http://127.0.0.1:{PORT}/route.pac"
 DEFAULT_DOMAINS = "brave.com\nbravesoftware.com\nstripe.com\nstripe.network"
 KEY = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
@@ -83,13 +91,14 @@ def pac(domains, proxy_port):
         raise SelectiveError("SELECTIVE_PORT_INVALID")
     domains = normalize_domains("\n".join(domains))
     return (
-        "// FreeNetHub domain-selective proxy for PAC-compatible Windows applications.\n"
+        "// Windows-compatible HTTPS HTTP CONNECT bridge to owned SOCKS5.\n"
+        f"// Owned SOCKS5 provider port {proxy_port}.\n"
         "function FindProxyForURL(url, host) {\n"
         "  host = host.toLowerCase().replace(/\\.$/, '');\n"
         "  var allowed = " + json.dumps(domains, separators=(",", ":")) + ";\n"
         "  for (var n=0; n<allowed.length; n++) {\n"
         "    if (host === allowed[n] || dnsDomainIs(host, '.' + allowed[n])) {\n"
-        f"      return 'SOCKS5 127.0.0.1:{proxy_port}';\n"
+        f"      return 'PROXY 127.0.0.1:{BRIDGE_PORT}';\n"
         "    }\n"
         "  }\n"
         "  return 'DIRECT';\n"
@@ -221,23 +230,36 @@ def _pac_ready(source):
         return False
 
 
+def _bridge_health(token):
+    if not token:
+        return False
+    url = f"http://127.0.0.1:{BRIDGE_PORT}/health?key=" + urllib.parse.quote(token)
+    try:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        with opener.open(url, timeout=2) as response:
+            return response.status == 200 and response.read(64) == bridge.HEALTH_BODY
+    except (OSError, urllib.error.URLError, ValueError):
+        return False
+
+
 def _start_service(token):
-    if _health(token):
+    if _health(token) and _bridge_health(token):
         return
     if not token:
         raise SelectiveError("SELECTIVE_TOKEN_MISSING")
-    try:
-        with socket.create_connection(("127.0.0.1", PORT), timeout=0.5):
-            raise SelectiveError("SELECTIVE_PORT_FOREIGN")
-    except (ConnectionRefusedError, TimeoutError, OSError):
-        pass
+    for listen_port in (PORT, BRIDGE_PORT):
+        try:
+            with socket.create_connection(("127.0.0.1", listen_port), timeout=0.5):
+                raise SelectiveError("SELECTIVE_PORT_FOREIGN")
+        except (ConnectionRefusedError, TimeoutError, OSError):
+            pass
     flags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0) | getattr(subprocess, "CREATE_NO_WINDOW", 0)
     subprocess.Popen([sys.executable, str(pathlib.Path(__file__).resolve()), "serve"],
                      stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                      stderr=subprocess.DEVNULL, cwd=str(ROOT),
                      creationflags=flags, close_fds=True)
     for _ in range(40):
-        if _health(token):
+        if _health(token) and _bridge_health(token):
             return
         time.sleep(0.1)
     raise SelectiveError("SELECTIVE_SERVER_START_FAILED")
@@ -245,7 +267,7 @@ def _start_service(token):
 
 def _stop_service(token):
     if not _health(token):
-        return True
+        return not _bridge_health(token)
     url = f"http://127.0.0.1:{PORT}/shutdown?key=" + urllib.parse.quote(token)
     try:
         req = urllib.request.Request(url, method="POST", data=b"")
@@ -254,9 +276,9 @@ def _stop_service(token):
             accepted=response.status == 200 and response.read(64) == LABEL_BYTES
         if not accepted:
             return False
-        # Do not allow uninstall to race a process that still owns the PAC port.
+        # Do not allow uninstall to race either owned PAC or CONNECT listener.
         for _ in range(30):
-            if not _health(token):
+            if not _health(token) and not _bridge_health(token):
                 return True
             time.sleep(0.1)
         return False
@@ -301,6 +323,7 @@ def status():
     bound = enabled and settings == _active_registry(state.get("pacUrl"))
     orphan = not enabled and isinstance(actual, str) and (actual == URL or actual.startswith(URL + "?v="))
     healthy = bool(bound and _health(state.get("serverToken", ""))
+                   and _bridge_health(state.get("serverToken", ""))
                    and PAC_FILE.is_file() and _pac_ready(PAC_FILE.read_text(encoding="utf-8")))
     return {
         "ok": healthy if enabled else not orphan, "enabled": enabled,
@@ -349,8 +372,8 @@ def enable(domains, port, method):
                        pacUrl=url, inFlight=True)
         _write_state(pending)
         _start_service(token)
-        if not _pac_ready(source):
-            raise SelectiveError("SELECTIVE_PAC_NOT_READY")
+        if not _pac_ready(source) or not _bridge_health(token):
+            raise SelectiveError("SELECTIVE_PAC_OR_CONNECT_BRIDGE_NOT_READY")
         _write_value("AutoConfigURL", {"present": True, "value": url, "kind": 1})
         changed = True
         _write_value("ProxyEnable", {"present": True, "value": 0, "kind": 4})
@@ -468,7 +491,21 @@ class _Handler(http.server.BaseHTTPRequestHandler):
 
 def serve():
     _require_windows()
-    http.server.ThreadingHTTPServer(("127.0.0.1", PORT), _Handler).serve_forever()
+    bridge_listener = bridge.server(BRIDGE_PORT, _load_state)
+    pac_listener = None
+    bridge_started = False
+    try:
+        pac_listener = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), _Handler)
+        worker = threading.Thread(target=bridge_listener.serve_forever, daemon=True)
+        worker.start()
+        bridge_started = True
+        pac_listener.serve_forever()
+    finally:
+        if pac_listener is not None:
+            pac_listener.server_close()
+        if bridge_started:
+            bridge_listener.shutdown()
+        bridge_listener.server_close()
 
 
 if __name__ == "__main__":

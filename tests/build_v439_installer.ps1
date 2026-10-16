@@ -3,7 +3,7 @@ Set-StrictMode -Version Latest
 $Root=Split-Path $PSScriptRoot -Parent
 Set-Location $Root
 $FreezeFiles=@(
- 'app\engine.py','app\selective_route_windows.py','app\directnet.py','app\nodehub.py','app\FreeNetHub.ps1','app\View.xaml','app\manifest.json',
+ 'app\engine.py','app\selective_route_windows.py','app\selective_http_bridge.py','app\directnet.py','app\nodehub.py','app\FreeNetHub.ps1','app\View.xaml','app\manifest.json',
  'app\directdpi\Start-DirectDpi.ps1','app\directdpi\Stop-DirectDpi.ps1','app\directdpi\hosts.txt',
  'app\directdpi\tools\winws.exe','app\directdpi\tools\WinDivert.dll','app\directdpi\tools\WinDivert64.sys','app\directdpi\tools\cygwin1.dll',
  'app\directdns\ctrld.exe','app\directdns\ctrld.toml','app\directdns\LICENSE-ctrld.txt',

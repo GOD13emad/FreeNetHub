@@ -34,19 +34,20 @@ class DomainTests(unittest.TestCase):
             with self.subTest(domain=sample[:50]), self.assertRaises(st.SelectiveError):
                 st.normalize_domains(sample)
 
-    def test_unchanged_direct_policy_and_socks_suffixes(self):
+    def test_selected_https_http_bridge_and_other_sites_direct(self):
         js = st.pac(st.normalize_domains(st.DEFAULT_DOMAINS), 19414)
-        self.assertNotIn("SOCKS5 127.0.0.1:19414; DIRECT", js)
+        self.assertNotIn("PROXY 127.0.0.1:19417; DIRECT", js)
+        self.assertIn("PROXY 127.0.0.1:19417", js)
         script = (
             "const vm=require('vm');"
             "const c={dnsDomainIs:(h,s)=>h.endsWith(s)};"
             "vm.runInNewContext(process.argv[1],c);"
             "const tests=["
-            "['account.brave.com','SOCKS5 127.0.0.1:19414'],"
-            "['api-dashboard.search.brave.com','SOCKS5 127.0.0.1:19414'],"
-            "['checkout.stripe.com','SOCKS5 127.0.0.1:19414'],"
-            "['js.stripe.com','SOCKS5 127.0.0.1:19414'],"
-            "['m.stripe.network','SOCKS5 127.0.0.1:19414'],"
+            "['account.brave.com','PROXY 127.0.0.1:19417'],"
+            "['api-dashboard.search.brave.com','PROXY 127.0.0.1:19417'],"
+            "['checkout.stripe.com','PROXY 127.0.0.1:19417'],"
+            "['js.stripe.com','PROXY 127.0.0.1:19417'],"
+            "['m.stripe.network','PROXY 127.0.0.1:19417'],"
             "['www.google.com','DIRECT'],"
             "['notbrave.com','DIRECT'],"
             "['badstripe.com','DIRECT']];"
@@ -76,6 +77,7 @@ class LifecycleTests(unittest.TestCase):
             mock.patch.object(st, "_write_value", side_effect=self.write_reg),
             mock.patch.object(st, "_notify", return_value=None),
             mock.patch.object(st, "_check_local_socks", return_value=None),
+            mock.patch.object(st, "_bridge_health", side_effect=lambda token: st._health(token)),
         ]
         for p in self.patches:
             p.start()

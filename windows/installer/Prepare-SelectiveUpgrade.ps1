@@ -13,7 +13,7 @@ try{
        !$d.Contains('enabled') -or $d['enabled'] -isnot [bool] -or
        [bool]$d['enabled'] -or [bool]$d['inFlight']){exit 42}
     # Disabled state still requires the owned loopback helper to be gone.
-    $listeners=@(Get-NetTCPConnection -State Listen -LocalPort 19416 -ErrorAction SilentlyContinue)
+    $listeners=@(Get-NetTCPConnection -State Listen -LocalPort @(19416,19417) -ErrorAction SilentlyContinue)
     if($listeners.Count){exit 42}
   }
   $reg=Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings' -ErrorAction Stop
