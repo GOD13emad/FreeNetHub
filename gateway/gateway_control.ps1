@@ -121,8 +121,15 @@ function Get-Status{
  $ca=if($d.adapter_description){Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.InterfaceDescription -eq [string]$d.adapter_description}|Select-Object -First 1}else{$null}
  $tun=Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name}|Select-Object -First 1
  $s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
- $wc=$null;try{$x=Run-WslConsole 'Status';if($x.exit -eq 0){$wc=$x.record.result}}catch{}
- $pcRunning=Owner-Valid;$consoleRunning=[bool]($wc -and $wc.running);$running=($pcRunning -or $consoleRunning)
+  # A verified running Windows Native TUN is independent of the WSL console.
+  # Querying WSL here can block up to 120 seconds and race the SYSTEM safety
+  # timer even after the Native owner has been verified.
+  $pcRunning=Owner-Valid
+  $wc=$null
+  if(-not $pcRunning -and -not $tun){
+   try{$x=Run-WslConsole 'Status';if($x.exit -eq 0){$wc=$x.record.result}}catch{}
+  }
+  $consoleRunning=[bool]($wc -and $wc.running);$running=($pcRunning -or $consoleRunning)
  $mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}elseif($s){[string]$s.mode}else{''}
  $tunView=if($tun){[ordered]@{name=$tun.Name;status=[string]$tun.Status;ifIndex=$tun.ifIndex;backend='WINDOWS_TUN'}}elseif($consoleRunning){[ordered]@{name='WSL:fnh-tun';status='Up';ifIndex=$null;backend='WSL2_AUTO_REDIRECT'}}else{$null}
  $manual=if($wc -and $wc.manual){$wc.manual}else{[ordered]@{ip=[string]$d.suggested_console_ip;prefix=24;gateway=[string]$d.gateway;dns=[string]$d.dns}}
@@ -190,7 +197,14 @@ try{
  if($Action -eq 'Status'){$out.exit=0;$out.result=Get-Status}
  elseif($Action -eq 'Stop'){
   Require-Admin;$s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
-  $ws=$null;try{$ws=Run-WslConsole 'Status'}catch{}
+   # When stopping a PC TUNNEL, do not spend the SYSTEM recovery window
+   # waiting for an unrelated WSL console status request.
+   $nativeOwnerPresent=(Test-Path -LiteralPath $Owner -PathType Leaf)
+   $nativeInterfacePresent=[bool](Get-NetAdapter -Name ([string]$Defaults.tun.interface_name) -IncludeHidden -ErrorAction SilentlyContinue)
+   $ws=$null
+   if(-not (($s -and [string]$s.mode -eq 'PC_TUNNEL') -or $nativeOwnerPresent -or $nativeInterfacePresent)){
+    try{$ws=Run-WslConsole 'Status'}catch{}
+   }
   if(($s -and [string]$s.mode -eq 'CONSOLE_ONLY') -or ($ws -and $ws.exit -eq 0 -and [bool]$ws.record.result.running)){
    $stop=Run-WslConsole 'Stop';Assert ($stop.exit -eq 0) 'WSL_CONSOLE_STOP_FAIL'
   }

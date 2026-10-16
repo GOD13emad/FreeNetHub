@@ -12,6 +12,15 @@ class GatewayTests(unittest.TestCase):
   import re
   self.assertFalse(re.search(r"\$Owner\b",source), "PowerShell case-insensitive collision between owner path and record")
   self.assertEqual(source.count("Out-J $OwnerPath $owner"),1)
+ def test_native_status_and_stop_skip_unrelated_wsl_status_poll(self):
+  src=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("if(-not $pcRunning -and -not $tun){",src)
+  self.assertIn("if(-not (($s -and [string]$s.mode -eq 'PC_TUNNEL') -or $nativeOwnerPresent -or $nativeInterfacePresent)){",src)
+  self.assertIn("try{$ws=Run-WslConsole 'Status'}catch{}",src)
+  self.assertLess(src.index("$pcRunning=Owner-Valid"),src.index("if(-not $pcRunning -and -not $tun){"))
+  self.assertIn("Run-WslConsole 'Start'",src)
+  self.assertIn("Run-WslConsole 'Stop'",src)
+
  def test_startpc_requires_live_owner_and_no_unowned_tun(self):
   src=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
   for marker in ("UNOWNED_TUN_PRESENT_REFUSE_START","PC_OWNER_RECEIPT_DISAPPEARED","PC_OWNER_IDENTITY_UNVERIFIED_AFTER_APPLY","PC_TUN_NOT_OWNED_AFTER_START","DEGRADED_UNOWNED_TUN"):
