@@ -49,6 +49,7 @@ Source: "Prepare-Upgrade.ps1"; Flags: dontcopy
 Source: "..\standalone\FreeNetHub.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\standalone\FreeNetHub.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\app\engine.py"; DestDir: "{app}\app"; Flags: ignoreversion
+Source: "..\..\app\selective_route_windows.py"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\nodehub.py"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\directnet.py"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\..\app\FreeNetHub.ps1"; DestDir: "{app}\app"; Flags: ignoreversion

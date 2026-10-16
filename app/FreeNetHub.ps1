@@ -72,7 +72,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  $work=[Windows.SystemParameters]::WorkArea;$script:Window.MinWidth=[Math]::Min(1180,$work.Width);$script:Window.MinHeight=[Math]::Min(760,$work.Height);$script:Window.Width=[Math]::Min(1440,$work.Width);$script:Window.Height=[Math]::Min(1020,$work.Height)
 
- $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false;testPathMode='BASE';pingTimeoutSec=10;downloadTimeoutSec=30;uploadTimeoutSec=30}
+ $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false;testPathMode='BASE';pingTimeoutSec=10;downloadTimeoutSec=30;uploadTimeoutSec=30;selectiveDomains=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network")}
 
  $stored=Read-Json (Join-Path $script:Root 'settings.json');if($stored){foreach($k in @($script:Settings.Keys)){if($stored.ContainsKey($k)){$script:Settings[$k]=$stored[$k]}}}
 
@@ -92,7 +92,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
  Set-ComboContent $script:C.UploadTimeoutBox ([string]$script:Settings.uploadTimeoutSec)
  Paint-TestSettings
 
- $script:C.Home.Text=$script:Settings.home;$script:C.CustomProxy.Text=$script:Settings.localProxy;$script:C.ShowIp.IsChecked=$script:Settings.showIp;if($script:C.ContainsKey('ShowIpDashboard')){$script:C.ShowIpDashboard.IsChecked=$script:Settings.showIp;}$script:C.FullSystem.IsChecked=$false;$script:C.ScopeText.Text='مرورگر · پیش‌فرض امن';$script:C.ConnectionScopeText.Text='حالت: مرورگر';$script:C.TrayOption.IsChecked=$(if($script:ShellHosted){$true}else{$script:Settings.minimizeToTray});if($script:ShellHosted){$script:C.TrayOption.IsEnabled=$false;$script:C.TrayOption.ToolTip='Tray is managed by FreeNetHub.exe'};$script:C.Monitor.IsChecked=$script:Settings.monitor;$script:C.AutoRepair.IsChecked=$script:Settings.autoRepair;if($script:C.ContainsKey('UpdateInstallMain')){$script:C.UpdateInstallMain.IsEnabled=$false}
+ $script:C.Home.Text=$script:Settings.home;$script:C.CustomProxy.Text=$script:Settings.localProxy;$script:C.SelectiveDomains.Text=[string]$script:Settings.selectiveDomains;$script:C.ShowIp.IsChecked=$script:Settings.showIp;if($script:C.ContainsKey('ShowIpDashboard')){$script:C.ShowIpDashboard.IsChecked=$script:Settings.showIp;}$script:C.FullSystem.IsChecked=$false;$script:C.ScopeText.Text='مرورگر · پیش‌فرض امن';$script:C.ConnectionScopeText.Text='حالت: مرورگر';$script:C.TrayOption.IsChecked=$(if($script:ShellHosted){$true}else{$script:Settings.minimizeToTray});if($script:ShellHosted){$script:C.TrayOption.IsEnabled=$false;$script:C.TrayOption.ToolTip='Tray is managed by FreeNetHub.exe'};$script:C.Monitor.IsChecked=$script:Settings.monitor;$script:C.AutoRepair.IsChecked=$script:Settings.autoRepair;if($script:C.ContainsKey('UpdateInstallMain')){$script:C.UpdateInstallMain.IsEnabled=$false}
 
  foreach($i in $script:C.Country.Items){if($i.Content -eq $script:Settings.country){$script:C.Country.SelectedItem=$i}}
 
@@ -141,7 +141,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','ImportWebClipboard','ImportObfsClipboard','Save','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','ImportWebClipboard','ImportObfsClipboard','Save','SelectivePreset','SelectiveApply','SelectiveDisable','SelectiveRefresh','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','SelectiveRoutingCard','MethodsScopeSelective','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
   $cap=Paint-ConsoleCapability
@@ -962,9 +962,15 @@ $script:C.QuickConnect.Add_Click({Select-ModeTag 'AUTO';Select-ConnectionScope '
  $script:C.BrowserConnectCard.Add_Click({Select-ConnectionScope 'BROWSER'})
  $script:C.FullSystemConnectCard.Add_Click({Select-ConnectionScope 'SYSTEM'})
  $script:C.ConsoleConnectCard.Add_Click({Select-ConnectionScope 'CONSOLE'})
+ # Scope card intentionally opens explicit domain editor without changing the
+ # global Browser/SYSTEM/CONSOLE Connect selector or starting a provider.
+ $script:C.SelectiveRoutingCard.Add_Click({$script:C.Tabs.SelectedIndex=4})
+
  if($script:C.ContainsKey('MethodsScopeBrowser')){$script:C.MethodsScopeBrowser.Add_Click({Select-ConnectionScope 'BROWSER'})}
  if($script:C.ContainsKey('MethodsScopeSystem')){$script:C.MethodsScopeSystem.Add_Click({Select-ConnectionScope 'SYSTEM'})}
  if($script:C.ContainsKey('MethodsScopeConsole')){$script:C.MethodsScopeConsole.Add_Click({Select-ConnectionScope 'CONSOLE'})}
+ if($script:C.ContainsKey('MethodsScopeSelective')){$script:C.MethodsScopeSelective.Add_Click({$script:C.Tabs.SelectedIndex=4})}
+
  if($script:C.ContainsKey('MainPingTest')){$script:C.MainPingTest.Add_Click({Start-ConfiguredTest $true})}
  if($script:C.ContainsKey('ToolsApplyWarpSystem')){$script:C.ToolsApplyWarpSystem.Add_Click({Select-ConnectionScope 'SYSTEM';Connect-MethodCard 'WARP'})}
  if($script:C.ContainsKey('ToolsApplyNodeSystem')){$script:C.ToolsApplyNodeSystem.Add_Click({Select-ConnectionScope 'SYSTEM';Connect-MethodCard 'NODE'})}
@@ -1065,7 +1071,32 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
   })
  }
 
- $script:C.Save.Add_Click({$script:Settings.country=[string]$script:C.Country.SelectedItem.Content;$script:Settings.home=$script:C.Home.Text;$script:Settings.localProxy=$script:C.CustomProxy.Text;$script:Settings.monitor=[bool]$script:C.Monitor.IsChecked;$script:Settings.autoRepair=[bool]$script:C.AutoRepair.IsChecked;$script:Settings.showIp=[bool]$script:C.ShowIp.IsChecked;$script:Settings.minimizeToTray=[bool]$script:C.TrayOption.IsChecked;$p=Join-Path $script:Root 'jobs\settings-request.json';Write-Json $p $script:Settings;Start-Work 'Settings' 'AUTO' $p})
+
+ $script:C.SelectivePreset.Add_Click({$script:C.SelectiveDomains.Text=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network")})
+ $script:C.SelectiveApply.Add_Click({
+  if($script:Task -or $script:GatewayTask){return}
+  if($script:FullSystemActive){
+   $script:C.SelectiveRouteStatus.Text='تونل کل سیستم فعال است؛ برای DIRECT بودن سایر دامنه‌ها ابتدا تونل کل سیستم را با rollback خودش خاموش کنید.'
+   return
+  }
+  $method=[string]$script:C.SelectiveMethod.SelectedItem.Tag
+  if($method -notin @('CFON','WARP','GOOL','TOR','NODE')){return}
+  $domains=[string]$script:C.SelectiveDomains.Text
+  $p=Join-Path $script:Root ('jobs\selective-request-'+[guid]::NewGuid().ToString('N')+'.json')
+  Write-Json $p @{domains=$domains}
+  $script:C.SelectiveRouteStatus.Text='در حال بررسی سلامت روش انتخاب‌شده و اعمال PAC...'
+  Start-Work 'SelectiveEnable' $method $p
+ })
+ $script:C.SelectiveDisable.Add_Click({
+  if($script:Task -or $script:GatewayTask){return}
+  $script:C.SelectiveRouteStatus.Text='در حال بازگردانی تنظیم قبلی پراکسی کاربر...'
+  Start-Work 'SelectiveDisable' 'AUTO'
+ })
+ $script:C.SelectiveRefresh.Add_Click({
+  if(!$script:Task -and !$script:GatewayTask){Start-Work 'SelectiveStatus' 'AUTO'}
+ })
+
+ $script:C.Save.Add_Click({$script:Settings.selectiveDomains=[string]$script:C.SelectiveDomains.Text;$script:Settings.country=[string]$script:C.Country.SelectedItem.Content;$script:Settings.home=$script:C.Home.Text;$script:Settings.localProxy=$script:C.CustomProxy.Text;$script:Settings.monitor=[bool]$script:C.Monitor.IsChecked;$script:Settings.autoRepair=[bool]$script:C.AutoRepair.IsChecked;$script:Settings.showIp=[bool]$script:C.ShowIp.IsChecked;$script:Settings.minimizeToTray=[bool]$script:C.TrayOption.IsChecked;$p=Join-Path $script:Root 'jobs\settings-request.json';Write-Json $p $script:Settings;Start-Work 'Settings' 'AUTO' $p})
 
  if(!$script:ShellHosted){
 
@@ -1120,6 +1151,18 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
      if(!$r -or $r.job -ne $script:Job -or $r.action -ne $script:Action -or $r.exit -ne $ec){$r=@{exit=1;result=@{error='RESULT_PROTOCOL_MISMATCH'};action=$script:Action}}
 
      $script:Last=$r;$script:C.Details.Text=(Sanitize $r)|ConvertTo-Json -Depth 16
+     if($r.action -in @('SelectiveEnable','SelectiveDisable','SelectiveStatus')){
+      if($r.exit -ne 0){
+       $script:C.SelectiveRouteStatus.Text='تونل انتخابی ناموفق: '+[string]$r.result.error
+      }elseif($r.result.ok -and $r.action -eq 'SelectiveEnable'){
+       $script:C.SelectiveRouteStatus.Text='تونل انتخابی فعال · روش '+[string]$r.result.method+' · دامنه‌ها: '+[string](@($r.result.domains).Count)
+      }elseif($r.action -eq 'SelectiveDisable' -and $r.result.ok){
+       $script:C.SelectiveRouteStatus.Text='تونل انتخابی خاموش شد · تنظیم پراکسی قبلی بازگردانده شد.'
+      }elseif($r.action -eq 'SelectiveStatus'){
+       if($r.result.enabled){$script:C.SelectiveRouteStatus.Text=$(if($r.result.healthy){'تونل انتخابی فعال · '+[string]$r.result.method}else{'تونل انتخابی نیازمند بررسی · '+[string]$r.result.error})}
+       else{$script:C.SelectiveRouteStatus.Text='تونل انتخابی غیرفعال'}
+      }else{$script:C.SelectiveRouteStatus.Text='تونل انتخابی: '+[string]$r.result.error}
+     }
 
      if($r.result.ContainsKey('healthy') -and $r.result.ContainsKey('mode')){
 

@@ -2,6 +2,20 @@ param([Parameter(Mandatory=$true)][string]$AppRoot)
 $ErrorActionPreference='Stop'
 $ports=19410,19413,19414,19450,19452,19453,19460,9909
 
+# Before any listener/process cleanup: do not overwrite a live user PAC helper.
+# Only the product owns this state file; corrupt or ambiguous state fails closed.
+$selectiveState=Join-Path $AppRoot 'data\selective_windows\policy.json'
+if(Test-Path -LiteralPath $selectiveState){
+  try{
+    $selective=Get-Content -LiteralPath $selectiveState -Raw -Encoding UTF8 | ConvertFrom-Json
+    if($null -eq $selective -or [int]$selective.schema -ne 1 -or
+       $selective.enabled -isnot [bool] -or [bool]$selective.enabled){
+      exit 42
+    }
+  }catch{exit 42}
+}
+
+
 function Get-ActiveListeners {
   @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $ports -contains $_.LocalPort })
 }
