@@ -1,6 +1,7 @@
 name: R55 private isolated Windows acceptance
 
 on:
+  workflow_call:
   push:
     branches:
       - candidate/r55-v519-private-review
