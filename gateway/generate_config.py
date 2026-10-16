@@ -15,7 +15,15 @@ def build(mode,provider="WARP",profile_path=None,dns_mode="hijack"):
  d=defaults();tun=d["tun"];console=d["console"]
  private={"ip_is_private":True,"action":"route","outbound":"direct"}
  selfproc={"process_name":["warp-plus.exe","sing-box.exe"],"action":"route","outbound":"direct"}
- rules=[private,selfproc];tun_in={"type":"tun","tag":"fnh-tun","interface_name":tun["interface_name"],"address":tun["address"],"mtu":tun["mtu"],"auto_route":True,"strict_route":True,"stack":"system","dns_mode":"disabled"}
+ # Reject the assigned TUN subnet before ip_is_private => direct.
+ # Otherwise UDP aimed at the TUN peer can loop back through direct into TUN
+ # (particularly with Windows auto_route and Tailscale gateway probes).
+ # Prefixes are generated from the same addresses as the TUN; no arbitrary
+ # external IP ranges are blocked and this never touches the host firewall.
+ import ipaddress
+ peer_ranges=[str(ipaddress.ip_interface(a).network) for a in tun["address"]]
+ reject_self_tun={"inbound":["fnh-tun"],"ip_cidr":peer_ranges,"action":"reject","method":"drop"}
+ rules=[reject_self_tun,private,selfproc];tun_in={"type":"tun","tag":"fnh-tun","interface_name":tun["interface_name"],"address":tun["address"],"mtu":tun["mtu"],"auto_route":True,"strict_route":True,"stack":"system","dns_mode":"disabled"}
  cfg={
   "log":{"level":"warn","timestamp":True},
   "inbounds":[tun_in],

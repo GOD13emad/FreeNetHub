@@ -41,8 +41,8 @@
     },
     {
       "file": "generate_config.py",
-      "bytes": 4871,
-      "sha256": "07FB8A0A6DA1D9B927F495D9D61DCC6BE6875C77A998443F0AD997C59B36A50E"
+      "bytes": 5446,
+      "sha256": "0FB09CD5459952B85BCB8295767A8650F34C04A23A8373125C13C682606ACAD4"
     },
     {
       "file": "apply_elevated.ps1",

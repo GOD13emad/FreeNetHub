@@ -12,6 +12,21 @@ class GatewayTests(unittest.TestCase):
   self.assertIn("162.159.192.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertIn("162.159.193.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertIn("162.159.197.0/24",c["inbounds"][0]["route_exclude_address"])
+ def test_windows_tun_peer_self_loop_is_rejected_before_private_direct(self):
+  # Upstream Windows sing-box issue #4455: auto_route+direct can
+  # reinject UDP to the TUN peer in an unbounded loop.
+  for mode in ("PC_TUNNEL","CONSOLE_ONLY"):
+   for provider in ("WARP","NODE"):
+    c,_=M.build(mode,provider,None)
+    rules=c["route"]["rules"]
+    reject=rules[0]
+    self.assertEqual(reject["inbound"],["fnh-tun"])
+    self.assertEqual(reject["action"],"reject")
+    self.assertEqual(reject["method"],"drop")
+    self.assertEqual(set(reject["ip_cidr"]),{"172.31.255.0/30","fdfe:7f4b:1::/126"})
+    self.assertLess(rules.index(reject),next(i for i,x in enumerate(rules) if x.get("ip_is_private")))
+    self.assertTrue(any(x.get("ip_is_private") and x.get("outbound")=="direct" for x in rules))
+
  def test_pc_native_dns_explicit_opt_in_preserves_tailnet(self):
   for provider in ("WARP","NODE"):
    c,_=M.build("PC_TUNNEL",provider,None,dns_mode="native")
