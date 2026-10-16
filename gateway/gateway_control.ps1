@@ -128,7 +128,7 @@ function Get-Status{
  $manual=if($wc -and $wc.manual){$wc.manual}else{[ordered]@{ip=[string]$d.suggested_console_ip;prefix=24;gateway=[string]$d.gateway;dns=[string]$d.dns}}
  $cStatus=if($consoleRunning){if($wc.router -and [bool]$wc.router.carrier){'Up'}else{'Disconnected'}}elseif($ca){[string]$ca.Status}elseif($wc -and $wc.usb -and [string]$wc.usb.state -eq 'Shared'){'Disconnected'}else{'Missing'}
  [ordered]@{
-  status='PASS';running=$running;mode=$mode;tun=$tunView
+  status=$(if($tun -and -not $pcRunning){'DEGRADED_UNOWNED_TUN'}else{'PASS'});running=$running;mode=$mode;tun=$tunView
   console=[ordered]@{
    name=if($ca){$ca.Name}else{[string]$d.adapter_name}
    description=if($wc -and $wc.usb){[string]$wc.usb.description}else{[string]$d.adapter_description}
@@ -211,6 +211,7 @@ try{
 
  else{
   Require-Admin;$st=Get-Status;Assert (-not [bool]$st.running) 'GATEWAY_ALREADY_RUNNING'
+   Assert (-not $st.tun) 'UNOWNED_TUN_PRESENT_REFUSE_START'
   Assert (-not (Test-Path -LiteralPath $Owner)) 'GATEWAY_OWNER_EVIDENCE_PRESENT_REFUSE_START'
   $mode=if($Action -eq 'StartPc'){'PC_TUNNEL'}else{'CONSOLE_ONLY'};$started=$false;$preexisting=$false
   try{
@@ -281,7 +282,13 @@ try{
     $kind=$(if($Provider -eq 'NODE'){'NODE_SOCKS'}else{'WARP_SOCKS'})
     $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;dnsMode=$dnsMode;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
     Write-J $Session $sess
-    $out.exit=0;$out.result=Get-Status
+    # Source Apply PASS alone is insufficient: ownership may disappear with
+    # the TUN still present. Reject false PASS and fail closed.
+    Assert (Test-Path -LiteralPath $Owner -PathType Leaf) 'PC_OWNER_RECEIPT_DISAPPEARED'
+    Assert (Owner-Valid) 'PC_OWNER_IDENTITY_UNVERIFIED_AFTER_APPLY'
+    $pcLive=Get-Status
+    Assert ([bool]$pcLive.running -and [string]$pcLive.mode -eq 'PC_TUNNEL' -and [bool]$pcLive.tun) 'PC_TUN_NOT_OWNED_AFTER_START'
+    $out.exit=0;$out.result=$pcLive
    }
   }catch{Cleanup-Failed $mode $started $Provider;throw}
  }
