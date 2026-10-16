@@ -84,3 +84,35 @@ try{& $preTest}catch{$actual=$_.Exception.Message}
 if($actual -ne 'TUN_PREFLIGHT_QUERY_UNVERIFIED'){throw 'PREFLIGHT_ADAPTER_QUERY_FAILED_OPEN'}
 'MOCK_PREFLIGHT_ADAPTER_QUERY_FAIL_CLOSED_PASS'
 'EXACT_SOURCE_FAILSTART_MOCK_PASS'
+
+
+# Validate exact production ActiveStore preflight and post-create branches.
+# No host Firewall cmdlets are invoked; Get-NetFirewallRule is mocked above.
+$preGuardStart=$text.IndexOf('  $knownGuardNames=@(',[StringComparison]::Ordinal)
+$preGuardEnd=$text.IndexOf('  # Protect both physical media',[Math]::Max(0,$preGuardStart),[StringComparison]::Ordinal)
+if($preGuardStart -lt 0 -or $preGuardEnd -le $preGuardStart){throw 'DNS_GUARD_PREFLIGHT_SOURCE_FRAGMENT_MISSING'}
+$guardPreflight=[ScriptBlock]::Create($text.Substring($preGuardStart,$preGuardEnd-$preGuardStart))
+$postGuardStart=$text.IndexOf('  try{$afterGuards=@(',[StringComparison]::Ordinal)
+$postGuardEnd=$text.IndexOf([char]10+' }'+[char]10+' $stdout=',[Math]::Max(0,$postGuardStart),[StringComparison]::Ordinal)
+if($postGuardStart -lt 0 -or $postGuardEnd -le $postGuardStart){throw 'DNS_GUARD_POSTCREATE_SOURCE_FRAGMENT_MISSING'}
+$guardPostcreate=[ScriptBlock]::Create($text.Substring($postGuardStart,$postGuardEnd-$postGuardStart))
+$pcDnsGuardNames=@('FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired','FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless')
+function Test-GuardQuery([string]$phase,[string[]]$names,[bool]$queryFails,[string]$want,[string]$label){
+ $script:rules=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+ foreach($name in $names){[void]$script:rules.Add($name)}
+ $script:firewallReadError=$queryFails
+ $err=''
+ try{
+  if($phase -eq 'pre'){& $guardPreflight}else{& $guardPostcreate}
+ }catch{$err=$_.Exception.Message}
+ if($err -ne $want){throw ($label+'_UNEXPECTED_'+$err)}
+ $label+'_PASS'
+}
+Test-GuardQuery 'pre' @() $true 'PC_DNS_GUARD_PREFLIGHT_QUERY_UNVERIFIED' 'START_DNS_GUARD_PREFLIGHT_READ_ERROR_FAIL_CLOSED'
+Test-GuardQuery 'pre' @('FreeNetHub-PC-DNS53-Guard-UDP') $false 'PC_DNS_GUARD_PREEXISTS_REFUSE_TO_OVERWRITE' 'START_DNS_GUARD_LEGACY_RULE_PREEXISTS_REJECTED'
+Test-GuardQuery 'pre' @($pcDnsGuardNames[0]) $false 'PC_DNS_GUARD_PREEXISTS_REFUSE_TO_OVERWRITE' 'START_DNS_GUARD_CURRENT_RULE_PREEXISTS_REJECTED'
+Test-GuardQuery 'pre' @('Unrelated-Never-Touch') $false '' 'START_DNS_GUARD_UNRELATED_RULE_ALONE_ALLOWED'
+Test-GuardQuery 'post' @($pcDnsGuardNames) $true 'PC_DNS_GUARD_POSTCREATE_QUERY_UNVERIFIED' 'START_DNS_GUARD_POSTCREATE_READ_ERROR_FAIL_CLOSED'
+Test-GuardQuery 'post' @($pcDnsGuardNames[0],$pcDnsGuardNames[1],$pcDnsGuardNames[2]) $false 'PC_DNS_GUARD_RULE_COUNT_WRONG' 'START_DNS_GUARD_POSTCREATE_MISSING_RULE_REJECTED'
+Test-GuardQuery 'post' @($pcDnsGuardNames) $false '' 'START_DNS_GUARD_POSTCREATE_COMPLETE_VERIFIED'
+'START_DNS_GUARD_PREFLIGHT_AND_POSTCREATE_SOURCE_MOCK_ALL_PASS'

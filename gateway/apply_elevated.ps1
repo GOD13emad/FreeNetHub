@@ -76,8 +76,14 @@ try{
   New-NetFirewallRule -DisplayName $fwName -Direction Outbound -Action Block -Protocol Any -LocalAddress ([string]$ConsoleCfg.subnet) -InterfaceAlias $uplink.Name -Profile Any|Out-Null
  }
  if($pcNative){
-  $exists=@($pcDnsGuardNames|Where-Object{Get-NetFirewallRule -Name $_ -PolicyStore ActiveStore -ErrorAction SilentlyContinue})
-  if($exists.Count -gt 0){Fail 'PC_DNS_GUARD_PREEXISTS_REFUSE_TO_OVERWRITE'}
+  # Query ActiveStore as a whole; an unreadable provider must never be
+  # interpreted as "no existing DNS guard". Include legacy exact names.
+  $knownGuardNames=@($pcDnsGuardNames)+@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP')
+  try{$beforeGuards=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+  catch{Fail 'PC_DNS_GUARD_PREFLIGHT_QUERY_UNVERIFIED'}
+  if(@($beforeGuards|Where-Object{$_.Name -in $knownGuardNames}).Count){
+   Fail 'PC_DNS_GUARD_PREEXISTS_REFUSE_TO_OVERWRITE'
+  }
   # Protect both physical media types across route changes. The overlay Tailscale
   # tunnel is not a Wired/Wireless egress. Never pin only the initial uplink alias.
   foreach($spec in @(
@@ -91,8 +97,12 @@ try{
    $actualType=Get-NetFirewallInterfaceTypeFilter -AssociatedNetFirewallRule (Get-NetFirewallRule -Name $spec.name -PolicyStore ActiveStore -ErrorAction Stop) -ErrorAction Stop
    if([string]$actualType.InterfaceType -ne [string]$spec.interfaceType){Fail 'PC_DNS_GUARD_INTERFACE_TYPE_MISMATCH'}
   }
-  $active=@($pcDnsGuardNames|Where-Object{Get-NetFirewallRule -Name $_ -PolicyStore ActiveStore -ErrorAction SilentlyContinue})
-  if($active.Count -ne 4){Fail 'PC_DNS_GUARD_RULE_COUNT_WRONG'}
+  try{$afterGuards=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+  catch{Fail 'PC_DNS_GUARD_POSTCREATE_QUERY_UNVERIFIED'}
+  $active=@($afterGuards|Where-Object{$_.Name -in $pcDnsGuardNames})
+  if($active.Count -ne 4 -or @($pcDnsGuardNames|Where-Object{
+   $guardName=$_;@($active|Where-Object{$_.Name -eq $guardName}).Count -ne 1
+  }).Count){Fail 'PC_DNS_GUARD_RULE_COUNT_WRONG'}
  }
  $stdout=Join-Path $Runtime 'singbox.stdout.log';$stderr=Join-Path $Runtime 'singbox.stderr.log'
  $p=Start-Process -FilePath $sb -ArgumentList @('run','-c',$cfg) -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
