@@ -20,8 +20,8 @@
     },
     {
       "file": ".github/workflows/r55-private-acceptance.yml",
-      "bytes": 7033,
-      "sha256": "8E78968A96BAD080B763CF971CD66FFCE8ED83D1CE2516F4B8ED8DB6ABDDD02B"
+      "bytes": 14056,
+      "sha256": "B1302312140E952CB4872B994180DD27ED6B946D4777B208BCC33AAC16656367"
     },
     {
       "file": ".github/workflows/v465-private-gateway-review.yml",

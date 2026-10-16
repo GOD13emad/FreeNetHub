@@ -115,3 +115,93 @@ jobs:
           path: ${{ runner.temp }}/fnh-r55-private-fresh-receipt.json
           if-no-files-found: error
           retention-days: 30
+
+  r54-to-r55-to-r54:
+    runs-on: windows-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Pin official R54 V508 preview binary and install to disposable root
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $url='https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.10-r54-v508-unsigned-preview/FreeNetHub_4.3.10_R54_V508_Unsigned_Preview.exe'
+          $old=Join-Path $env:RUNNER_TEMP 'fnh-r54-v508-sha-pinned.exe'
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-r55-private-upgrade'
+          if((Test-Path $old) -or (Test-Path $probe)){throw 'R54_TRIAL_ROOT_ALREADY_EXISTS'}
+          Invoke-WebRequest -Uri $url -OutFile $old -MaximumRedirection 4
+          if((Get-FileHash $old -Algorithm SHA256).Hash -ne '13534B9FCC9186361D43BE3AB6423D9D1D8A80547084F75CA56166BD89293CA9'){throw 'R54_DOWNLOAD_HASH_MISMATCH'}
+          $p=Start-Process -FilePath $old -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',('/DIR='+$probe)) -Wait -PassThru
+          if($p.ExitCode -ne 0){throw ('R54_FRESH_RC_'+$p.ExitCode)}
+          $r=Get-Content (Join-Path $probe 'RELEASE.json') -Raw|ConvertFrom-Json
+          if($r.releaseRevision -ne '4.3.10-r54-update-cache-retention'){throw 'R54_RELEASE_IDENTITY_CHANGED'}
+          if((Get-FileHash (Join-Path $probe 'gateway\manifest.json') -Algorithm SHA256).Hash -ne '1E7036AF9D560C6BAAE9501AB6CEA4C824396A63B20C986247FE98F5444AB1DB'){throw 'R54_GATEWAY_MANIFEST_NOT_ACCEPTED'}
+          New-Item -ItemType Directory -Force (Join-Path $probe 'data')|Out-Null
+          '{"kind":"data","canary":"R55_V519"}'|Set-Content (Join-Path $probe 'data\r55-canary.json') -Encoding utf8
+          '{"kind":"profile","canary":"R55_V519"}'|Set-Content (Join-Path $probe 'r55-profile-canary.json') -Encoding utf8
+          Write-Host 'R54_SHA_PINNED_INSTALLED_WITH_PERSISTENCE_CANARIES_PASS'
+      - name: Compile R55 candidate on isolated runner
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $paths=@(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
+            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+          )
+          $iscc=$paths|Where-Object{Test-Path $_}|Select-Object -First 1
+          if(!$iscc){
+            choco install innosetup --no-progress -y
+            if($LASTEXITCODE -ne 0){throw 'R55_UPGRADE_INNO_INSTALL_FAILED'}
+            $iscc=$paths|Where-Object{Test-Path $_}|Select-Object -First 1
+          }
+          if(!$iscc){throw 'R55_UPGRADE_ISCC_NOT_FOUND'}
+          & $iscc /Qp windows/installer/FreeNetHub.iss
+          if($LASTEXITCODE -ne 0){throw 'R55_UPGRADE_BUILD_FAILED'}
+          if(!(Test-Path 'delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_V519_PRIVATE_REVIEW_DO_NOT_RELEASE.exe')){throw 'R55_UPGRADE_BINARY_MISSING'}
+      - name: In-place upgrade R54 to R55, verify state then rollback R54
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-r55-private-upgrade'
+          $old=Join-Path $env:RUNNER_TEMP 'fnh-r54-v508-sha-pinned.exe'
+          $new=(Resolve-Path 'delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_V519_PRIVATE_REVIEW_DO_NOT_RELEASE.exe').Path
+          $data=Join-Path $probe 'data\r55-canary.json'
+          $profile=Join-Path $probe 'r55-profile-canary.json'
+          $dataSha=(Get-FileHash $data -Algorithm SHA256).Hash
+          $profileSha=(Get-FileHash $profile -Algorithm SHA256).Hash
+          $p=Start-Process -FilePath $new -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',('/DIR='+$probe)) -Wait -PassThru
+          if($p.ExitCode -ne 0){throw ('R55_INPLACE_UPGRADE_RC_'+$p.ExitCode)}
+          $r=Get-Content (Join-Path $probe 'RELEASE.json') -Raw|ConvertFrom-Json
+          if($r.releaseRevision -ne '4.3.11-r55-native-status-review'){throw 'R55_UPGRADE_VERSION_BAD'}
+          $g=Get-Content (Join-Path $probe 'gateway\manifest.json') -Raw|ConvertFrom-Json
+          if(@($g.files).Count -ne 18 -or $r.gatewayManifestSha256 -ne (Get-FileHash (Join-Path $probe 'gateway\manifest.json') -Algorithm SHA256).Hash){throw 'R55_UPGRADE_MANIFEST_BAD'}
+          foreach($row in $g.files){
+            $f=Join-Path (Join-Path $probe 'gateway') ([string]$row.file)
+            if(!(Test-Path $f) -or (Get-FileHash $f -Algorithm SHA256).Hash -ne [string]$row.sha256){throw ('R55_INSTALLED_GATEWAY_SHA_BAD_'+$row.file)}
+          }
+          if(!(Test-Path $data) -or (Get-FileHash $data -Algorithm SHA256).Hash -ne $dataSha){throw 'R55_UPGRADE_DATA_MISSING'}
+          if(!(Test-Path $profile) -or (Get-FileHash $profile -Algorithm SHA256).Hash -ne $profileSha){throw 'R55_UPGRADE_PROFILE_MISSING'}
+          $roots=@(Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall' -ErrorAction SilentlyContinue | ForEach-Object{Get-ItemProperty $_.PSPath} | Where-Object{$_.DisplayName -match '^FreeNet Hub version [0-9]+(?:\.[0-9]+){1,3}$'})
+          if($roots.Count -ne 1){throw ('R55_DUPLICATE_INSTALL_ROOT_'+$roots.Count)}
+          $b=Start-Process -FilePath $old -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',('/DIR='+$probe)) -Wait -PassThru
+          if($b.ExitCode -ne 0){throw ('R55_TO_R54_ROLLBACK_RC_'+$b.ExitCode)}
+          $back=Get-Content (Join-Path $probe 'RELEASE.json') -Raw|ConvertFrom-Json
+          if($back.releaseRevision -ne '4.3.10-r54-update-cache-retention'){throw 'R54_ROLLBACK_VERSION_BAD'}
+          if(!(Test-Path $data) -or (Get-FileHash $data -Algorithm SHA256).Hash -ne $dataSha){throw 'R54_ROLLBACK_DATA_MISSING'}
+          if(!(Test-Path $profile) -or (Get-FileHash $profile -Algorithm SHA256).Hash -ne $profileSha){throw 'R54_ROLLBACK_PROFILE_MISSING'}
+          if(@(Get-NetAdapter -Name FreeNetHub -IncludeHidden -ErrorAction SilentlyContinue).Count){throw 'R54_ROLLBACK_LEFT_ACTIVE_TUN'}
+          $receipt=[ordered]@{status='R54_V508_TO_R55_V519_TO_R54_PASS';oldSHA256='13534B9FCC9186361D43BE3AB6423D9D1D8A80547084F75CA56166BD89293CA9';r55SHA256=(Get-FileHash $new -Algorithm SHA256).Hash;dataPreserved=$true;profilePreserved=$true;publicRelease=$false}
+          $receipt|ConvertTo-Json -Depth 4|Set-Content (Join-Path $env:RUNNER_TEMP 'fnh-r55-v519-upgrade-receipt.json') -Encoding utf8
+          Write-Host 'R54_TO_R55_TO_R54_UPGRADE_ROLLBACK_PASS'
+      - name: Upload only a tiny upgrade receipt
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: r55-private-upgrade-rollback-receipt
+          path: ${{ runner.temp }}/fnh-r55-v519-upgrade-receipt.json
+          if-no-files-found: error
+          retention-days: 30
