@@ -55,7 +55,9 @@ class DomainTests(unittest.TestCase):
             " const v=c.FindProxyForURL('https://'+host,host);"
             " if(v!==e){console.error(host,v,e);process.exit(2);}}"
         )
-        p = subprocess.run(["node", "-e", script, js], capture_output=True, text=True, timeout=5)
+        # Hosted Windows CI can cold-start Node under heavy concurrent jobs;
+        # keep exact output assertions but allow bounded process startup.
+        p = subprocess.run(["node", "-e", script, js], capture_output=True, text=True, timeout=20)
         self.assertEqual(p.returncode, 0, p.stderr)
 
 
