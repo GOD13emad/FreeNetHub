@@ -1,11 +1,26 @@
+[CmdletBinding()]
+param()
 $ErrorActionPreference='Stop'
-foreach($p in '.\gateway\apply_elevated.ps1','.\gateway\stop_elevated.ps1'){
- $t=$null;$e=$null
- [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $p),[ref]$t,[ref]$e)|Out-Null
- if(@($e).Count){$e|ForEach-Object{$_.Message};exit 11}
+$Gateway=(Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $Gateway 'runtime_config.ps1')
+foreach($name in @('apply_elevated.ps1','stop_elevated.ps1')){
+ $path=Join-Path $Gateway $name
+ $tokens=$null;$errors=$null
+ [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors)|Out-Null
+ if(@($errors).Count){$errors|ForEach-Object{$_.Message};throw ('GATEWAY_POWERSHELL_PARSE_FAILED '+$name)}
 }
-& 'C:\Python314\python.exe' '.\gateway\generate_config.py' --mode CONSOLE_ONLY --provider WARP --target-country NL --allow-unverified-console --output '.\gateway\runtime\console_warp.syntax.json'
-if($LASTEXITCODE){exit $LASTEXITCODE}
-$sb=(Get-Content '.\gateway\runtime\local_gateway.json' -Raw -Encoding UTF8|ConvertFrom-Json).singbox.path
-& $sb check -c '.\gateway\runtime\console_warp.syntax.json'
-exit $LASTEXITCODE
+$Python=if(Test-Path -LiteralPath (Join-Path (Split-Path $Gateway -Parent) 'app\dependencies.json')){Get-FnhPython}else{
+ $cmd=Get-Command python.exe -ErrorAction SilentlyContinue
+ if(!$cmd){throw 'PYTHON_RUNTIME_MISSING'}
+ $cmd.Source
+}
+$SingBox=Get-FnhSingBox
+$Config=Join-Path ([IO.Path]::GetTempPath()) ('fnh-gateway-syntax-'+[guid]::NewGuid().ToString('N')+'.json')
+try{
+ & $Python (Join-Path $Gateway 'generate_config.py') --mode CONSOLE_ONLY --provider WARP --target-country NL --allow-unverified-console --output $Config
+ if($LASTEXITCODE -ne 0){throw ('GATEWAY_CONFIG_GENERATION_FAILED_'+$LASTEXITCODE)}
+ & $SingBox.path check -c $Config
+ if($LASTEXITCODE -ne 0){throw ('SINGBOX_CONFIG_CHECK_FAILED_'+$LASTEXITCODE)}
+}finally{
+ Remove-Item -LiteralPath $Config -Force -ErrorAction SilentlyContinue
+}
