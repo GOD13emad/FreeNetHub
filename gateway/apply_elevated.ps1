@@ -76,10 +76,10 @@ try{
   New-NetFirewallRule -DisplayName $fwName -Direction Outbound -Action Block -Protocol Any -LocalAddress ([string]$ConsoleCfg.subnet) -InterfaceAlias $uplink.Name -Profile Any|Out-Null
  }
  if($pcNative){
-  # Query ActiveStore as a whole; an unreadable provider must never be
-  # interpreted as "no existing DNS guard". Include legacy exact names.
+  # Scope the ActiveStore read to all known FreeNetHub DNS53 guard
+  # names (including legacy): an unreadable provider is still UNKNOWN.
   $knownGuardNames=@($pcDnsGuardNames)+@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP')
-  try{$beforeGuards=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+  try{$beforeGuards=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)}
   catch{Fail 'PC_DNS_GUARD_PREFLIGHT_QUERY_UNVERIFIED'}
   if(@($beforeGuards|Where-Object{$_.Name -in $knownGuardNames}).Count){
    Fail 'PC_DNS_GUARD_PREEXISTS_REFUSE_TO_OVERWRITE'
@@ -97,7 +97,7 @@ try{
    $actualType=Get-NetFirewallInterfaceTypeFilter -AssociatedNetFirewallRule (Get-NetFirewallRule -Name $spec.name -PolicyStore ActiveStore -ErrorAction Stop) -ErrorAction Stop
    if([string]$actualType.InterfaceType -ne [string]$spec.interfaceType){Fail 'PC_DNS_GUARD_INTERFACE_TYPE_MISMATCH'}
   }
-  try{$afterGuards=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+  try{$afterGuards=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)}
   catch{Fail 'PC_DNS_GUARD_POSTCREATE_QUERY_UNVERIFIED'}
   $active=@($afterGuards|Where-Object{$_.Name -in $pcDnsGuardNames})
   if($active.Count -ne 4 -or @($pcDnsGuardNames|Where-Object{
@@ -167,20 +167,20 @@ try{
    # The watchdog/source stop may concurrently delete a matching rule.
    # Treat that race as success only after an exact ActiveStore readback;
    # any unreadable firewall state or retained owned rule must fail closed.
-   $activeRules=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+   $activeRules=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
    foreach($n in $ownedCreatedDnsRules){
     if(@($activeRules|Where-Object{$_.Name -eq $n}).Count -eq 0){continue}
     try{
      Remove-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction Stop
     }catch{
      $removeError=$_.Exception.Message
-     $readback=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+     $readback=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
      if(@($readback|Where-Object{$_.Name -eq $n}).Count){
       Fail ('APPLY_FAILED_PC_DNS_GUARD_ROLLBACK_INCOMPLETE: '+$primaryError+' / '+$removeError)
      }
     }
    }
-   $remainingRules=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+   $remainingRules=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
    if(@($ownedCreatedDnsRules|Where-Object{$name=$_;@($remainingRules|Where-Object{$_.Name -eq $name}).Count -gt 0}).Count){
     Fail ('APPLY_FAILED_PC_DNS_GUARD_ROLLBACK_INCOMPLETE: '+$primaryError)
    }

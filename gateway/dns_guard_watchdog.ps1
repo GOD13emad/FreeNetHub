@@ -56,9 +56,9 @@ function Test-TunAbsentStable([int]$Checks=50,[int]$PollMs=500){
  return $false
 }
 function Remove-OwnedDnsRulesConvergent {
- # Enumerate the ActiveStore with terminating query errors. Missing exact
- # names are not exceptional; inaccessible store is never proof of absence.
- $active=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+ # Query only the FreeNetHub DNS53 guard namespace with terminating
+ # provider errors. Missing exact rules are benign; store failure is UNKNOWN.
+ $active=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
  foreach($n in $names){
   if(@($active|Where-Object{$_.Name -eq $n}).Count -eq 0){continue}
   try{
@@ -67,11 +67,11 @@ function Remove-OwnedDnsRulesConvergent {
    $attemptError=$_.Exception.Message
    # The main stop path may have concurrently removed the same exact rule.
    # Only an independently successful readback proving absence is benign.
-   $after=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+   $after=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
    if(@($after|Where-Object{$_.Name -eq $n}).Count){throw ('OWNED_RULE_REMOVE_FAILED_'+$n+': '+$attemptError)}
   }
  }
- $current=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+ $current=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
  return @($names|Where-Object{ $name=$_; @($current|Where-Object{$_.Name -eq $name}).Count -gt 0 })
 }
 try{

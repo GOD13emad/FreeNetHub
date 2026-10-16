@@ -95,14 +95,14 @@ class GatewayTests(unittest.TestCase):
   self.assertLess(apply.index("if($confirmedAbsent -lt 2){Fail ('APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED"),apply.index("foreach($n in $ownedCreatedDnsRules)"))
   self.assertIn("TUN_PREFLIGHT_QUERY_UNVERIFIED",apply)
   self.assertIn("$confirmedAbsent -ge 2",apply)
-  self.assertIn("$activeRules=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)",apply)
+  self.assertIn("$activeRules=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)",apply)
   self.assertIn("foreach($n in $ownedCreatedDnsRules)",apply)
   self.assertIn("dnsGuardNames=if($pcNative)",apply)
   self.assertIn("PC_DNS_GUARD_STOP_INCOMPLETE",stop)
   self.assertIn("OWNED_SINGBOX_IDENTITY_UNVERIFIED",stop)
   self.assertIn("OWNED_SINGBOX_IDENTITY_UNVERIFIED_AFTER_STOP",stop)
   self.assertLess(stop.index("OWNED_SINGBOX_IDENTITY_UNVERIFIED"),stop.index("if($tun){Fail 'TUN_ADAPTER_STOP_INCOMPLETE'"))
-  self.assertIn("$allActive=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)",stop)
+  self.assertIn("$allActive=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)",stop)
   self.assertIn("Remove-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction Stop",stop)
   self.assertIn("PC_DNS_GUARD_STORE_UNREADABLE",stop)
   self.assertIn("UNOWNED_DNS_GUARD_PRESENT_REFUSE_FALSE_CLEAN_STOP",stop)
@@ -115,7 +115,7 @@ class GatewayTests(unittest.TestCase):
   self.assertIn("$consecutiveAbsent -ge 2",watcher)
   self.assertIn("function Remove-OwnedDnsRulesConvergent",watcher)
   self.assertIn("Remove-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction Stop",watcher)
-  self.assertIn("$after=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)",watcher)
+  self.assertIn("$after=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)",watcher)
   self.assertIn("OWNED_RULE_REMOVE_FAILED_",watcher)
   self.assertIn("OWNED_TUN_ABSENCE_UNVERIFIED_DNS_RULES_RETAINED",stop)
   self.assertIn("function Test-OwnedTunAbsentStable(",stop)
@@ -126,6 +126,20 @@ class GatewayTests(unittest.TestCase):
   self.assertIn("EXACT_OWNER_EXITED_AND_RULES_CLEANED",watcher)
   self.assertLess(apply.index("New-NetFirewallRule -Name $spec.name"),apply.index("Start-Process -FilePath $sb"))
   self.assertLess(stop.index("if($tun){Fail 'TUN_ADAPTER_STOP_INCOMPLETE'"),stop.index("foreach($n in $ownedDnsGuard)"))
+
+ def test_pc_dns53_reads_are_scoped_to_owned_guard_namespace(self):
+  targeted="Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop"
+  broad="Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop"
+  for rel,at_least in (("apply_elevated.ps1",5),("stop_elevated.ps1",5),("dns_guard_watchdog.ps1",3)):
+   src=(G/rel).read_text(encoding="utf-8-sig")
+   self.assertNotIn(broad,src)
+   self.assertGreaterEqual(src.count(targeted),at_least)
+   self.assertIn("FreeNetHub-PC-DNS53-Guard-UDP-Wired",src)
+   self.assertIn("FreeNetHub-PC-DNS53-Guard-TCP-Wireless",src)
+  stop=(G/"stop_elevated.ps1").read_text(encoding="utf-8-sig")
+  self.assertLess(stop.index("Test-OwnedTunAbsentStable"),stop.index("foreach($n in $ownedDnsGuard)"))
+  self.assertIn("PC_DNS_GUARD_FINAL_QUERY_UNVERIFIED",stop)
+  self.assertIn("PC_DNS_GUARD_STORE_UNREADABLE",stop)
 
  def test_pc_tunnel_node_provider_uses_node_socks_without_cloudflare_exclusion(self):
   c,p=M.build("PC_TUNNEL","NODE",None)
