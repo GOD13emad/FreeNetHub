@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Linux static checks
         run: |
-          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_r37_parity.py crossplatform/linux/test_update_revision.py
+          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/selective_tunnel.py crossplatform/linux/test_selective_tunnel.py crossplatform/linux/test_selective_integration.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_r37_parity.py crossplatform/linux/test_update_revision.py
           python3 crossplatform/linux/selftest.py
           python3 crossplatform/linux/test_console_policy.py
           python3 crossplatform/linux/test_private_state_permissions.py
@@ -58,6 +58,8 @@ jobs:
           python3 crossplatform/linux/test_warp_tos_owner_consent.py
           python3 crossplatform/linux/test_r37_parity.py
           python3 crossplatform/linux/test_update_revision.py
+          python3 crossplatform/linux/test_selective_tunnel.py
+          python3 crossplatform/linux/test_selective_integration.py
           python3 tests/test_v462_mixed_release_update.py
           python3 tests/test_linux_browser_action_guards.py
           python3 tests/test_linux_site_diagnostics_auto.py
@@ -69,8 +71,15 @@ jobs:
             https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.9-r53-windows-stable/FreeNetHub_4.2.0_Linux_R20.zip \
             -o delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip
           python3 tests/verify_frozen_linux_r20_asset.py
-          python3 tests/build_linux_r21_package.py
+          # R21 was already published: download its immutable bytes instead of
+          # rebuilding R21 using newer R22 source.
+          curl -fLsS --retry 2 --max-time 70 \
+            https://github.com/GOD13emad/FreeNetHub/releases/download/v4.3.9-r53-windows-stable/FreeNetHub_4.2.0_Linux_R21.zip \
+            -o delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R21.zip
+          echo "82305e1a15684662b7711b53a84522122c6a11d618366314d9dd297b3a7fec1a  delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R21.zip" | sha256sum -c -
           python3 tests/test_linux_r21_upgrade_preserves_data.py
+          python3 tests/build_linux_r22_package.py
+          python3 tests/test_linux_r22_upgrade_preserves_data.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
           cd /tmp/fnh-r20-ci/FreeNetHub_4.2.0_Linux_R20

@@ -5,8 +5,8 @@ HERE=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location("fnh_r43_update_test", HERE/"freenet_hub_linux_r37.py")
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 
-assert m.VERSION=="4.2.0-linux.21-r54"
-assert m._linux_revision_from_version(m.VERSION)==21
+assert m.VERSION=="4.2.0-linux.22-r55"
+assert m._linux_revision_from_version(m.VERSION)==22
 assert m._linux_revision_from_version("4.2.0-linux.99-r123")==99
 assert m._linux_revision_from_version("broken") is None
 assert m._linux_revision_from_name("FreeNetHub_4.2.0_Linux_R16.zip")==16
@@ -28,12 +28,12 @@ def payload(revision):
 
 orig=m.urllib.request.urlopen
 try:
-    m.urllib.request.urlopen=lambda *a,**k: FakeResponse(payload(21))
-    same=m.update_check()
-    assert same["ok"] and same["localRevision"]==21 and same["remoteRevision"]==21 and same["updateAvailable"] is False
     m.urllib.request.urlopen=lambda *a,**k: FakeResponse(payload(22))
+    same=m.update_check()
+    assert same["ok"] and same["localRevision"]==22 and same["remoteRevision"]==22 and same["updateAvailable"] is False
+    m.urllib.request.urlopen=lambda *a,**k: FakeResponse(payload(23))
     newer=m.update_check()
-    assert newer["ok"] and newer["localRevision"]==21 and newer["remoteRevision"]==22 and newer["updateAvailable"] is True
+    assert newer["ok"] and newer["localRevision"]==22 and newer["remoteRevision"]==23 and newer["updateAvailable"] is True
     saved=m.VERSION
     m.VERSION="broken"
     broken=m.update_check()

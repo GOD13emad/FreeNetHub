@@ -21,8 +21,9 @@ import urllib.request
 
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
+import selective_tunnel as selective
 
-VERSION = "4.2.0-linux.21-r54"
+VERSION = "4.2.0-linux.22-r55"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -52,6 +53,7 @@ DEFAULT_SETTINGS = {
     "monitor": False,
     "autoRepair": False,
     "customProxy": "",
+    "selectiveDomains": selective.DEFAULT_DOMAINS,
 }
 ALLOWED_COUNTRIES = ("AUTO","AT","DE","NL","US","CA","GB","FR","SG","JP")
 PUBLIC_NODE_SOURCES = (
@@ -96,6 +98,10 @@ def settings():
     out["theme"] = out["theme"] if out["theme"] in ("dark","light") else "dark"
     out["country"] = out["country"] if out["country"] in ALLOWED_COUNTRIES else "AUTO"
     out["testPathMode"] = out["testPathMode"] if out["testPathMode"] in ("BASE","SELECTED") else "BASE"
+    try:
+        out["selectiveDomains"] = "\n".join(selective.parse_domains(out.get("selectiveDomains")))
+    except ValueError:
+        out["selectiveDomains"] = selective.DEFAULT_DOMAINS
     for key, lo, hi, default in (
         ("pingTimeoutSec",3,30,10),
         ("downloadTimeoutSec",10,120,30),
@@ -123,6 +129,7 @@ def save_settings(patch):
         u = urllib.parse.urlparse(cp)
         if u.scheme not in ("socks5h","socks5","http") or not u.hostname or not u.port:
             raise ValueError("CUSTOM_PROXY_INVALID")
+    out["selectiveDomains"] = "\n".join(selective.parse_domains(out.get("selectiveDomains")))
     _atomic(SETTINGS_PATH, out)
     return {"ok": True, "settings": out}
 
@@ -969,8 +976,66 @@ def test_active_sites(targets=ACTIVE_SITE_TARGETS, timeout=8):
             "scope":"BROWSER","results":results,"passed":sum(bool(x["ok"]) for x in results),
             "error":"" if allowed else "NO_INDEPENDENT_TARGET_HEALTH"}
 
+def selective_status():
+    return selective.status()
+
+
+def selective_disable():
+    return selective.disable()
+
+
+def selective_connect(mode="AUTO", domains=None):
+    """Explicit browser/system-PAC scope, never a privileged full-device TUN."""
+    requested = str(mode or "AUTO").upper()
+    if requested == "DIRECT":
+        return {"ok": False, "error": "SELECTIVE_DIRECT_IS_NOT_TUNNEL"}
+    if requested not in ("AUTO", "NODE", "WARP", "GOOL", "CFON", "TOR", "CUSTOM"):
+        return {"ok": False, "error": "SELECTIVE_METHOD_UNSUPPORTED"}
+    active = str(legacy.session().get("mode") or "").upper()
+    mapped = {"WARP_PROXY": "WARP", "OBFS4": "TOR", "SNOWFLAKE": "TOR"}
+    live = mapped.get(active, active)
+    method = live if requested == "AUTO" and live in ("NODE", "WARP", "GOOL", "CFON", "TOR", "CUSTOM") else requested
+    if method == "AUTO":
+        method = "CFON"  # default only when no existing local provider
+    if active and live not in (method, "DIRECT"):
+        return {"ok": False, "error": "SELECTIVE_ACTIVE_PROVIDER_CONFLICT", "activeMode": active}
+    if method == "CUSTOM":
+        proxy = str(settings().get("customProxy") or "")
+        u = urllib.parse.urlparse(proxy)
+        if u.scheme not in ("socks5", "socks5h") or u.username or u.password or u.hostname not in ("127.0.0.1", "localhost", "::1") or not u.port:
+            return {"ok": False, "error": "SELECTIVE_REQUIRES_LOCAL_SOCKS5"}
+        port = u.port
+    else:
+        if not active or live != method:
+            established = connect_method(method, "BROWSER")
+            if not established.get("ok"):
+                return {"ok": False, "error": "SELECTIVE_PROVIDER_NOT_READY", "provider": established}
+        proxy, name = _active_proxy_for_diagnostics()
+        if not proxy or (method != mapped.get(str(name).upper(), str(name).upper())):
+            return {"ok": False, "error": "SELECTIVE_PROXY_OWNERSHIP_UNVERIFIED"}
+        u = urllib.parse.urlparse(proxy)
+        if u.scheme not in ("socks5h", "socks5") or u.hostname != "127.0.0.1" or not u.port:
+            return {"ok": False, "error": "SELECTIVE_REQUIRES_LOCAL_SOCKS5"}
+        port = u.port
+    selection = settings()["selectiveDomains"] if domains is None else domains
+    try:
+        out = selective.apply(selection, port, method)
+        if out.get("ok") and domains is not None:
+            save_settings({"selectiveDomains": "\n".join(out["domains"])})
+        out["scope"] = "SELECTIVE"
+        return out
+    except (ValueError, selective.SelectiveError, OSError, subprocess.SubprocessError) as exc:
+        return {"ok": False, "scope": "SELECTIVE", "error": str(exc)}
+
+
 def connect_method(mode, scope="BROWSER"):
     mode=str(mode or "AUTO").upper(); scope=str(scope or "BROWSER").upper()
+    if scope == "SELECTIVE":
+        return selective_connect(mode)
+    if selective.status().get("enabled"):
+        off = selective.disable()
+        if not off.get("ok"):
+            return {"ok": False, "error": "SELECTIVE_DISABLE_REQUIRED", "detail": off}
     if scope=="CONSOLE":
         return legacy.console_start()
     if scope=="SYSTEM":
@@ -1018,6 +1083,10 @@ def connect_method(mode, scope="BROWSER"):
     return legacy.connect_mode(mode,full_system=False)
 
 def stop_all():
+    if selective.status().get("enabled"):
+        off = selective.disable()
+        if not off.get("ok"):
+            return {"ok": False, "error": "SELECTIVE_ROLLBACK_REQUIRED", "detail": off}
     nr=node_stop()
     wr=_warpplus_stop_all()
     lr=legacy.stop_all()

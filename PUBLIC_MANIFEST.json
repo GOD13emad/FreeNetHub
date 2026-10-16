@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 34360,
-      "sha256": "A6A94F38ADB428BC72F59C7278989D93278C51AD3B479EDC99984C6101AAF765"
+      "bytes": 35220,
+      "sha256": "0310FB4D1A80D164D84C896E195BA8A360E13F22EF33A0BECAFEB34388A87B1B"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -236,17 +236,17 @@
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
       "bytes": 44627,
-      "sha256": "45E0FE048A6E09061F492CB6E4E742B53C696D55E8C6CC8E2CCF4F825044CA6D"
+      "sha256": "88FA20A9FC70C74D569971C449D4604A17FBDB084AC54FFCFB3A2638AD5FB357"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
-      "bytes": 59862,
-      "sha256": "5D16D1F590787EE95895D39041A3AC58183F5C642146B3BC35CF31C1755E36DC"
+      "bytes": 64415,
+      "sha256": "E4ED2B855272DDA6FBB23FB1F47B1C443D83CCD624513889142D92117DC49E8E"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_r37.py",
-      "bytes": 59235,
-      "sha256": "46425984B466E2ADA663A882EEB950F9F8F3AC2DC8CB8EE21F6DF7076889086F"
+      "bytes": 62711,
+      "sha256": "F57AC30A63D531C24F0084280E0E448513789B877DCA5D28E59964CCC479BFA9"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -260,8 +260,8 @@
     },
     {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 7130,
-      "sha256": "FB5A46506CC186F41F0D6C8C4C7D964C4BBB0B8D27ADEDC471FD59DD063C51A7"
+      "bytes": 7738,
+      "sha256": "88E28DC70895335872259EDE88BEB68604F86B33C12F540CDAC6E3197D7868A5"
     },
     {
       "file": "crossplatform/linux/install_singbox_pinned.sh",
@@ -285,8 +285,8 @@
     },
     {
       "file": "crossplatform/linux/README_FA.md",
-      "bytes": 6869,
-      "sha256": "EC31D5DE3C9B5CCE8D048F56811350C52ED6C12D6072256BBB3CDAFDA22AAA5D"
+      "bytes": 8046,
+      "sha256": "8DC401E797D040C14C3B483CDF90BFBC0D2675AA92314A3DB9FEE3A44DC950AA"
     },
     {
       "file": "crossplatform/linux/recover_warp_remote.sh",
@@ -294,9 +294,14 @@
       "sha256": "86B342A0BB9767B92512850C68FD378D499AF61E8130369BAA24F9AB63CE9653"
     },
     {
+      "file": "crossplatform/linux/selective_tunnel.py",
+      "bytes": 14826,
+      "sha256": "6A4DC437D1AFF8422B4F86C625884FAAB8DB090428E8AC5989439730F5A109D0"
+    },
+    {
       "file": "crossplatform/linux/selftest.py",
       "bytes": 1829,
-      "sha256": "68EEAB9B173B6466E8C5817C662FCFAE3BE1AC006EE7C0E2318D94001B86E277"
+      "sha256": "AD07E45B912CF433042970F39D2FB63947AA6888461C3604370D4EA12EFF6306"
     },
     {
       "file": "crossplatform/linux/test_browser_profile.py",
@@ -315,8 +320,8 @@
     },
     {
       "file": "crossplatform/linux/test_r37_parity.py",
-      "bytes": 9098,
-      "sha256": "BA9A1668CDA55A3E1B6483CC417C9D7D039BCE929B961CF9C873D59CADD9AA7C"
+      "bytes": 9292,
+      "sha256": "542C2D3DECF51FE91615D6C34B1B2E894AA82369D280F31BD88E648663C3AACB"
     },
     {
       "file": "crossplatform/linux/test_scope_policy.py",
@@ -324,9 +329,19 @@
       "sha256": "AEC97B7DC1A15ABDB54B58EA9F8225DE2032EA445255CE3B56A893F3B8832282"
     },
     {
+      "file": "crossplatform/linux/test_selective_integration.py",
+      "bytes": 2780,
+      "sha256": "5F3E119B453CE966FC39C0AAF4535AB27520FF2C5AA4FECD0573D8A7119CDB28"
+    },
+    {
+      "file": "crossplatform/linux/test_selective_tunnel.py",
+      "bytes": 8056,
+      "sha256": "657E2C1EDBC9688D3458717A025400D32DCB394EAA93D72DE48895FCE3876BBE"
+    },
+    {
       "file": "crossplatform/linux/test_update_revision.py",
       "bytes": 2306,
-      "sha256": "BED2822E1693442C0DA2A6CC495A7B42C58041497CDECDC4B90824D4F829FFC8"
+      "sha256": "DB3318ECFA9E409FD5F8D22DA1AA166C1380C441CC8989B00B0195B777E9B8FE"
     },
     {
       "file": "crossplatform/linux/test_warp_tos_owner_consent.py",
@@ -335,8 +350,8 @@
     },
     {
       "file": "crossplatform/linux/uninstall.sh",
-      "bytes": 3382,
-      "sha256": "5F22894AF269D6DE6C2A9C05E2D5D163E55DBAE07784DE09A7A16FF935F9DA64"
+      "bytes": 3922,
+      "sha256": "83F38DBC7AFA3A5AAFA35F461CED56C71A67601FF185136BECCBC344F9855550"
     },
     {
       "file": "crossplatform/linux/warp_guard.py",
@@ -345,8 +360,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 7265,
-      "sha256": "E8D5008B12925069E738F54FF9A66548540AEC9FB8F92838A7935BF806C632B0"
+      "bytes": 7761,
+      "sha256": "007A13E191A50417EA6172129D3413B795DB1DECC2199ED0ED6F9FA07918D3FF"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1785,8 +1800,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 202259,
-      "sha256": "9ECA2FF2371728B850FFE12E4FDE23335C415EB36C7B596D54A41D7926AE6B4D"
+      "bytes": 205195,
+      "sha256": "E1AFFE22633CA84AC31D84A2C20B00FE5D39A14F988C1084EACFD22A9E6A07E7"
     },
     {
       "file": "pytest.ini",
@@ -1806,7 +1821,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42767,
-      "sha256": "42B3000DD1345AC3D4E715E68F7D7FA8F031D27C6A2885C006B39466F149BFAA"
+      "sha256": "D3890F890B6D20590B21C4E8F758E8E506F245632794A482155AC2685CE0316C"
     },
     {
       "file": "SECURITY.md",
@@ -1877,6 +1892,11 @@
       "file": "tests/build_linux_r21_package.py",
       "bytes": 2993,
       "sha256": "AC827170835FB180FB5C49B6D308A5CDD4679FEA96A41734D6F4C14FFF18DE95"
+    },
+    {
+      "file": "tests/build_linux_r22_package.py",
+      "bytes": 3072,
+      "sha256": "41913252A35F92CD9E2548C13B90A349A45976C57496A1D4387F283F646CEAEE"
     },
     {
       "file": "tests/build_linux_r9_package.py",
@@ -2495,13 +2515,18 @@
     },
     {
       "file": "tests/test_linux_install_active_guard.py",
-      "bytes": 2031,
-      "sha256": "27B4AEE42B4519D4E2B68949ED94E84A607D14695126330039279E53A4E1F647"
+      "bytes": 3050,
+      "sha256": "194204BDDC30F5196EB14ED2726610EB8594EE958F501C542FAD1CFE01D4280F"
     },
     {
       "file": "tests/test_linux_r21_upgrade_preserves_data.py",
       "bytes": 4829,
       "sha256": "738B74741A3C3BEB4FB47E2110FB1602E4C4C63CFB55D06486067E5125B010EB"
+    },
+    {
+      "file": "tests/test_linux_r22_upgrade_preserves_data.py",
+      "bytes": 4829,
+      "sha256": "0E569450C5D604E33C49E23A3016EC5491CB7F0CE2C2C8CC0ACAA0EF68393F80"
     },
     {
       "file": "tests/test_linux_site_diagnostics_auto.py",
@@ -2630,8 +2655,8 @@
     },
     {
       "file": "tests/test_v462_mixed_release_update.py",
-      "bytes": 2511,
-      "sha256": "1B97A42977B1E4FF37A54290F210775E840F3CA8C8306B3FD686318211C6DD17"
+      "bytes": 2581,
+      "sha256": "2DB19477918BCED1FA83315C793E7CA274167BC4AC60A34CFC2C69F505ECD580"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",
