@@ -51,5 +51,23 @@ class ReleaseRoutingTests(unittest.TestCase):
         self.assertIn("440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5",historical)
         self.assertIn("if: needs.source-line.outputs.line == 'R53'",historical)
 
+    def test_disposable_native_probe_is_bounded_and_requires_cleanup(self):
+        wf=(ROOT/".github/workflows/r55-native-disposable.yml").read_text(encoding="utf-8")
+        watchdog=(ROOT/"tests/r55_native_disposable_watchdog.ps1").read_text(encoding="utf-8")
+        for token in ("R55_NATIVE_INDEPENDENT_WATCHDOG_ARMED",
+                      "NATIVE_WATCHDOG_CLEANUP_UNVERIFIED",
+                      "NATIVE_CONTROLLER_STILL_RUNNING_AFTER_175S",
+                      "R55_NATIVE_STOP_TIMEOUT_65S",
+                      "DISPOSABLE_NATIVE_LEFT_NETWORK_MUTATIONS",
+                      "DISPOSABLE_NATIVE_DEFAULT_ROUTE_NOT_RESTORED"):
+            with self.subTest(token=token): self.assertIn(token,wf)
+        for token in ("Stop-Process -Id $StartPid -Force",
+                      "stop_elevated.ps1",
+                      "TIMEOUT_CLEANUP_VERIFIED",
+                      "FINAL_NETWORK_STATE_UNVERIFIED",
+                      "not_a_native_pass"):
+            with self.subTest(token=token): self.assertIn(token,watchdog)
+        self.assertNotIn("R55_DISPOSABLE_NATIVE_START_STOP_PASS",watchdog)
+
 if __name__=="__main__":
     unittest.main(verbosity=2)

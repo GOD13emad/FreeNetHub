@@ -20,8 +20,8 @@
     },
     {
       "file": ".github/workflows/r55-native-disposable.yml",
-      "bytes": 8812,
-      "sha256": "7A45F76FD344701D97FFF63FF84EA5DC4846DE75C949C8850ECB48C8ECCF1E20"
+      "bytes": 12861,
+      "sha256": "A34175356CFD7E3208C653DD82BE92826F79B48A576FF3050234D1DC898A8FD4"
     },
     {
       "file": ".github/workflows/r55-private-acceptance.yml",
@@ -2459,6 +2459,11 @@
       "sha256": "1FF71049CAB932FDD48FDC1470D8FDC1E98FDBACF115E1D39E3D573C8BD8EFF1"
     },
     {
+      "file": "tests/r55_native_disposable_watchdog.ps1",
+      "bytes": 3042,
+      "sha256": "263D5E8209E810E6DD38F3E9BC9AE754627D4469C4CFE5B29D745C8E0B6A73EB"
+    },
+    {
       "file": "tests/rebuild_crossplatform_manifest.py",
       "bytes": 1398,
       "sha256": "1A6572B7911000A938EBA28A70E97E049300A63D7FF878EEFD9475A537710397"
@@ -2660,8 +2665,8 @@
     },
     {
       "file": "tests/test_v521_ci_routing.py",
-      "bytes": 2945,
-      "sha256": "D3FD11794C46FDC72ECF4B361E764D98DE5DF0D0DA33C1097167078EBE225CD1"
+      "bytes": 4059,
+      "sha256": "517FE55ED23A7048240C8032C3050C9A35FD31D519E81942B907A96297C49E45"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",

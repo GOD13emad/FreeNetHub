@@ -76,10 +76,42 @@ jobs:
           $before=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction Stop|Sort-Object RouteMetric|Select-Object -First 1
           if(!$before){throw 'PRE_NATIVE_ROUTE_MISSING'}
           $started=$false; $proof=$null; $startError=''; $stopError=''
+          $runtime=Join-Path $root 'gateway\runtime'
+          $armed=Join-Path $runtime 'r55-runner-watchdog-armed'
+          $disarmed=Join-Path $runtime 'r55-runner-watchdog-disarmed'
+          $watchReceipt=Join-Path $runtime 'r55-runner-watchdog-receipt.json'
+          if((Test-Path $armed) -or (Test-Path $disarmed) -or (Test-Path $watchReceipt)){throw 'NATIVE_WATCHDOG_PREEXISTING_STATE'}
+          $null=New-Item -ItemType File -Path $armed -ErrorAction Stop
+          $startProc=$null
+          $watchProc=$null
           try {
             $startPath=Join-Path $root 'jobs\r55-native-disposable-start.json'
-            & pwsh -NoProfile -NonInteractive -File $gateway -Action StartPc -Provider WARP -ResultPath $startPath | Out-Null
-            if($LASTEXITCODE -ne 0 -or !(Test-Path $startPath)){throw 'R55_NATIVE_START_RESULT_FAILURE'}
+            $args=@('-NoProfile','-NonInteractive','-File',('"'+$gateway+'"'),'-Action','StartPc','-Provider','WARP','-ResultPath',('"'+$startPath+'"'))
+            $startProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList $args -PassThru -WindowStyle Hidden
+            if(!$startProc){throw 'NATIVE_START_PROCESS_FAILED'}
+            $startTicks=$startProc.StartTime.ToUniversalTime().Ticks
+            $watchScript=(Resolve-Path 'tests/r55_native_disposable_watchdog.ps1').Path
+            $watchArgs=@('-NoProfile','-NonInteractive','-File',('"'+$watchScript+'"'),'-InstallRoot',('"'+$root+'"'),'-StartPid',[string]$startProc.Id,'-StartTicks',[string]$startTicks,'-Seconds','150')
+            $watchProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList $watchArgs -PassThru -WindowStyle Hidden
+            if(!$watchProc){throw 'NATIVE_INDEPENDENT_WATCHDOG_FAILED'}
+            Write-Host 'R55_NATIVE_INDEPENDENT_WATCHDOG_ARMED'
+            $deadline=[DateTime]::UtcNow.AddSeconds(175)
+            while(!$startProc.HasExited -and [DateTime]::UtcNow -lt $deadline){
+              if(Test-Path -LiteralPath $watchReceipt){
+                $wr=Get-Content $watchReceipt -Raw|ConvertFrom-Json
+                if($wr.state -ne 'DISARMED'){Write-Host ('NATIVE_WATCHDOG_STATE='+$wr.state)}
+              }
+              Start-Sleep -Milliseconds 500
+              $startProc.Refresh()
+            }
+            if(!$startProc.HasExited){throw 'NATIVE_CONTROLLER_STILL_RUNNING_AFTER_175S'}
+            # The watchdog now terminates without touching network state.
+            $null=New-Item -ItemType File -Path $disarmed -ErrorAction Stop
+            if($startProc.ExitCode -ne 0 -or !(Test-Path $startPath)){throw ('R55_NATIVE_START_RESULT_FAILURE_RC_'+$startProc.ExitCode)}
+            if(Test-Path $watchReceipt){
+              $wr=Get-Content $watchReceipt -Raw|ConvertFrom-Json
+              if($wr.state -ne 'DISARMED'){throw ('NATIVE_WATCHDOG_TRIGGERED_'+$wr.state)}
+            }
             $start=Get-Content $startPath -Raw|ConvertFrom-Json
             if($start.exit -ne 0 -or !$start.result.running -or $start.result.mode -ne 'PC_TUNNEL'){throw ('R55_NATIVE_START_REJECTED_'+[string]$start.result.error)}
             $started=$true
@@ -109,13 +141,41 @@ jobs:
             $startError=$_.Exception.Message
             Write-Host ('R55_NATIVE_START_ERROR='+$startError)
           } finally {
-            # Fail closed: restore the ephemeral runner's network even on failed start.
+            # A watchdog-start error must not strand the newly launched controller.
+            if(!$watchProc -and $startProc -and !$startProc.HasExited){
+              try{$startProc.Kill($true);[void]$startProc.WaitForExit(3000)}catch{}
+            }
+            # Never run an unbounded native Stop; the runner must return control.
             try{
-              $stopPath=Join-Path $root 'jobs\r55-native-disposable-stop.json'
-              & pwsh -NoProfile -NonInteractive -File $gateway -Action Stop -ResultPath $stopPath | Out-Null
-              if($LASTEXITCODE -ne 0 -or !(Test-Path $stopPath)){throw 'R55_NATIVE_STOP_FAILED'}
-              $stop=Get-Content $stopPath -Raw|ConvertFrom-Json
-              if($stop.exit -ne 0){throw ('R55_NATIVE_STOP_REJECTED_'+[string]$stop.result.error)}
+              $triggered=$false
+              if(Test-Path $watchReceipt){
+                $watch=Get-Content $watchReceipt -Raw|ConvertFrom-Json
+                $triggered=$watch.state -notin @('DISARMED')
+              }
+              if($triggered -and $watchProc){
+                # Allow the independent timeout-stop to complete before reading
+                # its final receipt, even when the controller already exited.
+                if(!$watchProc.WaitForExit(70000)){throw 'INDEPENDENT_WATCHDOG_CLEANUP_TIMEOUT'}
+                $watch=Get-Content $watchReceipt -Raw|ConvertFrom-Json
+              }
+              if(!$triggered){
+                if(!(Test-Path $disarmed)){ $null=New-Item -ItemType File -Path $disarmed -ErrorAction SilentlyContinue }
+                $stopPath=Join-Path $root 'jobs\r55-native-disposable-stop.json'
+                $stopArgs=@('-NoProfile','-NonInteractive','-File',('"'+$gateway+'"'),'-Action','Stop','-ResultPath',('"'+$stopPath+'"'))
+                $stopProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList $stopArgs -PassThru -WindowStyle Hidden
+                if(!$stopProc.WaitForExit(65000)){
+                  try{$stopProc.Kill($true);[void]$stopProc.WaitForExit(3000)}catch{}
+                  throw 'R55_NATIVE_STOP_TIMEOUT_65S'
+                }
+                if($stopProc.ExitCode -ne 0 -or !(Test-Path $stopPath)){throw 'R55_NATIVE_STOP_FAILED'}
+                $stop=Get-Content $stopPath -Raw|ConvertFrom-Json
+                if($stop.exit -ne 0){throw ('R55_NATIVE_STOP_REJECTED_'+[string]$stop.result.error)}
+              }else{
+                # The independent watchdog attempted direct stop_elevated.
+                # Never treat its timeout cleanup as successful Native acceptance.
+                if($watch.state -ne 'TIMEOUT_CLEANUP_VERIFIED'){throw ('NATIVE_WATCHDOG_CLEANUP_UNVERIFIED_'+$watch.state)}
+                $stopError='NATIVE_START_TIMED_OUT_BUT_CLEANUP_VERIFIED'
+              }
             }catch{$stopError=$_.Exception.Message}
           }
           $after=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction Stop|Sort-Object RouteMetric|Select-Object -First 1
