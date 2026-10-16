@@ -10,13 +10,13 @@ $Root=(Resolve-Path "$PSScriptRoot\..").Path
 $Runtime=Join-Path $PSScriptRoot 'runtime'
 New-Item -ItemType Directory -Path $Runtime -Force|Out-Null
 $Result=Join-Path $Runtime 'apply_result.json'
-$Owner=Join-Path $Runtime 'owner.json'
+$OwnerPath=Join-Path $Runtime 'owner.json'
 $Pre=Join-Path $Runtime 'prestate.json'
 function Out-J($p,$x){$x|ConvertTo-Json -Depth 12|Set-Content -LiteralPath $p -Encoding UTF8}
 function Fail([string]$m){Out-J $Result ([ordered]@{status='FAIL';error=$m;utc=[DateTimeOffset]::UtcNow.ToString('o')});throw $m}
 $admin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if(!$admin){Fail 'ADMIN_REQUIRED'}
-if(Test-Path $Owner){Fail 'GATEWAY_ALREADY_OWNED'}
+if(Test-Path $OwnerPath){Fail 'GATEWAY_ALREADY_OWNED'}
 try{
  $existingTun=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object{$_.Name -eq 'FreeNetHub'})
 }catch{Fail 'TUN_PREFLIGHT_QUERY_UNVERIFIED'}
@@ -130,12 +130,12 @@ try{
   tun=[ordered]@{name=$tun.Name;ifIndex=$tun.ifIndex;description=$tun.InterfaceDescription}
   consoleIfIndex=if($console){$console.ifIndex}else{$null};uplinkIfIndex=$uplink.ifIndex;uplinkName=$uplink.Name;firewallRule=if($Mode -eq 'CONSOLE_ONLY'){$fwName}else{$null};dnsGuardNames=if($pcNative){$pcDnsGuardNames}else{@()};dnsGuardPid=if($guardProc){$guardProc.Id}else{$null}
  }
- Out-J $Owner $owner
+ Out-J $OwnerPath $owner
  Out-J $Result ([ordered]@{status='PASS';owner=$owner;consoleManual=if($Mode -eq 'CONSOLE_ONLY'){[ordered]@{ip=$ConsoleCfg.suggested_console_ip;prefix=24;gateway=$ConsoleCfg.gateway;dns=$ConsoleCfg.dns}}else{$null}})
 }catch{
  $primaryError=$_.Exception.Message
  # Fail closed: any start failure must restore prestate before returning failure.
- if(Test-Path $Owner){
+ if(Test-Path $OwnerPath){
   $stopScript=Join-Path $PSScriptRoot 'stop_elevated.ps1'
   & pwsh.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $stopScript
   $stopExit=$LASTEXITCODE

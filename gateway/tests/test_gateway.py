@@ -3,6 +3,15 @@ R=pathlib.Path(__file__).resolve().parents[2]
 G=R/"gateway"
 spec=importlib.util.spec_from_file_location("gc",G/"generate_config.py");M=importlib.util.module_from_spec(spec);spec.loader.exec_module(M)
 class GatewayTests(unittest.TestCase):
+ def test_apply_owner_record_does_not_shadow_path_in_case_insensitive_powershell(self):
+  source=(G/"apply_elevated.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("$OwnerPath=Join-Path $Runtime 'owner.json'",source)
+  self.assertIn("Out-J $OwnerPath $owner",source)
+  self.assertIn("if(Test-Path $OwnerPath)",source)
+  self.assertIn("$owner=[ordered]@{",source)
+  import re
+  self.assertFalse(re.search(r"\$Owner\b",source), "PowerShell case-insensitive collision between owner path and record")
+  self.assertEqual(source.count("Out-J $OwnerPath $owner"),1)
  def test_startpc_requires_live_owner_and_no_unowned_tun(self):
   src=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
   for marker in ("UNOWNED_TUN_PRESENT_REFUSE_START","PC_OWNER_RECEIPT_DISAPPEARED","PC_OWNER_IDENTITY_UNVERIFIED_AFTER_APPLY","PC_TUN_NOT_OWNED_AFTER_START","DEGRADED_UNOWNED_TUN"):
