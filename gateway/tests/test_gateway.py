@@ -3,6 +3,31 @@ R=pathlib.Path(__file__).resolve().parents[2]
 G=R/"gateway"
 spec=importlib.util.spec_from_file_location("gc",G/"generate_config.py");M=importlib.util.module_from_spec(spec);spec.loader.exec_module(M)
 class GatewayTests(unittest.TestCase):
+ def test_apply_owner_record_does_not_shadow_path_in_case_insensitive_powershell(self):
+  source=(G/"apply_elevated.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("$OwnerPath=Join-Path $Runtime 'owner.json'",source)
+  self.assertIn("Out-J $OwnerPath $owner",source)
+  self.assertIn("if(Test-Path $OwnerPath)",source)
+  self.assertIn("$owner=[ordered]@{",source)
+  import re
+  self.assertFalse(re.search(r"\$Owner\b",source), "PowerShell case-insensitive collision between owner path and record")
+  self.assertEqual(source.count("Out-J $OwnerPath $owner"),1)
+ def test_native_status_and_stop_skip_unrelated_wsl_status_poll(self):
+  src=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("if(-not $pcRunning -and -not $tun){",src)
+  self.assertIn("if(-not (($s -and [string]$s.mode -eq 'PC_TUNNEL') -or $nativeOwnerPresent -or $nativeInterfacePresent)){",src)
+  self.assertIn("try{$ws=Run-WslConsole 'Status'}catch{}",src)
+  self.assertLess(src.index("$pcRunning=Owner-Valid"),src.index("if(-not $pcRunning -and -not $tun){"))
+  self.assertIn("Run-WslConsole 'Start'",src)
+  self.assertIn("Run-WslConsole 'Stop'",src)
+
+ def test_startpc_requires_live_owner_and_no_unowned_tun(self):
+  src=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  for marker in ("UNOWNED_TUN_PRESENT_REFUSE_START","PC_OWNER_RECEIPT_DISAPPEARED","PC_OWNER_IDENTITY_UNVERIFIED_AFTER_APPLY","PC_TUN_NOT_OWNED_AFTER_START","DEGRADED_UNOWNED_TUN"):
+   self.assertIn(marker,src)
+  self.assertLess(src.index("PC_OWNER_RECEIPT_DISAPPEARED"),src.index("$out.exit=0;$out.result=$pcLive"))
+  self.assertLess(src.index("UNOWNED_TUN_PRESENT_REFUSE_START"),src.index("$mode=if($Action -eq 'StartPc')"))
+
  def test_pc_tunnel_final_provider(self):
   c,p=M.build("PC_TUNNEL","WARP",None)
   self.assertEqual(c["route"]["final"],"provider")
@@ -12,6 +37,119 @@ class GatewayTests(unittest.TestCase):
   self.assertIn("162.159.192.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertIn("162.159.193.0/24",c["inbounds"][0]["route_exclude_address"])
   self.assertIn("162.159.197.0/24",c["inbounds"][0]["route_exclude_address"])
+ def test_windows_tun_peer_self_loop_is_rejected_before_private_direct(self):
+  # Upstream Windows sing-box issue #4455: auto_route+direct can
+  # reinject UDP to the TUN peer in an unbounded loop.
+  for mode in ("PC_TUNNEL","CONSOLE_ONLY"):
+   for provider in ("WARP","NODE"):
+    c,_=M.build(mode,provider,None)
+    rules=c["route"]["rules"]
+    reject=rules[0]
+    self.assertEqual(reject["inbound"],["fnh-tun"])
+    self.assertEqual(reject["action"],"reject")
+    self.assertEqual(reject["method"],"drop")
+    self.assertEqual(set(reject["ip_cidr"]),{"172.31.255.0/30","fdfe:7f4b:1::/126"})
+    self.assertLess(rules.index(reject),next(i for i,x in enumerate(rules) if x.get("ip_is_private")))
+    self.assertTrue(any(x.get("ip_is_private") and x.get("outbound")=="direct" for x in rules))
+
+ def test_pc_native_dns_explicit_opt_in_preserves_tailnet(self):
+  for provider in ("WARP","NODE"):
+   c,_=M.build("PC_TUNNEL",provider,None,dns_mode="native")
+   self.assertEqual(c["inbounds"][0]["dns_mode"],"native")
+   self.assertTrue(c["inbounds"][0]["strict_route"])
+   self.assertIn("100.64.0.0/10",c["inbounds"][0]["route_exclude_address"])
+   self.assertIn("fd7a:115c:a1e0::/48",c["inbounds"][0]["route_exclude_address"])
+   self.assertEqual(c["route"]["final"],"provider")
+   self.assertEqual(c["dns"]["servers"][0]["detour"],"provider")
+  with self.assertRaisesRegex(ValueError,"PC_DNS_MODE_INVALID"):
+   M.build("PC_TUNNEL","WARP",None,dns_mode="disabled")
+  with self.assertRaisesRegex(ValueError,"PC_ONLY_DNS_MODE"):
+   M.build("CONSOLE_ONLY","WARP",None,dns_mode="native")
+
+ def test_pc_controller_only_selects_native_with_effective_tailscale_quad100(self):
+  src=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("Get-Service -Name 'Tailscale'",src)
+  self.assertIn("Get-DnsClientNrptPolicy -Effective",src)
+  self.assertIn("if($quadPolicies.Count -gt 0){$dnsMode='native'}",src)
+  self.assertIn("--dns-mode $dnsMode",src)
+  self.assertIn("dnsMode=$dnsMode",src)
+
+ def test_native_dns_guard_owned_lifecycle_fail_closed(self):
+  apply=(G/"apply_elevated.ps1").read_text(encoding="utf-8-sig")
+  stop=(G/"stop_elevated.ps1").read_text(encoding="utf-8-sig")
+  watcher=(G/"dns_guard_watchdog.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("PC_DNS_GUARD_PREEXISTS_REFUSE_TO_OVERWRITE",apply)
+  self.assertIn("$knownGuardNames=@($pcDnsGuardNames)+@",apply)
+  self.assertIn("PC_DNS_GUARD_PREFLIGHT_QUERY_UNVERIFIED",apply)
+  self.assertIn("PC_DNS_GUARD_POSTCREATE_QUERY_UNVERIFIED",apply)
+  self.assertLess(apply.index("PC_DNS_GUARD_PREFLIGHT_QUERY_UNVERIFIED"),apply.index("New-NetFirewallRule -Name $spec.name"))
+  self.assertIn("-InterfaceType $spec.interfaceType -Enabled True -Profile Any -PolicyStore ActiveStore",apply)
+  self.assertIn("Get-NetFirewallInterfaceTypeFilter -AssociatedNetFirewallRule",apply)
+  self.assertIn("PC_DNS_GUARD_INTERFACE_TYPE_MISMATCH",apply)
+  self.assertIn("PC_NATIVE_DEFAULT_UPLINK_NOT_WIRED_OR_WIFI",apply)
+  self.assertIn("FreeNetHub-PC-DNS53-Guard-UDP-Wired",apply)
+  self.assertIn("FreeNetHub-PC-DNS53-Guard-TCP-Wireless",apply)
+  self.assertNotIn("-RemotePort 53 -InterfaceAlias $uplink.Name",apply)
+  self.assertIn("-UdpWirelessRule",apply)
+  self.assertIn("-TcpWirelessRule",apply)
+  self.assertIn("$pcNative=($Mode -eq 'PC_TUNNEL'",apply)
+  self.assertIn("dns_guard_watchdog.ps1",apply)
+  self.assertIn("PC_DNS_GUARD_WATCHDOG_DID_NOT_START",apply)
+  self.assertIn("APPLY_FAILED_PC_DNS_GUARD_ROLLBACK_INCOMPLETE",apply)
+  self.assertIn("if($Mode -eq 'CONSOLE_ONLY'){\n   Get-NetFirewallRule -DisplayName $fwName",apply)
+  self.assertLess(apply.index("if($Mode -eq 'CONSOLE_ONLY'){\n   Get-NetFirewallRule -DisplayName $fwName"),apply.index("if($pcNative){\n   # Fail closed:"))
+  self.assertIn("$ownedCreatedDnsRules=@()",apply)
+  self.assertIn("APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED",apply)
+  self.assertIn("if($confirmedAbsent -lt 2){Fail ('APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED:",apply)
+  self.assertLess(apply.index("if($confirmedAbsent -lt 2){Fail ('APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED"),apply.index("foreach($n in $ownedCreatedDnsRules)"))
+  self.assertIn("TUN_PREFLIGHT_QUERY_UNVERIFIED",apply)
+  self.assertIn("$confirmedAbsent -ge 2",apply)
+  self.assertIn("$activeRules=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)",apply)
+  self.assertIn("foreach($n in $ownedCreatedDnsRules)",apply)
+  self.assertIn("dnsGuardNames=if($pcNative)",apply)
+  self.assertIn("PC_DNS_GUARD_STOP_INCOMPLETE",stop)
+  self.assertIn("OWNED_SINGBOX_IDENTITY_UNVERIFIED",stop)
+  self.assertIn("OWNED_SINGBOX_IDENTITY_UNVERIFIED_AFTER_STOP",stop)
+  self.assertLess(stop.index("OWNED_SINGBOX_IDENTITY_UNVERIFIED"),stop.index("if($tun){Fail 'TUN_ADAPTER_STOP_INCOMPLETE'"))
+  self.assertIn("$allActive=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)",stop)
+  self.assertIn("Remove-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction Stop",stop)
+  self.assertIn("PC_DNS_GUARD_STORE_UNREADABLE",stop)
+  self.assertIn("UNOWNED_DNS_GUARD_PRESENT_REFUSE_FALSE_CLEAN_STOP",stop)
+  self.assertIn("UNOWNED_DNS_GUARD_QUERY_UNVERIFIED",stop)
+  self.assertLess(stop.index("UNOWNED_DNS_GUARD_PRESENT_REFUSE_FALSE_CLEAN_STOP"),stop.index("state=\'NOT_OWNED\'"))
+  self.assertIn("if($o.PSObject.Properties['dnsGuardNames'])",stop)
+  self.assertIn("TUN_LINGERED_RULES_RETAINED",watcher)
+  self.assertIn("if(-not (Test-TunAbsentStable)){",watcher)
+  self.assertIn("function Test-TunAbsentStable(",watcher)
+  self.assertIn("$consecutiveAbsent -ge 2",watcher)
+  self.assertIn("function Remove-OwnedDnsRulesConvergent",watcher)
+  self.assertIn("Remove-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction Stop",watcher)
+  self.assertIn("$after=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)",watcher)
+  self.assertIn("OWNED_RULE_REMOVE_FAILED_",watcher)
+  self.assertIn("OWNED_TUN_ABSENCE_UNVERIFIED_DNS_RULES_RETAINED",stop)
+  self.assertIn("function Test-OwnedTunAbsentStable(",stop)
+  self.assertLess(stop.index("if(-not (Test-OwnedTunAbsentStable)){"),stop.index("foreach($n in $ownedDnsGuard)"))
+  self.assertIn("while(Is-ExactOwner)",watcher)
+  self.assertIn("if([string]::IsNullOrWhiteSpace($path)){return $true}",watcher)
+  self.assertIn("}catch{return $true}",watcher)
+  self.assertIn("EXACT_OWNER_EXITED_AND_RULES_CLEANED",watcher)
+  self.assertLess(apply.index("New-NetFirewallRule -Name $spec.name"),apply.index("Start-Process -FilePath $sb"))
+  self.assertLess(stop.index("if($tun){Fail 'TUN_ADAPTER_STOP_INCOMPLETE'"),stop.index("foreach($n in $ownedDnsGuard)"))
+
+ def test_pc_dns53_reads_are_scoped_to_owned_guard_namespace(self):
+  targeted="Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop"
+  broad="Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop"
+  for rel,at_least in (("apply_elevated.ps1",5),("stop_elevated.ps1",5),("dns_guard_watchdog.ps1",3)):
+   src=(G/rel).read_text(encoding="utf-8-sig")
+   self.assertNotIn(broad,src)
+   self.assertGreaterEqual(src.count(targeted),at_least)
+   self.assertIn("FreeNetHub-PC-DNS53-Guard-UDP-Wired",src)
+   self.assertIn("FreeNetHub-PC-DNS53-Guard-TCP-Wireless",src)
+  stop=(G/"stop_elevated.ps1").read_text(encoding="utf-8-sig")
+  self.assertLess(stop.index("Test-OwnedTunAbsentStable"),stop.index("foreach($n in $ownedDnsGuard)"))
+  self.assertIn("PC_DNS_GUARD_FINAL_QUERY_UNVERIFIED",stop)
+  self.assertIn("PC_DNS_GUARD_STORE_UNREADABLE",stop)
+
  def test_pc_tunnel_node_provider_uses_node_socks_without_cloudflare_exclusion(self):
   c,p=M.build("PC_TUNNEL","NODE",None)
   provider=next(x for x in c["outbounds"] if x.get("tag")=="provider")

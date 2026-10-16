@@ -6,8 +6,8 @@
   "files": [
     {
       "file": "gateway_control.ps1",
-      "bytes": 16430,
-      "sha256": "52E477CC3508834D5C232E195287FA1BB7B97739BD3F102D9CB0F214597B73AF"
+      "bytes": 19981,
+      "sha256": "33B90ABB4ABE725C28150086E348C97C73726BD006E3AF5E63066D107F7DC498"
     },
     {
       "file": "gateway_request.ps1",
@@ -41,18 +41,23 @@
     },
     {
       "file": "generate_config.py",
-      "bytes": 4540,
-      "sha256": "F17394E38F0F5E80321982EFC9A438988BBC8E8154E5DC35A079E3BE2449B1B6"
+      "bytes": 5446,
+      "sha256": "0FB09CD5459952B85BCB8295767A8650F34C04A23A8373125C13C682606ACAD4"
     },
     {
       "file": "apply_elevated.ps1",
-      "bytes": 7764,
-      "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
+      "bytes": 13757,
+      "sha256": "ED6C1C931724AB441BC64A358026466B97E542929C883E70840DCF86E13AE442"
     },
     {
       "file": "stop_elevated.ps1",
-      "bytes": 5216,
-      "sha256": "0B86645215F11150BEC8E8444ADF4E7ED6964D8BB53285FDBF927B2E19EB591F"
+      "bytes": 11170,
+      "sha256": "4ECA1110206F1519A5AEEA9FAFE2697A3F8D70259F00DA74F17BF127CD02D3FB"
+    },
+    {
+      "file": "dns_guard_watchdog.ps1",
+      "bytes": 4593,
+      "sha256": "ABA3FA5D770E29B8B17F5CD05B0540D29BE0C60F6B1FE404FAA3CB65536ACEE7"
     },
     {
       "file": "console_provider.ps1",

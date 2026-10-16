@@ -18,7 +18,7 @@ if((git -C $root rev-list -n 1 $base) -ne $base){throw 'BASE_COMMIT_UNAVAILABLE'
 if(Test-Path $reg){throw 'CI_APP_REGISTRY_PREEXISTS'}
 $canonical=Join-Path $env:LOCALAPPDATA 'Programs\FreeNetHub'
 if(Test-Path $canonical){throw 'CI_CANONICAL_INSTALL_PREEXISTS'}
-$stageName=if($PrivateGatewayReview){'fnh-r54-v465-'+$Mode}else{'fnh-r54-'+$Mode}
+$stageName=if($PrivateGatewayReview){'fnh-r54-v481-'+$Mode}else{'fnh-r54-'+$Mode}
 $work=Join-Path $env:RUNNER_TEMP ($stageName+'-worktree')
 $probe=Join-Path $env:RUNNER_TEMP ($stageName+'-install')
 if((Test-Path $work) -or (Test-Path $probe)){throw 'CI_STAGING_ALREADY_EXISTS'}
@@ -27,8 +27,8 @@ if($LASTEXITCODE){throw 'WORKTREE_SETUP_FAILED'}
 python (Join-Path $root 'tests\prepare_r54_isolated.py') $work
 if($LASTEXITCODE){throw 'R54_SOURCE_PREP_FAILED'}
 if($PrivateGatewayReview){
-  python (Join-Path $root 'tests\prepare_v465_gateway_review.py') $work
-  if($LASTEXITCODE){throw 'V465_GATEWAY_PREP_FAILED'}
+  python (Join-Path $root 'tests\prepare_private_gateway_review.py') $work
+  if($LASTEXITCODE){throw 'V481_GATEWAY_PREP_FAILED'}
 }
 $stagedHelper=Join-Path $work 'windows\installer\Prepare-Upgrade.ps1'
 $helperDigest='98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C'
@@ -49,7 +49,7 @@ if(-not $iscc){
 if(-not $iscc){throw 'CI_INNO_NOT_FOUND'}
 & $iscc /Qp $installScript
 if($LASTEXITCODE){throw ('CI_INNO_BUILD_FAILED_'+$LASTEXITCODE)}
-$installerName=if($PrivateGatewayReview){'FreeNetHub_4.3.10_R54_V465_GATEWAY_REVIEW_DO_NOT_RELEASE.exe'}else{'FreeNetHub_4.3.10_R54_Setup.exe'}
+$installerName=if($PrivateGatewayReview){'FreeNetHub_4.3.10_R54_V481_GATEWAY_REVIEW_DO_NOT_RELEASE.exe'}else{'FreeNetHub_4.3.10_R54_Setup.exe'}
 $r54=Join-Path $work ('delivery\release_candidate_v4.3.10\'+$installerName)
 if(-not (Test-Path $r54)){throw 'R54_PRIVATE_BUILD_MISSING'}
 $release=Get-Content -LiteralPath (Join-Path $work 'RELEASE.json') -Raw|ConvertFrom-Json
@@ -76,13 +76,13 @@ function Verify-Installed([string]$expected){
   }
   if($expected -eq $rev54 -and $PrivateGatewayReview){
     $gmanifest=Join-Path $probe 'gateway\manifest.json'
-    $gsha='440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5'
-    if((Get-FileHash $gmanifest -Algorithm SHA256).Hash -ne $gsha -or $out.gatewayManifestSha256 -ne $gsha){throw 'V465_INSTALLED_GATEWAY_MANIFEST_CHAIN_BAD'}
+    $gsha='1E7036AF9D560C6BAAE9501AB6CEA4C824396A63B20C986247FE98F5444AB1DB'
+    if((Get-FileHash $gmanifest -Algorithm SHA256).Hash -ne $gsha -or $out.gatewayManifestSha256 -ne $gsha){throw 'V481_INSTALLED_GATEWAY_MANIFEST_CHAIN_BAD'}
     $gm=Get-Content $gmanifest -Raw|ConvertFrom-Json
-    if(@($gm.files).Count -ne 17){throw 'V465_GATEWAY_FILECOUNT_CHANGED'}
+    if(@($gm.files).Count -ne 18){throw 'V481_GATEWAY_FILECOUNT_CHANGED'}
     foreach($e in $gm.files){
       $f=Join-Path (Join-Path $probe 'gateway') ([string]$e.file)
-      if(!(Test-Path $f) -or (Get-FileHash $f -Algorithm SHA256).Hash -ne [string]$e.sha256){throw 'V465_INSTALLED_GATEWAY_SOURCE_MISMATCH'}
+      if(!(Test-Path $f) -or (Get-FileHash $f -Algorithm SHA256).Hash -ne [string]$e.sha256){throw 'V481_INSTALLED_GATEWAY_SOURCE_MISMATCH'}
     }
   }
   if(-not (Test-Path -LiteralPath (Join-Path $probe 'FreeNetHub.exe'))){throw 'INSTALLED_UI_MISSING'}
@@ -129,7 +129,7 @@ if($Mode -eq 'upgrade'){
     if(Test-Path -LiteralPath $probe){Remove-Item -LiteralPath $probe -Recurse -Force}
     Install-Exact $r54 $probe
     Verify-Installed $rev54
-    Write-Output 'V465_EXACT_SAME_BINARY_R53_UPGRADE_ROLLBACK_AND_FRESH_PASS'
+    Write-Output 'V481_EXACT_SAME_BINARY_R53_UPGRADE_ROLLBACK_AND_FRESH_PASS'
   }
 }else{
   Install-Exact $r54 $probe
@@ -142,13 +142,13 @@ $receipt=[ordered]@{
   r54InstallerSha256=(Get-FileHash $r54 -Algorithm SHA256).Hash
   gatewayReview=[bool]$PrivateGatewayReview
   sameExactBinaryFreshAndRollbackValidated=([bool]$PrivateGatewayReview -and $Mode -eq 'upgrade')
-  gatewayManifestSHA256=if($PrivateGatewayReview){'440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5'}else{$null}
+  gatewayManifestSHA256=if($PrivateGatewayReview){'1E7036AF9D560C6BAAE9501AB6CEA4C824396A63B20C986247FE98F5444AB1DB'}else{$null}
   reviewInstallerName=$installerName
   testedInstallerHelperSha256=$helperDigest
   officialR53PinnedHash=$oldSha
   physicalHost='GitHub hosted isolated Windows runner'
   updatedOwnerMachine=$false;scopedVPNMutation=$false
 }
-$receiptName=if($PrivateGatewayReview){'v465-'+$Mode+'-receipt.json'}else{'r54-'+$Mode+'-receipt.json'}
+$receiptName=if($PrivateGatewayReview){'v481-'+$Mode+'-receipt.json'}else{'r54-'+$Mode+'-receipt.json'}
 $receipt|ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP $receiptName) -Encoding utf8
 $receipt|ConvertTo-Json -Depth 4

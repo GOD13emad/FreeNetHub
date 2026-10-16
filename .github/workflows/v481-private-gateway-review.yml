@@ -1,0 +1,64 @@
+name: V481 private gateway candidate acceptance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/v481-private-gateway-review.yml'
+      - 'tests/prepare_private_gateway_review.py'
+      - 'tests/test_r54_isolated_upgrade.ps1'
+      - 'gateway/**'
+      - 'windows/installer/Prepare-Upgrade.ps1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  disposable-windows-review:
+    name: V481 private R54 gateway ${{ matrix.mode }}
+    runs-on: windows-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [fresh, upgrade]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact V485 gateway manifest, helper and isolated preparation
+        shell: pwsh
+        run: |
+          python -m py_compile tests/prepare_private_gateway_review.py tests/prepare_r54_isolated.py
+          if ($LASTEXITCODE -ne 0) { throw 'PREPARATION_PYTHON_SYNTAX_FAILED' }
+          if ((Get-FileHash gateway/manifest.json -Algorithm SHA256).Hash -ne '1E7036AF9D560C6BAAE9501AB6CEA4C824396A63B20C986247FE98F5444AB1DB') { throw 'V485_GATEWAY_MANIFEST_NOT_PINNED' }
+          if ((Get-FileHash windows/installer/Prepare-Upgrade.ps1 -Algorithm SHA256).Hash -ne '98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C') { throw 'V458_INSTALLER_HELPER_NOT_PINNED' }
+      - name: Build, install and verify private R54 Gateway candidate on disposable runner
+        shell: pwsh
+        run: ./tests/test_r54_isolated_upgrade.ps1 -Mode ${{ matrix.mode }} -PrivateGatewayReview
+      - name: Independently verify exact tested artifact and source metadata
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $m='${{ matrix.mode }}'
+          $stage=Join-Path $env:RUNNER_TEMP ('fnh-r54-v481-'+$m+'-worktree')
+          $exe=Join-Path $stage 'delivery/release_candidate_v4.3.10/FreeNetHub_4.3.10_R54_V481_GATEWAY_REVIEW_DO_NOT_RELEASE.exe'
+          $receipt=Get-Content (Join-Path $env:RUNNER_TEMP ('v481-'+$m+'-receipt.json')) -Raw|ConvertFrom-Json
+          if($receipt.status -ne 'PASS' -or $receipt.gatewayReview -ne $true -or $receipt.mode -ne $m) { throw 'V481_DISPOSABLE_INSTALL_NOT_ACCEPTED' }
+          if($receipt.gatewayManifestSHA256 -ne '1E7036AF9D560C6BAAE9501AB6CEA4C824396A63B20C986247FE98F5444AB1DB') { throw 'V481_RECEIPT_GATEWAY_NOT_VALIDATED' }
+          if($m -eq 'upgrade' -and $receipt.sameExactBinaryFreshAndRollbackValidated -ne $true) { throw 'V481_SAME_BINARY_DUAL_SCENARIO_NOT_TESTED' }
+          if((Get-FileHash $exe -Algorithm SHA256).Hash -ne $receipt.r54InstallerSha256 -or (Get-Item $exe).Length -ne $receipt.r54InstallerBytes) { throw 'V481_TESTED_BINARY_DIGEST_MISMATCH' }
+          if((Get-Content (Join-Path $stage 'RELEASE.json') -Raw|ConvertFrom-Json).gatewayManifestSha256 -ne $receipt.gatewayManifestSHA256) { throw 'V481_RELEASE_GATEWAY_CHAIN_MISMATCH' }
+          Write-Host ('V481_PRIVATE_REVIEW_'+$m+'_PASS_SHA256='+$receipt.r54InstallerSha256)
+          Write-Host 'NO_PUBLIC_RELEASE_OR_OWNER_INSTALL'
+      - name: Archive tiny reproducible test receipt only, never release the binary
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: v481-private-gateway-${{ matrix.mode }}-receipt
+          path: ${{ runner.temp }}/v481-${{ matrix.mode }}-receipt.json
+          if-no-files-found: error
+          retention-days: 30

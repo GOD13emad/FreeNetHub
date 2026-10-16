@@ -1,4 +1,4 @@
-"""Build an isolated NONRELEASE R54 package with accepted V463 Gateway sources.
+"""Build an isolated NONRELEASE R54 package with V485 hash-pinned Gateway sources.
 
 Run only after prepare_r54_isolated.py in a detached R53-base worktree.
 Never mutates the owner's active app, routes, published assets or accepted R54 draft.
@@ -9,9 +9,9 @@ import json
 import subprocess
 import sys
 
-SOURCE_GATEWAY_SHA = "440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5"
+SOURCE_GATEWAY_SHA = "1E7036AF9D560C6BAAE9501AB6CEA4C824396A63B20C986247FE98F5444AB1DB"
 BASE_SHA = "e4112be36d6cce97863c59a5dbe6a5d0bcdf5786"
-REVIEW_NAME = "FreeNetHub_4.3.10_R54_V465_GATEWAY_REVIEW_DO_NOT_RELEASE"
+REVIEW_NAME = "FreeNetHub_4.3.10_R54_V481_GATEWAY_REVIEW_DO_NOT_RELEASE"
 
 
 def sha(path):
@@ -21,15 +21,15 @@ def sha(path):
 def main(stage: Path) -> None:
     source = Path(__file__).resolve().parents[1]
     stage = stage.resolve(strict=True)
-    if not stage.name.startswith("fnh-r54-v465-"):
-        raise RuntimeError("V465_DISPOSABLE_STAGE_NAME_REQUIRED")
+    if not stage.name.startswith("fnh-r54-v481-"):
+        raise RuntimeError("V481_DISPOSABLE_STAGE_NAME_REQUIRED")
     if subprocess.check_output(["git", "-C", str(stage), "rev-parse", "HEAD"], text=True).strip() != BASE_SHA:
         raise RuntimeError("BASE_SHA_NOT_PINNED")
     manifest = source / "gateway/manifest.json"
     if sha(manifest) != SOURCE_GATEWAY_SHA:
-        raise RuntimeError("V463_GATEWAY_MANIFEST_NOT_PINNED")
+        raise RuntimeError("V485_GATEWAY_MANIFEST_NOT_PINNED")
     m = json.loads(manifest.read_text(encoding="utf-8"))
-    if len(m["files"]) != 17:
+    if len(m["files"]) != 18:
         raise RuntimeError("GATEWAY_FILE_COUNT_CHANGED")
     for e in m["files"]:
         rel = Path(e["file"])
@@ -54,15 +54,28 @@ def main(stage: Path) -> None:
     before = "OutputBaseFilename=FreeNetHub_4.3.10_R54_Setup"
     if text.count(before) != 1:
         raise RuntimeError("INNO_OUTPUT_ANCHOR_CHANGED")
-    script.write_text(text.replace(before, "OutputBaseFilename=" + REVIEW_NAME), encoding="utf-8")
+    # R54 baseline Inno has an explicit Gateway file list (not a glob).
+    # Only patch the disposable NONRELEASE stage to include the newly
+    # hash-pinned DNS watchdog; never mutate the public R53 installer source.
+    stop_line = r'Source: "..\..\gateway\stop_elevated.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion'
+    watchdog_line = stop_line.replace("stop_elevated.ps1", "dns_guard_watchdog.ps1")
+    if text.count(stop_line) != 1 or "dns_guard_watchdog.ps1" in text:
+        raise RuntimeError("INNO_GATEWAY_WATCHDOG_ENTRY_ANCHOR_CHANGED")
+    if not any(e["file"] == "dns_guard_watchdog.ps1" for e in m["files"]):
+        raise RuntimeError("DNS_WATCHDOG_NOT_IN_GATEWAY_MANIFEST")
+    text = text.replace(stop_line, stop_line + "\n" + watchdog_line)
+    text = text.replace(before, "OutputBaseFilename=" + REVIEW_NAME)
+    script.write_text(text, encoding="utf-8")
+    if watchdog_line not in script.read_text(encoding="utf-8"):
+        raise RuntimeError("PRIVATE_INNO_WATCHDOG_NOT_PACKAGED")
     if sha(stage / "gateway/manifest.json") != SOURCE_GATEWAY_SHA:
         raise RuntimeError("GATEWAY_MANIFEST_POSTCHECK_FAILED")
     if json.loads(release.read_text(encoding="utf-8"))["gatewayManifestSha256"] != SOURCE_GATEWAY_SHA:
         raise RuntimeError("RELEASE_CHAIN_POSTCHECK_FAILED")
-    print("V465_PRIVATE_GATEWAY_STAGE_PREP_PASS", len(m["files"]), SOURCE_GATEWAY_SHA)
+    print("V481_PRIVATE_GATEWAY_STAGE_PREP_PASS", len(m["files"]), SOURCE_GATEWAY_SHA)
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        raise SystemExit("usage: prepare_v465_gateway_review.py <disposable-stage>")
+        raise SystemExit("usage: prepare_private_gateway_review.py <disposable-stage>")
     main(Path(sys.argv[1]))

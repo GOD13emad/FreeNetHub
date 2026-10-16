@@ -25,6 +25,30 @@ jobs:
       - name: Installer owned-process shutdown bounded-wait regression
         shell: pwsh
         run: ./tests/test_prepare_upgrade_wait.ps1
+      - name: Execute mocked V481 fail-start DNS firewall guard lifecycle
+        shell: pwsh
+        run: ./tests/test_pc_dns_guard_failstart.ps1
+      - name: V481 native DNS firewall disabled-profile fail-closed regression
+        shell: pwsh
+        run: ./tests/test_pc_dns_guard_firewall_profiles.ps1
+      - name: Check V481 watchdog identity access fail-closed on Windows
+        shell: pwsh
+        run: ./tests/test_pc_dns_guard_identity.ps1
+      - name: Check V481 stop ownership ambiguity fail-closed on Windows
+        shell: pwsh
+        run: ./tests/test_pc_dns_guard_stop_identity.ps1
+      - name: Refuse clean Stop when legacy owner leaves DNS53 firewall guards
+        shell: pwsh
+        run: ./tests/test_pc_dns_guard_final_stop.ps1
+      - name: Native gateway verified Stop receipt and failed-start fail-closed regression
+        shell: pwsh
+        run: ./tests/test_gateway_verified_stop.ps1
+      - name: Serialize gateway mutations and reject abandoned owner lock
+        shell: pwsh
+        run: ./tests/test_gateway_mutation_mutex.ps1
+      - name: Validate V481 exact-owner DNS firewall watchdog on isolated hosted Windows
+        shell: pwsh
+        run: ./tests/test_pc_dns_guard_watchdog_hosted.ps1
       - name: Engine unit tests
         run: python tests/test_engine.py
       - name: Reject stale Windows node health and throughput data
@@ -36,7 +60,7 @@ jobs:
       - name: Parse PowerShell sources
         shell: pwsh
         run: |
-          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1','windows/installer/Prepare-Upgrade.ps1','tests/test_prepare_upgrade_wait.ps1')
+          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1','windows/installer/Prepare-Upgrade.ps1','tests/test_prepare_upgrade_wait.ps1','tests/test_pc_dns_guard_failstart.ps1','tests/test_pc_dns_guard_firewall_profiles.ps1','tests/test_pc_dns_guard_identity.ps1','tests/test_pc_dns_guard_stop_identity.ps1','tests/test_pc_dns_guard_final_stop.ps1','tests/test_pc_dns_guard_watchdog_hosted.ps1','tests/test_gateway_verified_stop.ps1','tests/test_gateway_mutation_mutex.ps1')
           $files += Get-ChildItem gateway -Filter *.ps1 -File | ForEach-Object FullName
           foreach($f in $files){
             $t=$null;$e=$null
@@ -193,7 +217,25 @@ jobs:
           AVDMANAGER="$(dirname "$SDKMANAGER")/avdmanager"
           test -x "$SDKMANAGER" && test -x "$AVDMANAGER"
           yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" "platform-tools" "emulator" "platforms;android-36" "build-tools;35.0.0" "system-images;android-36;google_apis;x86_64"
+          # Android CDN responses have intermittently produced a corrupt
+          # emulator archive on fresh ephemeral GitHub runners. Retry only
+          # package provisioning; never treat a missing image as runtime PASS.
+          installed=0
+          for attempt in 1 2 3; do
+            if "$SDKMANAGER" "platform-tools" "emulator" "platforms;android-36" "build-tools;35.0.0" "system-images;android-36;google_apis;x86_64"; then
+              if [ -x "$ANDROID_SDK_ROOT/emulator/emulator" ] && [ -f "$ANDROID_SDK_ROOT/system-images/android-36/google_apis/x86_64/system.img" ]; then
+                installed=1
+                break
+              fi
+              echo "Android emulator package command succeeded but installed files are incomplete"
+            fi
+            echo "Android SDK package attempt $attempt of 3 did not produce a complete image"
+            if [ "$attempt" -lt 3 ]; then sleep $((attempt * 7)); fi
+          done
+          if [ "$installed" != 1 ]; then
+            echo "Android emulator image unavailable after bounded retries"
+            exit 1
+          fi
           echo no | "$AVDMANAGER" create avd --force --name fnh_ci --package "system-images;android-36;google_apis;x86_64"
           AVD_INI="$(find "$HOME" "$ANDROID_SDK_ROOT" "$RUNNER_TEMP" -type f -name 'fnh_ci.ini' -print -quit 2>/dev/null || true)"
           if [ -z "$AVD_INI" ]; then
@@ -244,7 +286,26 @@ jobs:
             exit 1
           fi
           "$ADB" shell input keyevent 82 || true
-          BEFORE="$("$ADB" shell ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
+          # ADB can briefly become offline after emulator launch or UI dump.
+          # Bounded retries require a real device and successful shell exit;
+          # permanent emulator failure still fails this required test.
+          set -o pipefail
+          adb_shell_retry() {
+            local attempt
+            for attempt in 1 2 3 4 5 6 7 8; do
+              if [ "$("$ADB" get-state 2>/dev/null || true)" = device ] \
+                && "$ADB" shell "$@" >/tmp/fnh-adb-shell-output.txt 2>/tmp/fnh-adb-shell-error.txt; then
+                cat /tmp/fnh-adb-shell-output.txt
+                return 0
+              fi
+              sleep 2
+            done
+            cat /tmp/fnh-adb-shell-error.txt >&2 || true
+            echo "ADB required shell command unavailable after bounded retries" >&2
+            return 1
+          }
+          BEFORE="$(adb_shell_retry ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
+          test -n "$BEFORE"
 
           # Activity launch completion does not guarantee that the accessibility
           # hierarchy already contains the target state. Poll that state with a
@@ -257,7 +318,7 @@ jobs:
             local attempt state
             rm -f "$local_path"
             for attempt in $(seq 1 15); do
-              "$ADB" wait-for-device >/dev/null 2>&1 || true
+              timeout 5s "$ADB" wait-for-device >/dev/null 2>&1 || true
               state="$("$ADB" get-state 2>/dev/null || true)"
               if [ "$state" = "device" ] \
                 && "$ADB" shell uiautomator dump "$remote_path" >/tmp/fnh-uiautomator-last.txt 2>&1 \
@@ -296,22 +357,26 @@ jobs:
           # The essential runtime invariant is that no consent path is exposed,
           # no VPN service starts, and existing network interfaces remain stable.
           # Avoid an exact enabled/text UIAutomator match: it is renderer-dependent.
-          if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
+          SERVICES="$(adb_shell_retry dumpsys activity services)"
+          if grep -q 'com.freenethub.mobile/.FreeNetVpnService' <<< "$SERVICES"; then
             echo 'Unlinked VPN service unexpectedly running'
             exit 1
           fi
 
-          "$ADB" shell am force-stop com.freenethub.mobile
-          "$ADB" shell am start -W -n com.freenethub.mobile/.MainActivity | tee /tmp/fnh-am-relaunch.txt
+          adb_shell_retry am force-stop com.freenethub.mobile
+          adb_shell_retry am start -W -n com.freenethub.mobile/.MainActivity | tee /tmp/fnh-am-relaunch.txt
           grep -q 'Status: ok' /tmp/fnh-am-relaunch.txt
 
-          AFTER="$("$ADB" shell ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
+          AFTER="$(adb_shell_retry ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
+          test -n "$AFTER"
           test "$BEFORE" = "$AFTER"
-          if "$ADB" shell dumpsys activity services | grep -q 'com.freenethub.mobile/.FreeNetVpnService'; then
+          SERVICES="$(adb_shell_retry dumpsys activity services)"
+          if grep -q 'com.freenethub.mobile/.FreeNetVpnService' <<< "$SERVICES"; then
             echo 'VPN service unexpectedly running'
             exit 1
           fi
-          "$ADB" shell pm path com.freenethub.mobile | grep -q '^package:'
+          PACKAGE_PATH="$(adb_shell_retry pm path com.freenethub.mobile)"
+          grep -q '^package:' <<< "$PACKAGE_PATH"
           "$ADB" emu kill || true
 
   ios-simulator-runtime:
@@ -397,9 +462,27 @@ jobs:
           }
           if(-not $iscc){ throw 'ISCC_NOT_FOUND_AFTER_INSTALL' }
           Write-Host "ISCC=$iscc"
-      - name: Build exact FreeNet Hub 4.3.9 R53 candidate installer
+      - name: Checkout immutable R53 baseline for historical installer compatibility
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: 17daff34805b82bcae0c6e8d5e6cbed6258c50ff
+          path: r53-baseline
+          persist-credentials: false
+      - name: Build exact immutable FreeNet Hub 4.3.9 R53 installer
         shell: pwsh
-        run: ./tests/build_v439_installer.ps1
+        run: |
+          $baseline=Join-Path $PWD 'r53-baseline'
+          $expected='17daff34805b82bcae0c6e8d5e6cbed6258c50ff'
+          if((git -C $baseline rev-parse HEAD).Trim() -ne $expected){throw 'R53_IMMUTABLE_BASELINE_COMMIT_MISMATCH'}
+          & pwsh.exe -NoProfile -NonInteractive -File (Join-Path $baseline 'tests\build_v439_installer.ps1')
+          if($LASTEXITCODE -ne 0){throw 'R53_IMMUTABLE_BASELINE_BUILD_FAIL'}
+          $source=Join-Path $baseline 'delivery\github_v4.3.9\FreeNetHub_4.3.9_R53_Setup.exe'
+          $target=Join-Path $PWD 'delivery\github_v4.3.9\FreeNetHub_4.3.9_R53_Setup.exe'
+          if(!(Test-Path -LiteralPath $source)){throw 'R53_IMMUTABLE_BASELINE_BINARY_MISSING'}
+          New-Item -ItemType Directory -Path (Split-Path $target -Parent) -Force|Out-Null
+          Copy-Item -LiteralPath $source -Destination $target -Force
+          if((Get-FileHash $target).Hash -ne (Get-FileHash $source).Hash){throw 'R53_IMMUTABLE_BINARY_COPY_MISMATCH'}
+          Write-Host ('R53_IMMUTABLE_BASELINE_PACKAGE_PASS_SHA256='+(Get-FileHash $target).Hash)
       - name: Fresh install exact artifact into absent app directory
         shell: pwsh
         run: |
@@ -467,8 +550,43 @@ jobs:
           if(!(Test-Path -LiteralPath $installed)){throw 'R53_PRE_ROLLBACK_RELEASE_MISSING'}
           $before=Get-Content -LiteralPath $installed -Raw | ConvertFrom-Json
           if($before.releaseRevision -ne '4.3.9-r53-inno-root-guard'){throw 'R53_PRE_ROLLBACK_REVISION_BAD'}
-          $rollback=Start-Process -FilePath $old -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe)) -Wait -PassThru
-          if($rollback.ExitCode -ne 0){throw ('R51_EXPLICIT_ROLLBACK_EXIT_'+$rollback.ExitCode)}
+          # Forensics only: never alter or skip immutable R51's safety check.
+          # Do not print the full Gateway session (may contain user metadata).
+          $gatewayControl=Join-Path $probe 'gateway\gateway_control.ps1'
+          $pyCheck=Get-Command python.exe -ErrorAction SilentlyContinue
+          Write-Host ('R51_ROLLBACK_STATUS_DIAG_GATEWAY_PRESENT='+(Test-Path -LiteralPath $gatewayControl))
+          Write-Host ('R51_ROLLBACK_STATUS_DIAG_DEPENDENCIES_PRESENT='+(Test-Path -LiteralPath (Join-Path $probe 'app\dependencies.json')))
+          Write-Host ('R51_ROLLBACK_STATUS_DIAG_PYTHON_COMMAND_PRESENT='+[bool]$pyCheck)
+          if(Test-Path -LiteralPath $gatewayControl){
+            $diagOutput=@(& pwsh.exe -NoProfile -NonInteractive -File $gatewayControl -Action Status 2>&1)
+            $diagExit=$LASTEXITCODE
+            $diagText=($diagOutput|Out-String).Trim()
+            Write-Host ('R51_ROLLBACK_STATUS_DIAG_EXIT='+$diagExit)
+            try {
+              $parsed=$diagText|ConvertFrom-Json -ErrorAction Stop
+              Write-Host ('R51_ROLLBACK_STATUS_DIAG_JSON_EXIT='+[string]$parsed.exit)
+              Write-Host ('R51_ROLLBACK_STATUS_DIAG_JSON_ERROR='+[string]$parsed.result.error)
+            }catch{
+              # Exact errors only; redact any line resembling encoded token/key.
+              foreach($line in @($diagOutput)|Select-Object -First 8){
+                $safe=[string]$line
+                $safe=$safe -replace '(?i)(token|password|secret|api_key|key)\s*[=:]\s*[^\s,]+','$1=[REDACTED]'
+                Write-Host ('R51_ROLLBACK_STATUS_DIAG_STDERR='+$safe.Substring(0,[Math]::Min($safe.Length,300)))
+              }
+            }
+          }
+          # Preserve the original rollback assertion, but diagnose setup stage
+          # rejections instead of reporting only the Inno return code.
+          $rollbackLog=Join-Path $env:RUNNER_TEMP 'fnh-r51-explicit-rollback-inno.log'
+          $rollback=Start-Process -FilePath $old -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',("/DIR="+$probe),("/LOG="+$rollbackLog)) -Wait -PassThru
+          if($rollback.ExitCode -ne 0){
+            Write-Host ('R51_ROLLBACK_EXIT='+$rollback.ExitCode)
+            if(Test-Path -LiteralPath $rollbackLog){
+              Write-Host 'R51_ROLLBACK_SETUP_LOG_LAST_80'
+              Get-Content -LiteralPath $rollbackLog -Tail 80 | ForEach-Object { Write-Host $_ }
+            }else{Write-Host 'R51_ROLLBACK_INNO_LOG_MISSING'}
+            throw ('R51_EXPLICIT_ROLLBACK_EXIT_'+$rollback.ExitCode)
+          }
           $after=Get-Content -LiteralPath $installed -Raw | ConvertFrom-Json
           if($after.releaseRevision -ne '4.3.7-r51-protocol-expansion-2'){throw 'R51_ROLLBACK_REVISION_BAD'}
           $manifest=Get-Content -LiteralPath (Join-Path $probe 'app\manifest.json') -Raw | ConvertFrom-Json
