@@ -39,6 +39,7 @@ draft_as_future_latest = {
 }
 
 old_open, old_version = module.urllib.request.urlopen, module.VERSION
+module.VERSION = "4.2.0-linux.21-r54"  # immutable historical fixture
 try:
     module.urllib.request.urlopen = lambda *args, **kwargs: FakeResponse(draft_as_future_latest)
     same = module.update_check()

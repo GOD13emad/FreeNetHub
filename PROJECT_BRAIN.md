@@ -1,5 +1,17 @@
 # PROJECT BRAIN — FreeNet Hub
 
+## CURRENT — 2026-10-17 selective-domain R22 candidate (NOT INSTALLED OR RELEASED)
+
+- Event FNH-R22-SELECTIVE-20261017, accepted source baseline main 406447b8ca7793064b15dab8cf4420bed4a4684d; candidate branch feat/selective-domain-routing. Public Windows R53 and Linux R21 are unchanged and frozen.
+- Owner goal: fourth FreeNetHub scope «تونل انتخابی»: edit domain list, choose healthy local method, apply, inspect, disable, exact user GNOME proxy rollback. Defaults Brave and Stripe hostname suffixes. Selected domains use owned SOCKS5, all other domains DIRECT; selected domains never PAC-fallback DIRECT. This is GNOME/PAC-aware app routing, not full host TCP/UDP/TUN or per-process enforcement.
+- Linux source version 4.2.0-linux.22-r55 and separate unpublished R22 package. GTK Dashboard/Methods/Settings domain editor, Brave+Stripe preset and activation controls; validated helper, loopback PAC HTTP user service, strict ownership, bounded domain parsing, local SOCKS health test and content-hash versioned PAC URL to defeat observed GNOME compiled-PAC stale cache. Installer refuses active CFON/selective scopes before mutation (exit 72), integrity/preflight and uninstall rollback extended.
+- Local verification: seven focused PAC/security/recovery cases PASS; scoped provider integration, prior browser, system, console, WARP consent, node and version/update regressions PASS. Isolated R21->R22 upgrade PASS: five private-file samples retained, tamper denied before mutation with exit75, single installed root and checksum verified. Exact R22 27-file local ZIP SHA256 5ffa0d7fe5ce6971000693185687c0e1870bbba15484416c1c297ba3902869ee; prior published R21 SHA256 82305e1a15684662b7711b53a84522122c6a11d618366314d9dd297b3a7fec1a retained.
+- Owner field evidence remains Linux R21 CFON SOCKS5 port 19414 healthy, browser/tabs active. Existing separate live PAC: direct Brave geo-403 vs scoped SOCKS HTTP200. After adding Stripe rules and cache-busting PAC URL, GNOME resolver routes checkout.stripe.com and js.stripe.com via port 19414, Google DIRECT. Actual browser payment/Stripe checkout success is UNPROVEN; no login/payment performed, no tabs or external network routes stopped. R22 must not adopt an unrelated previous PAC without explicit restoration boundary.
+- Gates OPEN: exact-source hosted CI, code review/promote, R22 owner installed GTK/browser acceptance after safe idle CFON boundary, Windows selective-scope parity. Existing Linux full-device WARP ToS/sudo and Windows elevated gateway/mobile real-device gates are unrelated, remain OPEN/EXTERNAL. Strict FINAL is UNPROVEN.
+- Next: seal candidate SHA, run hosted CI, keep public R21 immutable, avoid replacing active owner host connection. Release/install only on verified evidence and safe idle, without terminating browser, Tailscale or other sessions.
+
+## Previous accepted R21 field milestone (historical; superseded for current R22 candidate)
+
 Status: CURRENT / OWNER_WINDOWS_R53_AND_LINUX_R21_FIELD_PASS / STRICT_SYSTEM_AND_MOBILE_EXTERNAL_OPEN
 Brain version: v442-linux-r21-public-field-acceptance-2026-10-14
 Accepted source main and Fork: bb3237472ced37572934f500c17bd83aaad952e3 (before this docs-only milestone).

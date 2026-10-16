@@ -28,6 +28,27 @@ def test_active_cfon_install_refuses_before_any_file_changes():
         assert not (app/"INSTALL.sha256").exists()
 
 
+def test_selective_active_refuses_upgrade_without_stopping_tunnel():
+    with tempfile.TemporaryDirectory(prefix="fnh-selective-active-") as td:
+        home=pathlib.Path(td)
+        app=home/".local/share/FreeNetHub"
+        (app/"selective").mkdir(parents=True)
+        (app/"session.json").write_text('{"mode":null,"provider":null,"detail":{}}')
+        (app/"selective/policy.json").write_text('{"schema":1,"enabled":true}')
+        ui=app/"freenet_hub_linux_gtk.py"
+        ui.write_text("UNMODIFIED_OWNER_UI")
+        old=ui.read_bytes()
+        proc=subprocess.run(["bash",str(INSTALL)],text=True,capture_output=True,
+                            env={**os.environ,"HOME":str(home),"DBUS_SESSION_BUS_ADDRESS":""},
+                            timeout=10)
+        assert proc.returncode==72,(proc.returncode,proc.stderr)
+        assert "FREENET_HUB_SELECTIVE_ACTIVE" in proc.stderr
+        assert ui.read_bytes()==old
+        assert not (app/"backup").exists()
+        assert not (app/"INSTALL.sha256").exists()
+
+
+
 def test_unreadable_session_fails_closed():
     with tempfile.TemporaryDirectory(prefix="fnh-active-guard-") as td:
         home=pathlib.Path(td)

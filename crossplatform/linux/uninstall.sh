@@ -6,6 +6,17 @@ BIN_HOME="$HOME/.local/bin"
 DESKTOP_HOME="$HOME/.local/share/applications"
 ICON="$HOME/.local/share/icons/hicolor/scalable/apps/freenethub.svg"
 
+if [ -f "$APP_HOME/selective_tunnel.py" ]; then
+  python3 - "$APP_HOME/selective_tunnel.py" <<'SELECTIVEPY'
+import importlib.util,sys
+spec=importlib.util.spec_from_file_location("fnh_selective_uninstall",sys.argv[1])
+m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+r=m.disable()
+if not r.get("ok"):
+    print("SELECTIVE_ROLLBACK_REQUIRED_BEFORE_UNINSTALL:",r,file=sys.stderr)
+    raise SystemExit(20)
+SELECTIVEPY
+fi
 if [ -f "$APP_HOME/freenet_hub_linux.py" ]; then
   python3 - "$APP_HOME/freenet_hub_linux.py" <<'PY'
 import importlib.util,json,pathlib,sys
@@ -67,7 +78,7 @@ PY
 rm -f "$BIN_HOME/freenethub" "$BIN_HOME/freenethub-recover" "$BIN_HOME/freenethub-uninstall"
 rm -f "$DESKTOP_HOME/local.freenethub.desktop" "$DESKTOP_HOME/freenethub.desktop"
 rm -f "$ICON"
-rm -f   "$APP_HOME/freenet_hub_linux.py"   "$APP_HOME/freenet_hub_linux_gtk.py"   "$APP_HOME/warp_guard.py"   "$APP_HOME/recover_warp_remote.sh"   "$APP_HOME/uninstall.sh"   "$APP_HOME/INSTALL.sha256"   "$APP_HOME/INSTALL.json"
+rm -f   "$APP_HOME/freenet_hub_linux.py"   "$APP_HOME/freenet_hub_linux_r37.py"   "$APP_HOME/freenet_hub_linux_gtk.py"   "$APP_HOME/nodehub_shared.py"   "$APP_HOME/selective_tunnel.py"   "$APP_HOME/warp_guard.py"   "$APP_HOME/recover_warp_remote.sh"   "$APP_HOME/uninstall.sh"   "$APP_HOME/INSTALL.sha256"   "$APP_HOME/INSTALL.json"
 
 command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$DESKTOP_HOME" >/dev/null 2>&1 || true
 command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true

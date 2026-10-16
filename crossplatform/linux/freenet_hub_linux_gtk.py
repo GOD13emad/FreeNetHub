@@ -284,6 +284,9 @@ class FreeNetHub(Adw.Application):
         top.append(button("مرورگر عادی (بدون تونل)",lambda *_:self.run_async("Direct browser",core.open_direct_browser)))
         status.append(top)
         status.append(label("مرورگر تونلی فقط پس از اتصال تأییدشده فعال می‌شود. مرورگر عادی از اینترنت سیستم استفاده می‌کند.","muted"))
+        self.selective_dashboard_state=label("تونل انتخابی: غیرفعال","muted")
+        status.append(self.selective_dashboard_state)
+        status.append(button("مدیریت تونل انتخابی و دامنه‌ها",lambda *_:self.show_page("settings")))
         self.site_health_label=label("وضعیت سایت‌ها: آزمایش نشده (اتصال برقرار، تضمین دسترسی به هر سایت نیست).","muted")
         status.append(self.site_health_label)
         status.append(button("تست دسترسی سایت‌ها از داخل اتصال فعلی",lambda *_:self.run_async("Target sites",core.test_active_sites,self.site_health_done)))
@@ -304,10 +307,11 @@ class FreeNetHub(Adw.Application):
         for key,text,sub in [
             ("BROWSER","◎ مرورگر","فقط مرورگر/پروفایل FreeNet Hub"),
             ("SYSTEM","▣ کل سیستم","WARP رسمی برای کل سیستم"),
+            ("SELECTIVE","◇ تونل انتخابی","فقط دامنه‌های انتخاب‌شده · بقیه مستقیم"),
             ("CONSOLE",">_ کنسول","Hotspot/Gateway مستقل کنسول"),
         ]:
             b=Gtk.ToggleButton();inner=vbox(2);inner.append(label(text,"metric",xalign=.5));inner.append(label(sub,"muted",xalign=.5));b.set_child(inner);b.add_css_class("scope");b.connect("toggled",lambda x,k=key:self.scope_toggled(k,x));scope_widgets.append(b);self.scope_buttons.setdefault(key,[]).append(b)
-        scopes.append(flow(scope_widgets,max_children=3,min_children=1,spacing=8));root.append(scopes)
+        scopes.append(flow(scope_widgets,max_children=4,min_children=1,spacing=8));root.append(scopes)
 
         choose=card()
         ch=hbox(8);txt=vbox(2);txt.set_hexpand(True);txt.append(label("۲ · روش اتصال","section-title"));self.selected_method_label=label("روش انتخاب‌شده: هوشمند","good");txt.append(self.selected_method_label);txt.append(label("روی «انتخاب» هر کارت بزن؛ کارت انتخاب‌شده با کادر مشخص می‌شود.","muted"));ch.append(txt)
@@ -364,9 +368,9 @@ class FreeNetHub(Adw.Application):
 
         current=card();current.append(label("روش و Scope فعال","section-title"));self.methods_current=label("هوشمند · مرورگر","good");current.append(self.methods_current)
         sw=[]
-        for key,text in [("BROWSER","◎ مرورگر"),("SYSTEM","▣ کل سیستم"),("CONSOLE",">_ کنسول")]:
+        for key,text in [("BROWSER","◎ مرورگر"),("SELECTIVE","◇ تونل انتخابی"),("SYSTEM","▣ کل سیستم"),("CONSOLE",">_ کنسول")]:
             b=Gtk.ToggleButton(label=text);b.connect("toggled",lambda x,k=key:self.scope_toggled(k,x));sw.append(b);self.scope_buttons.setdefault(key,[]).append(b)
-        current.append(flow(sw,max_children=3,min_children=1));root.append(current)
+        current.append(flow(sw,max_children=4,min_children=1));root.append(current)
 
         alltests=card();alltests.append(label("تست همه روش‌ها","section-title"));alltests.append(label("تست‌ها به‌ترتیب اجرا می‌شوند تا port/providerها با هم تداخل نکنند. اگر اتصال FreeNet Hub فعال باشد، برای حفظ state تست همه متوقف می‌شود.","muted"))
         alltests.append(flow([
@@ -521,6 +525,34 @@ class FreeNetHub(Adw.Application):
         self.proxy_entry=Gtk.Entry();self.proxy_entry.set_text(str(s["customProxy"]));self.proxy_entry.set_direction(Gtk.TextDirection.LTR);self.proxy_entry.set_placeholder_text("socks5h://host:port or http://host:port")
         conn.append(label("Home URL","muted"));conn.append(self.home_entry);conn.append(label("Custom Proxy","muted"));conn.append(self.proxy_entry);root.append(conn)
 
+        selective=card()
+        selective.append(label("◇ تونل انتخابی · Split Tunnel دامنه‌ای","section-title"))
+        selective.append(label("دامنه‌های این فهرست از SOCKS5 روش انتخاب‌شده عبور می‌کنند؛ "
+                               "بقیه سایت‌ها DIRECT هستند. این قابلیت VPN سراسری نیست.","muted"))
+        selective.append(label("هر خط یک دامنه؛ شامل زیر‌دامنه‌ها (مثال: brave.com ، stripe.com)","muted"))
+        self.selective_domains_view=Gtk.TextView()
+        self.selective_domains_view.set_monospace(True)
+        self.selective_domains_view.set_direction(Gtk.TextDirection.LTR)
+        self.selective_domains_view.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+        self.selective_domains_view.get_buffer().set_text(s["selectiveDomains"])
+        edit=Gtk.ScrolledWindow()
+        edit.set_min_content_height(104)
+        edit.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
+        edit.set_child(self.selective_domains_view)
+        selective.append(edit)
+        self.selective_state_label=label("تونل انتخابی: غیرفعال","muted")
+        selective.append(self.selective_state_label)
+        selective.append(flow([
+            button("Brave + Stripe",self.selective_preset),
+            button("▶ فعال / اعمال انتخابی",self.apply_selective,"primary"),
+            button("■ خاموش / بازگردانی",self.disable_selective,"danger"),
+            button("بررسی وضعیت",self.refresh_selective),
+        ],max_children=2,min_children=1,spacing=8))
+        selective.append(label("روش سالم CFON/WARP/Node/Tor/Custom SOCKS5 را انتخاب کن. "
+                               "بدون دسترسی ادمین یا تغییر مسیر شبکه. "
+                               "فقط برنامه‌های سازگار با PAC/GNOME از این قابلیت استفاده می‌کنند.","muted"))
+        root.append(selective)
+
         mon=card();mon.append(label("پایایی","section-title"))
         mr=flow(max_children=2,min_children=1)
         a=hbox(7);a.append(label("بررسی دوره‌ای"));self.monitor_switch=Gtk.Switch();self.monitor_switch.set_active(bool(s["monitor"]));a.append(self.monitor_switch);mr.append(a)
@@ -540,7 +572,7 @@ class FreeNetHub(Adw.Application):
 
     def set_scope(self,scope,widget=None):
         self.scope=scope
-        names={"BROWSER":"مرورگر","SYSTEM":"کل سیستم","CONSOLE":"کنسول"}
+        names={"BROWSER":"مرورگر","SELECTIVE":"تونل انتخابی","SYSTEM":"کل سیستم","CONSOLE":"کنسول"}
         self.sidebar_scope.set_text("Scope: "+names.get(scope,scope))
         for k,buttons in self.scope_buttons.items():
             for b in buttons:
@@ -551,6 +583,7 @@ class FreeNetHub(Adw.Application):
             self.methods_current.set_text(f"{title} · {names.get(scope,scope)}")
         if scope=="CONSOLE":self.status_detail.set_text("Console Gateway مستقل انتخاب شد.")
         elif scope=="SYSTEM":self.status_detail.set_text("Full System در Linux R15 فقط WARP رسمی است.")
+        elif scope=="SELECTIVE":self.status_detail.set_text("تونل دامنه‌ای فقط برای مقصدهای انتخاب‌شده؛ بقیه مستقیم.")
         else:self.status_detail.set_text("Browser scope پیش‌فرض امن است.")
         return False
 
@@ -570,7 +603,7 @@ class FreeNetHub(Adw.Application):
         self.sidebar_method.set_text("Method: "+title)
         if hasattr(self,"selected_method_label"):self.selected_method_label.set_text("روش انتخاب‌شده: "+title)
         if hasattr(self,"methods_current"):
-            names={"BROWSER":"مرورگر","SYSTEM":"کل سیستم","CONSOLE":"کنسول"}
+            names={"BROWSER":"مرورگر","SELECTIVE":"تونل انتخابی","SYSTEM":"کل سیستم","CONSOLE":"کنسول"}
             self.methods_current.set_text(f"{title} · {names.get(self.scope,self.scope)}")
 
     def connect_selected(self):
@@ -582,10 +615,44 @@ class FreeNetHub(Adw.Application):
         self.select_method(method)
         self.run_async(f"Connect {self.scope} {method}",lambda:core.connect_method(method,self.scope),self.connect_done)
 
+    def selective_domains_text(self):
+        buf=self.selective_domains_view.get_buffer()
+        return buf.get_text(buf.get_start_iter(),buf.get_end_iter(),False)
+
+    def selective_preset(self,*_):
+        self.selective_domains_view.get_buffer().set_text(core.selective.DEFAULT_DOMAINS)
+
+    def apply_selective(self,*_):
+        self.set_scope("SELECTIVE")
+        domains=self.selective_domains_text()
+        self.run_async("Selective Tunnel",lambda:core.selective_connect(self.method,domains),self.selective_done)
+
+    def disable_selective(self,*_):
+        self.run_async("Disable Selective Tunnel",core.selective_disable,self.selective_done)
+
+    def selective_done(self,result):
+        self.refresh_selective()
+        self.refresh_snapshot()
+        if not result.get("ok"):
+            self.selective_state_label.set_text("تونل انتخابی: " + str(result.get("error") or "FAILED"))
+
+    def refresh_selective(self,*_):
+        try:
+            state=core.selective_status()
+            summary=("فعال · "+str(len(state.get("domains") or []))+
+                     " دامنه · "+str(state.get("method") or "—")) if state.get("ok") and state.get("enabled") else (
+                     ("خطا: "+str(state.get("error"))) if state.get("enabled") else "غیرفعال")
+        except Exception as exc:
+            summary="وضعیت نامشخص: "+str(exc)
+        if hasattr(self,"selective_state_label"):self.selective_state_label.set_text("تونل انتخابی: "+summary)
+        if hasattr(self,"selective_dashboard_state"):self.selective_dashboard_state.set_text("تونل انتخابی: "+summary)
+        return False
+
     def connect_done(self,result):
         if result.get("guard",{}).get("token"):
             self.pending_warp_token=result["guard"]["token"];self.keep_btn.set_sensitive(True)
         self.refresh_all()
+        self.refresh_selective()
 
     def keep_warp(self,*_):
         if not self.pending_warp_token:return
@@ -667,6 +734,7 @@ class FreeNetHub(Adw.Application):
         except Exception as e:s={"ok":False,"error":str(e)}
         if hasattr(self,"tunnel_browser_button"):
             self.tunnel_browser_button.set_sensitive(bool(s.get("ok") and s.get("mode")))
+        self.refresh_selective()
         mode=s.get("mode") or "—";provider=s.get("provider") or "—";country=s.get("country") or "—";warp=s.get("warp") or ""
         if not warp and isinstance(s.get("trace"),dict):warp=(s.get("trace") or {}).get("trace",{}).get("warp","")
         self.dash_route.set_text(str(provider));self.dash_country.set_text("Tor / نامشخص" if country=="T1" else str(country));self.dash_warp.set_text(str(warp or "off"))
@@ -902,6 +970,7 @@ class FreeNetHub(Adw.Application):
             "country":core.ALLOWED_COUNTRIES[self.country_drop.get_selected()],
             "home":self.home_entry.get_text().strip(),
             "customProxy":self.proxy_entry.get_text().strip(),
+            "selectiveDomains":self.selective_domains_text(),
             "monitor":self.monitor_switch.get_active(),
             "autoRepair":self.repair_switch.get_active(),
         }

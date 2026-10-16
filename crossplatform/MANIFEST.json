@@ -110,17 +110,17 @@
     {
       "file": "linux/freenet_hub_linux.py",
       "bytes": 44627,
-      "sha256": "45E0FE048A6E09061F492CB6E4E742B53C696D55E8C6CC8E2CCF4F825044CA6D"
+      "sha256": "88FA20A9FC70C74D569971C449D4604A17FBDB084AC54FFCFB3A2638AD5FB357"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
-      "bytes": 59862,
-      "sha256": "5D16D1F590787EE95895D39041A3AC58183F5C642146B3BC35CF31C1755E36DC"
+      "bytes": 64415,
+      "sha256": "E4ED2B855272DDA6FBB23FB1F47B1C443D83CCD624513889142D92117DC49E8E"
     },
     {
       "file": "linux/freenet_hub_linux_r37.py",
-      "bytes": 59235,
-      "sha256": "46425984B466E2ADA663A882EEB950F9F8F3AC2DC8CB8EE21F6DF7076889086F"
+      "bytes": 62711,
+      "sha256": "F57AC30A63D531C24F0084280E0E448513789B877DCA5D28E59964CCC479BFA9"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -134,8 +134,8 @@
     },
     {
       "file": "linux/install.sh",
-      "bytes": 7130,
-      "sha256": "FB5A46506CC186F41F0D6C8C4C7D964C4BBB0B8D27ADEDC471FD59DD063C51A7"
+      "bytes": 7738,
+      "sha256": "88E28DC70895335872259EDE88BEB68604F86B33C12F540CDAC6E3197D7868A5"
     },
     {
       "file": "linux/install_singbox_pinned.sh",
@@ -159,8 +159,8 @@
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 6869,
-      "sha256": "EC31D5DE3C9B5CCE8D048F56811350C52ED6C12D6072256BBB3CDAFDA22AAA5D"
+      "bytes": 8046,
+      "sha256": "8DC401E797D040C14C3B483CDF90BFBC0D2675AA92314A3DB9FEE3A44DC950AA"
     },
     {
       "file": "linux/recover_warp_remote.sh",
@@ -168,9 +168,14 @@
       "sha256": "86B342A0BB9767B92512850C68FD378D499AF61E8130369BAA24F9AB63CE9653"
     },
     {
+      "file": "linux/selective_tunnel.py",
+      "bytes": 14826,
+      "sha256": "6A4DC437D1AFF8422B4F86C625884FAAB8DB090428E8AC5989439730F5A109D0"
+    },
+    {
       "file": "linux/selftest.py",
       "bytes": 1829,
-      "sha256": "68EEAB9B173B6466E8C5817C662FCFAE3BE1AC006EE7C0E2318D94001B86E277"
+      "sha256": "AD07E45B912CF433042970F39D2FB63947AA6888461C3604370D4EA12EFF6306"
     },
     {
       "file": "linux/test_browser_profile.py",
@@ -189,8 +194,8 @@
     },
     {
       "file": "linux/test_r37_parity.py",
-      "bytes": 9098,
-      "sha256": "BA9A1668CDA55A3E1B6483CC417C9D7D039BCE929B961CF9C873D59CADD9AA7C"
+      "bytes": 9292,
+      "sha256": "542C2D3DECF51FE91615D6C34B1B2E894AA82369D280F31BD88E648663C3AACB"
     },
     {
       "file": "linux/test_scope_policy.py",
@@ -198,9 +203,19 @@
       "sha256": "AEC97B7DC1A15ABDB54B58EA9F8225DE2032EA445255CE3B56A893F3B8832282"
     },
     {
+      "file": "linux/test_selective_integration.py",
+      "bytes": 2780,
+      "sha256": "5F3E119B453CE966FC39C0AAF4535AB27520FF2C5AA4FECD0573D8A7119CDB28"
+    },
+    {
+      "file": "linux/test_selective_tunnel.py",
+      "bytes": 8056,
+      "sha256": "657E2C1EDBC9688D3458717A025400D32DCB394EAA93D72DE48895FCE3876BBE"
+    },
+    {
       "file": "linux/test_update_revision.py",
       "bytes": 2306,
-      "sha256": "BED2822E1693442C0DA2A6CC495A7B42C58041497CDECDC4B90824D4F829FFC8"
+      "sha256": "DB3318ECFA9E409FD5F8D22DA1AA166C1380C441CC8989B00B0195B777E9B8FE"
     },
     {
       "file": "linux/test_warp_tos_owner_consent.py",
@@ -209,8 +224,8 @@
     },
     {
       "file": "linux/uninstall.sh",
-      "bytes": 3382,
-      "sha256": "5F22894AF269D6DE6C2A9C05E2D5D163E55DBAE07784DE09A7A16FF935F9DA64"
+      "bytes": 3922,
+      "sha256": "83F38DBC7AFA3A5AAFA35F461CED56C71A67601FF185136BECCBC344F9855550"
     },
     {
       "file": "linux/warp_guard.py",

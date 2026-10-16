@@ -15,13 +15,15 @@ def load(name,path):
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 
 legacy=load("legacy",LIN/"freenet_hub_linux.py")
-assert legacy.VERSION=="4.2.0-linux.21-r54"
+assert legacy.VERSION=="4.2.0-linux.22-r55"
 r37=load("r37",LIN/"freenet_hub_linux_r37.py")
-assert r37.VERSION=="4.2.0-linux.21-r54"
+assert r37.VERSION=="4.2.0-linux.22-r55"
 assert r37.NODE_PORT==19460
 assert r37.settings()["testPathMode"] in ("BASE","SELECTED")
 for fn in ("node_store","node_refresh_public","node_test_all","node_connect","node_connect_auto","node_stop","node_raw","node_history","node_export","node_update_meta","node_benchmark_batch","node_benchmark_best","node_best","benchmark_method","benchmark_configured","benchmark_all_methods","connect_method","warpplus_status","warpplus_start","update_check","update_install","open_browser"):
     assert callable(getattr(r37,fn))
+for fn in ("selective_connect", "selective_disable", "selective_status"):
+    assert callable(getattr(r37,fn)), fn
 ui=(LIN/"freenet_hub_linux_gtk.py").read_text(encoding="utf-8")
 assert "core.benchmark_method(self.method,ping_only)" in ui
 assert "core.benchmark_direct(ping_only)" in ui
@@ -30,13 +32,14 @@ for marker in ("داشبورد","روش‌ها","Node Pool","ابزارها","ت
 assert "self.win.set_size_request(720,480)" in ui
 assert "self.method_cards.setdefault(key,[])" in ui
 assert "self.scope_buttons.setdefault(key,[])" in ui
+assert "تونل انتخابی" in ui and "self.selective_domains_view" in ui
 assert "self.node_sort_idx=0" in ui
 assert "self.node_sort_toggled" in ui
 assert "self._syncing_sort" in ui
 assert "elif int(idx)==int(self.node_sort_idx)" in ui
 assert "بیشترین Upload" in ui
 installer=(LIN/"install.sh").read_text(encoding="utf-8")
-for marker in ("freenet_hub_linux_r37.py","nodehub_shared.py","runtime/usr/bin/sing-box","runtime/usr/bin/warp-plus","4.2.0-linux.21-r54","install_singbox_pinned.sh","install_warpplus_pinned.sh"):
+for marker in ("freenet_hub_linux_r37.py","nodehub_shared.py","runtime/usr/bin/sing-box","runtime/usr/bin/warp-plus","4.2.0-linux.22-r55","install_singbox_pinned.sh","install_warpplus_pinned.sh"):
     assert marker in installer, marker
 pin=(LIN/"install_singbox_pinned.sh").read_text(encoding="utf-8")
 assert "v1.14.2" in pin
