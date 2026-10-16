@@ -19,6 +19,11 @@
       "sha256": "D934F9A83BE1484372B0F8F41D164A61E9E532F7CF10F3C15C721DC8FDD8C958"
     },
     {
+      "file": ".github/workflows/r55-native-disposable.yml",
+      "bytes": 8812,
+      "sha256": "7A45F76FD344701D97FFF63FF84EA5DC4846DE75C949C8850ECB48C8ECCF1E20"
+    },
+    {
       "file": ".github/workflows/r55-private-acceptance.yml",
       "bytes": 16576,
       "sha256": "E8AE064D45C7DF40AD7FDA78BE9DB101C555B4A81D246B6E4C93F1688EE5CCDC"
