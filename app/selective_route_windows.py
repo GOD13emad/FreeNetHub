@@ -277,6 +277,14 @@ def _check_local_socks(port):
         raise SelectiveError("SELECTIVE_SOCKS5_UNREACHABLE") from exc
 
 
+def _active_registry(pac_url):
+    # Verify ownership of *both* values the feature writes, including types.
+    return {
+        "AutoConfigURL": {"present": True, "value": pac_url, "kind": 1},
+        "ProxyEnable": {"present": True, "value": 0, "kind": 4},
+    }
+
+
 def status():
     _require_windows()
     state = _load_state()
@@ -290,15 +298,18 @@ def status():
             "healthy": False, "bound": False,
             "error": "SELECTIVE_PENDING_RECOVERY_REQUIRED",
         }
-    bound = enabled and actual == state.get("pacUrl")
+    bound = enabled and settings == _active_registry(state.get("pacUrl"))
+    orphan = not enabled and isinstance(actual, str) and (actual == URL or actual.startswith(URL + "?v="))
     healthy = bool(bound and _health(state.get("serverToken", ""))
                    and PAC_FILE.is_file() and _pac_ready(PAC_FILE.read_text(encoding="utf-8")))
     return {
-        "ok": healthy if enabled else True, "enabled": enabled,
+        "ok": healthy if enabled else not orphan, "enabled": enabled,
         "healthy": healthy, "bound": bound,
         "domains": state.get("domains") or [], "method": state.get("method") or "",
         "proxyPort": state.get("proxyPort"),
-        "error": "" if healthy or not enabled else "SELECTIVE_WINDOWS_PAC_UNAVAILABLE",
+        "error": ("SELECTIVE_WINDOWS_ORPHAN_PAC" if orphan else
+                  "SELECTIVE_WINDOWS_PROXY_DRIFT" if enabled and not bound else
+                  "SELECTIVE_WINDOWS_PAC_UNAVAILABLE" if enabled and not healthy else ""),
     }
 
 
@@ -316,7 +327,7 @@ def enable(domains, port, method):
     snapshot = _snapshot()
     actual = snapshot["AutoConfigURL"].get("value") if snapshot["AutoConfigURL"]["present"] else ""
     if previous.get("enabled"):
-        if actual != previous.get("pacUrl"):
+        if snapshot != _active_registry(previous.get("pacUrl")):
             raise SelectiveError("SELECTIVE_WINDOWS_PROXY_DRIFT")
         restore = previous["previous"]
         token = previous["serverToken"]
@@ -344,7 +355,7 @@ def enable(domains, port, method):
         changed = True
         _write_value("ProxyEnable", {"present": True, "value": 0, "kind": 4})
         _notify()
-        if _snapshot()["AutoConfigURL"].get("value") != url:
+        if _snapshot() != _active_registry(url):
             raise SelectiveError("SELECTIVE_WININET_APPLY_UNVERIFIED")
         _write_state(dict(schema=1, enabled=True, domains=domains,
                           proxyPort=port, method=method, pacUrl=url,
@@ -387,7 +398,7 @@ def disable():
         state["previous"] = None
         _write_state(state)
         return {"ok": True, "state": "disabled", "restored": True, "serverStopped": True}
-    if actual != state.get("pacUrl"):
+    if active != _active_registry(state.get("pacUrl")):
         return {"ok": False, "error": "SELECTIVE_WINDOWS_PROXY_DRIFT"}
     try:
         _restore(restore)

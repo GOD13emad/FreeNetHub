@@ -135,6 +135,18 @@ class LifecycleTests(unittest.TestCase):
         self.reg["AutoConfigURL"]["value"] = st._load_state()["pacUrl"]
         self.assertTrue(st.disable()["ok"])
 
+    def test_external_manual_proxy_enable_drift_is_not_clobbered(self):
+        self.assertTrue(st.enable("brave.com", 19414, "CFON")["ok"])
+        self.reg["ProxyEnable"]["value"] = 1
+        self.assertEqual(st.status()["error"], "SELECTIVE_WINDOWS_PROXY_DRIFT")
+        self.assertFalse(st.status()["ok"])
+        self.assertEqual(st.disable()["error"], "SELECTIVE_WINDOWS_PROXY_DRIFT")
+        with self.assertRaises(st.SelectiveError):
+            st.enable("stripe.com", 19414, "CFON")
+        self.assertEqual(self.reg["ProxyEnable"]["value"], 1)
+        self.reg["ProxyEnable"]["value"] = 0
+        self.assertTrue(st.disable()["ok"])
+
     def test_invalid_or_failed_proxy_never_changes_user_registry(self):
         with self.assertRaises(st.SelectiveError):
             st.enable("api.bad/evil", 19414, "CFON")

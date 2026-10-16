@@ -46,6 +46,7 @@ Type: filesandordirs; Name: "{app}\\runtime"
 
 [Files]
 Source: "Prepare-Upgrade.ps1"; Flags: dontcopy
+Source: "Prepare-SelectiveUpgrade.ps1"; Flags: dontcopy
 Source: "..\standalone\FreeNetHub.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\standalone\FreeNetHub.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\app\engine.py"; DestDir: "{app}\app"; Flags: ignoreversion
@@ -221,6 +222,22 @@ begin
   // that missing directory as Exec WorkingDir and CreateProcess failed.
   if not DirExists(ExpandConstant('{app}')) then
     exit;
+
+  // Selective user PAC must be restored before any historical R54 helper
+  // stops an owned process or overwrites installed files.
+  // Keep the accepted V458 Prepare-Upgrade.ps1 unchanged and SHA-pinned.
+  ExtractTemporaryFile('Prepare-SelectiveUpgrade.ps1');
+  Helper := ExpandConstant('{tmp}\Prepare-SelectiveUpgrade.ps1');
+  Params := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' +
+    Helper + '" -AppRoot "' + ExpandConstant('{app}') + '"';
+  if not Exec(P, Params, ExpandConstant('{tmp}'), SW_HIDE, ewWaitUntilTerminated, ResultCode) then begin
+    Result := 'Free Net Hub could not verify its selective user proxy guard: ' + SysErrorMessage(ResultCode);
+    exit;
+  end;
+  if ResultCode <> 0 then begin
+    Result := 'Free Net Hub selective PAC is still active or unverified. Disable it using Free Net Hub and retry; no network state was changed.';
+    exit;
+  end;
 
   // Upgrade/reinstall: verify only the previous installed instance. Use the
   // Setup temporary directory as an existing WorkingDir; AppRoot is explicit.

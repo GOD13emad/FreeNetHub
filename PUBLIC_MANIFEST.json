@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 35535,
-      "sha256": "E233860D83B78478479DF78ADCEC4252D57259162A8BFB8761973C9EB8842569"
+      "bytes": 35776,
+      "sha256": "D0E46692ABA3B5D86FB420C64B00774DCD9CD0E8B3B18B9F97FC1C9CE5E68348"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -116,7 +116,7 @@
     {
       "file": "app/manifest.json",
       "bytes": 5174,
-      "sha256": "E00AB812A34FA16AB401CA28EBDE8531552C583063E936515790D4E3333A49C4"
+      "sha256": "B8302A831F8CD986F691D683772F2622CD7FF5237FD2320483C48462CD716AE9"
     },
     {
       "file": "app/nodehub.py",
@@ -125,8 +125,8 @@
     },
     {
       "file": "app/selective_route_windows.py",
-      "bytes": 17736,
-      "sha256": "919ED10A62DC1A27F02A62320D197257C745E6C1F9BC7CD0FB243D562940EC30"
+      "bytes": 18309,
+      "sha256": "F5D971A361F7F37E6B30CFA701B901DDA13BA15F6561F1C6BC4D19D3C83B22DD"
     },
     {
       "file": "app/View.xaml",
@@ -1805,8 +1805,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 208024,
-      "sha256": "21B2B670DAEB1A19F39A128656DD06E95C00FA1A2546F7B0247BF7EFC95FF325"
+      "bytes": 208916,
+      "sha256": "A1736CB893ED16BDFBFB71F73D2F7E14F039071AFA31E635DB63813E2FEFC582"
     },
     {
       "file": "pytest.ini",
@@ -1826,7 +1826,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 43187,
-      "sha256": "524DA02BC396E9BAA77604DBF0CCB397FC9D2FBB14D6624B091B8DE1E6F0F03B"
+      "sha256": "1E8BE4D86A2B8F1C2EDFC7DE72610167136D67A16E20F1B2B1535BC03426548B"
     },
     {
       "file": "SECURITY.md",
@@ -2095,8 +2095,8 @@
     },
     {
       "file": "tests/build_v439_installer.ps1",
-      "bytes": 3555,
-      "sha256": "52AF5CEDF3F6C0B02FDD278F31A5CBD97C0D23CE191F7B949930CA3C2A39E000"
+      "bytes": 3604,
+      "sha256": "01EBA96FE77324F6425E2218DF7ABF4B72FA679C41CBBBE276D955A959DADF48"
     },
     {
       "file": "tests/build_v43_installer.ps1",
@@ -2554,6 +2554,11 @@
       "sha256": "6323DD2454DD5D9DA53B7A084FD937B8BE63D6E7652522B56EFDB7C6755BD465"
     },
     {
+      "file": "tests/test_prepare_selective_upgrade.ps1",
+      "bytes": 1912,
+      "sha256": "5637EB60EF07D13117F85D24949546A0DD4429782B494E9A7CCF561948BD8457"
+    },
+    {
       "file": "tests/test_prepare_upgrade_wait.ps1",
       "bytes": 3986,
       "sha256": "1178E55CDBA9DF4179021DFE196BA214A3192D3AAB374DF65CA932A9C1575F62"
@@ -2665,13 +2670,13 @@
     },
     {
       "file": "tests/test_windows_selective_integration.py",
-      "bytes": 5883,
-      "sha256": "7D3C429FC6944FC2A46CD04EDBE12FB9D0182AFE368618D08C2D3A8FE8963ABD"
+      "bytes": 6404,
+      "sha256": "81340ACE141842442B79554956B481B259A7452DF8611A53267EAD6E4089A07E"
     },
     {
       "file": "tests/test_windows_selective_routing.py",
-      "bytes": 8352,
-      "sha256": "EB52D443B90AB1CFD3DD2BB3C5F7E248AA8DC30B8C8FCF5FB7228B731D5D02CD"
+      "bytes": 8997,
+      "sha256": "480B52B21B1817B9001E5F9DD3F2739667F6FE386DD244D7099C52938A23B35C"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",
@@ -2725,13 +2730,18 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 14680,
-      "sha256": "E98778EE73EBF192BDC5ECECAC6BB0B8DD5B3DD086AF43E33F67F66DA4614D1B"
+      "bytes": 15637,
+      "sha256": "B54B8DE157AD2FF072B0E71365BB2C0DF21582FE66D75023808C5DB41C504BA5"
+    },
+    {
+      "file": "windows/installer/Prepare-SelectiveUpgrade.ps1",
+      "bytes": 1198,
+      "sha256": "228FA305E8BF485EDB3404E27B4DFF06F27EBB9CA0C44044B3C6129B4192BE47"
     },
     {
       "file": "windows/installer/Prepare-Upgrade.ps1",
-      "bytes": 4903,
-      "sha256": "68EDF843FB8300D7D856D34FAF5AFF4B01E4AE187C0C21001B4442822C2FFC42"
+      "bytes": 4345,
+      "sha256": "98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C"
     },
     {
       "file": "windows/installer/Test-CleanInstall420.ps1",

@@ -8,7 +8,7 @@ $FreezeFiles=@(
  'app\directdpi\tools\winws.exe','app\directdpi\tools\WinDivert.dll','app\directdpi\tools\WinDivert64.sys','app\directdpi\tools\cygwin1.dll',
  'app\directdns\ctrld.exe','app\directdns\ctrld.toml','app\directdns\LICENSE-ctrld.txt',
  'gateway\manifest.json','windows\standalone\FreeNetHub.exe','windows\standalone\FreeNetHubShell.cs','windows\standalone\FreeNetHubShell.manifest','windows\standalone\MANIFEST.json',
- 'windows\installer\FreeNetHub.iss','windows\installer\Prepare-Upgrade.ps1','Uninstall-FreeNetHub.ps1','RELEASE.json'
+ 'windows\installer\FreeNetHub.iss','windows\installer\Prepare-Upgrade.ps1','windows\installer\Prepare-SelectiveUpgrade.ps1','Uninstall-FreeNetHub.ps1','RELEASE.json'
 )
 $Freeze=@{}
 foreach($rel in $FreezeFiles){$Freeze[$rel]=(Get-FileHash -LiteralPath (Join-Path $Root $rel) -Algorithm SHA256).Hash}

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Static and mocked integration checks, no WinINet registry/system changes."""
+import hashlib
 import importlib.util
 import json
 import pathlib
@@ -40,7 +41,7 @@ class IntegrationTests(unittest.TestCase):
                 self.assertEqual(engine.dispatch("SelectiveStatus", "AUTO", ""), {"ok": True, "enabled": False})
                 self.assertEqual(engine.dispatch("SelectiveDisable", "AUTO", ""), {"ok": True, "restored": True})
                 outside = base / "forbidden.json"
-                outside.write_text(req.read_text())
+                outside.write_text(req.read_text(encoding="utf-8"))
                 with self.assertRaises(ValueError):
                     engine.dispatch("SelectiveEnable", "CFON", str(outside))
                 with self.assertRaises(ValueError):
@@ -92,13 +93,19 @@ class IntegrationTests(unittest.TestCase):
             self.assertIn("C." + name, ui)
         for action in ("SelectiveEnable", "SelectiveDisable", "SelectiveStatus"):
             self.assertIn("Start-Work '" + action + "'", ui)
-            self.assertIn("'" + action + "'", (ROOT / "app/engine.py").read_text())
+            self.assertIn("'" + action + "'", (ROOT / "app/engine.py").read_text(encoding="utf-8"))
         self.assertIn("selective_route_windows.py", installer)
         self.assertIn("data\\selective_windows\\policy.json", uninstall)
-        self.assertIn("SELECTIVE_RESTORE_REQUIRED_BEFORE_STOP", (ROOT / "app/engine.py").read_text())
-        prepare=(ROOT / "windows/installer/Prepare-Upgrade.ps1").read_text()
-        self.assertIn("selective_windows\\policy.json", prepare)
-        self.assertLess(prepare.index("$selectiveState="), prepare.index("Get-ActiveListeners"))
+        self.assertIn("SELECTIVE_RESTORE_REQUIRED_BEFORE_STOP", (ROOT / "app/engine.py").read_text(encoding="utf-8"))
+        accepted=(ROOT / "windows/installer/Prepare-Upgrade.ps1").read_bytes()
+        self.assertEqual(hashlib.sha256(accepted).hexdigest().upper(),
+                         "98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C")
+        guard=(ROOT / "windows/installer/Prepare-SelectiveUpgrade.ps1").read_text(encoding="utf-8")
+        self.assertIn("selective_windows\\policy.json", guard)
+        self.assertIn("inFlight", guard)
+        self.assertIn("Prepare-SelectiveUpgrade.ps1", installer)
+        self.assertLess(installer.index("ExtractTemporaryFile('Prepare-SelectiveUpgrade.ps1')"),
+                        installer.index("ExtractTemporaryFile('Prepare-Upgrade.ps1')"))
 
 
 if __name__ == "__main__":
