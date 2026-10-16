@@ -46,13 +46,13 @@
     },
     {
       "file": "apply_elevated.ps1",
-      "bytes": 13757,
-      "sha256": "ED6C1C931724AB441BC64A358026466B97E542929C883E70840DCF86E13AE442"
+      "bytes": 13741,
+      "sha256": "7E2D6FC3886E5180CA00A99971441E9DA9662B852BAC5FF57A35FC9907ABB810"
     },
     {
       "file": "stop_elevated.ps1",
-      "bytes": 11170,
-      "sha256": "4ECA1110206F1519A5AEEA9FAFE2697A3F8D70259F00DA74F17BF127CD02D3FB"
+      "bytes": 11362,
+      "sha256": "1DC7B3E9177A27148EE83A8C92A9D53662BB4383B0B997499F3FA176504B3D19"
     },
     {
       "file": "dns_guard_watchdog.ps1",

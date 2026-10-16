@@ -3,6 +3,40 @@ R=pathlib.Path(__file__).resolve().parents[2]
 G=R/"gateway"
 spec=importlib.util.spec_from_file_location("gc",G/"generate_config.py");M=importlib.util.module_from_spec(spec);spec.loader.exec_module(M)
 class GatewayTests(unittest.TestCase):
+ def test_native_dns_guard_owner_handles_empty_legacy_null_and_rejects_unknown(self):
+  apply=(G/"apply_elevated.ps1").read_text(encoding="utf-8-sig")
+  stop=(G/"stop_elevated.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("dnsGuardNames=@($ownedCreatedDnsRules)",apply)
+  self.assertIn("$null -ne $o.dnsGuardNames",stop)
+  self.assertIn("PC_DNS_GUARD_RULE_IDENTITY_MISMATCH",stop)
+  self.assertIn("Assert-NoResidualPcDnsGuard $o",stop)
+  # Execute isolated JSON round trips with no firewall or network changes.
+  import shutil
+  if not shutil.which("pwsh"):return
+  script=r'''$ErrorActionPreference='Stop'
+  $created=@()
+  $owner=[ordered]@{dnsGuardNames=@($created)}
+  $decoded=($owner|ConvertTo-Json -Compress|ConvertFrom-Json)
+  if($null -eq $decoded.dnsGuardNames -or @($decoded.dnsGuardNames).Count -ne 0){throw 'EMPTY_GUARDS_SERIALIZATION_INVALID'}
+  $allowed=@('FreeNetHub-PC-DNS53-Guard-UDP-Wired')
+  foreach($inputJson in @('{"dnsGuardNames":null}','{"dnsGuardNames":[]}','{}')){
+    $o=$inputJson|ConvertFrom-Json
+    $ownedDnsGuard=@()
+    if($o.PSObject.Properties['dnsGuardNames'] -and $null -ne $o.dnsGuardNames){$ownedDnsGuard=@($o.dnsGuardNames)}
+    if($ownedDnsGuard.Count -ne 0){throw 'NULL_OR_MISSING_FALSE_POSITIVE'}
+  }
+  $o='{"dnsGuardNames":[null]}'|ConvertFrom-Json
+  $ownedDnsGuard=@($o.dnsGuardNames)
+  if(@($ownedDnsGuard|Where-Object{$_ -notin $allowed}).Count -ne 1){throw 'EXPLICIT_NULL_INVALID_RULE_WAS_ACCEPTED'}
+  $o='{"dnsGuardNames":["UNTRUSTED-NAME"]}'|ConvertFrom-Json
+  $ownedDnsGuard=@($o.dnsGuardNames)
+  if(@($ownedDnsGuard|Where-Object{$_ -notin $allowed}).Count -ne 1){throw 'UNKNOWN_NAME_WAS_ACCEPTED'}
+  $created=@('FreeNetHub-PC-DNS53-Guard-UDP-Wired')
+  $o=[ordered]@{dnsGuardNames=@($created)}|ConvertTo-Json|ConvertFrom-Json
+  if(@($o.dnsGuardNames).Count -ne 1 -or @($o.dnsGuardNames|Where-Object{$_ -notin $allowed}).Count){throw 'VALID_GUARD_REJECTED'}
+  '''
+  result=subprocess.run(["pwsh","-NoProfile","-NonInteractive","-Command",script],capture_output=True,text=True,timeout=15)
+  self.assertEqual(result.returncode,0,result.stdout+" "+result.stderr)
  def test_pc_tunnel_final_provider(self):
   c,p=M.build("PC_TUNNEL","WARP",None)
   self.assertEqual(c["route"]["final"],"provider")

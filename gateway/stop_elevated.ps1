@@ -164,7 +164,11 @@ if($o.firewallRule){
 # Release only the exact PC DNS guard rules after the owned TUN is gone.
 # Older installed owner.json records do not have this optional field.
 $ownedDnsGuard=@()
-if($o.PSObject.Properties['dnsGuardNames']){$ownedDnsGuard=@($o.dnsGuardNames)}
+# Older hijack owner receipts can encode an empty conditional as JSON null.
+# @($null) is one unknown rule; distinguish absence from an actual invalid name.
+if($o.PSObject.Properties['dnsGuardNames'] -and $null -ne $o.dnsGuardNames){
+ $ownedDnsGuard=@($o.dnsGuardNames)
+}
 if([string]$o.mode -eq 'PC_TUNNEL' -and $ownedDnsGuard.Count){
  $allowed=@('FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP','FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired','FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless')
  if(@($ownedDnsGuard|Where-Object{$_ -notin $allowed}).Count){Fail 'PC_DNS_GUARD_RULE_IDENTITY_MISMATCH' $o}

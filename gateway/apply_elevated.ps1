@@ -128,7 +128,7 @@ try{
   schema=1;utc=[DateTimeOffset]::UtcNow.ToString('o');mode=$Mode;pid=$p.Id;path=$proc.ExecutablePath;startTicks=$gp.StartTime.ToUniversalTime().Ticks
   config=$cfg;configSha256=$ConfigSha256;singBoxSha256=(Get-FileHash $sb -Algorithm SHA256).Hash
   tun=[ordered]@{name=$tun.Name;ifIndex=$tun.ifIndex;description=$tun.InterfaceDescription}
-  consoleIfIndex=if($console){$console.ifIndex}else{$null};uplinkIfIndex=$uplink.ifIndex;uplinkName=$uplink.Name;firewallRule=if($Mode -eq 'CONSOLE_ONLY'){$fwName}else{$null};dnsGuardNames=if($pcNative){$pcDnsGuardNames}else{@()};dnsGuardPid=if($guardProc){$guardProc.Id}else{$null}
+  consoleIfIndex=if($console){$console.ifIndex}else{$null};uplinkIfIndex=$uplink.ifIndex;uplinkName=$uplink.Name;firewallRule=if($Mode -eq 'CONSOLE_ONLY'){$fwName}else{$null};dnsGuardNames=@($ownedCreatedDnsRules);dnsGuardPid=if($guardProc){$guardProc.Id}else{$null}
  }
  Out-J $OwnerPath $owner
  Out-J $Result ([ordered]@{status='PASS';owner=$owner;consoleManual=if($Mode -eq 'CONSOLE_ONLY'){[ordered]@{ip=$ConsoleCfg.suggested_console_ip;prefix=24;gateway=$ConsoleCfg.gateway;dns=$ConsoleCfg.dns}}else{$null}})

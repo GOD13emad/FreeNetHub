@@ -1616,12 +1616,12 @@
     {
       "file": "evidence/V519_R55_PRIVATE_CANDIDATE.json",
       "bytes": 876,
-      "sha256": "2A5D0CFC576B640AB8EB51218476973B0C2DAE87EAE839E677D5C1E0AD9BEAF8"
+      "sha256": "076A60757955129300FF2B8A676C4A8A9409F0692487E535D1B94533E2469EDB"
     },
     {
       "file": "gateway/apply_elevated.ps1",
-      "bytes": 13757,
-      "sha256": "ED6C1C931724AB441BC64A358026466B97E542929C883E70840DCF86E13AE442"
+      "bytes": 13741,
+      "sha256": "7E2D6FC3886E5180CA00A99971441E9DA9662B852BAC5FF57A35FC9907ABB810"
     },
     {
       "file": "gateway/build_isolated_mihomo.py",
@@ -1671,7 +1671,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3071,
-      "sha256": "E791CD665B6A07FEEF8CDA04E67C2EA0D581817A71C68C6543D0AD23B195A578"
+      "sha256": "B86470A682CD42B097628E5CFD581BA94773AD7F54EA8F6E97C2AACC93805B51"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1715,8 +1715,8 @@
     },
     {
       "file": "gateway/stop_elevated.ps1",
-      "bytes": 11170,
-      "sha256": "4ECA1110206F1519A5AEEA9FAFE2697A3F8D70259F00DA74F17BF127CD02D3FB"
+      "bytes": 11362,
+      "sha256": "1DC7B3E9177A27148EE83A8C92A9D53662BB4383B0B997499F3FA176504B3D19"
     },
     {
       "file": "gateway/tests/build_gateway_manifest.py",
@@ -1765,8 +1765,8 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 9396,
-      "sha256": "D31A7DB9F0471A7EAE9CC149E391FF1F397A68781FC8F1C942471ECD50983DC9"
+      "bytes": 11513,
+      "sha256": "4B6BB139EC4BB6383456F59048666724D20C96607F3647AACFA7A06D6A37C24D"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
@@ -1826,7 +1826,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42756,
-      "sha256": "D8C4CE59B65A5B841D2CAD0A1CF6601EF96772A0FE092AD1A2FE1EADD9FCEF58"
+      "sha256": "F2AB1EF136C7802A4816273F7C0311EDF299CB7B2246AC9951DC11A68CE04C49"
     },
     {
       "file": "SECURITY.md",
