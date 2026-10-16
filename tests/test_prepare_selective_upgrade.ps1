@@ -31,3 +31,6 @@ try{
   Remove-Item -LiteralPath $Temp -Recurse -Force
  }
 }
+# Nested pwsh fixtures intentionally exit 42 in blocked cases. Return an
+# explicit success code so GitHub Actions does not inherit their LASTEXITCODE.
+exit 0

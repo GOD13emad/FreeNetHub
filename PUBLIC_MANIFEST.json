@@ -1805,8 +1805,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 208916,
-      "sha256": "A1736CB893ED16BDFBFB71F73D2F7E14F039071AFA31E635DB63813E2FEFC582"
+      "bytes": 209238,
+      "sha256": "B38EA7A5CD5B93AA0F065329FD94B2C1687EB93CB0F0C19EC34CFF8EDDE86FCF"
     },
     {
       "file": "pytest.ini",
@@ -2555,8 +2555,8 @@
     },
     {
       "file": "tests/test_prepare_selective_upgrade.ps1",
-      "bytes": 1912,
-      "sha256": "5637EB60EF07D13117F85D24949546A0DD4429782B494E9A7CCF561948BD8457"
+      "bytes": 2071,
+      "sha256": "FAB5227311A68B4E87092AEF26AC5A5EAA952E2BBB5D401E45DDA7E490EED885"
     },
     {
       "file": "tests/test_prepare_upgrade_wait.ps1",
