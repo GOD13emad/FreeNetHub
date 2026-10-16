@@ -121,14 +121,21 @@ function Get-Status{
  $ca=if($d.adapter_description){Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.InterfaceDescription -eq [string]$d.adapter_description}|Select-Object -First 1}else{$null}
  $tun=Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name}|Select-Object -First 1
  $s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
- $wc=$null;try{$x=Run-WslConsole 'Status';if($x.exit -eq 0){$wc=$x.record.result}}catch{}
- $pcRunning=Owner-Valid;$consoleRunning=[bool]($wc -and $wc.running);$running=($pcRunning -or $consoleRunning)
- $mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}elseif($s){[string]$s.mode}else{''}
+  # A verified running Windows Native TUN is independent of the WSL console.
+  # Querying WSL here can block up to 120 seconds and race the SYSTEM safety
+  # timer even after the Native owner has been verified.
+  $pcRunning=Owner-Valid
+  $wc=$null
+  if(-not $pcRunning -and -not $tun){
+   try{$x=Run-WslConsole 'Status';if($x.exit -eq 0){$wc=$x.record.result}}catch{}
+  }
+  $consoleRunning=[bool]($wc -and $wc.running);$running=($pcRunning -or $consoleRunning)
+ $mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}else{''}
  $tunView=if($tun){[ordered]@{name=$tun.Name;status=[string]$tun.Status;ifIndex=$tun.ifIndex;backend='WINDOWS_TUN'}}elseif($consoleRunning){[ordered]@{name='WSL:fnh-tun';status='Up';ifIndex=$null;backend='WSL2_AUTO_REDIRECT'}}else{$null}
  $manual=if($wc -and $wc.manual){$wc.manual}else{[ordered]@{ip=[string]$d.suggested_console_ip;prefix=24;gateway=[string]$d.gateway;dns=[string]$d.dns}}
  $cStatus=if($consoleRunning){if($wc.router -and [bool]$wc.router.carrier){'Up'}else{'Disconnected'}}elseif($ca){[string]$ca.Status}elseif($wc -and $wc.usb -and [string]$wc.usb.state -eq 'Shared'){'Disconnected'}else{'Missing'}
  [ordered]@{
-  status='PASS';running=$running;mode=$mode;tun=$tunView
+  status=$(if($tun -and -not $pcRunning){'DEGRADED_UNOWNED_TUN'}else{'PASS'});running=$running;mode=$mode;tun=$tunView
   console=[ordered]@{
    name=if($ca){$ca.Name}else{[string]$d.adapter_name}
    description=if($wc -and $wc.usb){[string]$wc.usb.description}else{[string]$d.adapter_description}
@@ -139,9 +146,43 @@ function Get-Status{
  }
 }
 function Require-Admin{if(-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'ADMIN_REQUIRED'}}
+function Invoke-VerifiedNativeStop{
+ # Only the exact stop routine can confirm no unowned TUN/physical DNS53 guard.
+ # A fresh verified PASS receipt is required before provider or session cleanup.
+ $stopReceipt=Join-Path $Runtime 'stop_result.json'
+ Remove-Item -LiteralPath $stopReceipt -Force -ErrorAction SilentlyContinue
+ & pwsh.exe -NoLogo -NoProfile -NonInteractive -File $StopScript | Out-Null
+ $stopExit=$LASTEXITCODE
+ Assert ($stopExit -eq 0) 'NATIVE_STOP_NONZERO_EXIT'
+ Assert (Test-Path -LiteralPath $stopReceipt -PathType Leaf) 'NATIVE_STOP_RECEIPT_MISSING'
+ try{$stopRecord=Get-Content -LiteralPath $stopReceipt -Raw -Encoding UTF8|ConvertFrom-Json -ErrorAction Stop}
+ catch{throw 'NATIVE_STOP_RECEIPT_UNREADABLE'}
+ Assert ([string]$stopRecord.status -eq 'PASS' -and [string]$stopRecord.state -in @('STOPPED','NOT_OWNED')) 'NATIVE_STOP_UNVERIFIED'
+}
+# Serialize this gateway's mutating commands across independent PowerShell
+# launchers. An abandoned mutex means prior gateway state is unknown: fail closed.
+$script:GatewayMutationMutex=$null
+$script:GatewayMutationHeld=$false
+function Enter-GatewayMutationGuard{
+ $script:GatewayMutationMutex=[System.Threading.Mutex]::new($false,'Local\FreeNetHub_Gateway_Mutation_v1')
+ try{$script:GatewayMutationHeld=$script:GatewayMutationMutex.WaitOne(0)}
+ catch [System.Threading.AbandonedMutexException]{
+  $script:GatewayMutationHeld=$true
+  throw 'GATEWAY_MUTATION_LOCK_ABANDONED_REVIEW_REQUIRED'
+ }
+ Assert $script:GatewayMutationHeld 'GATEWAY_MUTATION_IN_PROGRESS'
+}
+function Exit-GatewayMutationGuard{
+ try{
+  if($script:GatewayMutationHeld){$script:GatewayMutationMutex.ReleaseMutex()}
+ }finally{
+  $script:GatewayMutationHeld=$false
+  if($script:GatewayMutationMutex){$script:GatewayMutationMutex.Dispose();$script:GatewayMutationMutex=$null}
+ }
+}
 function Cleanup-Failed([string]$mode,[bool]$providerStarted,[string]$provider='WARP'){
  if($mode -eq 'PC_TUNNEL'){
-  try{if((Test-Path $Owner) -or (Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name})){& $StopScript|Out-Null}}catch{}
+  Invoke-VerifiedNativeStop
   if($providerStarted){try{Run-Engine 'StopOne' $provider 60|Out-Null}catch{}}
  }else{
   try{[void](Run-WslConsole 'Stop')}catch{}
@@ -152,14 +193,22 @@ New-Item -ItemType Directory -Path $Runtime -Force|Out-Null
 if($ResultPath){$full=[IO.Path]::GetFullPath($ResultPath);$jobs=[IO.Path]::GetFullPath((Join-Path $Root 'jobs'))+'\';if(!$full.StartsWith($jobs,[StringComparison]::OrdinalIgnoreCase)){throw 'RESULT_PATH_OUTSIDE_JOBS'};$ResultPath=$full}
 $out=[ordered]@{schema=1;action=$Action;utc=[DateTimeOffset]::UtcNow.ToString('o');exit=1;result=$null}
 try{
+ if($Action -ne 'Status'){Enter-GatewayMutationGuard}
  if($Action -eq 'Status'){$out.exit=0;$out.result=Get-Status}
  elseif($Action -eq 'Stop'){
   Require-Admin;$s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
-  $ws=$null;try{$ws=Run-WslConsole 'Status'}catch{}
+   # When stopping a PC TUNNEL, do not spend the SYSTEM recovery window
+   # waiting for an unrelated WSL console status request.
+   $nativeOwnerPresent=(Test-Path -LiteralPath $Owner -PathType Leaf)
+   $nativeInterfacePresent=[bool](Get-NetAdapter -Name ([string]$Defaults.tun.interface_name) -IncludeHidden -ErrorAction SilentlyContinue)
+   $ws=$null
+   if(-not (($s -and [string]$s.mode -eq 'PC_TUNNEL') -or $nativeOwnerPresent -or $nativeInterfacePresent)){
+    try{$ws=Run-WslConsole 'Status'}catch{}
+   }
   if(($s -and [string]$s.mode -eq 'CONSOLE_ONLY') -or ($ws -and $ws.exit -eq 0 -and [bool]$ws.record.result.running)){
    $stop=Run-WslConsole 'Stop';Assert ($stop.exit -eq 0) 'WSL_CONSOLE_STOP_FAIL'
   }
-  if((Test-Path $Owner) -or (Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name})){& $StopScript|Out-Null}
+  Invoke-VerifiedNativeStop
   if($s -and [string]$s.mode -eq 'PC_TUNNEL' -and -not [bool]$s.providerPreexisting){$sp=[string]$s.provider;if($sp -in @('WARP','NODE')){Run-Engine 'StopOne' $sp 60|Out-Null}}
   Remove-Item $Session -Force -ErrorAction SilentlyContinue;$out.exit=0;$out.result=Get-Status
  }
@@ -176,7 +225,8 @@ try{
 
  else{
   Require-Admin;$st=Get-Status;Assert (-not [bool]$st.running) 'GATEWAY_ALREADY_RUNNING'
-  if(Test-Path $Owner){Remove-Item $Owner -Force -ErrorAction SilentlyContinue}
+   Assert (-not $st.tun) 'UNOWNED_TUN_PRESENT_REFUSE_START'
+  Assert (-not (Test-Path -LiteralPath $Owner)) 'GATEWAY_OWNER_EVIDENCE_PRESENT_REFUSE_START'
   $mode=if($Action -eq 'StartPc'){'PC_TUNNEL'}else{'CONSOLE_ONLY'};$started=$false;$preexisting=$false
   try{
    if($mode -eq 'CONSOLE_ONLY'){
@@ -217,7 +267,16 @@ try{
     $baseRoute=Get-BaseRouteSnapshot
     $before=Trace
     $cfg=Join-Path $Runtime ('pc_product_'+$Provider.ToLowerInvariant()+'.json')
-    & $Python $Generator --mode PC_TUNNEL --provider $Provider --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
+    # sing-box 1.14 hijack+strict_route WFP blocks off-TUN DNS port 53 on Windows.
+    # Only opt into native DNS when a running Tailscale client has an effective
+    # Quad100 NRPT policy. Keep hijack for other devices and unsupported states.
+    $dnsMode='hijack'
+    $tailscaleSvc=Get-Service -Name 'Tailscale' -ErrorAction SilentlyContinue
+    if($tailscaleSvc -and $tailscaleSvc.Status -eq 'Running'){
+     $quadPolicies=@(Get-DnsClientNrptPolicy -Effective -ErrorAction SilentlyContinue | Where-Object { [string]$_.NameServers -match '100\.100\.100\.100' })
+     if($quadPolicies.Count -gt 0){$dnsMode='native'}
+    }
+    & $Python $Generator --mode PC_TUNNEL --provider $Provider --dns-mode $dnsMode --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
     $SB=[string](Get-FnhSingBox).path;& $SB check -c $cfg;Assert ($LASTEXITCODE -eq 0) 'CONFIG_CHECK_FAIL'
     & $Apply -Mode PC_TUNNEL -ConfigPath $cfg -ConfigSha256 ((Get-FileHash $cfg -Algorithm SHA256).Hash)|Out-Null
     $ar=Get-Content (Join-Path $Runtime 'apply_result.json') -Raw -Encoding UTF8|ConvertFrom-Json;Assert ($ar.status -eq 'PASS') 'APPLY_FAIL';Start-Sleep -Seconds 2
@@ -235,13 +294,20 @@ try{
     }
 
     $kind=$(if($Provider -eq 'NODE'){'NODE_SOCKS'}else{'WARP_SOCKS'})
-    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
+    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;dnsMode=$dnsMode;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
     Write-J $Session $sess
-    $out.exit=0;$out.result=Get-Status
+    # Source Apply PASS alone is insufficient: ownership may disappear with
+    # the TUN still present. Reject false PASS and fail closed.
+    Assert (Test-Path -LiteralPath $Owner -PathType Leaf) 'PC_OWNER_RECEIPT_DISAPPEARED'
+    Assert (Owner-Valid) 'PC_OWNER_IDENTITY_UNVERIFIED_AFTER_APPLY'
+    $pcLive=Get-Status
+    Assert ([bool]$pcLive.running -and [string]$pcLive.mode -eq 'PC_TUNNEL' -and [bool]$pcLive.tun) 'PC_TUN_NOT_OWNED_AFTER_START'
+    $out.exit=0;$out.result=$pcLive
    }
   }catch{Cleanup-Failed $mode $started $Provider;throw}
  }
 }catch{$out.exit=20;$out.result=[ordered]@{error=$_.Exception.Message;status=try{Get-Status}catch{$null}}}
+finally{Exit-GatewayMutationGuard}
 if($ResultPath){Write-J $ResultPath $out}
 $out|ConvertTo-Json -Depth 24
 exit $out.exit

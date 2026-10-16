@@ -1,5 +1,5 @@
 #define MyAppName "FreeNet Hub"
-#define MyAppVersion "4.3.9"
+#define MyAppVersion "4.3.11"
 #define MyAppPublisher "FreeNet Hub"
 #define MyAppExeName "FreeNetHub.exe"
 
@@ -13,8 +13,8 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-OutputDir=..\..\delivery\github_v4.3.9
-OutputBaseFilename=FreeNetHub_4.3.9_R53_Setup
+OutputDir=..\..\delivery\release_candidate_v4.3.11
+OutputBaseFilename=FreeNetHub_4.3.11_R55_V519_PRIVATE_REVIEW_DO_NOT_RELEASE
 SetupIconFile=..\standalone\FreeNetHub.ico
 UninstallDisplayIcon={app}\FreeNetHub.exe
 Compression=lzma2/ultra64
@@ -24,9 +24,9 @@ CloseApplications=yes
 RestartApplications=no
 ChangesAssociations=no
 ChangesEnvironment=no
-VersionInfoVersion=4.3.9.0
+VersionInfoVersion=4.3.11.0
 VersionInfoProductName=FreeNet Hub
-VersionInfoDescription=FreeNet Hub 4.3.9 R53 same-AppId install root fail-closed guard
+VersionInfoDescription=FreeNet Hub 4.3.11 R55 native status private review
 MinVersion=10.0.19041
 
 [Languages]
@@ -74,6 +74,7 @@ Source: "..\..\gateway\preflight.ps1"; DestDir: "{app}\gateway"; Flags: ignoreve
 Source: "..\..\gateway\generate_config.py"; DestDir: "{app}\gateway"; Flags: ignoreversion
 Source: "..\..\gateway\apply_elevated.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion
 Source: "..\..\gateway\stop_elevated.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion
+Source: "..\..\gateway\dns_guard_watchdog.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion
 Source: "..\..\gateway\console_provider.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion
 Source: "..\..\gateway\wsl_console.ps1"; DestDir: "{app}\gateway"; Flags: ignoreversion
 Source: "..\..\gateway\build_isolated_mihomo.py"; DestDir: "{app}\gateway"; Flags: ignoreversion

@@ -1,0 +1,117 @@
+name: R55 private isolated Windows acceptance
+
+on:
+  push:
+    branches:
+      - candidate/r55-v519-private-review
+
+permissions:
+  contents: read
+
+jobs:
+  r55-windows-fresh:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Exact source integrity and R55 contract
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          python tests/verify_public_tree.py
+          if($LASTEXITCODE -ne 0){throw 'R55_PUBLIC_TREE_FAILED'}
+          python -m unittest discover -s gateway/tests -p 'test*.py' -q
+          if($LASTEXITCODE -ne 0){throw 'R55_GATEWAY_TESTS_FAILED'}
+          $r=Get-Content RELEASE.json -Raw|ConvertFrom-Json
+          $a=Get-Content app/manifest.json -Raw|ConvertFrom-Json
+          if($r.version -ne '4.3.11' -or $r.releaseRevision -ne '4.3.11-r55-native-status-review'){throw 'R55_REVISION_CHANGED'}
+          if($a.version -ne $r.version -or $a.coreVersion -ne $r.releaseRevision){throw 'R55_APP_REVISION_CHANGED'}
+          if($r.status -ne 'R55_PRIVATE_CANDIDATE_NOT_FOR_RELEASE'){throw 'R55_PRIVATE_STATUS_CHANGED'}
+          if((Get-FileHash app/manifest.json -Algorithm SHA256).Hash -ne $r.appManifestSha256){throw 'R55_APP_HASH_CHAIN_FAILED'}
+          if((Get-FileHash gateway/manifest.json -Algorithm SHA256).Hash -ne $r.gatewayManifestSha256){throw 'R55_GATEWAY_HASH_CHAIN_FAILED'}
+          if(@((Get-Content gateway/manifest.json -Raw|ConvertFrom-Json).files).Count -ne 18){throw 'R55_GATEWAY_FILE_COUNT_CHANGED'}
+          Write-Host 'R55_PRIVATE_SOURCE_MANIFEST_AND_TESTS_PASS'
+      - name: Ensure local Inno Setup compiler
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $paths=@(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
+            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+          )
+          $iscc=$paths|Where-Object{Test-Path $_}|Select-Object -First 1
+          if(!$iscc){
+            choco install innosetup --no-progress -y
+            if($LASTEXITCODE -ne 0){throw 'R55_INNO_INSTALL_FAILED'}
+            $iscc=$paths|Where-Object{Test-Path $_}|Select-Object -First 1
+          }
+          if(!$iscc){throw 'R55_ISCC_NOT_FOUND'}
+          "ISCC=$iscc" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Build nonrelease installer and inspect exact binary identity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          & $env:ISCC /Qp windows/installer/FreeNetHub.iss
+          if($LASTEXITCODE -ne 0){throw 'R55_INNO_BUILD_FAILED'}
+          $exe='delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_V519_PRIVATE_REVIEW_DO_NOT_RELEASE.exe'
+          if(!(Test-Path $exe)){throw 'R55_INSTALLER_MISSING'}
+          $f=Get-Item $exe
+          if($f.Length -lt 1000000){throw 'R55_INSTALLER_SUSPICIOUS_SIZE'}
+          if($f.VersionInfo.FileVersion.Trim() -ne '4.3.11.0'){throw 'R55_INSTALLER_FILE_VERSION_BAD'}
+          $sig=(Get-AuthenticodeSignature $f.FullName).Status.ToString()
+          if($sig -ne 'NotSigned'){throw ('R55_SIGNATURE_UNEXPECTED_'+$sig)}
+          Write-Host ('R55_PRIVATE_EXACT_INSTALLER_SHA256='+(Get-FileHash $f.FullName -Algorithm SHA256).Hash)
+      - name: Fresh install on disposable hosted Windows runner and check manifest chain
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-r55-private-fresh'
+          $exe=(Resolve-Path 'delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_V519_PRIVATE_REVIEW_DO_NOT_RELEASE.exe').Path
+          if(Test-Path $probe){throw 'R55_FRESH_ROOT_PREEXISTS'}
+          $p=Start-Process -FilePath $exe -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',('/DIR='+$probe)) -Wait -PassThru
+          if($p.ExitCode -ne 0){throw ('R55_INSTALL_EXIT_'+$p.ExitCode)}
+          foreach($rel in @('FreeNetHub.exe','RELEASE.json','app\manifest.json','app\dependencies.json','gateway\gateway_control.ps1','gateway\dns_guard_watchdog.ps1','gateway\manifest.json')){
+            if(!(Test-Path (Join-Path $probe $rel))){throw ('R55_INSTALLED_FILE_MISSING_'+$rel)}
+          }
+          $release=Get-Content (Join-Path $probe 'RELEASE.json') -Raw|ConvertFrom-Json
+          $app=Get-Content (Join-Path $probe 'app\manifest.json') -Raw|ConvertFrom-Json
+          $gateway=Get-Content (Join-Path $probe 'gateway\manifest.json') -Raw|ConvertFrom-Json
+          if($release.releaseRevision -ne '4.3.11-r55-native-status-review' -or $app.coreVersion -ne $release.releaseRevision){throw 'R55_INSTALLED_REVISION_BAD'}
+          if((Get-FileHash (Join-Path $probe 'app\manifest.json') -Algorithm SHA256).Hash -ne $release.appManifestSha256){throw 'R55_INSTALLED_APP_CHAIN_BAD'}
+          if((Get-FileHash (Join-Path $probe 'gateway\manifest.json') -Algorithm SHA256).Hash -ne $release.gatewayManifestSha256){throw 'R55_INSTALLED_GATEWAY_CHAIN_BAD'}
+          if(@($gateway.files).Count -ne 18){throw 'R55_INSTALLED_GATEWAY_ENTRIES_BAD'}
+          foreach($row in $gateway.files){
+            $path=Join-Path (Join-Path $probe 'gateway') ([string]$row.file)
+            if(!(Test-Path $path) -or (Get-FileHash $path -Algorithm SHA256).Hash -ne [string]$row.sha256){throw ('R55_GATEWAY_INSTALLED_MISMATCH_'+$row.file)}
+          }
+          foreach($row in $app.code){
+            $path=Join-Path (Join-Path $probe 'app') ([string]$row.file)
+            if(!(Test-Path $path) -or (Get-FileHash $path -Algorithm SHA256).Hash -ne [string]$row.sha256){throw ('R55_APP_INSTALLED_MISMATCH_'+$row.file)}
+          }
+          $receipt=[ordered]@{
+            status='R55_DISPOSABLE_FRESH_INSTALL_PASS'
+            version=$release.version
+            revision=$release.releaseRevision
+            installerSHA256=(Get-FileHash $exe -Algorithm SHA256).Hash
+            gatewayManifestSHA256=$release.gatewayManifestSha256
+            appManifestSHA256=$release.appManifestSha256
+            publicRelease=$false
+            ownerHostChanged=$false
+          }
+          $receipt|ConvertTo-Json -Depth 5|Set-Content (Join-Path $env:RUNNER_TEMP 'fnh-r55-private-fresh-receipt.json') -Encoding utf8
+          Write-Host 'R55_DISPOSABLE_FRESH_INSTALL_AND_HASH_CHAIN_PASS'
+      - name: Upload metadata receipt only (never installer)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: r55-private-fresh-acceptance-receipt
+          path: ${{ runner.temp }}/fnh-r55-private-fresh-receipt.json
+          if-no-files-found: error
+          retention-days: 30

@@ -126,4 +126,17 @@ class GatewayTests(unittest.TestCase):
   ):
    self.assertIn(marker,text)
   self.assertIn("Join-Path $PSScriptRoot 'stop_elevated.ps1'",text)
+ def test_status_uses_live_owner_and_detects_orphan_tun(self):
+  text=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("$mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}else{''}",text)
+  self.assertNotIn("elseif($s){[string]$s.mode}",text)
+  self.assertIn("DEGRADED_UNOWNED_TUN",text)
+ def test_r55_native_dns_and_system_rollback_are_both_present(self):
+  text=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("if($quadPolicies.Count -gt 0){$dnsMode='native'}",text)
+  self.assertIn("function Invoke-VerifiedNativeStop",text)
+  self.assertIn("GATEWAY_MUTATION_IN_PROGRESS",text)
+  self.assertIn("NATIVE_STOP_RECEIPT_MISSING",text)
+  generator=(G/"generate_config.py").read_text(encoding="utf-8-sig")
+  self.assertIn("100.64.0.0/10",generator)
 if __name__=="__main__":unittest.main(verbosity=2)
