@@ -1790,8 +1790,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 224259,
-      "sha256": "7296B297680EE92A4C4CC9A09C529503E7AFDEFA73E670DB242E6F30BE708157"
+      "bytes": 224741,
+      "sha256": "306EA65DAD8BD82AFC691EBB3E2E01B91A8578CD3B8E0D45BA84FDA9B1118D0C"
     },
     {
       "file": "pytest.ini",
@@ -2550,8 +2550,8 @@
     },
     {
       "file": "tests/test_pc_dns_guard_watchdog_hosted.ps1",
-      "bytes": 6646,
-      "sha256": "C7412A0D56130A241CFE79235260B1E723AB311B30A977A1818F04C016D78F65"
+      "bytes": 8777,
+      "sha256": "9238BC4EA7DE808A2E625AC2BE80BB4AE213D7B8B02FAE10970BE888C888D38A"
     },
     {
       "file": "tests/test_prepare_upgrade_wait.ps1",

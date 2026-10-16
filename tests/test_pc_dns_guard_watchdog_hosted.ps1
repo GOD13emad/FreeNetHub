@@ -9,6 +9,7 @@ $testAddress='192.0.2.77'
 $created=@()
 $dummy=$null
 $watch=$null
+$ownerlessSandbox=$null
 $failure=''
 $passed=$false
 function CurrentGuardRules {
@@ -54,6 +55,28 @@ try {
   $addressFilter=Get-NetFirewallAddressFilter -AssociatedNetFirewallRule $rule -ErrorAction Stop
   Check (@($addressFilter.RemoteAddress) -contains $testAddress) 'FIREWALL_FILTER_SCOPE_NOT_TESTNET'
  }
+ # Validate the production ownerless STOP branch against real ActiveStore,
+ # but only with TEST-NET-scoped rules on disposable GitHub Windows runners.
+ # A private copy isolates owner/apply receipts from the actual repository.
+ $ownerlessSandbox=Join-Path $env:RUNNER_TEMP ('fnh-ownerless-stop-'+[guid]::NewGuid().ToString('N'))
+ New-Item -ItemType Directory -Path (Join-Path $ownerlessSandbox 'runtime') -Force|Out-Null
+ $stopSource=Join-Path (Split-Path $guard -Parent) 'stop_elevated.ps1'
+ $runtimeConfig=Join-Path (Split-Path $guard -Parent) 'runtime_config.ps1'
+ Check (Test-Path -LiteralPath $stopSource) 'OWNERLESS_STOP_SOURCE_MISSING'
+ Check (Test-Path -LiteralPath $runtimeConfig) 'OWNERLESS_RUNTIME_SOURCE_MISSING'
+ Copy-Item -LiteralPath $stopSource -Destination $ownerlessSandbox -ErrorAction Stop
+ Copy-Item -LiteralPath $runtimeConfig -Destination $ownerlessSandbox -ErrorAction Stop
+ $isolatedStop=Join-Path $ownerlessSandbox 'stop_elevated.ps1'
+ $stopStdout=Join-Path $ownerlessSandbox 'stop.stdout.txt'
+ $stopStderr=Join-Path $ownerlessSandbox 'stop.stderr.txt'
+ $stopProcess=Start-Process -FilePath pwsh.exe -ArgumentList @('-NoLogo','-NoProfile','-NonInteractive','-File',('"' + $isolatedStop + '"')) -RedirectStandardOutput $stopStdout -RedirectStandardError $stopStderr -Wait -PassThru -WindowStyle Hidden
+ $stopReceipt=Join-Path $ownerlessSandbox 'runtime\stop_result.json'
+ Check ($stopProcess.ExitCode -ne 0) 'OWNERLESS_STOP_FALSE_SUCCESS_EXIT'
+ Check (Test-Path -LiteralPath $stopReceipt) 'OWNERLESS_STOP_NO_FAIL_RECEIPT'
+ $stopJson=Get-Content -LiteralPath $stopReceipt -Raw -Encoding UTF8|ConvertFrom-Json -ErrorAction Stop
+ Check ($stopJson.status -eq 'FAIL' -and $stopJson.error -eq 'UNOWNED_DNS_GUARD_PRESENT_REFUSE_FALSE_CLEAN_STOP') 'OWNERLESS_STOP_WRONG_FAIL_RECEIPT'
+ Check (@(CurrentGuardRules).Count -eq 4) 'OWNERLESS_STOP_UNEXPECTED_GUARD_REMOVAL'
+ 'HOSTED_OWNERLESS_STOP_ORPHAN_DNS_GUARDS_FAIL_CLOSED_PASS'
  $args=@('-NoProfile','-NonInteractive','-File',('"' + $guard + '"'),'-TargetPid',([string]$owned.Id),'-StartTicks',([string]$owned.StartTime.ToUniversalTime().Ticks),'-ExpectedExe',('"' + [string]$owned.Path + '"'),'-UdpRule',$ruleNames[0],'-TcpRule',$ruleNames[1],'-UdpWirelessRule',$ruleNames[2],'-TcpWirelessRule',$ruleNames[3])
  $watch=Start-Process -FilePath pwsh.exe -ArgumentList $args -PassThru -WindowStyle Hidden
  Start-Sleep -Seconds 2
@@ -95,6 +118,7 @@ try {
   $actual=Get-Process -Id $dummy.Id -ErrorAction SilentlyContinue
   if($actual -and [long]$actual.StartTime.ToUniversalTime().Ticks -eq [long]$dummy.StartTime.ToUniversalTime().Ticks){Stop-Process -Id $dummy.Id -Force -ErrorAction SilentlyContinue}
  }catch{}}
+ if($ownerlessSandbox -and (Test-Path -LiteralPath $ownerlessSandbox)){Remove-Item -LiteralPath $ownerlessSandbox -Recurse -Force -ErrorAction SilentlyContinue}
  foreach($n in $created){
   $existing=Get-NetFirewallRule -Name $n -PolicyStore ActiveStore -ErrorAction SilentlyContinue
   if($existing){$existing|Remove-NetFirewallRule -ErrorAction SilentlyContinue}
