@@ -41,6 +41,22 @@ function Process-Identity($o){
  return 'EXACT'
 }
 function Process-Matches($o){return (Process-Identity $o) -eq 'EXACT'}
+function Assert-NoResidualPcDnsGuard($ownerRecord){
+ # The list inside legacy owner.json may be absent or incomplete.
+ # A successful STOP must independently prove all exact FreeNetHub DNS53
+ # guard identities are absent, not merely the subset in owner.json.
+ if([string]$ownerRecord.mode -ne 'PC_TUNNEL'){return}
+ $allKnown=@(
+  'FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP',
+  'FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired',
+  'FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless'
+ )
+ try{$remaining=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+ catch{Fail 'PC_DNS_GUARD_FINAL_QUERY_UNVERIFIED' $ownerRecord}
+ if(@($remaining|Where-Object{$_.Name -in $allKnown}).Count){
+  Fail 'PC_DNS_GUARD_FINAL_RESIDUAL_REFUSE_FALSE_STOP' $ownerRecord
+ }
+}
 function Test-OwnedTunAbsentStable([int]$Checks=8,[int]$PollMs=250){
  # A transient NetAdapter/CIM read error during Wintun teardown is not
  # proof of removal. Preserve the physical DNS block until two clean
@@ -194,6 +210,7 @@ if(Test-Path $Pre){
   if(!$restoredIf -or [string]$restoredIf.Forwarding -ne [string]$c.forwarding){Fail 'CONSOLE_FORWARDING_RESTORE_INCOMPLETE' $o}
  }
 }
+Assert-NoResidualPcDnsGuard $o
 Remove-Item $Owner -Force -ErrorAction SilentlyContinue
 if(Test-Path $Owner){Fail 'OWNER_STATE_REMOVE_INCOMPLETE' $o}
 Out-J $Result ([ordered]@{
