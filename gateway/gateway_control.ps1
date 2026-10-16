@@ -123,12 +123,12 @@ function Get-Status{
  $s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
  $wc=$null;try{$x=Run-WslConsole 'Status';if($x.exit -eq 0){$wc=$x.record.result}}catch{}
  $pcRunning=Owner-Valid;$consoleRunning=[bool]($wc -and $wc.running);$running=($pcRunning -or $consoleRunning)
- $mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}elseif($s){[string]$s.mode}else{''}
+ $mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}else{''}
  $tunView=if($tun){[ordered]@{name=$tun.Name;status=[string]$tun.Status;ifIndex=$tun.ifIndex;backend='WINDOWS_TUN'}}elseif($consoleRunning){[ordered]@{name='WSL:fnh-tun';status='Up';ifIndex=$null;backend='WSL2_AUTO_REDIRECT'}}else{$null}
  $manual=if($wc -and $wc.manual){$wc.manual}else{[ordered]@{ip=[string]$d.suggested_console_ip;prefix=24;gateway=[string]$d.gateway;dns=[string]$d.dns}}
  $cStatus=if($consoleRunning){if($wc.router -and [bool]$wc.router.carrier){'Up'}else{'Disconnected'}}elseif($ca){[string]$ca.Status}elseif($wc -and $wc.usb -and [string]$wc.usb.state -eq 'Shared'){'Disconnected'}else{'Missing'}
  [ordered]@{
-  status='PASS';running=$running;mode=$mode;tun=$tunView
+  status=$(if($tun -and -not $pcRunning){'DEGRADED_UNOWNED_TUN'}else{'PASS'});running=$running;mode=$mode;tun=$tunView
   console=[ordered]@{
    name=if($ca){$ca.Name}else{[string]$d.adapter_name}
    description=if($wc -and $wc.usb){[string]$wc.usb.description}else{[string]$d.adapter_description}

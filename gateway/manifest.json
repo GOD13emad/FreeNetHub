@@ -6,8 +6,8 @@
   "files": [
     {
       "file": "gateway_control.ps1",
-      "bytes": 16430,
-      "sha256": "52E477CC3508834D5C232E195287FA1BB7B97739BD3F102D9CB0F214597B73AF"
+      "bytes": 16465,
+      "sha256": "B35466076FEDE8D37F463EAD48A7E28840542D55CE237C3B42E4B1EDD21CDA58"
     },
     {
       "file": "gateway_request.ps1",

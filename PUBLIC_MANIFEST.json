@@ -1625,8 +1625,8 @@
     },
     {
       "file": "gateway/gateway_control.ps1",
-      "bytes": 16430,
-      "sha256": "52E477CC3508834D5C232E195287FA1BB7B97739BD3F102D9CB0F214597B73AF"
+      "bytes": 16465,
+      "sha256": "B35466076FEDE8D37F463EAD48A7E28840542D55CE237C3B42E4B1EDD21CDA58"
     },
     {
       "file": "gateway/gateway_defaults.json",
@@ -1651,7 +1651,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 2912,
-      "sha256": "440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5"
+      "sha256": "A6078B0DCE2D8FDEFFB529A8915027AD477EB2430FF9F5772ED59E4484484755"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1745,8 +1745,8 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 8580,
-      "sha256": "B46496F0A5F466A97908AD62569136972881C41A3277820DE6B40E163E9334D3"
+      "bytes": 8961,
+      "sha256": "640E85EC01D2382434AD55CB0ADC9DC2D46CACF04693EDA9B25805E5F1B6F995"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",

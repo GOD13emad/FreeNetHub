@@ -126,4 +126,9 @@ class GatewayTests(unittest.TestCase):
   ):
    self.assertIn(marker,text)
   self.assertIn("Join-Path $PSScriptRoot 'stop_elevated.ps1'",text)
+ def test_status_is_live_owned_not_stale_session(self):
+  text=(G/"gateway_control.ps1").read_text(encoding="utf-8-sig")
+  self.assertIn("$mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}else{''}",text)
+  self.assertNotIn("elseif($s){[string]$s.mode}",text)
+  self.assertIn("status=$(if($tun -and -not $pcRunning){'DEGRADED_UNOWNED_TUN'}else{'PASS'})",text)
 if __name__=="__main__":unittest.main(verbosity=2)
