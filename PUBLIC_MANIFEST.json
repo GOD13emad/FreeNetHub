@@ -20,8 +20,8 @@
     },
     {
       "file": ".github/workflows/r55-native-disposable.yml",
-      "bytes": 12861,
-      "sha256": "A34175356CFD7E3208C653DD82BE92826F79B48A576FF3050234D1DC898A8FD4"
+      "bytes": 14435,
+      "sha256": "65EACF04E926D8209FDB0B0C79290C9915BB40070FF2B48A2D25E108E3C69CF1"
     },
     {
       "file": ".github/workflows/r55-private-acceptance.yml",
@@ -2665,8 +2665,8 @@
     },
     {
       "file": "tests/test_v521_ci_routing.py",
-      "bytes": 4059,
-      "sha256": "517FE55ED23A7048240C8032C3050C9A35FD31D519E81942B907A96297C49E45"
+      "bytes": 4222,
+      "sha256": "9BF97E5579F01E50ADC386627B8C7605F196E9319A19AA1E98ED1DE9BCB50587"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",

@@ -56,6 +56,9 @@ class ReleaseRoutingTests(unittest.TestCase):
         watchdog=(ROOT/"tests/r55_native_disposable_watchdog.ps1").read_text(encoding="utf-8")
         for token in ("R55_NATIVE_INDEPENDENT_WATCHDOG_ARMED",
                       "NATIVE_WATCHDOG_CLEANUP_UNVERIFIED",
+                      "R55_NATIVE_START_GATEWAY_ERROR",
+                      "R55_NATIVE_STOP_GATEWAY_ERROR",
+                      "R55_NATIVE_DIRECT_CLEANUP=",
                       "NATIVE_CONTROLLER_STILL_RUNNING_AFTER_175S",
                       "R55_NATIVE_STOP_TIMEOUT_65S",
                       "DISPOSABLE_NATIVE_LEFT_NETWORK_MUTATIONS",

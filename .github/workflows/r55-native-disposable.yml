@@ -107,7 +107,14 @@ jobs:
             if(!$startProc.HasExited){throw 'NATIVE_CONTROLLER_STILL_RUNNING_AFTER_175S'}
             # The watchdog now terminates without touching network state.
             $null=New-Item -ItemType File -Path $disarmed -ErrorAction Stop
-            if($startProc.ExitCode -ne 0 -or !(Test-Path $startPath)){throw ('R55_NATIVE_START_RESULT_FAILURE_RC_'+$startProc.ExitCode)}
+            if(!(Test-Path -LiteralPath $startPath)){throw ('R55_NATIVE_START_RECEIPT_MISSING_RC_'+$startProc.ExitCode)}
+            $startEvidence=Get-Content -LiteralPath $startPath -Raw|ConvertFrom-Json
+            if($startProc.ExitCode -ne 0 -or $startEvidence.exit -ne 0){
+              $code=[string]$startEvidence.result.error
+              if($code -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$code='GATEWAY_ERROR_UNCLASSIFIED'}
+              Write-Host ('R55_NATIVE_START_GATEWAY_ERROR='+$code)
+              throw ('R55_NATIVE_START_REJECTED_'+$code)
+            }
             if(Test-Path $watchReceipt){
               $wr=Get-Content $watchReceipt -Raw|ConvertFrom-Json
               if($wr.state -ne 'DISARMED'){throw ('NATIVE_WATCHDOG_TRIGGERED_'+$wr.state)}
@@ -167,9 +174,24 @@ jobs:
                   try{$stopProc.Kill($true);[void]$stopProc.WaitForExit(3000)}catch{}
                   throw 'R55_NATIVE_STOP_TIMEOUT_65S'
                 }
-                if($stopProc.ExitCode -ne 0 -or !(Test-Path $stopPath)){throw 'R55_NATIVE_STOP_FAILED'}
-                $stop=Get-Content $stopPath -Raw|ConvertFrom-Json
-                if($stop.exit -ne 0){throw ('R55_NATIVE_STOP_REJECTED_'+[string]$stop.result.error)}
+                $stop=$null
+                if(Test-Path -LiteralPath $stopPath){try{$stop=Get-Content $stopPath -Raw|ConvertFrom-Json}catch{}}
+                if($stopProc.ExitCode -ne 0 -or !$stop -or $stop.exit -ne 0){
+                  $code=if($stop){[string]$stop.result.error}else{'NO_CONTROLLER_STOP_RECEIPT'}
+                  if($code -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$code='GATEWAY_STOP_UNCLASSIFIED'}
+                  Write-Host ('R55_NATIVE_STOP_GATEWAY_ERROR='+$code)
+                  $direct=Join-Path $root 'gateway\stop_elevated.ps1'
+                  $directProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList @('-NoProfile','-NonInteractive','-File',('"'+$direct+'"')) -PassThru -WindowStyle Hidden
+                  if(!$directProc.WaitForExit(60000)){
+                    try{$directProc.Kill($true)}catch{}
+                    throw 'R55_NATIVE_DIRECT_CLEANUP_TIMEOUT'
+                  }
+                  $stopReceipt=Join-Path $root 'gateway\runtime\stop_result.json'
+                  $nativeStop=$null
+                  if(Test-Path $stopReceipt){try{$nativeStop=Get-Content $stopReceipt -Raw|ConvertFrom-Json}catch{}}
+                  Write-Host ('R55_NATIVE_DIRECT_CLEANUP='+$(if($directProc.ExitCode -eq 0 -and $nativeStop -and $nativeStop.status -eq 'PASS'){'PASS'}else{'UNVERIFIED'}))
+                  throw ('R55_NATIVE_STOP_CONTROLLER_REJECTED_'+$code)
+                }
               }else{
                 # The independent watchdog attempted direct stop_elevated.
                 # Never treat its timeout cleanup as successful Native acceptance.
