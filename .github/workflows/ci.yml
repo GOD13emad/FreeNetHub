@@ -40,6 +40,9 @@ jobs:
       - name: Native gateway verified Stop receipt and failed-start fail-closed regression
         shell: pwsh
         run: ./tests/test_gateway_verified_stop.ps1
+      - name: Serialize gateway mutations and reject abandoned owner lock
+        shell: pwsh
+        run: ./tests/test_gateway_mutation_mutex.ps1
       - name: Validate V481 exact-owner DNS firewall watchdog on isolated hosted Windows
         shell: pwsh
         run: ./tests/test_pc_dns_guard_watchdog_hosted.ps1
@@ -54,7 +57,7 @@ jobs:
       - name: Parse PowerShell sources
         shell: pwsh
         run: |
-          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1','windows/installer/Prepare-Upgrade.ps1','tests/test_prepare_upgrade_wait.ps1','tests/test_pc_dns_guard_failstart.ps1','tests/test_pc_dns_guard_firewall_profiles.ps1','tests/test_pc_dns_guard_identity.ps1','tests/test_pc_dns_guard_stop_identity.ps1','tests/test_pc_dns_guard_watchdog_hosted.ps1','tests/test_gateway_verified_stop.ps1')
+          $files=@('app/FreeNetHub.ps1','Install-Windows.ps1','Setup-WindowsDependencies.ps1','Uninstall-FreeNetHub.ps1','windows/installer/Prepare-Upgrade.ps1','tests/test_prepare_upgrade_wait.ps1','tests/test_pc_dns_guard_failstart.ps1','tests/test_pc_dns_guard_firewall_profiles.ps1','tests/test_pc_dns_guard_identity.ps1','tests/test_pc_dns_guard_stop_identity.ps1','tests/test_pc_dns_guard_watchdog_hosted.ps1','tests/test_gateway_verified_stop.ps1','tests/test_gateway_mutation_mutex.ps1')
           $files += Get-ChildItem gateway -Filter *.ps1 -File | ForEach-Object FullName
           foreach($f in $files){
             $t=$null;$e=$null

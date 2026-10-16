@@ -152,6 +152,27 @@ function Invoke-VerifiedNativeStop{
  catch{throw 'NATIVE_STOP_RECEIPT_UNREADABLE'}
  Assert ([string]$stopRecord.status -eq 'PASS' -and [string]$stopRecord.state -in @('STOPPED','NOT_OWNED')) 'NATIVE_STOP_UNVERIFIED'
 }
+# Serialize this gateway's mutating commands across independent PowerShell
+# launchers. An abandoned mutex means prior gateway state is unknown: fail closed.
+$script:GatewayMutationMutex=$null
+$script:GatewayMutationHeld=$false
+function Enter-GatewayMutationGuard{
+ $script:GatewayMutationMutex=[System.Threading.Mutex]::new($false,'Local\FreeNetHub_Gateway_Mutation_v1')
+ try{$script:GatewayMutationHeld=$script:GatewayMutationMutex.WaitOne(0)}
+ catch [System.Threading.AbandonedMutexException]{
+  $script:GatewayMutationHeld=$true
+  throw 'GATEWAY_MUTATION_LOCK_ABANDONED_REVIEW_REQUIRED'
+ }
+ Assert $script:GatewayMutationHeld 'GATEWAY_MUTATION_IN_PROGRESS'
+}
+function Exit-GatewayMutationGuard{
+ try{
+  if($script:GatewayMutationHeld){$script:GatewayMutationMutex.ReleaseMutex()}
+ }finally{
+  $script:GatewayMutationHeld=$false
+  if($script:GatewayMutationMutex){$script:GatewayMutationMutex.Dispose();$script:GatewayMutationMutex=$null}
+ }
+}
 function Cleanup-Failed([string]$mode,[bool]$providerStarted,[string]$provider='WARP'){
  if($mode -eq 'PC_TUNNEL'){
   Invoke-VerifiedNativeStop
@@ -165,6 +186,7 @@ New-Item -ItemType Directory -Path $Runtime -Force|Out-Null
 if($ResultPath){$full=[IO.Path]::GetFullPath($ResultPath);$jobs=[IO.Path]::GetFullPath((Join-Path $Root 'jobs'))+'\';if(!$full.StartsWith($jobs,[StringComparison]::OrdinalIgnoreCase)){throw 'RESULT_PATH_OUTSIDE_JOBS'};$ResultPath=$full}
 $out=[ordered]@{schema=1;action=$Action;utc=[DateTimeOffset]::UtcNow.ToString('o');exit=1;result=$null}
 try{
+ if($Action -ne 'Status'){Enter-GatewayMutationGuard}
  if($Action -eq 'Status'){$out.exit=0;$out.result=Get-Status}
  elseif($Action -eq 'Stop'){
   Require-Admin;$s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
@@ -264,6 +286,7 @@ try{
   }catch{Cleanup-Failed $mode $started $Provider;throw}
  }
 }catch{$out.exit=20;$out.result=[ordered]@{error=$_.Exception.Message;status=try{Get-Status}catch{$null}}}
+finally{Exit-GatewayMutationGuard}
 if($ResultPath){Write-J $ResultPath $out}
 $out|ConvertTo-Json -Depth 24
 exit $out.exit
