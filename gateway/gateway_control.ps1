@@ -139,9 +139,22 @@ function Get-Status{
  }
 }
 function Require-Admin{if(-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'ADMIN_REQUIRED'}}
+function Invoke-VerifiedNativeStop{
+ # Only the exact stop routine can confirm no unowned TUN/physical DNS53 guard.
+ # A fresh verified PASS receipt is required before provider or session cleanup.
+ $stopReceipt=Join-Path $Runtime 'stop_result.json'
+ Remove-Item -LiteralPath $stopReceipt -Force -ErrorAction SilentlyContinue
+ & pwsh.exe -NoLogo -NoProfile -NonInteractive -File $StopScript | Out-Null
+ $stopExit=$LASTEXITCODE
+ Assert ($stopExit -eq 0) 'NATIVE_STOP_NONZERO_EXIT'
+ Assert (Test-Path -LiteralPath $stopReceipt -PathType Leaf) 'NATIVE_STOP_RECEIPT_MISSING'
+ try{$stopRecord=Get-Content -LiteralPath $stopReceipt -Raw -Encoding UTF8|ConvertFrom-Json -ErrorAction Stop}
+ catch{throw 'NATIVE_STOP_RECEIPT_UNREADABLE'}
+ Assert ([string]$stopRecord.status -eq 'PASS' -and [string]$stopRecord.state -in @('STOPPED','NOT_OWNED')) 'NATIVE_STOP_UNVERIFIED'
+}
 function Cleanup-Failed([string]$mode,[bool]$providerStarted,[string]$provider='WARP'){
  if($mode -eq 'PC_TUNNEL'){
-  try{if((Test-Path $Owner) -or (Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name})){& $StopScript|Out-Null}}catch{}
+  Invoke-VerifiedNativeStop
   if($providerStarted){try{Run-Engine 'StopOne' $provider 60|Out-Null}catch{}}
  }else{
   try{[void](Run-WslConsole 'Stop')}catch{}
@@ -159,7 +172,7 @@ try{
   if(($s -and [string]$s.mode -eq 'CONSOLE_ONLY') -or ($ws -and $ws.exit -eq 0 -and [bool]$ws.record.result.running)){
    $stop=Run-WslConsole 'Stop';Assert ($stop.exit -eq 0) 'WSL_CONSOLE_STOP_FAIL'
   }
-  if((Test-Path $Owner) -or (Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name})){& $StopScript|Out-Null}
+  Invoke-VerifiedNativeStop
   if($s -and [string]$s.mode -eq 'PC_TUNNEL' -and -not [bool]$s.providerPreexisting){$sp=[string]$s.provider;if($sp -in @('WARP','NODE')){Run-Engine 'StopOne' $sp 60|Out-Null}}
   Remove-Item $Session -Force -ErrorAction SilentlyContinue;$out.exit=0;$out.result=Get-Status
  }
@@ -176,7 +189,7 @@ try{
 
  else{
   Require-Admin;$st=Get-Status;Assert (-not [bool]$st.running) 'GATEWAY_ALREADY_RUNNING'
-  if(Test-Path $Owner){Remove-Item $Owner -Force -ErrorAction SilentlyContinue}
+  Assert (-not (Test-Path -LiteralPath $Owner)) 'GATEWAY_OWNER_EVIDENCE_PRESENT_REFUSE_START'
   $mode=if($Action -eq 'StartPc'){'PC_TUNNEL'}else{'CONSOLE_ONLY'};$started=$false;$preexisting=$false
   try{
    if($mode -eq 'CONSOLE_ONLY'){
