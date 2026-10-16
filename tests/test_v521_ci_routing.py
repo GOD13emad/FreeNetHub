@@ -72,5 +72,22 @@ class ReleaseRoutingTests(unittest.TestCase):
             with self.subTest(token=token): self.assertIn(token,watchdog)
         self.assertNotIn("R55_DISPOSABLE_NATIVE_START_STOP_PASS",watchdog)
 
+    def test_native_dns53_disposable_lifecycle_is_fail_closed(self):
+        wf=(ROOT/".github/workflows/r55-native-dns53-disposable.yml").read_text(encoding="utf-8")
+        for marker in ("candidate/r55-v519-private-review",
+                       "python tests/verify_release_line.py --expected R55",
+                       "--dns-mode native",
+                       "FreeNetHub-PC-DNS53-Guard-UDP-Wired",
+                       "FreeNetHub-PC-DNS53-Guard-TCP-Wired",
+                       "FreeNetHub-PC-DNS53-Guard-UDP-Wireless",
+                       "FreeNetHub-PC-DNS53-Guard-TCP-Wireless",
+                       "GUARD_OWNER_IDENTITY_UNVERIFIED",
+                       "NATIVE_DNS53_RESIDUAL_NETWORK_MUTATION",
+                       "NATIVE_DNS53_ROUTE_NOT_RESTORED",
+                       "NATIVE_DNS53_STOP_NOT_PASS",
+                       "R55_NATIVE_DNS53_GUARD_AND_STOP_PASS"):
+            with self.subTest(marker=marker): self.assertIn(marker,wf)
+        self.assertNotIn("PHYSICAL_WIFI_UDP53_PASS",wf)
+
 if __name__=="__main__":
     unittest.main(verbosity=2)

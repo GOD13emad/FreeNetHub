@@ -24,6 +24,11 @@
       "sha256": "BE2141FFE8002754987D66D67A28088741BD7FAE9E88BEA5E832A1FEDB5EB52F"
     },
     {
+      "file": ".github/workflows/r55-native-dns53-disposable.yml",
+      "bytes": 9995,
+      "sha256": "2B78F04C56113F1929C23D70B6C0890943962828CE9330D46DB03E120F19A612"
+    },
+    {
       "file": ".github/workflows/r55-private-acceptance.yml",
       "bytes": 16576,
       "sha256": "E8AE064D45C7DF40AD7FDA78BE9DB101C555B4A81D246B6E4C93F1688EE5CCDC"
@@ -2665,8 +2670,8 @@
     },
     {
       "file": "tests/test_v521_ci_routing.py",
-      "bytes": 4222,
-      "sha256": "9BF97E5579F01E50ADC386627B8C7605F196E9319A19AA1E98ED1DE9BCB50587"
+      "bytes": 5250,
+      "sha256": "651969A8E492F12504358336AA97C4E42AA601032E8FA4BFBBA020B9DDC3FF36"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",
