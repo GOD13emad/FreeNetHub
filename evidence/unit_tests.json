@@ -1,9 +1,9 @@
 {
-  "utc": "2026-09-29T19:23:08.398569+00:00",
-  "tests": 120,
+  "utc": "2026-10-16T13:53:47.684832+00:00",
+  "tests": 134,
   "failures": 0,
   "errors": 0,
-  "skipped": 0,
+  "skipped": 1,
   "scope": "Unit validation, ownership and bounded native child; no product tunnel start",
   "success": true
 }

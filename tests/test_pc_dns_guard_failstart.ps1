@@ -14,7 +14,9 @@ $exact=$text.Substring($start,$end-$start)
 if($exact.Split('AddSeconds(15)').Count -ne 2){throw 'FAILSTART_15_SECOND_DEADLINE_CHANGED'}
 if($exact -notmatch 'APPLY_FAILED_TUN_LINGERED_DNS_RULES_RETAINED'){throw 'FAILSTART_RETENTION_MARKER_MISSING'}
 if($exact -notmatch 'Get-NetAdapter -IncludeHidden -ErrorAction Stop'){throw 'FAILSTART_REQUIRES_TERMINATING_ADAPTER_QUERY'}
-if($exact -notmatch 'Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop'){throw 'FAILSTART_REQUIRES_TERMINATING_FIREWALL_QUERY'}
+$targetedFirewallRead="Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop"
+if(!$exact.Contains($targetedFirewallRead)){throw 'FAILSTART_REQUIRES_TERMINATING_SCOPED_FIREWALL_QUERY'}
+if($exact.Contains('Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop')){throw 'FAILSTART_BROAD_FIREWALL_ENUMERATION_REGRESSION'}
 $testCode=[ScriptBlock]::Create($exact.Replace('AddSeconds(15)','AddMilliseconds(45)'))
 $script:rules=$null
 $script:virtualTunPresent=$false
@@ -30,7 +32,10 @@ function Get-NetAdapter {
 function Get-NetFirewallRule {
  param([string]$Name,[string]$PolicyStore,[string]$ErrorAction)
  if($script:firewallReadError){throw 'SIMULATED_FIREWALL_QUERY_FAILURE'}
- foreach($n in $script:rules){if(!$Name -or $n -eq $Name){[pscustomobject]@{Name=$n}}}
+ # Model Windows NetSecurity's -Name wildcard matching against only the
+ # owned DNS guard identity prefix; inaccessible stores throw above.
+ if($Name -ne 'FreeNetHub-PC-DNS53-Guard-*'){throw 'MOCK_QUERY_NOT_SCOPED'}
+ foreach($n in $script:rules){if($n -like $Name){[pscustomobject]@{Name=$n}}}
 }
 function Remove-NetFirewallRule {
  param([string]$Name,[string]$PolicyStore,[string]$ErrorAction)

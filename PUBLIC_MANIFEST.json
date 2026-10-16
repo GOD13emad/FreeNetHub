@@ -1186,7 +1186,7 @@
     {
       "file": "evidence/unit_tests.json",
       "bytes": 221,
-      "sha256": "4229B16D600B7F8FBD30EBCDED3FA7C90FF8A35FF4CB7D952666E0C476772F1A"
+      "sha256": "0604908E20F665F132E3D292DDA4BFFF27C50A7745E56A1DF5C5B82F482B66C4"
     },
     {
       "file": "evidence/V430_SUPERSEDED_RELEASE_ARCHIVE_20261004.json",
@@ -1790,8 +1790,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 242079,
-      "sha256": "ABA42304CA1A546D3FA33362D661C0CEBD5F2B8505DA08E1870C05F020089C26"
+      "bytes": 243048,
+      "sha256": "FEC1899655DD3F6E1CFDEBEDF53C95BEA0877B617FAD0F4ABE2EB9F4F80B86B1"
     },
     {
       "file": "pytest.ini",
@@ -2540,8 +2540,8 @@
     },
     {
       "file": "tests/test_pc_dns_guard_failstart.ps1",
-      "bytes": 8127,
-      "sha256": "61F7284C643EF1A544DE16A7B914DC85C0CB434115BC1C41CD349DD56F053961"
+      "bytes": 8566,
+      "sha256": "EDA99AF4DE8C4ACDACC38D4C05D5BB3D64B06791D8805D91C2A328E2D532D85A"
     },
     {
       "file": "tests/test_pc_dns_guard_final_stop.ps1",
