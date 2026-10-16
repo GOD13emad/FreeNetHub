@@ -58,3 +58,6 @@ try{
  Exit-GatewayMutationGuard
  Remove-Item -LiteralPath $td -Recurse -Force -ErrorAction SilentlyContinue
 }
+
+# Do not let the intentional child-process exit 19 poison the CI task exit.
+exit 0

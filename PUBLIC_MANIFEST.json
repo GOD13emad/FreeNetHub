@@ -1790,8 +1790,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 229445,
-      "sha256": "8B18E2F6110CC1241982B562A3A546EA7DC36EE11E558DD320F446F1A482E47E"
+      "bytes": 230023,
+      "sha256": "5E8C39394E811E69960DE98079C13A7CDAD5139A91CAF728D0F9511F156CACDD"
     },
     {
       "file": "pytest.ini",
@@ -2490,8 +2490,8 @@
     },
     {
       "file": "tests/test_gateway_mutation_mutex.ps1",
-      "bytes": 3037,
-      "sha256": "4079E9A0B99D064217F8F940851C798F49DD922FA67BE9983FE3CBD844F788E3"
+      "bytes": 3121,
+      "sha256": "685621193D7CDC7B094AF988489FE5F568A2D337234E88CAF8A38BDA4914A6FC"
     },
     {
       "file": "tests/test_gateway_verified_stop.ps1",
