@@ -1740,8 +1740,8 @@
     },
     {
       "file": "gateway/tests/static_gateway_check.ps1",
-      "bytes": 707,
-      "sha256": "DB01CB201DE99D5363538D589B9356FF86CC19E6914A5DFEC9738820BC33E098"
+      "bytes": 1316,
+      "sha256": "06F15A9D0E4AD7BE30CEBB7AA920F6373901EA05D61D539B2C2F8A5DDC126D89"
     },
     {
       "file": "gateway/tests/test_gateway.py",
