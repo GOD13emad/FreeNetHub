@@ -380,7 +380,12 @@ jobs:
           )"
           test -n "$UDID"
           xcrun simctl boot "$UDID" 2>/dev/null || true
-          xcrun simctl bootstatus "$UDID" -b
+          # Bound cold-boot hangs on hosted macOS; never silently pass a missing simulator.
+          if ! perl -e 'alarm 720; exec @ARGV' xcrun simctl bootstatus "$UDID" -b; then
+            echo 'SIMULATOR_BOOT_TIMEOUT_OR_FAILURE' >&2
+            xcrun simctl list devices booted || true
+            exit 1
+          fi
           APP=build/Build/Products/Debug-iphonesimulator/FreeNetHub.app
           xcrun simctl install "$UDID" "$APP"
           xcrun simctl launch "$UDID" com.freenethub.app | tee /tmp/fnh-ios-launch.txt

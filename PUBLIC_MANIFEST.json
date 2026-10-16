@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 36256,
-      "sha256": "9D2BC1088E618B71C8014478397E02260430A67750FE02D1FA3A5898B217B4FA"
+      "bytes": 36533,
+      "sha256": "D43F3D41CBE63F90D9EDDB5332C9E306B53606B8AA31269738040C462E662AE7"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -20,8 +20,8 @@
     },
     {
       "file": ".github/workflows/r55-private-acceptance.yml",
-      "bytes": 14073,
-      "sha256": "2A24DA1C885C4A481E47BA5575923AA4A8D298D029C3EAF216C6589B9C99DD1D"
+      "bytes": 16576,
+      "sha256": "E8AE064D45C7DF40AD7FDA78BE9DB101C555B4A81D246B6E4C93F1688EE5CCDC"
     },
     {
       "file": ".github/workflows/v465-private-gateway-review.yml",
@@ -2655,8 +2655,8 @@
     },
     {
       "file": "tests/test_v521_ci_routing.py",
-      "bytes": 2544,
-      "sha256": "FBAC205D1017BCFA684801285D684F9DF5D60FE79ABB183C4F85C16905D07F56"
+      "bytes": 2945,
+      "sha256": "D3FD11794C46FDC72ECF4B361E764D98DE5DF0D0DA33C1097167078EBE225CD1"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",

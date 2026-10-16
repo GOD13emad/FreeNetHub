@@ -170,6 +170,7 @@ jobs:
           $probe=Join-Path $env:RUNNER_TEMP 'fnh-r55-private-upgrade'
           $old=Join-Path $env:RUNNER_TEMP 'fnh-r54-v508-sha-pinned.exe'
           $new=(Resolve-Path 'delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_V519_PRIVATE_REVIEW_DO_NOT_RELEASE.exe').Path
+          $testedSha=(Get-FileHash $new -Algorithm SHA256).Hash
           $data=Join-Path $probe 'data\r55-canary.json'
           $profile=Join-Path $probe 'r55-profile-canary.json'
           $dataSha=(Get-FileHash $data -Algorithm SHA256).Hash
@@ -195,7 +196,30 @@ jobs:
           if(!(Test-Path $data) -or (Get-FileHash $data -Algorithm SHA256).Hash -ne $dataSha){throw 'R54_ROLLBACK_DATA_MISSING'}
           if(!(Test-Path $profile) -or (Get-FileHash $profile -Algorithm SHA256).Hash -ne $profileSha){throw 'R54_ROLLBACK_PROFILE_MISSING'}
           if(@(Get-NetAdapter -Name FreeNetHub -IncludeHidden -ErrorAction SilentlyContinue).Count){throw 'R54_ROLLBACK_LEFT_ACTIVE_TUN'}
-          $receipt=[ordered]@{status='R54_V508_TO_R55_V519_TO_R54_PASS';oldSHA256='13534B9FCC9186361D43BE3AB6423D9D1D8A80547084F75CA56166BD89293CA9';r55SHA256=(Get-FileHash $new -Algorithm SHA256).Hash;dataPreserved=$true;profilePreserved=$true;publicRelease=$false}
+          # A single exact R55 exe must pass both real upgrade/rollback and fresh install.
+          # The earlier R54 uninstaller removes this disposable runner's old AppId
+          # registration; never invoke it on the owner's installed system.
+          $uninstaller=Join-Path $probe 'unins000.exe'
+          if(!(Test-Path -LiteralPath $uninstaller)){throw 'R54_ROLLBACK_UNINSTALLER_MISSING'}
+          $un=Start-Process -FilePath $uninstaller -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -Wait -PassThru
+          if($un.ExitCode -ne 0){throw ('R54_DISPOSABLE_UNINSTALL_RC_'+$un.ExitCode)}
+          $registration='HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{BCE83A4E-8897-4D52-A650-BB67A2BB8142}_is1'
+          if(Test-Path -LiteralPath $registration){throw 'R54_UNINSTALL_LEFT_APPID_REGISTRATION'}
+          $fresh=Join-Path $env:RUNNER_TEMP 'fnh-r55-same-exe-fresh-after-rollback'
+          if(Test-Path -LiteralPath $fresh){throw 'R55_SAME_BINARY_FRESH_ROOT_PREEXISTS'}
+          if((Get-FileHash $new -Algorithm SHA256).Hash -ne $testedSha){throw 'R55_EXACT_BINARY_CHANGED_AFTER_ROLLBACK'}
+          $freshProc=Start-Process -FilePath $new -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',('/DIR='+$fresh)) -Wait -PassThru
+          if($freshProc.ExitCode -ne 0){throw ('R55_SAME_BINARY_FRESH_INSTALL_RC_'+$freshProc.ExitCode)}
+          $freshRelease=Get-Content (Join-Path $fresh 'RELEASE.json') -Raw|ConvertFrom-Json
+          if($freshRelease.releaseRevision -ne '4.3.11-r55-native-status-review'){throw 'R55_SAME_BINARY_FRESH_REVISION_MISMATCH'}
+          $freshGateway=Get-Content (Join-Path $fresh 'gateway\manifest.json') -Raw|ConvertFrom-Json
+          if(@($freshGateway.files).Count -ne 18 -or $freshRelease.gatewayManifestSha256 -ne (Get-FileHash (Join-Path $fresh 'gateway\manifest.json') -Algorithm SHA256).Hash){throw 'R55_SAME_BINARY_FRESH_MANIFEST_BAD'}
+          foreach($entry in $freshGateway.files){
+            $file=Join-Path (Join-Path $fresh 'gateway') ([string]$entry.file)
+            if(!(Test-Path -LiteralPath $file) -or (Get-FileHash $file -Algorithm SHA256).Hash -ne [string]$entry.sha256){throw ('R55_SAME_BINARY_FRESH_FILE_BAD_'+$entry.file)}
+          }
+          if(@(Get-NetAdapter -Name FreeNetHub -IncludeHidden -ErrorAction SilentlyContinue).Count){throw 'R55_SAME_BINARY_FRESH_LEFT_ACTIVE_TUN'}
+          $receipt=[ordered]@{status='R55_EXACT_SAME_BINARY_UPGRADE_ROLLBACK_FRESH_PASS';oldSHA256='13534B9FCC9186361D43BE3AB6423D9D1D8A80547084F75CA56166BD89293CA9';r55SHA256=$testedSha;dataPreserved=$true;profilePreserved=$true;sameBinaryFreshInstall=$true;freshGatewayFilesVerified=18;publicRelease=$false}
           $receipt|ConvertTo-Json -Depth 4|Set-Content (Join-Path $env:RUNNER_TEMP 'fnh-r55-v519-upgrade-receipt.json') -Encoding utf8
           Write-Host 'R54_TO_R55_TO_R54_UPGRADE_ROLLBACK_PASS'
       - name: Upload only a tiny upgrade receipt
