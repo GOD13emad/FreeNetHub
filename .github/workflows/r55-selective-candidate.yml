@@ -1,0 +1,131 @@
+name: R55 selective Windows isolated candidate acceptance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/r55-selective-candidate.yml'
+      - 'tests/prepare_r55_selective_candidate.py'
+      - 'tests/test_windows_r55_isolated.ps1'
+      - 'app/engine.py'
+      - 'app/selective_route_windows.py'
+      - 'app/selective_http_bridge.py'
+      - 'app/FreeNetHub.ps1'
+      - 'app/View.xaml'
+      - 'app/manifest.json'
+      - 'windows/installer/FreeNetHub.iss'
+      - 'windows/installer/Prepare-SelectiveUpgrade.ps1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-disposable-r55:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+
+      - name: Verify exact source identity, public baseline and private material
+        shell: pwsh
+        run: |
+          $expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          if ((git rev-parse HEAD) -ne $expected){throw 'R55_SOURCE_CHECKOUT_SHA_MISMATCH'}
+          if ((Get-FileHash windows/installer/Prepare-Upgrade.ps1 -Algorithm SHA256).Hash -ne '98BD0A564EA8055960D3A5B6C8CB3B5737DA391D88846F7562621B8E8DC1656C'){throw 'R55_V458_HELPER_NOT_PINNED'}
+          python tests/verify_public_tree.py
+          if($LASTEXITCODE){throw 'R55_PUBLIC_PRESTATE_BAD'}
+          python tests/security_scan_public.py
+          if($LASTEXITCODE){throw 'R55_PRIVATE_DATA_PRESTATE_BAD'}
+          python tests/test_r53_release_identity.py
+          if($LASTEXITCODE){throw 'R55_PUBLIC_R53_REVISION_MUTATED'}
+
+      - name: Windows HTTP CONNECT bridge, domain policy and native pre-upgrade tests
+        shell: pwsh
+        run: |
+          python tests/test_windows_selective_routing.py
+          if($LASTEXITCODE){throw 'R55_PROXY_POLICY_TESTS_FAILED'}
+          python tests/test_windows_selective_http_bridge.py
+          if($LASTEXITCODE){throw 'R55_CONNECT_BRIDGE_TESTS_FAILED'}
+          python tests/test_windows_selective_integration.py
+          if($LASTEXITCODE){throw 'R55_UI_ENGINE_INTEGRATION_TESTS_FAILED'}
+          ./tests/test_prepare_selective_upgrade.ps1
+          if($LASTEXITCODE){throw 'R55_PREUPGRADE_GUARD_TESTS_FAILED'}
+          $tokens=$null;$errors=$null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path tests/test_windows_r55_isolated.ps1),[ref]$tokens,[ref]$errors)|Out-Null
+          if(@($errors).Count){throw 'R55_ACCEPTANCE_SCRIPT_POWERSHELL_PARSE_FAILED'}
+
+      - name: Ensure Inno Setup compiler
+        shell: pwsh
+        run: |
+          $candidates=@(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
+            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+          )
+          $iscc=$candidates|Where-Object{$_ -and (Test-Path -LiteralPath $_)}|Select-Object -First 1
+          if(-not $iscc){
+            choco install innosetup --no-progress -y
+            $iscc=$candidates|Where-Object{$_ -and (Test-Path -LiteralPath $_)}|Select-Object -First 1
+          }
+          if(-not $iscc){throw 'R55_ISCC_UNAVAILABLE'}
+
+      - name: Prepare isolated versioned 4.3.11 R55 source without touching public R53
+        shell: pwsh
+        run: |
+          $expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          $stage=Join-Path $env:RUNNER_TEMP 'fnh-r55-selective-stage'
+          python tests/prepare_r55_selective_candidate.py --source-sha $expected --stage $stage
+          if($LASTEXITCODE){throw 'R55_ISOLATED_STAGE_FAILED'}
+          $receipt=Get-Content (Join-Path $stage 'R55_ISOLATED_BUILD_SOURCE.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+          if($receipt.sourceSHA -ne $expected -or $receipt.version -ne '4.3.11' -or $receipt.status -ne 'ISOLATED_SOURCE_CANDIDATE'){throw 'R55_STAGE_IDENTITY_FAILED'}
+          if((Get-Content (Join-Path $stage 'RELEASE.json') -Raw -Encoding UTF8 | ConvertFrom-Json).releaseRevision -ne '4.3.11-r55-selective-domain-routing'){throw 'R55_STAGE_REVISION_WRONG'}
+
+      - name: Compile one distinct candidate binary, no public release
+        shell: pwsh
+        run: |
+          $candidates=@(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
+            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+          )
+          $iscc=$candidates|Where-Object{$_ -and (Test-Path -LiteralPath $_)}|Select-Object -First 1
+          if(-not $iscc){throw 'R55_COMPILER_UNAVAILABLE'}
+          $stage=Join-Path $env:RUNNER_TEMP 'fnh-r55-selective-stage'
+          $iss=Join-Path $stage 'windows\installer\FreeNetHub.iss'
+          $exe=Join-Path $stage 'delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_SELECTIVE_Setup.exe'
+          if(Test-Path $exe){throw 'R55_EXE_ALREADY_EXISTS'}
+          & $iscc /Qp $iss
+          if($LASTEXITCODE -ne 0 -or -not (Test-Path $exe)){throw 'R55_INNO_COMPILATION_FAILED'}
+          $digest=(Get-FileHash $exe -Algorithm SHA256).Hash
+          if((Get-Item $exe).Length -lt 150000){throw 'R55_EXE_TOO_SMALL'}
+          Write-Host ('R55_ISOLATED_UNSIGNED_CANDIDATE_SHA256='+$digest)
+
+      - name: Test exact R55 binary fresh installation, UI, R53 upgrade and rollback
+        shell: pwsh
+        run: |
+          $stage=Join-Path $env:RUNNER_TEMP 'fnh-r55-selective-stage'
+          $expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          ./tests/test_windows_r55_isolated.ps1 -StageRoot $stage -ExpectedSourceSha $expected
+          if($LASTEXITCODE){throw 'R55_ACCEPTANCE_SCRIPT_NONZERO'}
+          $receipt=Get-Content (Join-Path $env:RUNNER_TEMP 'R55_TESTED_RECEIPT.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+          if($receipt.status -ne 'CI_SOURCE_AND_DISPOSABLE_INSTALL_ACCEPTED_NOT_RELEASED' -or $receipt.sourceSHA -ne $expected -or $receipt.systemProxyUnchanged -ne $true){throw 'R55_ACCEPTANCE_RECEIPT_INVALID'}
+          Write-Host ('R55_CI_EXACT_TESTED_BINARY_SHA256='+$receipt.r55InstallerSha256)
+
+      - name: Archive proof records only, never unaccepted binary
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: r55-disposable-source-and-test-proof
+          path: |
+            ${{ runner.temp }}/fnh-r55-selective-stage/R55_ISOLATED_BUILD_SOURCE.json
+            ${{ runner.temp }}/R55_TESTED_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 30

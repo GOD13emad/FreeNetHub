@@ -19,6 +19,11 @@
       "sha256": "D934F9A83BE1484372B0F8F41D164A61E9E532F7CF10F3C15C721DC8FDD8C958"
     },
     {
+      "file": ".github/workflows/r55-selective-candidate.yml",
+      "bytes": 7028,
+      "sha256": "0744E0C327401630B304ED5FCC4EDD6D160877FE47B9682D7968B70C5E88E3F7"
+    },
+    {
       "file": ".github/workflows/v465-private-gateway-review.yml",
       "bytes": 3661,
       "sha256": "D2DE3D53D17E7DF4B5BDE9FE677C35F0CE91356D0306B1F9DDEE57787BBE53FC"
@@ -1810,8 +1815,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 210464,
-      "sha256": "E2726CC8A6B15AFFA5DF6189B3BF27AE1040430597200835269D6E06EF4B433F"
+      "bytes": 211435,
+      "sha256": "19090357C670BA3EB5BC9BDF9CFE1F0C22BB5BE4D452B6609FC163A24047875F"
     },
     {
       "file": "pytest.ini",
@@ -2152,6 +2157,11 @@
       "file": "tests/prepare_r54_isolated.py",
       "bytes": 5356,
       "sha256": "2581BA064F8929668C4252B5812FEC54A95E9379EF04C9188D6EAFEFBB9F4992"
+    },
+    {
+      "file": "tests/prepare_r55_selective_candidate.py",
+      "bytes": 8483,
+      "sha256": "96378331ACB2B4FEFB35FC1E0E76727A536B0720531BC921D4A3FE23FD8D7134"
     },
     {
       "file": "tests/prepare_v465_gateway_review.py",
@@ -2672,6 +2682,11 @@
       "file": "tests/test_v462_mixed_release_update.py",
       "bytes": 2581,
       "sha256": "2DB19477918BCED1FA83315C793E7CA274167BC4AC60A34CFC2C69F505ECD580"
+    },
+    {
+      "file": "tests/test_windows_r55_isolated.ps1",
+      "bytes": 8257,
+      "sha256": "F6752FCB687638674EFB6A34D662D1AF9C701EC963772E47F6E03746679B3232"
     },
     {
       "file": "tests/test_windows_selective_http_bridge.py",
