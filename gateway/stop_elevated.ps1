@@ -83,6 +83,20 @@ if(!$o){
   $orphan=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object{$_.Name -eq 'FreeNetHub'})
  }catch{Fail 'UNOWNED_TUN_QUERY_UNVERIFIED'}
  if($orphan.Count){Fail 'UNOWNED_TUN_PRESENT_REFUSE_FALSE_CLEAN_STOP'}
+ # A missing owner receipt cannot justify reporting a clean stop while
+ # exact FreeNetHub DNS guards still exist or ActiveStore is unreadable.
+ # Do not delete these rules: their generation cannot be safely attributed
+ # to the missing owner from a stale apply_result.json.
+ $guardNames=@(
+  'FreeNetHub-PC-DNS53-Guard-UDP','FreeNetHub-PC-DNS53-Guard-TCP',
+  'FreeNetHub-PC-DNS53-Guard-UDP-Wired','FreeNetHub-PC-DNS53-Guard-TCP-Wired',
+  'FreeNetHub-PC-DNS53-Guard-UDP-Wireless','FreeNetHub-PC-DNS53-Guard-TCP-Wireless'
+ )
+ try{$activeRules=@(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)}
+ catch{Fail 'UNOWNED_DNS_GUARD_QUERY_UNVERIFIED'}
+ if(@($activeRules|Where-Object{$_.Name -in $guardNames}).Count){
+  Fail 'UNOWNED_DNS_GUARD_PRESENT_REFUSE_FALSE_CLEAN_STOP'
+ }
  Out-J $Result ([ordered]@{status='PASS';state='NOT_OWNED';utc=[DateTimeOffset]::UtcNow.ToString('o')})
  exit 0
 }

@@ -154,3 +154,41 @@ Check-Guard 'readError' 'PC_DNS_GUARD_STORE_UNREADABLE' 5 'STOP_DNS_GUARD_QUERY_
 Check-Guard 'readbackError' 'PC_DNS_GUARD_STORE_UNREADABLE' 4 'STOP_DNS_GUARD_RACE_READBACK_ERROR'
 Check-Guard 'finalReadError' 'PC_DNS_GUARD_STORE_UNREADABLE' 1 'STOP_DNS_GUARD_FINAL_READ_ERROR_FAIL_CLOSED'
 'STOP_DNS_GUARD_EXACT_SOURCE_MOCK_ALL_PASS'
+
+
+# Re-run the exact ownerless stop branch with in-memory adapter and ActiveStore
+# mocks. A stranded DNS53 block must be reported FAIL, not NOT_OWNED/PASS.
+$script:adapterSteps=@('absent')
+$script:adapterStep=0
+$script:guardScenario='normal'
+$script:firewallRules=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+[void]$script:firewallRules.Add('FreeNetHub-PC-DNS53-Guard-UDP-Wired')
+$got=''
+try{. $recover}catch{$got=$_.Exception.Message}
+if($got -ne 'UNOWNED_DNS_GUARD_PRESENT_REFUSE_FALSE_CLEAN_STOP'){throw ('STOP_ORPHAN_GUARD_UNEXPECTED_'+$got)}
+'STOP_OWNERLESS_TUN_ABSENT_DNS_GUARD_PRESENT_FAIL_CLOSED_PASS'
+$script:adapterSteps=@('absent')
+$script:adapterStep=0
+$script:guardScenario='readError'
+$got=''
+try{. $recover}catch{$got=$_.Exception.Message}
+if($got -ne 'UNOWNED_DNS_GUARD_QUERY_UNVERIFIED'){throw ('STOP_ORPHAN_GUARD_QUERY_UNEXPECTED_'+$got)}
+'STOP_OWNERLESS_TUN_ABSENT_FIREWALL_QUERY_FAIL_CLOSED_PASS'
+$script:adapterSteps=@('absent')
+$script:adapterStep=0
+$script:guardScenario='normal'
+$script:firewallRules=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+[void]$script:firewallRules.Add('Unrelated-Rule-Never-Delete')
+# Only in the mock, replace the terminating exit with a sentinel; the
+# owner's original source remains unchanged and exact decision branches run.
+$recoverSource=$txt.Substring($recoverStart,$recoverEnd-$recoverStart)
+if($recoverSource.Split('exit 0').Count -ne 2){throw 'RECOVERY_EXIT_CONTRACT_CHANGED'}
+$positiveRecover=[ScriptBlock]::Create($recoverSource.Replace('exit 0',"'SAFE_CLEAN_STOP'"))
+function Out-J{param($p,$x);$script:mockCleanReceipt=$x}
+$Result='X:\source-mock\stop_result.json'
+$script:mockCleanReceipt=$null
+$testOutput=@(& $positiveRecover)
+if($testOutput -notcontains 'SAFE_CLEAN_STOP' -or $script:mockCleanReceipt.status -ne 'PASS' -or $script:mockCleanReceipt.state -ne 'NOT_OWNED'){throw 'STOP_OWNERLESS_CLEAN_ABSENCE_NOT_RECOGNIZED'}
+if(!$script:firewallRules.Contains('Unrelated-Rule-Never-Delete')){throw 'STOP_OWNERLESS_UNRELATED_RULE_MUTATED'}
+'STOP_OWNERLESS_TUN_AND_GUARD_BOTH_ABSENT_PASS'
+'STOP_OWNERLESS_GUARD_STATE_SOURCE_MOCK_ALL_PASS'

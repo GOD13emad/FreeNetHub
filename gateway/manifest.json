@@ -51,8 +51,8 @@
     },
     {
       "file": "stop_elevated.ps1",
-      "bytes": 9328,
-      "sha256": "F488D36D871938B60453B16F05C57E36BC66D9481E7A32326E5EDAC47FE3BF5D"
+      "bytes": 10115,
+      "sha256": "60627B10B6F2ADE154E65E1DF16A70F8B658F5C2C73272BA47BB2790BDCE3E93"
     },
     {
       "file": "dns_guard_watchdog.ps1",
