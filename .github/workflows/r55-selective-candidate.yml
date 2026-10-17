@@ -129,3 +129,39 @@ jobs:
             ${{ runner.temp }}/R55_TESTED_RECEIPT.json
           if-no-files-found: error
           retention-days: 30
+
+      - name: Seal exactly CI-tested unsigned R55 installer and receipts
+        shell: pwsh
+        run: |
+          $expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          $stage=Join-Path $env:RUNNER_TEMP 'fnh-r55-selective-stage'
+          $binary=Join-Path $stage 'delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_SELECTIVE_Setup.exe'
+          $tested=Join-Path $env:RUNNER_TEMP 'R55_TESTED_RECEIPT.json'
+          $prepared=Join-Path $stage 'R55_ISOLATED_BUILD_SOURCE.json'
+          if(!(Test-Path -LiteralPath $binary) -or !(Test-Path -LiteralPath $tested) -or !(Test-Path -LiteralPath $prepared)){throw 'R55_TESTED_BINARY_OR_RECEIPT_MISSING'}
+          $r=Get-Content -LiteralPath $tested -Raw -Encoding UTF8|ConvertFrom-Json
+          $src=Get-Content -LiteralPath $prepared -Raw -Encoding UTF8|ConvertFrom-Json
+          if($r.status -ne 'CI_SOURCE_AND_DISPOSABLE_INSTALL_ACCEPTED_NOT_RELEASED' -or $r.sourceSHA -ne $expected -or $src.sourceSHA -ne $expected -or $src.installerBoundCodeHashes -ne 'PASS'){throw 'R55_EXACT_SOURCE_RECEIPT_UNVERIFIED'}
+          if($r.freshUiLaunch -ne 'PASS' -or $r.versionedUpgrade -ne 'PASS' -or $r.exactRollback -ne 'PASS' -or $r.systemProxyUnchanged -ne $true -or $r.noAutoListener -ne $true){throw 'R55_ACCEPTANCE_INCOMPLETE'}
+          $sha=(Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash
+          if($sha -ne $r.r55InstallerSha256 -or (Get-Item $binary).Length -ne $r.r55InstallerBytes){throw 'R55_EXACT_TESTED_BINARY_MISMATCH'}
+          $out=Join-Path $env:RUNNER_TEMP 'fnh-r55-exact-tested-preview'
+          if(Test-Path $out){throw 'R55_PREVIEW_DIRECTORY_PREEXISTS'}
+          New-Item -ItemType Directory -Path $out|Out-Null
+          $name='FreeNetHub_4.3.11_R55_SELECTIVE_Setup.exe'
+          $target=Join-Path $out $name
+          Copy-Item -LiteralPath $binary -Destination $target -ErrorAction Stop
+          if((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $sha){throw 'R55_POST_COPY_SHA_CHANGED'}
+          Copy-Item -LiteralPath $tested -Destination (Join-Path $out 'R55_TESTED_RECEIPT.json')
+          Copy-Item -LiteralPath $prepared -Destination (Join-Path $out 'R55_ISOLATED_BUILD_SOURCE.json')
+          [IO.File]::WriteAllText((Join-Path $out 'SHA256SUMS.txt'),($sha.ToLowerInvariant()+'  '+$name+[Environment]::NewLine),[Text.UTF8Encoding]::new($false))
+          Write-Host ('R55_UNSIGNED_EXACT_TESTED_PREVIEW_SHA256='+$sha)
+
+      - name: Archive exact tested R55 unsigned installer for later controlled owner acceptance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: FreeNetHub_4.3.11_R55_SELECTIVE_CI_TESTED_UNSIGNED
+          path: |
+            ${{ runner.temp }}/fnh-r55-exact-tested-preview/*
+          if-no-files-found: error
+          retention-days: 30
