@@ -85,6 +85,15 @@
       "conclusion": "success",
       "totalJobs": 10,
       "jobsPassed": 10
+    },
+    "R25VirtualGtkVisualSourceCI": {
+      "sha": "a027ffdbfd82a0a3cbe7c8b1f36cfdfd955f9f66",
+      "run": 39066167737,
+      "status": "completed",
+      "conclusion": "success",
+      "jobsPassed": 10,
+      "jobsTotal": 10,
+      "attempt": 1
     }
   },
   "ownerWindows": {
@@ -330,9 +339,9 @@
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "MMZ local CFON bootstrap fails; R25 firstparty real headless Firefox and mapped virtual Broadway GTK Methods/Settings PASS; owner interactive GUI/PAC screenshot and Google login remain OPEN"
+    "MMZ local CFON bootstrap fails; R25 Methods/Tailnet and Settings visual GTK Broadway screenshots PASS; real owner interactive GUI, PAC user validation and authenticated Google login remain OPEN"
   ],
-  "status": "WINDOWS_R57_MMZ_LINUX_R25_NATIVE_VIRTUAL_GTK_NAV_AND_ALL_ROLLBACK_CI_10_OF_10_PASS__EMAD_R21_CFON_STABLE__OWNER_INTERACTIVE_GUI_TUN_MOBILE_ACCEPTANCE_OPEN",
+  "status": "WINDOWS_R57_MMZ_LINUX_R25_NATIVE_VIRTUAL_VISUAL_TAILNET_GUI_AND_FROZEN_ROLLBACK_PASS_CI10OF10__EMAD_R21_CFON_PRESERVED__REAL_INTERACTIVE_TUN_MOBILE_AUTH_FINAL_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -786,7 +795,38 @@
           "7caed6c1-45b7-427c-9235-66036326161a"
         ],
         "officialReference": "https://docs.gtk.org/gtk4/gtk4-broadwayd.html",
-        "status": "VIRTUAL_MAPPED_NATIVE_WINDOW_AND_METHODS_SETTINGS_GTK_NAV_PASS_SCREENSHOT_AND_OWNER_INTERACTIVE_GUI_OPEN"
+        "status": "VIRTUAL_MAPPED_NATIVE_GTK_AND_CHROME_SCREENSHOT_TAILNET_UI_PASS_REAL_OWNER_GUI_OPEN",
+        "stableVisualCaptures20261018": {
+          "event": "FNH-MMZ-R25-VISUAL-SCREENSHOTS-20261018",
+          "scope": "MMZ Ubuntu 26 installed R25, isolated HOME/XDG + GTK4 Broadway loopback native render; not user desktop",
+          "captureType": "Google Chrome 155 owned fresh headless profiles, 1280x880 PNG screenshot of private 127.0.0.1 Broadway",
+          "firstCaptureAmbiguity": "Methods navbar selected but old Dashboard content still visible; transient vs persistent cause unverified",
+          "firstCaptureSHA256": "BDED8B8C299DE2D3A334AF23EF7FDF9DD20A627A3CC7191E1F7AFEA1F1C0B844",
+          "stableSettingsTopSHA256": "593BA35D41DF7D95F569DD187590A5B7F6F6E0A19C7595A3DF4B8743BFB2D590",
+          "stableMethodsTailnetCardSHA256": "3CC87A6F4569A459916672835614452E92D9363C68DF6BD0D5DD2F39C08D0DAA",
+          "stableTailnetClientSettingsSHA256": "8EA158F547E2EA085C4B10EBE23CC0423D0CC00E2D126DED6115FC9706E0EE93",
+          "stableMethodCardStatus": "PASS_SELECTED_TAILNET_PING_SPEED_CONNECT_CONTROLS_VISIBLE",
+          "stableSettingsClientStatus": "PASS_PEER_IP_INPUT_DOMAINS_GOOGLE_ONLY_DISCOVER_TEST_OPEN_STOP_VISIBLE",
+          "snapshotMetadataSHA256": {
+            "initial": "BE25F4FBC31D7397268B0CF2FCA7E5C1D53ADFD77495AE5A891422E1E4305E94",
+            "settings": "4CC7C265EC6CC5CC020B094C800BF9ED3B9B61BB9667FDD329EE2F2D34467282",
+            "methods": "72EFEE6FC185DAC2E245F16E0B9861D4AAF9662A8D1D3D13D772F09238D4E40B",
+            "clientSettings": "8230B2620031509298229B8BFA204905A71287CBBE7EF23B44D19B1CF9630EA3"
+          },
+          "scopeAccepted": "VIRTUAL_VISUAL_GTK_PAGES_AND_TAILNET_FIELDS_ONLY",
+          "allServerPorts19889through19892Closed": true,
+          "installedIntegrityCheckedAfter": true,
+          "systemProxyRoutesTailscalePreserved": true,
+          "realOwnerInteractiveGUIAccepted": false,
+          "fullDeviceTUNOrDNSLeakAccepted": false,
+          "visualEvidenceFilesStoredInOwnerPrivateMMZStateOnly": true,
+          "operatorReceiptOperations": [
+            "dff0812f-1b78-42e7-9965-e7913e495f17",
+            "3b259552-ae56-44a9-a745-1fd47b5f1ab3",
+            "bf2cf217-de58-414a-9354-27ce9c7f76fc",
+            "d0e16ac5-770b-4b0e-a924-11e447a69dc2"
+          ]
+        }
       }
     }
   },
