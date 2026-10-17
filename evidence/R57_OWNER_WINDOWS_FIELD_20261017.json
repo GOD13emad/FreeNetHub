@@ -291,7 +291,7 @@
     "R24→R21 physical cleanup of orphan R24 modules (reversible exact-SHA helper local 11/11 PASS; deployed owner run and CI still pending)",
     "MMZ local CFON bootstrap fails; R25 firstparty launch real Firefox headless and GTK offscreen handlers PASS; interactive owner-authorized desktop/Google login remains OPEN"
   ],
-  "status": "WINDOWS_R57_AND_MMZ_LINUX_R25_OWNER_PHYSICAL_FIRSTPARTY_HEADLESS_BROWSER_AND_GTK_OFFSCREEN_PASS__EMAD_R21_CFON_INTACT__FINAL_OPEN",
+  "status": "WINDOWS_R57_MMZ_LINUX_R25_PEER_HEADLESS_PAC_AND_PHYSICAL_ROLLBACK_PASS__EMAD_R21_CFON_PRESERVED__FINAL_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -390,7 +390,7 @@
         "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file",
         "https://tailscale.com/docs/reference/faq/other-vpns"
       ],
-      "status": "EXACT_SHA_CI_REAL_OWNER_MMZ_R25_FIRSTPARTY_HEADLESS_BROWSER_LAUNCH_GTK_OFFSCREEN_PASS_INTERACTIVE_DESKTOP_OPEN",
+      "status": "EXACT_SHA_HOSTED_CI_MMZ_PHYSICAL_INSTALL_AND_ROLLBACK_FIRSTPARTY_HEADLESS_PAC_SCOPED_PASS__INTERACTIVE_GUI_AND_FULL_TUN_OPEN",
       "exactSourceCI": {
         "commit": "5e9024623334c798f2d54ec5ba9f18782b4e28bf",
         "run": 39057288426,
@@ -502,7 +502,92 @@
           "33238e12-3ba7-429b-b80e-1118ea8901a7",
           "ef3bd363-dac1-46c8-a8e2-ba5f3d83d1c2"
         ]
+      },
+      "physicalOwnerRollbackAndReinstall": {
+        "status": "PASS_IN_SCOPE",
+        "platform": "MMZ Ubuntu26 actual owner per-user installed home (not test HOME)",
+        "versions": [
+          "4.2.0-linux.25-r58",
+          "4.2.0-linux.24-r57",
+          "4.2.0-linux.25-r58"
+        ],
+        "actualInstallerExitCodes": [
+          0,
+          0
+        ],
+        "physicalR24ChecksumEntriesPass": 11,
+        "physicalR25ChecksumEntriesPass": 12,
+        "realPrivateFileSha256Preserved": 3,
+        "defaultRoutesPreserved": true,
+        "GnomeProxyPreserved": true,
+        "TailscalePreserved": true,
+        "applicationAndDedicatedBrowserNotRunning": true,
+        "nativeAdminOrRootNeeded": false,
+        "temporaryR24HadInertR25OnlyModule": true,
+        "cleanOrphanRemovalWhenOnR24Performed": false,
+        "finalInstalledVersion": "4.2.0-linux.25-r58",
+        "receiptSHA256": "A47A8C85B2116A2687DA6D462CFFBFFC293CE2E787C29EF23B6991090B35B815",
+        "privateReceipt": "MMZ .local/state/fnh-mmz-r25-field-20261017/real-R25-to-R24-to-R25-rollback-20261017/result.json",
+        "operationId": "f246fb54-3ef8-4135-a649-0b34d1f74b91"
+      },
+      "offlinePeerFirefoxBoundedTrace": {
+        "scope": "Firefox158 test-only isolated PAC on MMZ with exact Tailscale peer port unavailable; 22-second observation",
+        "directGoogleControlHTTP": 204,
+        "peerSocketUnreachableBeforeTest": true,
+        "PACSelectedNoExplicitDirectFallback": true,
+        "FirefoxSelectedSOCKS5Decisions": 2,
+        "selectedGoogleSOCKS5SocketInitializations": 1,
+        "selectedGoogleDirectOrUnknownSocketInitializationsObserved": 0,
+        "selectedGoogleProxyRemoteDNSFlagSeen": 1,
+        "FirefoxPageLoadCompleted": false,
+        "processStoppedAfterSeconds": 22,
+        "noDirectSelectedSocketObservedWithinBoundedTrace": true,
+        "longTermFailOpenExcluded": false,
+        "wholeDeviceDNSDoHAndUDPLeakSafetyProven": false,
+        "firefoxOwnTestBrowserExitedAndSystemStatePreserved": true,
+        "logAggregateReceiptSHA256": "9B602F309C6F83D2B1847A1FF20D04D73CFA58D14C42CA0B85F06DF004AE79E2",
+        "referencePrimarySources": [
+          "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=468868",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=1207798"
+        ],
+        "runOperation": "5fd3e9d6-e5b1-4a6d-a5e6-41e061f3dba1",
+        "aggregateOperation": "f4444659-9ab4-4deb-8c5d-2ea642fe47c6"
+      },
+      "latestSourceEvidenceCIDone": {
+        "commit": "0fa450dba69ff671e0a933c24750b5a8a7fc03ec",
+        "run": 39059626401,
+        "status": "completed",
+        "conclusion": "success",
+        "totalJobs": 10,
+        "successJobs": 10
+      },
+      "nativeGuiAvailability": {
+        "MMZVisibleFreeNetHubWindowCount": 0,
+        "MMZObserveOnlyGUI": true,
+        "OwnerAuthorizedTakeover": false,
+        "noSessionFocusChanged": true
       }
+    }
+  },
+  "nativeTunPrivilegePreflight17Oct2026": {
+    "MMZLinux": {
+      "effectiveUID": 1000,
+      "CAP_NET_ADMIN": false,
+      "devNetTunCharacterDevice": true,
+      "sudoNoninteractiveExit": 1,
+      "noNativeElevationAttempted": true,
+      "noTUNAddedByFreeNetHub": true
+    },
+    "WindowsOwnerR57": {
+      "nativeElevatedAdministrator": false,
+      "gatewayMode": "PC_TUNNEL",
+      "singBoxPinned": true,
+      "projectTunExists": false,
+      "gatewayOwnerExists": false,
+      "defaultUplink": "Wi-Fi",
+      "consoleAdapterPresent": false,
+      "noNativeElevationAttempted": true
     }
   }
 }
