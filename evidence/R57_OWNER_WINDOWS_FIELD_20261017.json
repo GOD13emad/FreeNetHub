@@ -68,6 +68,15 @@
       "conclusion": "success",
       "passedJobs": 10,
       "totalJobs": 10
+    },
+    "R25OrphanCleanupSourceCI": {
+      "sha": "ef85a3d20002f04b835d7a44609d27a130b0191e",
+      "run": 39064075051,
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "jobsPassed": 10,
+      "total": 10
     }
   },
   "ownerWindows": {
@@ -313,10 +322,9 @@
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "R24+R25 three-module physical orphan cleanup/reversibility PASS; new standalone R25 helper exact-SHA hosted CI still pending; frozen old installers do not automatically clean leftovers",
     "MMZ local CFON bootstrap fails; R25 firstparty launch real Firefox headless and GTK offscreen handlers PASS; interactive owner-authorized desktop/Google login remains OPEN"
   ],
-  "status": "WIN_R57_MMZ_R25_PHYSICAL_ALL_THREE_ROLLBACK_ORPHANS_QUARANTINE_AND_RESTORE_PASS__EMAD_R21_CFON_ACTIVE__NEW_R25_HELPER_EXACT_CI_PENDING__PRODUCT_FINAL_OPEN",
+  "status": "WINDOWS_R57_MMZ_LINUX_R25_ACTUAL_OWNER_ROLLBACK_ALL_THREE_ORPHANS_QUARANTINE_SOURCE_CI_PASS__EMAD_LINUX_R21_CFON_HEALTHY__FULL_PRODUCT_FINAL_STILL_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -652,7 +660,7 @@
         ]
       },
       "physicalR25OnlyOrphanCleanup": {
-        "status": "ACTUAL_MMZ_R25_TO_R21_SOURCE_HISTORIC_AND_ALL_THREE_PRIVATE_ORPHAN_QUARANTINE_RESTORE_PASS; NEW_SOURCE_HOSTED_CI_PENDING",
+        "status": "HOSTED_EXACT_SHA_CI_10_OF_10_SUCCESS_AND_MMZ_PHYSICAL_R25_ONLY_ORPHAN_QUARANTINE_RESTORE_PASS",
         "sourceBaseSHA": "ae5760e40fc464b439b38ea5ecdb1844f79228e7",
         "targetMachine": "MMZ Ubuntu 26 user-local install; Emad active Linux R21 unchanged",
         "targetVersionsVerified": [
@@ -700,7 +708,20 @@
         "privateOwnerStateFilesSha256Preserved": 3,
         "networkProxyRoutesAndTailscalePreserved": true,
         "originalEmadCFONKeptActive": true,
-        "newHelperHostedExactShaCi": "PENDING",
+        "newHelperHostedExactShaCi": {
+          "sha": "ef85a3d20002f04b835d7a44609d27a130b0191e",
+          "workflowRun": 39064075051,
+          "attempt": 2,
+          "runStatus": "completed",
+          "conclusion": "success",
+          "jobsPassed": 10,
+          "jobsTotal": 10,
+          "firstAttemptDependencyFailure": "Android SDK image Google APIs android-36 x86_64 download gave ZipFile unknown archive before runtime validation",
+          "rerunScope": "GH rerun failed jobs only; no new code and same SHA",
+          "secondAttemptAndroidSdkImageInstall": "success",
+          "secondAttemptAndroidRuntime": "success",
+          "sourceScope": "All original hosted CI jobs, not physical Android hardware"
+        },
         "privateReceiptSHA256": {
           "prestate": "01FF0A440271EB5415B1CD3B9667C74B02B65FEC4F203438C53870AEFE95A9A8",
           "physicalR25ToR21": "91B824264B691C6AEEC45025034F687B9C97426C29BB6BD86801CFEF3B79C5F1",
@@ -714,7 +735,15 @@
           "75d8df32-716b-45ae-9e8e-f9474a8b17b6"
         ],
         "notPartOfFrozenR21OrR24Installer": true,
-        "noClaimWholeDeviceOrPacketDNSLeakSafety": true
+        "noClaimWholeDeviceOrPacketDNSLeakSafety": true,
+        "primaryEmadR21LiveCfonDryRun": {
+          "result": "DRY_RUN",
+          "eligibleR25OnlyModules": 0,
+          "mutated": false,
+          "ownerSampledFileShaUnchanged": 4,
+          "upstreamOwnedSocksReply": "0500",
+          "quarantineNotCreated": true
+        }
       }
     }
   },
