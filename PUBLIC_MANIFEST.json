@@ -45,8 +45,8 @@
     },
     {
       "file": ".github/workflows/r57-tailnet-cfon-candidate.yml",
-      "bytes": 10675,
-      "sha256": "5BC50080F1D2BE8B3AAD1A459614CFA906517F97D37F5174969EB47BE43AB37E"
+      "bytes": 10717,
+      "sha256": "BB79F68B25BD6D8B4ABE9C498727F63958FF178ADD212156CA6C1245DB17E56F"
     },
     {
       "file": ".github/workflows/v465-private-gateway-review.yml",
