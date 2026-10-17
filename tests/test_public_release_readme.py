@@ -11,6 +11,8 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 README = (ROOT / "README_FA.md").read_text(encoding="utf-8")
 CURRENT = README.split("## نسخه‌های توسعه و پیش‌نمایش", 1)[0]
+ENGLISH = (ROOT / "README.md").read_text(encoding="utf-8")
+CURRENT_ENGLISH = ENGLISH.split("## Development and Preview Builds", 1)[0]
 EVIDENCE = json.loads(
     (ROOT / "evidence/V443_R21_R53_POSTPUBLISH_VERIFICATION_20261014.json").read_text(
         encoding="utf-8"
@@ -38,13 +40,20 @@ stable = {
     "Linux SHA-256": CONFIRMED["linuxR21SHA256"],
 }
 for name, value in stable.items():
-    assert CURRENT.count(value) == 1, (name, "missing/duplicated current release value")
+    assert CURRENT.count(value) == 1, ("fa", name, "missing/duplicated stable value")
+    assert CURRENT_ENGLISH.count(value) == 1, ("en", name, "missing/duplicated stable value")
 assert "# FreeNet Hub" in README.splitlines()[0]
 assert "Windows R53" in README.splitlines()[0] and "Linux R21" in README.splitlines()[0]
 assert "Windows R52" not in CURRENT and "Linux R20 —" not in CURRENT
 assert "docs/LINUX_ROLLBACK_RESIDUE.md" in README
+assert "docs/LINUX_ROLLBACK_RESIDUE.md" in ENGLISH
 assert (ROOT / "docs/LINUX_ROLLBACK_RESIDUE.md").is_file()
-assert "R57" in README and "R24" in README, "Preview differentiation must be explicit"
+assert "R57" in README and "R24" in README, "FA preview differentiation missing"
+assert "R57" in ENGLISH and "R24" in ENGLISH, "EN preview differentiation missing"
+assert "Linux R20 — public" not in CURRENT_ENGLISH
+assert "README_FA.md" in ENGLISH and "Windows R53" in ENGLISH.splitlines()[0]
+assert "Linux R21" in ENGLISH.splitlines()[0]
 print(json.dumps({"status": "PASS", "publicRelease": tag,
-                  "checkedCurrentMetadataFields": len(stable),
+                  "checkedCurrentMetadataFields": len(stable) * 2,
+                  "languages": ["fa", "en"],
                   "scope": "offline accepted R53/R21 GitHub evidence"}))
