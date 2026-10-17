@@ -103,6 +103,14 @@
       "jobTotal": 10,
       "jobSuccessCount": 10,
       "attempt": 1
+    },
+    "lastSourceExactCI": {
+      "sha": "b20897ab1ebab337a6619d0d71f516a305e3aa52",
+      "run": 39069918648,
+      "status": "completed",
+      "conclusion": "success",
+      "jobsSuccess": 10,
+      "totalJobs": 10
     }
   },
   "ownerWindows": {
@@ -377,9 +385,9 @@
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "MMZ R25 selected Tailnet Methods/Settings visual PNG PASS; authorized native Wayland GUI test blocked by Commander GUI outcome-uncertain restart requirement; real owner interaction/PAC validation/authenticated Google remain OPEN"
+    "MMZ R25 selected Tailnet Methods/Settings visual PNG PASS; Commander GUI recovered and real R25 window observed but closed before owner interactive method click; real owner input/PAC validation/authenticated Google remain OPEN"
   ],
-  "status": "WINDOWS_R57_NATIVE_HIDDEN_WPF_STA_PASS_MMZ_R25_VIRTUAL_GUI_PASS_NATIVE_COMMANDER_GUI_COORDINATOR_UNCERTAIN__CI10OF10__PRIMARY_EMAD_R21_CFON_OK__PRODUCT_FINAL_OPEN",
+  "status": "WINDOWS_R57_MMZ_R25_COMMANDER_GUI_RECOVERED_VISUAL_GUI_AND_HIDDEN_WPF_PASS__OWNER_INTERACTIVE_TUN_MOBILE_LOGIN_OPEN__EMAD_R21_CFON_STABLE",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -891,7 +899,40 @@
         "nativeInteractiveGUIAccepted": false,
         "FreeNetHubAppGUIFailureProven": false,
         "appOperation": "53f631a4-0c47-4294-a3fe-eb68c220919e",
-        "coordinator": "MMZ ChatGPT Remote Commander 0.10.24"
+        "coordinator": "MMZ ChatGPT Remote Commander 0.10.24",
+        "guiCoordinatorRecoveredAfterReconciledPreDispatchError": true,
+        "originalPendingIncidentPreservedPrivately": true
+      },
+      "nativeMMZGUIRecovery20261018": {
+        "event": "FNH-MMZ-NATIVE-GUI-RECOVERED-20261018",
+        "sourceGitBaseline": "b20897ab1ebab337a6619d0d71f516a305e3aa52",
+        "originalPendingNativeIncidentSHA256": "9774457C3315F7024C8ECEB9C5EB7F932FCC9D9071E446787E8C9C3F326438DC",
+        "independentlyVerifiedNativeErrorBeforeActivate": true,
+        "originalPrivateIncidentArchivedNotDeleted": true,
+        "privatePreDispatchAuditSHA256": "5EAEF180742114A61133C839DBBE96A5744B22F028C11DAC6907D263E70DB790",
+        "firstSupervisorRestartSucceededButDidNotResetActualNodeAgent": true,
+        "onlyActualCommanderServerUnitRestarted": "rc-private-runner-candidate-final-20261017.service",
+        "actualNewMainPID": 1040152,
+        "GUIStatusAvailable": true,
+        "GUIStatusUncertain": false,
+        "GUIStatusLeased": false,
+        "nativeFreeNetHubWindowObserved": true,
+        "realNativeFreeNetHubMethodClicked": false,
+        "noOtherUserWindowsInput": true,
+        "temporaryGUILeaseExplicitlyReleased": true,
+        "ownerApplicationExitedWithoutError": true,
+        "nativeOwnerInteractiveGUIAccepted": false,
+        "installedR25ChecksumVerified": true,
+        "privateObfs4AndSnowflakeFileHashesIdentical": true,
+        "sessionOnlyUpdatedTimestampChanged": true,
+        "sessionModeProviderDetailUnchanged": true,
+        "defaultIPv4RoutesUnchanged": true,
+        "GNOMEProxyNoneUnchanged": true,
+        "TailscaleRunningUnchanged": true,
+        "originalEmadLinuxR21CfonAlive": true,
+        "receiptSHA256": "A14523F14AD284CF686628F0EE48E08CCBB54732F58778D840C893DCD7D21D33",
+        "receiptLocation": "MMZ owner-private state fnh-mmz-r25-field-20261017/native-gui-coordinator-recovery-20261018/reconciliation-and-native-gui.json",
+        "outcome": "COMMANDER_GUI_COORDINATOR_RECOVERED_REAL_OWNER_GUI_CLICK_NOT_ACCEPTED"
       }
     }
   },
