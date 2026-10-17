@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','SetupConsole')][string]$Action,[Parameter(Mandatory)][string]$Job,[ValidateSet('WARP','NODE')][string]$Provider='WARP',[ValidateSet('SELECTED','AUTO')][string]$NodePolicy='SELECTED')
+param([Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','SetupConsole')][string]$Action,[Parameter(Mandatory)][string]$Job,[ValidateSet('WARP','NODE')][string]$Provider='WARP',[ValidateSet('SELECTED','AUTO')][string]$NodePolicy='SELECTED',[switch]$ReuseVerifiedWarp)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $Root=(Resolve-Path "$PSScriptRoot\..").Path
 if($Job -notmatch '^[a-fA-F0-9]{32}$'){throw 'INVALID_JOB_ID'}
@@ -11,6 +11,7 @@ Assert-GatewayIntegrity
 $Result=Join-Path $Root ('jobs\gateway-'+$Job+'.json')
 $tmp=$Result+'.tmp'
 try{
+ if($ReuseVerifiedWarp -and ($Action -ne 'StartPc' -or $Provider -ne 'WARP')){throw 'REUSE_WARP_STARTPC_ONLY'}
  if($Action -eq 'SetupConsole'){
   $setup=Join-Path $PSScriptRoot 'Setup-ConsoleGateway.ps1'
   $sr=Join-Path $PSScriptRoot ('runtime\setup-'+$Job+'.json')
@@ -22,7 +23,7 @@ try{
   exit $(if($p.ExitCode -eq 0 -and [string]$payload.status -eq 'PASS'){0}else{20})
  }
  $args=@('-NoProfile','-WindowStyle','Hidden','-ExecutionPolicy','Bypass','-File',$Controller,'-Action',$Action,'-ResultPath',$Result)
- if($Action -eq 'StartPc'){$args+=@('-Provider',$Provider);if($Provider -eq 'NODE'){$args+=@('-NodePolicy',$NodePolicy)}}
+ if($Action -eq 'StartPc'){$args+=@('-Provider',$Provider);if($Provider -eq 'NODE'){$args+=@('-NodePolicy',$NodePolicy)};if($ReuseVerifiedWarp){$args+= '-ReuseVerifiedWarp'}}
  $p=Start-Process -FilePath 'pwsh.exe' -ArgumentList $args -Verb RunAs -Wait -PassThru
  if(!(Test-Path $Result)){[ordered]@{schema=1;action=$Action;utc=[DateTimeOffset]::UtcNow.ToString('o');exit=$p.ExitCode;result=[ordered]@{error='GATEWAY_RESULT_MISSING'}}|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $tmp -Encoding UTF8;Move-Item $tmp $Result -Force}
  exit $p.ExitCode

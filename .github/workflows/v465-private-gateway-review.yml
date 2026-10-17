@@ -14,7 +14,31 @@ permissions:
   contents: read
 
 jobs:
+  source-line:
+    runs-on: ubuntu-24.04
+    outputs:
+      line: ${{ steps.detect.outputs.line }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Identify immutable historical V465 applicability
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          revision=$(python3 -c 'import json;print(json.load(open("RELEASE.json",encoding="utf-8-sig"))["releaseRevision"])')
+          case "$revision" in
+            4.3.9-r53-inno-root-guard) line=R53;;
+            4.3.11-r55-native-status-review) line=R55;;
+            *) echo "UNKNOWN_RELEASE_REVISION_FOR_V465=$revision" >&2;exit 1;;
+          esac
+          echo "line=$line" >> "$GITHUB_OUTPUT"
+          echo "V465_HISTORICAL_SOURCE_LINE=$line"
+
   disposable-windows-review:
+    needs: source-line
+    if: needs.source-line.outputs.line == 'R53'
     name: V465 private R54 gateway ${{ matrix.mode }}
     runs-on: windows-latest
     timeout-minutes: 40

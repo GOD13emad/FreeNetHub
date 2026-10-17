@@ -1,9 +1,10 @@
 [CmdletBinding()]
 param(
- [Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','Status')][string]$Action,
+ [Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','Status','ProbeWarpReuse')][string]$Action,
  [ValidateSet('WARP','NODE')][string]$Provider='WARP',
  [ValidateSet('SELECTED','AUTO')][string]$NodePolicy='SELECTED',
- [string]$ResultPath=''
+ [string]$ResultPath='',
+ [switch]$ReuseVerifiedWarp
 )
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'runtime_config.ps1')
@@ -90,6 +91,64 @@ function Verify-ProviderUdp([string]$p,[string]$target){
  }
  [ordered]@{status='PASS';publicIp=[string]$j.udp_public_ip;country=$country;countryVerified=($target -and $target -ne 'AUTO');seconds=$j.seconds;relay=$j.relay}
 }
+function Assert-WarpReuseLoopProtection($config){
+ # A route rule may legally omit process_name and outbound; StrictMode must not
+ # turn those unrelated rules into a false negative or abort an otherwise safe start.
+ Assert ($null -ne $config -and @($config.inbounds).Count -gt 0) 'REUSE_WARP_LOOP_PROTECTION_MISSING'
+ $bypass=@($config.inbounds[0].route_exclude_address)
+ $rules=@($config.route.rules)
+ $processBypass=@($rules|Where-Object{
+  $name=$_.PSObject.Properties['process_name']
+  $out=$_.PSObject.Properties['outbound']
+  $act=$_.PSObject.Properties['action']
+  ($null -ne $name) -and ($null -ne $out) -and ($null -ne $act) -and
+   ([string]$act.Value -eq 'route') -and ([string]$out.Value -eq 'direct') -and
+   ('warp-plus.exe' -in @($name.Value))
+ })
+ Assert ([bool]$config.route.auto_detect_interface -and $processBypass.Count -eq 1 -and ('162.159.192.0/24' -in $bypass) -and ('100.64.0.0/10' -in $bypass)) 'REUSE_WARP_LOOP_PROTECTION_MISSING'
+}
+function Get-VerifiedInstalledWarp([switch]$IdentityOnly){
+ # Cross-install WARP must match one pinned executable and localhost listener; never adopt/stop it.
+ $cfg=$Defaults.providers.WARP
+ Assert ([string]$cfg.type -eq 'socks' -and [string]$cfg.host -eq '127.0.0.1' -and [bool]$cfg.udp) 'REUSE_WARP_PROVIDER_CONFIG_INVALID'
+ $port=[int]$cfg.port
+ Assert ($port -ge 1024 -and $port -le 65535) 'REUSE_WARP_PORT_INVALID'
+ $listen=@(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction Stop)
+ Assert ($listen.Count -eq 1 -and [string]$listen[0].LocalAddress -eq '127.0.0.1') 'REUSE_WARP_LISTENER_NOT_EXCLUSIVE_LOOPBACK'
+ $processId=[int]$listen[0].OwningProcess
+ Assert ($processId -gt 0) 'REUSE_WARP_PROCESS_MISSING'
+ $depPath=Join-Path $Root 'app\dependencies.json'
+ Assert (Test-Path -LiteralPath $depPath -PathType Leaf) 'REUSE_WARP_PINNED_DEPENDENCY_MISSING'
+ $deps=Get-Content -LiteralPath $depPath -Raw -Encoding UTF8|ConvertFrom-Json
+ Assert ($null -ne $deps.warp -and [string]$deps.warp.sha256 -match '^[A-Fa-f0-9]{64}$') 'REUSE_WARP_DEPENDENCY_NOT_PINNED'
+ $binary=[string]$deps.warp.path
+ Assert (Test-Path -LiteralPath $binary -PathType Leaf) 'REUSE_WARP_BINARY_MISSING'
+ $binary=(Resolve-Path -LiteralPath $binary -ErrorAction Stop).Path
+ Assert ((Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash -eq [string]$deps.warp.sha256) 'REUSE_WARP_BINARY_HASH_CHANGED'
+ $c=Get-CimInstance Win32_Process -Filter ('ProcessId='+$processId) -ErrorAction Stop
+ Assert ($null -ne $c -and [string]$c.Name -eq 'warp-plus.exe') 'REUSE_WARP_WRONG_PROCESS'
+ Assert ([string]::Equals([string]$c.ExecutablePath,$binary,[StringComparison]::OrdinalIgnoreCase)) 'REUSE_WARP_FOREIGN_BINARY'
+ $pattern='(?i)(?:^|\s)--bind(?:\s+|=)127\.0\.0\.1:'+$port+'(?=\s|$)'
+ Assert ([string]$c.CommandLine -match $pattern) 'REUSE_WARP_BIND_NOT_VERIFIED'
+ $owner=Get-Process -Id $processId -ErrorAction Stop
+ $ticks=[long]$owner.StartTime.ToUniversalTime().Ticks
+ Assert ($ticks -gt 0) 'REUSE_WARP_START_ID_MISSING'
+ $verifiedWarp=$null;$udpVerified=$false
+ if(!$IdentityOnly){
+  $http=& curl.exe -4 --socks5-hostname ('127.0.0.1:'+$port) --connect-timeout 5 --max-time 18 -sS -o NUL -w '%{http_code}' 'https://www.youtube.com/generate_204' 2>$null|Out-String
+  Assert ($LASTEXITCODE -eq 0 -and $http.Trim() -eq '204') 'REUSE_WARP_HTTPS204_FAILED'
+  $trace=& curl.exe -4 --socks5-hostname ('127.0.0.1:'+$port) --connect-timeout 5 --max-time 18 -fsS 'https://www.cloudflare.com/cdn-cgi/trace' 2>$null|Out-String
+  Assert ($LASTEXITCODE -eq 0 -and $trace -match '(?m)^warp=on\s*$') 'REUSE_WARP_TRACE_NOT_ATTESTED'
+  $verifiedWarp='on'
+  $udpCheck=Verify-ProviderUdp 'WARP' 'AUTO'
+  Assert ([string]$udpCheck.status -eq 'PASS') 'REUSE_WARP_UDP_NOT_VERIFIED'
+  $udpVerified=$true
+ }
+ $again=@(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction Stop)
+ Assert ($again.Count -eq 1 -and [string]$again[0].LocalAddress -eq '127.0.0.1' -and [int]$again[0].OwningProcess -eq $processId) 'REUSE_WARP_LISTENER_CHANGED'
+ Assert ((Get-Process -Id $processId -ErrorAction Stop).StartTime.ToUniversalTime().Ticks -eq $ticks) 'REUSE_WARP_PROCESS_RESTARTED'
+ return [ordered]@{status='REUSE_PINNED_INSTALLED_WARP_PASS';port=$port;pid=$processId;startTicks=$ticks;sha256=(Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash;warp=$verifiedWarp;udpVerified=$udpVerified;engineOwnershipTransferred=$false}
+}
 function Run-Engine([string]$a,[string]$m,[int]$budget=120){
  $j=[guid]::NewGuid().ToString('N');& $Python $Engine --action $a --mode $m --job $j --budget $budget|Out-Null;$ec=$LASTEXITCODE
  $rec=Get-Content (Join-Path $Root ('jobs\'+$j+'.json')) -Raw -Encoding UTF8|ConvertFrom-Json
@@ -121,14 +180,21 @@ function Get-Status{
  $ca=if($d.adapter_description){Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.InterfaceDescription -eq [string]$d.adapter_description}|Select-Object -First 1}else{$null}
  $tun=Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name}|Select-Object -First 1
  $s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
- $wc=$null;try{$x=Run-WslConsole 'Status';if($x.exit -eq 0){$wc=$x.record.result}}catch{}
- $pcRunning=Owner-Valid;$consoleRunning=[bool]($wc -and $wc.running);$running=($pcRunning -or $consoleRunning)
- $mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}elseif($s){[string]$s.mode}else{''}
+  # A verified running Windows Native TUN is independent of the WSL console.
+  # Querying WSL here can block up to 120 seconds and race the SYSTEM safety
+  # timer even after the Native owner has been verified.
+  $pcRunning=Owner-Valid
+  $wc=$null
+  if(-not $pcRunning -and -not $tun){
+   try{$x=Run-WslConsole 'Status';if($x.exit -eq 0){$wc=$x.record.result}}catch{}
+  }
+  $consoleRunning=[bool]($wc -and $wc.running);$running=($pcRunning -or $consoleRunning)
+ $mode=if($consoleRunning){'CONSOLE_ONLY'}elseif($pcRunning){'PC_TUNNEL'}else{''}
  $tunView=if($tun){[ordered]@{name=$tun.Name;status=[string]$tun.Status;ifIndex=$tun.ifIndex;backend='WINDOWS_TUN'}}elseif($consoleRunning){[ordered]@{name='WSL:fnh-tun';status='Up';ifIndex=$null;backend='WSL2_AUTO_REDIRECT'}}else{$null}
  $manual=if($wc -and $wc.manual){$wc.manual}else{[ordered]@{ip=[string]$d.suggested_console_ip;prefix=24;gateway=[string]$d.gateway;dns=[string]$d.dns}}
  $cStatus=if($consoleRunning){if($wc.router -and [bool]$wc.router.carrier){'Up'}else{'Disconnected'}}elseif($ca){[string]$ca.Status}elseif($wc -and $wc.usb -and [string]$wc.usb.state -eq 'Shared'){'Disconnected'}else{'Missing'}
  [ordered]@{
-  status='PASS';running=$running;mode=$mode;tun=$tunView
+  status=$(if($tun -and -not $pcRunning){'DEGRADED_UNOWNED_TUN'}else{'PASS'});running=$running;mode=$mode;tun=$tunView
   console=[ordered]@{
    name=if($ca){$ca.Name}else{[string]$d.adapter_name}
    description=if($wc -and $wc.usb){[string]$wc.usb.description}else{[string]$d.adapter_description}
@@ -139,9 +205,43 @@ function Get-Status{
  }
 }
 function Require-Admin{if(-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'ADMIN_REQUIRED'}}
+function Invoke-VerifiedNativeStop{
+ # Only the exact stop routine can confirm no unowned TUN/physical DNS53 guard.
+ # A fresh verified PASS receipt is required before provider or session cleanup.
+ $stopReceipt=Join-Path $Runtime 'stop_result.json'
+ Remove-Item -LiteralPath $stopReceipt -Force -ErrorAction SilentlyContinue
+ & pwsh.exe -NoLogo -NoProfile -NonInteractive -File $StopScript | Out-Null
+ $stopExit=$LASTEXITCODE
+ Assert ($stopExit -eq 0) 'NATIVE_STOP_NONZERO_EXIT'
+ Assert (Test-Path -LiteralPath $stopReceipt -PathType Leaf) 'NATIVE_STOP_RECEIPT_MISSING'
+ try{$stopRecord=Get-Content -LiteralPath $stopReceipt -Raw -Encoding UTF8|ConvertFrom-Json -ErrorAction Stop}
+ catch{throw 'NATIVE_STOP_RECEIPT_UNREADABLE'}
+ Assert ([string]$stopRecord.status -eq 'PASS' -and [string]$stopRecord.state -in @('STOPPED','NOT_OWNED')) 'NATIVE_STOP_UNVERIFIED'
+}
+# Serialize this gateway's mutating commands across independent PowerShell
+# launchers. An abandoned mutex means prior gateway state is unknown: fail closed.
+$script:GatewayMutationMutex=$null
+$script:GatewayMutationHeld=$false
+function Enter-GatewayMutationGuard{
+ $script:GatewayMutationMutex=[System.Threading.Mutex]::new($false,'Local\FreeNetHub_Gateway_Mutation_v1')
+ try{$script:GatewayMutationHeld=$script:GatewayMutationMutex.WaitOne(0)}
+ catch [System.Threading.AbandonedMutexException]{
+  $script:GatewayMutationHeld=$true
+  throw 'GATEWAY_MUTATION_LOCK_ABANDONED_REVIEW_REQUIRED'
+ }
+ Assert $script:GatewayMutationHeld 'GATEWAY_MUTATION_IN_PROGRESS'
+}
+function Exit-GatewayMutationGuard{
+ try{
+  if($script:GatewayMutationHeld){$script:GatewayMutationMutex.ReleaseMutex()}
+ }finally{
+  $script:GatewayMutationHeld=$false
+  if($script:GatewayMutationMutex){$script:GatewayMutationMutex.Dispose();$script:GatewayMutationMutex=$null}
+ }
+}
 function Cleanup-Failed([string]$mode,[bool]$providerStarted,[string]$provider='WARP'){
  if($mode -eq 'PC_TUNNEL'){
-  try{if((Test-Path $Owner) -or (Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name})){& $StopScript|Out-Null}}catch{}
+  Invoke-VerifiedNativeStop
   if($providerStarted){try{Run-Engine 'StopOne' $provider 60|Out-Null}catch{}}
  }else{
   try{[void](Run-WslConsole 'Stop')}catch{}
@@ -152,14 +252,24 @@ New-Item -ItemType Directory -Path $Runtime -Force|Out-Null
 if($ResultPath){$full=[IO.Path]::GetFullPath($ResultPath);$jobs=[IO.Path]::GetFullPath((Join-Path $Root 'jobs'))+'\';if(!$full.StartsWith($jobs,[StringComparison]::OrdinalIgnoreCase)){throw 'RESULT_PATH_OUTSIDE_JOBS'};$ResultPath=$full}
 $out=[ordered]@{schema=1;action=$Action;utc=[DateTimeOffset]::UtcNow.ToString('o');exit=1;result=$null}
 try{
+ if($ReuseVerifiedWarp -and ($Action -ne 'StartPc' -or $Provider -ne 'WARP')){throw 'REUSE_WARP_STARTPC_ONLY'}
+ if($Action -notin @('Status','ProbeWarpReuse')){Enter-GatewayMutationGuard}
  if($Action -eq 'Status'){$out.exit=0;$out.result=Get-Status}
+ elseif($Action -eq 'ProbeWarpReuse'){$out.exit=0;$out.result=Get-VerifiedInstalledWarp}
  elseif($Action -eq 'Stop'){
   Require-Admin;$s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
-  $ws=$null;try{$ws=Run-WslConsole 'Status'}catch{}
+   # When stopping a PC TUNNEL, do not spend the SYSTEM recovery window
+   # waiting for an unrelated WSL console status request.
+   $nativeOwnerPresent=(Test-Path -LiteralPath $Owner -PathType Leaf)
+   $nativeInterfacePresent=[bool](Get-NetAdapter -Name ([string]$Defaults.tun.interface_name) -IncludeHidden -ErrorAction SilentlyContinue)
+   $ws=$null
+   if(-not (($s -and [string]$s.mode -eq 'PC_TUNNEL') -or $nativeOwnerPresent -or $nativeInterfacePresent)){
+    try{$ws=Run-WslConsole 'Status'}catch{}
+   }
   if(($s -and [string]$s.mode -eq 'CONSOLE_ONLY') -or ($ws -and $ws.exit -eq 0 -and [bool]$ws.record.result.running)){
    $stop=Run-WslConsole 'Stop';Assert ($stop.exit -eq 0) 'WSL_CONSOLE_STOP_FAIL'
   }
-  if((Test-Path $Owner) -or (Get-NetAdapter -IncludeHidden -ErrorAction SilentlyContinue|Where-Object{$_.Name -eq [string]$Defaults.tun.interface_name})){& $StopScript|Out-Null}
+  Invoke-VerifiedNativeStop
   if($s -and [string]$s.mode -eq 'PC_TUNNEL' -and -not [bool]$s.providerPreexisting){$sp=[string]$s.provider;if($sp -in @('WARP','NODE')){Run-Engine 'StopOne' $sp 60|Out-Null}}
   Remove-Item $Session -Force -ErrorAction SilentlyContinue;$out.exit=0;$out.result=Get-Status
  }
@@ -176,8 +286,9 @@ try{
 
  else{
   Require-Admin;$st=Get-Status;Assert (-not [bool]$st.running) 'GATEWAY_ALREADY_RUNNING'
-  if(Test-Path $Owner){Remove-Item $Owner -Force -ErrorAction SilentlyContinue}
-  $mode=if($Action -eq 'StartPc'){'PC_TUNNEL'}else{'CONSOLE_ONLY'};$started=$false;$preexisting=$false
+   Assert (-not $st.tun) 'UNOWNED_TUN_PRESENT_REFUSE_START'
+  Assert (-not (Test-Path -LiteralPath $Owner)) 'GATEWAY_OWNER_EVIDENCE_PRESENT_REFUSE_START'
+  $mode=if($Action -eq 'StartPc'){'PC_TUNNEL'}else{'CONSOLE_ONLY'};$started=$false;$preexisting=$false;$externalWarp=$null
   try{
    if($mode -eq 'CONSOLE_ONLY'){
     $profilePath=if(Test-Path $ConsoleProfile){$ConsoleProfile}else{''};$before=Trace
@@ -210,15 +321,33 @@ try{
      }
     }else{
      $v=Run-Engine 'Verify' 'WARP' 60;$preexisting=($v.exit -eq 0 -and [bool]$v.record.result.healthy)
-     if(!$preexisting){$c=Run-Engine 'ConnectProvider' 'WARP' 220;Assert ($c.exit -eq 0 -and [bool]$c.record.result.healthy) 'WARP_CONNECT_FAIL';$started=$true}
+     if(!$preexisting){
+      if($ReuseVerifiedWarp){$externalWarp=Get-VerifiedInstalledWarp;$preexisting=$true}
+      else{$c=Run-Engine 'ConnectProvider' 'WARP' 220;Assert ($c.exit -eq 0 -and [bool]$c.record.result.healthy) 'WARP_CONNECT_FAIL';$started=$true}
+     }
     }
 
     $udpBefore=Verify-ProviderUdp $Provider $(if($Provider -eq 'NODE'){$target}else{'AUTO'})
     $baseRoute=Get-BaseRouteSnapshot
     $before=Trace
     $cfg=Join-Path $Runtime ('pc_product_'+$Provider.ToLowerInvariant()+'.json')
-    & $Python $Generator --mode PC_TUNNEL --provider $Provider --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
+    # sing-box 1.14 hijack+strict_route WFP blocks off-TUN DNS port 53 on Windows.
+    # Only opt into native DNS when a running Tailscale client has an effective
+    # Quad100 NRPT policy. Keep hijack for other devices and unsupported states.
+    $dnsMode='hijack'
+    $tailscaleSvc=Get-Service -Name 'Tailscale' -ErrorAction SilentlyContinue
+    if($tailscaleSvc -and $tailscaleSvc.Status -eq 'Running'){
+     $quadPolicies=@(Get-DnsClientNrptPolicy -Effective -ErrorAction SilentlyContinue | Where-Object { [string]$_.NameServers -match '100\.100\.100\.100' })
+     if($quadPolicies.Count -gt 0){$dnsMode='native'}
+    }
+    & $Python $Generator --mode PC_TUNNEL --provider $Provider --dns-mode $dnsMode --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
     $SB=[string](Get-FnhSingBox).path;& $SB check -c $cfg;Assert ($LASTEXITCODE -eq 0) 'CONFIG_CHECK_FAIL'
+    if($externalWarp){
+     $loopCfg=Get-Content -LiteralPath $cfg -Raw -Encoding UTF8|ConvertFrom-Json
+     Assert-WarpReuseLoopProtection $loopCfg
+     $repeat=Get-VerifiedInstalledWarp -IdentityOnly
+     Assert ($repeat.pid -eq $externalWarp.pid -and $repeat.startTicks -eq $externalWarp.startTicks -and $repeat.sha256 -eq $externalWarp.sha256) 'REUSE_WARP_OWNER_CHANGED_BEFORE_TUN'
+    }
     & $Apply -Mode PC_TUNNEL -ConfigPath $cfg -ConfigSha256 ((Get-FileHash $cfg -Algorithm SHA256).Hash)|Out-Null
     $ar=Get-Content (Join-Path $Runtime 'apply_result.json') -Raw -Encoding UTF8|ConvertFrom-Json;Assert ($ar.status -eq 'PASS') 'APPLY_FAIL';Start-Sleep -Seconds 2
 
@@ -235,13 +364,20 @@ try{
     }
 
     $kind=$(if($Provider -eq 'NODE'){'NODE_SOCKS'}else{'WARP_SOCKS'})
-    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
+    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;providerReuse=$(if($externalWarp){'PINNED_EXTERNAL_NO_OWNERSHIP'}else{'NONE'});baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;dnsMode=$dnsMode;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
     Write-J $Session $sess
-    $out.exit=0;$out.result=Get-Status
+    # Source Apply PASS alone is insufficient: ownership may disappear with
+    # the TUN still present. Reject false PASS and fail closed.
+    Assert (Test-Path -LiteralPath $Owner -PathType Leaf) 'PC_OWNER_RECEIPT_DISAPPEARED'
+    Assert (Owner-Valid) 'PC_OWNER_IDENTITY_UNVERIFIED_AFTER_APPLY'
+    $pcLive=Get-Status
+    Assert ([bool]$pcLive.running -and [string]$pcLive.mode -eq 'PC_TUNNEL' -and [bool]$pcLive.tun) 'PC_TUN_NOT_OWNED_AFTER_START'
+    $out.exit=0;$out.result=$pcLive
    }
   }catch{Cleanup-Failed $mode $started $Provider;throw}
  }
 }catch{$out.exit=20;$out.result=[ordered]@{error=$_.Exception.Message;status=try{Get-Status}catch{$null}}}
+finally{Exit-GatewayMutationGuard}
 if($ResultPath){Write-J $ResultPath $out}
 $out|ConvertTo-Json -Depth 24
 exit $out.exit
