@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 37770,
-      "sha256": "C878CDA6998CE7EC53306BD121436B5FE6D92B0DBDA8825ED195917D4E302820"
+      "bytes": 37910,
+      "sha256": "D57DAB97CC73C4EC8B19DCEF03ED5A5F6662D4DA3F754D0A2F82848E4E9D2955"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1845,8 +1845,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 230241,
-      "sha256": "D364FBEB7C1B9342841EFB12EE26590457F288F734602C9A869E6CB6F24A9257"
+      "bytes": 231215,
+      "sha256": "8813E0FC7BD32052BA8492E6E641D390569E1675B30B317BE56B172414B3C03D"
     },
     {
       "file": "pytest.ini",
@@ -1860,8 +1860,8 @@
     },
     {
       "file": "README_FA.md",
-      "bytes": 4589,
-      "sha256": "633D484DFF43D5DFFD96AF69C1E7F31971F9722396B74636993195FCF98F5099"
+      "bytes": 5296,
+      "sha256": "86D98DE1F67993863B7E18DDD948421AFC23518CD6914242E469C0A117BC0852"
     },
     {
       "file": "RELEASE.json",
@@ -2647,6 +2647,11 @@
       "file": "tests/test_product_boundary.py",
       "bytes": 1779,
       "sha256": "F7BA03F2F9C492075895AE5ECFB2F7D12FC4602F7D8A6E835149232C2E491E46"
+    },
+    {
+      "file": "tests/test_public_release_readme.py",
+      "bytes": 2433,
+      "sha256": "01309CE41587E9EC51CF691C32737748EC5E46726474D022FE35B11B725E3F9F"
     },
     {
       "file": "tests/test_r22_country_shadowshare.py",

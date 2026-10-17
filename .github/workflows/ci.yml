@@ -16,6 +16,8 @@ jobs:
           python-version: '3.13'
       - name: Verify public manifests
         run: python tests/verify_public_tree.py
+      - name: Verify current R53/R21 public release guide against accepted evidence
+        run: python tests/test_public_release_readme.py
       - name: Scan public tree for private/runtime material
         run: python tests/security_scan_public.py
       - name: Verify mobile fail-closed gates
