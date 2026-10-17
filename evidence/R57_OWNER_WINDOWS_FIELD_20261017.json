@@ -37,6 +37,14 @@
       "jobsPassed": 10,
       "jobsTotal": 10,
       "scope": "hosted CI all ten jobs; emulators are not physical-device tests"
+    },
+    "r24RollbackRoundtripMainCI": {
+      "sha": "c8ab531436028d7887779f70ae16f7de68a7fcfb",
+      "run": 39048642412,
+      "status": "completed",
+      "conclusion": "success",
+      "jobsPassed": 10,
+      "jobsTotal": 10
     }
   },
   "ownerWindows": {
@@ -222,6 +230,38 @@
       "sha256": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
       "archiveTest": "PASS",
       "manifestFilesVerified": 24
+    },
+    "r24RollbackResidueCleanup": {
+      "status": "SOURCE_LOCAL_TESTED_ONLY; EXACT_SHA_HOSTED_CI_PENDING",
+      "ownerHost": "Ubuntu Linux user-local shell",
+      "helper": "tests/cleanup_r24_rollback_residue.py",
+      "documentation": "docs/LINUX_ROLLBACK_RESIDUE.md",
+      "helperSha256": "C3E0BF097005A04B515601352EA77518BEBBEF2911C2295C01F99C6F1E7608E4",
+      "testScriptSha256": "A9B41C49B9BAE17F0AAF121E36BB3C87224A86EE8B9E243596DC1C006F65ED15",
+      "frozenR21AssetSha256": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+      "r24PreviewAssetSha256": "D76958F80923BFC1B77E406FE00F4CE96CC83A9A54521415DBBDAE53AFFB1824",
+      "onlyApprovedOrphanModuleNames": [
+        "selective_tunnel.py",
+        "tailnet_cfon_gateway.py"
+      ],
+      "defaultInspectionReadOnly": true,
+      "requiresExactInstalledR21VersionAndCode": true,
+      "rejectsActiveOrUnknownOwnerSession": true,
+      "rejectsChangedOrSymlinkedModules": true,
+      "quarantineReversibleWithoutDeletion": true,
+      "quarantinePrivatePermissionOctal": "0700",
+      "quarantineReceiptPermissionOctal": "0600",
+      "supportsExplicitRestore": true,
+      "supportsIdempotentPartialOperationReconciliation": true,
+      "isolatedRegressionPassed": 11,
+      "isolatedRegressionTotal": 11,
+      "isolatedRegressionOperation": "3046dc58-fd9e-4941-9caa-aa496eaae654",
+      "ownerLiveDryRunEligibleModules": 0,
+      "ownerLiveDryRunMutated": false,
+      "ownerLiveDryRunFileHashSamplesPreserved": 5,
+      "ownerLiveCfonSocksHealthyAfterDryRun": true,
+      "realOwnerRollbackOrQuarantineApplied": false,
+      "physicalOwnerR24Install": false
     }
   },
   "privateEvidence": {
@@ -240,7 +280,7 @@
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "R24→R21 physical rollback clean-up of orphan R24 modules with strict exact-hash provenance; inert in tested R21 launch path, NOT auto-deleted"
+    "R24→R21 physical cleanup of orphan R24 modules (reversible exact-SHA helper local 11/11 PASS; deployed owner run and CI still pending)"
   ],
   "status": "OWNER_WINDOWS_R57_SCOPED_FIELD_AND_LINUX_R24_OWNER_OS_ISOLATED_PASS__REAL_LINUX_R24_INSTALL_OPEN"
 }

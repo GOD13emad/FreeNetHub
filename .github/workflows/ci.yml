@@ -95,6 +95,9 @@ jobs:
           # Never reconstruct the already CI-proven immutable R23 with R24 sources.
           python3 tests/build_linux_r24_package.py
           python3 tests/test_linux_r24_upgrade_preserves_data.py
+          # Frozen R21 cannot remove R24-only modules. Test reversible,
+          # SHA-pinned rollback residue quarantine only in disposable HOME.
+          python3 tests/test_r24_rollback_residue.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
           cd /tmp/fnh-r20-ci/FreeNetHub_4.2.0_Linux_R20
