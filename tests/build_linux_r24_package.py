@@ -15,18 +15,14 @@ FILES=[
  "test_console_policy.py","test_private_state_permissions.py","test_scope_policy.py","test_r37_parity.py",
  "test_update_revision.py","test_warp_tos_owner_consent.py","test_selective_tunnel.py","test_selective_integration.py","test_tailnet_cfon_gateway.py"
 ]
-for rel in ("freenet_hub_linux.py","freenet_hub_linux_r37.py"):
- txt=(L/rel).read_text(encoding="utf-8")
- if EXPECTED_VERSION not in txt: raise SystemExit("VERSION_CONTRACT_MISMATCH:"+rel)
-install_text=(L/"install.sh").read_text(encoding="utf-8")
-if EXPECTED_VERSION not in install_text or EXPECTED_RELEASE not in install_text:
- raise SystemExit("INSTALL_METADATA_CONTRACT_MISMATCH")
-
+# R24 is a frozen accepted preview. Reconstruct it only from its exact
+# accepted source commit, even after the working tree moves to R25.
+# In CI use a full checkout so the pinned source is available offline.
+FROZEN_COMMIT="428fea704225b70b1640c5d085cf6e8e8a9ae23b"
+FROZEN_SHA256="D76958F80923BFC1B77E406FE00F4CE96CC83A9A54521415DBBDAE53AFFB1824"
 def canonical_bytes(p):
- p=pathlib.Path(p).resolve()
- rel=p.relative_to(R).as_posix()
- oid=subprocess.check_output(["git","hash-object","-w",f"--path={rel}",str(p)],cwd=R,text=True).strip()
- return subprocess.check_output(["git","cat-file","blob",oid],cwd=R)
+ rel=pathlib.Path(p).relative_to(R).as_posix()
+ return subprocess.check_output(["git","show",f"{FROZEN_COMMIT}:{rel}"],cwd=R)
 def sha_bytes(data):return hashlib.sha256(data).hexdigest().upper()
 rows=[];payload={}
 for rel in FILES:
@@ -47,4 +43,6 @@ with zipfile.ZipFile(tmp,"w",compression=zipfile.ZIP_STORED) as z:
   data=(json.dumps(obj,ensure_ascii=False,indent=2)+"\n").encode() if isinstance(obj,dict) else obj.encode()
   zi=zipfile.ZipInfo(f"{ROOT}/{name}",date_time=(2026,9,29,0,0,0));zi.external_attr=(0o644&0xFFFF)<<16;zi.create_system=3;zi.compress_type=zipfile.ZIP_STORED;z.writestr(zi,data)
 tmp.replace(OUT)
+if sha_bytes(OUT.read_bytes())!=FROZEN_SHA256:
+ raise SystemExit("FROZEN_R24_REBUILD_SHA_MISMATCH")
 print(json.dumps({"status":"PASS","path":str(OUT.relative_to(R)),"bytes":OUT.stat().st_size,"sha256":sha_bytes(OUT.read_bytes()),"files":len(FILES)}))

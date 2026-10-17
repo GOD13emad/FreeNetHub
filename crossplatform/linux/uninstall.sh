@@ -32,6 +32,19 @@ if m.OWNER.is_file():
     m.OWNER.unlink()
 TAILUN
 fi
+# Stop only the project's own isolated peer Firefox; no unrelated profile.
+if [ -f "$APP_HOME/tailnet_client_browser.py" ]; then
+  python3 - "$APP_HOME" <<'CLIENTUN'
+import pathlib,sys,json
+app=pathlib.Path(sys.argv[1])
+sys.path.insert(0,str(app))
+import tailnet_client_browser as helper
+result=helper.stop_browser()
+if not result.get("ok"):
+    print("TAILNET_CLIENT_BROWSER_STOP_REQUIRED",json.dumps(result),file=sys.stderr)
+    raise SystemExit(20)
+CLIENTUN
+fi
 if [ -f "$APP_HOME/selective_tunnel.py" ]; then
   python3 - "$APP_HOME/selective_tunnel.py" <<'SELECTIVEPY'
 import importlib.util,sys
@@ -104,7 +117,7 @@ PY
 rm -f "$BIN_HOME/freenethub" "$BIN_HOME/freenethub-recover" "$BIN_HOME/freenethub-uninstall"
 rm -f "$DESKTOP_HOME/local.freenethub.desktop" "$DESKTOP_HOME/freenethub.desktop"
 rm -f "$ICON"
-rm -f   "$APP_HOME/freenet_hub_linux.py"   "$APP_HOME/freenet_hub_linux_r37.py"   "$APP_HOME/freenet_hub_linux_gtk.py"   "$APP_HOME/nodehub_shared.py"   "$APP_HOME/selective_tunnel.py"   "$APP_HOME/tailnet_cfon_gateway.py"   "$APP_HOME/warp_guard.py"   "$APP_HOME/recover_warp_remote.sh"   "$APP_HOME/uninstall.sh"   "$APP_HOME/INSTALL.sha256"   "$APP_HOME/INSTALL.json"
+rm -f   "$APP_HOME/freenet_hub_linux.py"   "$APP_HOME/freenet_hub_linux_r37.py"   "$APP_HOME/freenet_hub_linux_gtk.py"   "$APP_HOME/nodehub_shared.py"   "$APP_HOME/selective_tunnel.py"   "$APP_HOME/tailnet_cfon_gateway.py"   "$APP_HOME/tailnet_client_browser.py"   "$APP_HOME/warp_guard.py"   "$APP_HOME/recover_warp_remote.sh"   "$APP_HOME/uninstall.sh"   "$APP_HOME/INSTALL.sha256"   "$APP_HOME/INSTALL.json"
 
 command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$DESKTOP_HOME" >/dev/null 2>&1 || true
 command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true

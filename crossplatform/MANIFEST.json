@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "4.3.7-crossplatform-r51-linux-r20",
+  "version": "4.3.7-crossplatform-source-r25-preview",
   "files": [
     {
       "file": "android/app/build.gradle.kts",
@@ -110,17 +110,17 @@
     {
       "file": "linux/freenet_hub_linux.py",
       "bytes": 44627,
-      "sha256": "4681BF0E377C765CCBEE5654C91EE47920565DBDC98DAF4FF9CA01C4EEFC1FB3"
+      "sha256": "254D9C07332A16E75010E82324C568482EF9BB5DA5E7C20DFCDE58BE523CE9E4"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
-      "bytes": 71446,
-      "sha256": "D8B1216D0CC222DA5CBCA21B55F9CB5DE8C7A84528DEC277E732AB7FB0282EAF"
+      "bytes": 78028,
+      "sha256": "1DC4ECFB961F5316E257909916A6CD16C2CD3C81F1AE59613E980C23989B605F"
     },
     {
       "file": "linux/freenet_hub_linux_r37.py",
-      "bytes": 64704,
-      "sha256": "AD591BD72182EE9C067F738B85548528A25AE7D2A3F8D01DD9FE9F6B85AB5EC2"
+      "bytes": 65842,
+      "sha256": "CFBB10B1A4ED111378A2B52BA215B44F73858176737ABE1CDFD45940DC3EE143"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -134,8 +134,8 @@
     },
     {
       "file": "linux/install.sh",
-      "bytes": 8943,
-      "sha256": "5F881020AFDC7C29083159DC57CC5F422B5CCD13E2632BB3C8B7CB9E1880A96A"
+      "bytes": 9921,
+      "sha256": "4B4E2A53D03FC87643437B2D9749F788C3650DE0E6CBC629F69C88A2FBD7F18C"
     },
     {
       "file": "linux/install_singbox_pinned.sh",
@@ -159,8 +159,8 @@
     },
     {
       "file": "linux/README_FA.md",
-      "bytes": 11450,
-      "sha256": "B4ED8930829B382BAD34A055B462F41F782BDAFFEB365FD006C9AB47293AF261"
+      "bytes": 13407,
+      "sha256": "587B2ACCCDD7DE91B44DB45210156A43307D241C53443986E92E02F7119DCD60"
     },
     {
       "file": "linux/recover_warp_remote.sh",
@@ -175,12 +175,17 @@
     {
       "file": "linux/selftest.py",
       "bytes": 1829,
-      "sha256": "7B9E8310097825912B7F6AD92CCC30D5339507B256D7A0036BA424364E7EBEF5"
+      "sha256": "D8118F707B4B6B0BB687E90BEDA3FF95F3AB0BC90A1F4B9F507F4E443BA5BBED"
     },
     {
       "file": "linux/tailnet_cfon_gateway.py",
       "bytes": 17345,
       "sha256": "152B6D5182A7AD7759289EAC75013B344B4449C9AB46CD4A37107A0E9F1E34C6"
+    },
+    {
+      "file": "linux/tailnet_client_browser.py",
+      "bytes": 13430,
+      "sha256": "EEE303930265368928588C460B417B61BA4EE7D8016BC2EB7B0ACFDBB3166322"
     },
     {
       "file": "linux/test_browser_profile.py",
@@ -199,8 +204,8 @@
     },
     {
       "file": "linux/test_r37_parity.py",
-      "bytes": 9292,
-      "sha256": "5B9CB7C32A3219F77FBE3A8D4260B7A557005B29DAA7EC2E87B9F5336EC9021D"
+      "bytes": 9737,
+      "sha256": "F0C418FE6D596602C6925316628A5A806EBCA3B14E572B5E1853B49578255E7B"
     },
     {
       "file": "linux/test_scope_policy.py",
@@ -223,9 +228,14 @@
       "sha256": "4C2B78D4FBDD66E0877A843A6065F107181CC2C9AF973B0B11081F86B7894186"
     },
     {
+      "file": "linux/test_tailnet_client_browser.py",
+      "bytes": 13400,
+      "sha256": "72BBDB8523F4D3CBEE2266CAB33E27364DFBCBA7C02A93596A72ED84C73F1B89"
+    },
+    {
       "file": "linux/test_update_revision.py",
       "bytes": 2306,
-      "sha256": "21E6B99661F03709055EDCBAA89885FFA19FBF553F81941DF9FAAF39FB00127C"
+      "sha256": "3237FD1C6F7C8550D23F28FA7A424732FE4A606CCBE95B11284D4211233D93D2"
     },
     {
       "file": "linux/test_warp_tos_owner_consent.py",
@@ -234,8 +244,8 @@
     },
     {
       "file": "linux/uninstall.sh",
-      "bytes": 5162,
-      "sha256": "4A2974BFAD8FDDAB8A0A9B0915D0581D206EEF1DA7F537179147D4918EAE3CA1"
+      "bytes": 5666,
+      "sha256": "8898D2740984E71EF59DD2447FCC49C2B7C1410630FA73654B15B57231E07115"
     },
     {
       "file": "linux/warp_guard.py",

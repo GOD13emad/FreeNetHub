@@ -35,6 +35,8 @@ jobs:
           python-version: '3.13'
       - name: Verify public manifests
         run: python tests/verify_public_tree.py
+      - name: Verify current R53/R21 public release guide against accepted evidence
+        run: python tests/test_public_release_readme.py
       - name: Scan public tree for private/runtime material
         run: python tests/security_scan_public.py
       - name: Verify mobile fail-closed gates
@@ -87,9 +89,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0 # exact immutable R24 source must be present for archive reconstruction
       - name: Linux static checks
         run: |
-          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/selective_tunnel.py crossplatform/linux/test_selective_tunnel.py crossplatform/linux/tailnet_cfon_gateway.py crossplatform/linux/test_tailnet_cfon_gateway.py crossplatform/linux/test_selective_integration.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_r37_parity.py crossplatform/linux/test_update_revision.py
+          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/selective_tunnel.py crossplatform/linux/test_selective_tunnel.py crossplatform/linux/tailnet_cfon_gateway.py crossplatform/linux/test_tailnet_cfon_gateway.py crossplatform/linux/tailnet_client_browser.py crossplatform/linux/test_tailnet_client_browser.py crossplatform/linux/test_selective_integration.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_r37_parity.py crossplatform/linux/test_update_revision.py
           python3 crossplatform/linux/selftest.py
           python3 crossplatform/linux/test_console_policy.py
           python3 crossplatform/linux/test_private_state_permissions.py
@@ -101,6 +105,7 @@ jobs:
           python3 crossplatform/linux/test_selective_tunnel.py
           python3 crossplatform/linux/test_selective_integration.py
           python3 crossplatform/linux/test_tailnet_cfon_gateway.py
+          python3 crossplatform/linux/test_tailnet_client_browser.py
           python3 tests/test_windows_selective_routing.py
           python3 tests/test_windows_selective_http_bridge.py
           python3 tests/test_windows_selective_integration.py
@@ -127,6 +132,15 @@ jobs:
           # Never reconstruct the already CI-proven immutable R23 with R24 sources.
           python3 tests/build_linux_r24_package.py
           python3 tests/test_linux_r24_upgrade_preserves_data.py
+          # R25 is a separate consumer-feature candidate, never overwrite R24.
+          python3 tests/build_linux_r25_package.py
+          python3 tests/test_linux_r25_upgrade_preserves_data.py
+          # Frozen R21 cannot remove R24-only modules. Test reversible,
+          # SHA-pinned rollback residue quarantine only in disposable HOME.
+          python3 tests/test_r24_rollback_residue.py
+          # R25-only Firefox client source may remain after a frozen
+          # R25→R24/R21 rollback; verify its separately pinned reversible tool.
+          python3 tests/test_r25_rollback_residue.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
           cd /tmp/fnh-r20-ci/FreeNetHub_4.2.0_Linux_R20
@@ -151,6 +165,26 @@ jobs:
           path: |
             delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R24.zip
             delivery/github_v4.2.0/R24_SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+      - name: Seal distinct R25 Linux private-peer-browser candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          package=delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R25.zip
+          test -s "$package"
+          unzip -p "$package" FreeNetHub_4.2.0_Linux_R25/PACKAGE_MANIFEST.json |
+            python3 -c 'import json,sys;m=json.load(sys.stdin);assert m["version"]=="4.2.0-linux.25-r58" and m["release"]=="LINUX_4.2.0_R25_R58_PEER_BROWSER_SELECTIVE" and len(m["files"])==31'
+          sha256sum "$package" > delivery/github_v4.2.0/R25_SHA256SUMS.txt
+          sha256sum -c delivery/github_v4.2.0/R25_SHA256SUMS.txt
+          echo "R25_EXACT_CI_TESTED_PRIVATE_PREVIEW_NOT_PUBLIC_RELEASE"
+      - name: Archive R25 peer-browser preview separately from public R21 and frozen R24
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: FreeNetHub_4.2.0_Linux_R25_CI_TESTED_UNSIGNED
+          path: |
+            delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R25.zip
+            delivery/github_v4.2.0/R25_SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30
   android-build:
