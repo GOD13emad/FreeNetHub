@@ -289,9 +289,9 @@
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
     "R24→R21 physical cleanup of orphan R24 modules (reversible exact-SHA helper local 11/11 PASS; deployed owner run and CI still pending)",
-    "MMZ local CFON bootstrap still fails; installed R25 exact SHA SOCKS5/HTTP/real Firefox headless PAC PASS; authenticated interactive Firefox GUI acceptance OPEN"
+    "MMZ local CFON bootstrap fails; R25 firstparty launch real Firefox headless and GTK offscreen handlers PASS; interactive owner-authorized desktop/Google login remains OPEN"
   ],
-  "status": "WINDOWS_R57_AND_MMZ_LINUX_R25_PHYSICAL_PEER_AND_NATIVE_HEADLESS_FIREFOX_PAC_PASS__EMAD_LINUX_R21_CFON_INTACT__PRODUCT_FINAL_OPEN",
+  "status": "WINDOWS_R57_AND_MMZ_LINUX_R25_OWNER_PHYSICAL_FIRSTPARTY_HEADLESS_BROWSER_AND_GTK_OFFSCREEN_PASS__EMAD_R21_CFON_INTACT__FINAL_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -390,7 +390,7 @@
         "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file",
         "https://tailscale.com/docs/reference/faq/other-vpns"
       ],
-      "status": "EXACT_SHA_CI_AND_PHYSICAL_INSTALL_FIRSTPARTY_TAILNET_SOCKS_HTTP_AND_FIREFOX_HEADLESS_PAC_PASS__INTERACTIVE_GUI_OPEN",
+      "status": "EXACT_SHA_CI_REAL_OWNER_MMZ_R25_FIRSTPARTY_HEADLESS_BROWSER_LAUNCH_GTK_OFFSCREEN_PASS_INTERACTIVE_DESKTOP_OPEN",
       "exactSourceCI": {
         "commit": "5e9024623334c798f2d54ec5ba9f18782b4e28bf",
         "run": 39057288426,
@@ -452,6 +452,56 @@
         "receiptSHA256": "6F24DF363506AC1BC877BC2779164F9E7913177D4E12B04C3B33D6B75905F250",
         "operationReceipt": "da78c4ae-96a5-4127-99a3-6d7dc5bc8e51",
         "serverCleanStopReceipt": "343c8c74-8b8a-4f8f-815a-2f1bb6aa53aa"
+      },
+      "realInstalledFirstpartyBrowserLaunch": {
+        "status": "PASS_IN_SCOPE",
+        "installedVersion": "4.2.0-linux.25-r58",
+        "exactSourceCommit": "5e9024623334c798f2d54ec5ba9f18782b4e28bf",
+        "firstPartyLaunchCalledNotJustRenderedPAC": true,
+        "selectedPeer": "100.115.125.114",
+        "selectedPublicURL": "https://www.google.com/",
+        "firstPartyMethodReturnedOK": true,
+        "returnedScope": "BROWSER_SELECTIVE",
+        "returnedMode": "TAILNET",
+        "dedicatedRealFirefoxPIDSeen": true,
+        "validGooglePublicPNGGenerated": true,
+        "FirefoxProxyLogFiles": 3,
+        "nativeFirefoxProxyLogContainsSelectedPeer": true,
+        "actualUserJSPACConfigured": true,
+        "selectedNoDirectFallback": true,
+        "testOverridesLimitedToDisposableProfileRootAndHeadlessFirefoxWrapper": true,
+        "productionNetworkPreflightAndPACWriterAndProcessTrackerUsedUnchanged": true,
+        "separateFirefoxProfileStopped": true,
+        "GNOMEProxyDefaultRoutesAndTailscaleUnchanged": true,
+        "userDesktopInputUsed": false,
+        "interactiveOwnerGUIAccepted": false,
+        "authenticatedGoogleAppAccepted": false,
+        "privateOwnerReceipt": "MMZ .local/state/fnh-mmz-r25-field-20261017/real-installed-r25-client-headless-action/result.json",
+        "privateReceiptSHA256": "1E7EA413CEE5F8CEA842ED1E2D835D66ECF0B0365E135630B8C2190F2334B56A",
+        "operationId": "625547bb-a1e5-4b5a-83fe-9807bacbb165"
+      },
+      "realInstalledGtkOffscreenEventWiring": {
+        "status": "PASS_IN_SCOPE",
+        "nativeGTK4LibadwaitaWidgetsConstructed": [
+          "sidebar",
+          "dashboard",
+          "methods",
+          "settings"
+        ],
+        "nativeWindowMapped": false,
+        "tailnetMethodCardPresent": true,
+        "defaultClientAllowlist": [
+          "google.com",
+          "cloud.google.com"
+        ],
+        "browserAndSelectiveDispatchCorrect": true,
+        "systemAndConsoleScopesFailClosedBeforeNetwork": true,
+        "realGTKActionsInterceptedWithoutBrowserLaunch": 5,
+        "noOwnerSystemOrSessionChanges": true,
+        "operations": [
+          "33238e12-3ba7-429b-b80e-1118ea8901a7",
+          "ef3bd363-dac1-46c8-a8e2-ba5f3d83d1c2"
+        ]
       }
     }
   }
