@@ -1,9 +1,10 @@
 [CmdletBinding()]
 param(
- [Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','Status')][string]$Action,
+ [Parameter(Mandatory)][ValidateSet('StartPc','StartConsole','Stop','StopConsole','Status','ProbeWarpReuse')][string]$Action,
  [ValidateSet('WARP','NODE')][string]$Provider='WARP',
  [ValidateSet('SELECTED','AUTO')][string]$NodePolicy='SELECTED',
- [string]$ResultPath=''
+ [string]$ResultPath='',
+ [switch]$ReuseVerifiedWarp
 )
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'runtime_config.ps1')
@@ -89,6 +90,48 @@ function Verify-ProviderUdp([string]$p,[string]$target){
   Assert ($country -eq $target) ($p+'_UDP_COUNTRY_'+$country)
  }
  [ordered]@{status='PASS';publicIp=[string]$j.udp_public_ip;country=$country;countryVerified=($target -and $target -ne 'AUTO');seconds=$j.seconds;relay=$j.relay}
+}
+function Get-VerifiedInstalledWarp([switch]$IdentityOnly){
+ # Cross-install WARP must match one pinned executable and localhost listener; never adopt/stop it.
+ $cfg=$Defaults.providers.WARP
+ Assert ([string]$cfg.type -eq 'socks' -and [string]$cfg.host -eq '127.0.0.1' -and [bool]$cfg.udp) 'REUSE_WARP_PROVIDER_CONFIG_INVALID'
+ $port=[int]$cfg.port
+ Assert ($port -ge 1024 -and $port -le 65535) 'REUSE_WARP_PORT_INVALID'
+ $listen=@(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction Stop)
+ Assert ($listen.Count -eq 1 -and [string]$listen[0].LocalAddress -eq '127.0.0.1') 'REUSE_WARP_LISTENER_NOT_EXCLUSIVE_LOOPBACK'
+ $processId=[int]$listen[0].OwningProcess
+ Assert ($processId -gt 0) 'REUSE_WARP_PROCESS_MISSING'
+ $depPath=Join-Path $Root 'app\dependencies.json'
+ Assert (Test-Path -LiteralPath $depPath -PathType Leaf) 'REUSE_WARP_PINNED_DEPENDENCY_MISSING'
+ $deps=Get-Content -LiteralPath $depPath -Raw -Encoding UTF8|ConvertFrom-Json
+ Assert ($null -ne $deps.warp -and [string]$deps.warp.sha256 -match '^[A-Fa-f0-9]{64}$') 'REUSE_WARP_DEPENDENCY_NOT_PINNED'
+ $binary=[string]$deps.warp.path
+ Assert (Test-Path -LiteralPath $binary -PathType Leaf) 'REUSE_WARP_BINARY_MISSING'
+ $binary=(Resolve-Path -LiteralPath $binary -ErrorAction Stop).Path
+ Assert ((Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash -eq [string]$deps.warp.sha256) 'REUSE_WARP_BINARY_HASH_CHANGED'
+ $c=Get-CimInstance Win32_Process -Filter ('ProcessId='+$processId) -ErrorAction Stop
+ Assert ($null -ne $c -and [string]$c.Name -eq 'warp-plus.exe') 'REUSE_WARP_WRONG_PROCESS'
+ Assert ([string]::Equals([string]$c.ExecutablePath,$binary,[StringComparison]::OrdinalIgnoreCase)) 'REUSE_WARP_FOREIGN_BINARY'
+ $pattern='(?i)(?:^|\s)--bind(?:\s+|=)127\.0\.0\.1:'+$port+'(?=\s|$)'
+ Assert ([string]$c.CommandLine -match $pattern) 'REUSE_WARP_BIND_NOT_VERIFIED'
+ $owner=Get-Process -Id $processId -ErrorAction Stop
+ $ticks=[long]$owner.StartTime.ToUniversalTime().Ticks
+ Assert ($ticks -gt 0) 'REUSE_WARP_START_ID_MISSING'
+ $verifiedWarp=$null;$udpVerified=$false
+ if(!$IdentityOnly){
+  $http=& curl.exe -4 --socks5-hostname ('127.0.0.1:'+$port) --connect-timeout 5 --max-time 18 -sS -o NUL -w '%{http_code}' 'https://www.youtube.com/generate_204' 2>$null|Out-String
+  Assert ($LASTEXITCODE -eq 0 -and $http.Trim() -eq '204') 'REUSE_WARP_HTTPS204_FAILED'
+  $trace=& curl.exe -4 --socks5-hostname ('127.0.0.1:'+$port) --connect-timeout 5 --max-time 18 -fsS 'https://www.cloudflare.com/cdn-cgi/trace' 2>$null|Out-String
+  Assert ($LASTEXITCODE -eq 0 -and $trace -match '(?m)^warp=on\s*$') 'REUSE_WARP_TRACE_NOT_ATTESTED'
+  $verifiedWarp='on'
+  $udpCheck=Verify-ProviderUdp 'WARP' 'AUTO'
+  Assert ([string]$udpCheck.status -eq 'PASS') 'REUSE_WARP_UDP_NOT_VERIFIED'
+  $udpVerified=$true
+ }
+ $again=@(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction Stop)
+ Assert ($again.Count -eq 1 -and [string]$again[0].LocalAddress -eq '127.0.0.1' -and [int]$again[0].OwningProcess -eq $processId) 'REUSE_WARP_LISTENER_CHANGED'
+ Assert ((Get-Process -Id $processId -ErrorAction Stop).StartTime.ToUniversalTime().Ticks -eq $ticks) 'REUSE_WARP_PROCESS_RESTARTED'
+ return [ordered]@{status='REUSE_PINNED_INSTALLED_WARP_PASS';port=$port;pid=$processId;startTicks=$ticks;sha256=(Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash;warp=$verifiedWarp;udpVerified=$udpVerified;engineOwnershipTransferred=$false}
 }
 function Run-Engine([string]$a,[string]$m,[int]$budget=120){
  $j=[guid]::NewGuid().ToString('N');& $Python $Engine --action $a --mode $m --job $j --budget $budget|Out-Null;$ec=$LASTEXITCODE
@@ -193,8 +236,10 @@ New-Item -ItemType Directory -Path $Runtime -Force|Out-Null
 if($ResultPath){$full=[IO.Path]::GetFullPath($ResultPath);$jobs=[IO.Path]::GetFullPath((Join-Path $Root 'jobs'))+'\';if(!$full.StartsWith($jobs,[StringComparison]::OrdinalIgnoreCase)){throw 'RESULT_PATH_OUTSIDE_JOBS'};$ResultPath=$full}
 $out=[ordered]@{schema=1;action=$Action;utc=[DateTimeOffset]::UtcNow.ToString('o');exit=1;result=$null}
 try{
- if($Action -ne 'Status'){Enter-GatewayMutationGuard}
+ if($ReuseVerifiedWarp -and ($Action -ne 'StartPc' -or $Provider -ne 'WARP')){throw 'REUSE_WARP_STARTPC_ONLY'}
+ if($Action -notin @('Status','ProbeWarpReuse')){Enter-GatewayMutationGuard}
  if($Action -eq 'Status'){$out.exit=0;$out.result=Get-Status}
+ elseif($Action -eq 'ProbeWarpReuse'){$out.exit=0;$out.result=Get-VerifiedInstalledWarp}
  elseif($Action -eq 'Stop'){
   Require-Admin;$s=if(Test-Path $Session){Get-Content $Session -Raw -Encoding UTF8|ConvertFrom-Json}else{$null}
    # When stopping a PC TUNNEL, do not spend the SYSTEM recovery window
@@ -227,7 +272,7 @@ try{
   Require-Admin;$st=Get-Status;Assert (-not [bool]$st.running) 'GATEWAY_ALREADY_RUNNING'
    Assert (-not $st.tun) 'UNOWNED_TUN_PRESENT_REFUSE_START'
   Assert (-not (Test-Path -LiteralPath $Owner)) 'GATEWAY_OWNER_EVIDENCE_PRESENT_REFUSE_START'
-  $mode=if($Action -eq 'StartPc'){'PC_TUNNEL'}else{'CONSOLE_ONLY'};$started=$false;$preexisting=$false
+  $mode=if($Action -eq 'StartPc'){'PC_TUNNEL'}else{'CONSOLE_ONLY'};$started=$false;$preexisting=$false;$externalWarp=$null
   try{
    if($mode -eq 'CONSOLE_ONLY'){
     $profilePath=if(Test-Path $ConsoleProfile){$ConsoleProfile}else{''};$before=Trace
@@ -260,7 +305,10 @@ try{
      }
     }else{
      $v=Run-Engine 'Verify' 'WARP' 60;$preexisting=($v.exit -eq 0 -and [bool]$v.record.result.healthy)
-     if(!$preexisting){$c=Run-Engine 'ConnectProvider' 'WARP' 220;Assert ($c.exit -eq 0 -and [bool]$c.record.result.healthy) 'WARP_CONNECT_FAIL';$started=$true}
+     if(!$preexisting){
+      if($ReuseVerifiedWarp){$externalWarp=Get-VerifiedInstalledWarp;$preexisting=$true}
+      else{$c=Run-Engine 'ConnectProvider' 'WARP' 220;Assert ($c.exit -eq 0 -and [bool]$c.record.result.healthy) 'WARP_CONNECT_FAIL';$started=$true}
+     }
     }
 
     $udpBefore=Verify-ProviderUdp $Provider $(if($Provider -eq 'NODE'){$target}else{'AUTO'})
@@ -278,6 +326,15 @@ try{
     }
     & $Python $Generator --mode PC_TUNNEL --provider $Provider --dns-mode $dnsMode --output $cfg|Out-Null;Assert ($LASTEXITCODE -eq 0) 'CONFIG_GENERATE_FAIL'
     $SB=[string](Get-FnhSingBox).path;& $SB check -c $cfg;Assert ($LASTEXITCODE -eq 0) 'CONFIG_CHECK_FAIL'
+    if($externalWarp){
+     $loopCfg=Get-Content -LiteralPath $cfg -Raw -Encoding UTF8|ConvertFrom-Json
+     $bypass=@($loopCfg.inbounds[0].route_exclude_address)
+     $rules=@($loopCfg.route.rules)
+     $processBypass=@($rules|Where-Object{$_.action -eq 'route' -and $_.outbound -eq 'direct' -and 'warp-plus.exe' -in @($_.process_name)})
+     Assert ([bool]$loopCfg.route.auto_detect_interface -and $processBypass.Count -eq 1 -and ('162.159.192.0/24' -in $bypass) -and ('100.64.0.0/10' -in $bypass)) 'REUSE_WARP_LOOP_PROTECTION_MISSING'
+     $repeat=Get-VerifiedInstalledWarp -IdentityOnly
+     Assert ($repeat.pid -eq $externalWarp.pid -and $repeat.startTicks -eq $externalWarp.startTicks -and $repeat.sha256 -eq $externalWarp.sha256) 'REUSE_WARP_OWNER_CHANGED_BEFORE_TUN'
+    }
     & $Apply -Mode PC_TUNNEL -ConfigPath $cfg -ConfigSha256 ((Get-FileHash $cfg -Algorithm SHA256).Hash)|Out-Null
     $ar=Get-Content (Join-Path $Runtime 'apply_result.json') -Raw -Encoding UTF8|ConvertFrom-Json;Assert ($ar.status -eq 'PASS') 'APPLY_FAIL';Start-Sleep -Seconds 2
 
@@ -294,7 +351,7 @@ try{
     }
 
     $kind=$(if($Provider -eq 'NODE'){'NODE_SOCKS'}else{'WARP_SOCKS'})
-    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;dnsMode=$dnsMode;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
+    $sess=[ordered]@{schema=4;mode='PC_TUNNEL';provider=$Provider;providerReuse=$(if($externalWarp){'PINNED_EXTERNAL_NO_OWNERSHIP'}else{'NONE'});baseRoute=$baseRoute;baseTrace=$before;providerKind=$kind;dnsMode=$dnsMode;nodePolicy=$(if($Provider -eq 'NODE'){$NodePolicy}else{$null});providerPreexisting=$preexisting;profileSha256=$null;started=[DateTimeOffset]::UtcNow.ToString('o');verify=[ordered]@{targetCountry=$target;providerUdpBefore=$udpBefore;trace=$tr;youtube='204';udp=$udpPost;udpCountry=$udpCountry};manual=$null}
     Write-J $Session $sess
     # Source Apply PASS alone is insufficient: ownership may disappear with
     # the TUN still present. Reject false PASS and fail closed.

@@ -3,6 +3,15 @@ R=pathlib.Path(__file__).resolve().parents[2]
 G=R/"gateway"
 spec=importlib.util.spec_from_file_location("gc",G/"generate_config.py");M=importlib.util.module_from_spec(spec);spec.loader.exec_module(M)
 class GatewayTests(unittest.TestCase):
+ def test_gateway_manifest_builder_retains_critical_native_dns_guard(self):
+  builder=(G/"tests"/"build_gateway_manifest.py").read_text(encoding="utf-8-sig")
+  manifest=json.loads((G/"manifest.json").read_text(encoding="utf-8-sig"))
+  included={row["file"] for row in manifest["files"]}
+  self.assertIn("newline='\\n'",builder)
+  self.assertNotIn(b'\r\n',(G/"manifest.json").read_bytes())
+  for name in ("dns_guard_watchdog.ps1","stop_elevated.ps1","apply_elevated.ps1","gateway_control.ps1"):
+   self.assertIn(repr(name),builder)
+   self.assertIn(name,included)
  def test_native_dns_guard_owner_handles_empty_legacy_null_and_rejects_unknown(self):
   apply=(G/"apply_elevated.ps1").read_text(encoding="utf-8-sig")
   stop=(G/"stop_elevated.ps1").read_text(encoding="utf-8-sig")

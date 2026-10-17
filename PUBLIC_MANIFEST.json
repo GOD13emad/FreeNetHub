@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 36533,
-      "sha256": "D43F3D41CBE63F90D9EDDB5332C9E306B53606B8AA31269738040C462E662AE7"
+      "bytes": 36681,
+      "sha256": "906F31552BBAA6D1FC3751C1203392E3F435547EF5284AC1478731FD8D5B4595"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1650,8 +1650,8 @@
     },
     {
       "file": "gateway/gateway_control.ps1",
-      "bytes": 19954,
-      "sha256": "E850C849EC5F6A062F7D4E5ADE5D625B907A299F35DCF413514183F77FA9D38E"
+      "bytes": 24609,
+      "sha256": "BE32471EF66BF9F924CEAE892B7F3C80BE6EE8E4EA9C0CED17175B0D489D802B"
     },
     {
       "file": "gateway/gateway_defaults.json",
@@ -1676,7 +1676,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3071,
-      "sha256": "B86470A682CD42B097628E5CFD581BA94773AD7F54EA8F6E97C2AACC93805B51"
+      "sha256": "80788AB5C251AEF8ABBC4D815F8E79C15D15568F1723D2C27C6109A0F3A9686E"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1725,8 +1725,8 @@
     },
     {
       "file": "gateway/tests/build_gateway_manifest.py",
-      "bytes": 1155,
-      "sha256": "1EC667F5468B19016537516C9E0BC4D52654135F75F2028B8E596B400DDB6DAC"
+      "bytes": 1193,
+      "sha256": "E263A4D6518BEAD35BA0AA2C87EE4A4A630C0B76B6E002D3CFF1B8240149FA5F"
     },
     {
       "file": "gateway/tests/direct_stun.py",
@@ -1770,13 +1770,18 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 11513,
-      "sha256": "4B6BB139EC4BB6383456F59048666724D20C96607F3647AACFA7A06D6A37C24D"
+      "bytes": 12076,
+      "sha256": "A75E213215A5E753028AB783795696E64D1DF451E872583DF8103648C00253D6"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
       "bytes": 2732,
       "sha256": "FDC63F73FFD3B5B6F0FCE124D2A134FD9305E474BC9A35937EC56A1DDCC6A83F"
+    },
+    {
+      "file": "gateway/tests/test_warp_reuse_contract.ps1",
+      "bytes": 4028,
+      "sha256": "5B1A8EA295F7A00BFCB98C5209171BA32412E707FE2DED8E7BCD0ACC6276B892"
     },
     {
       "file": "gateway/tests/virtual_console_e2e.py",
@@ -1830,8 +1835,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 42756,
-      "sha256": "F2AB1EF136C7802A4816273F7C0311EDF299CB7B2246AC9951DC11A68CE04C49"
+      "bytes": 42755,
+      "sha256": "1B317526FECFEF734C10EB56EBFC872A5E70F02417F2D08A7913E29477739ABB"
     },
     {
       "file": "SECURITY.md",
