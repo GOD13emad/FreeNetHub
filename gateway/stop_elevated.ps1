@@ -41,6 +41,18 @@ function Process-Identity($o){
  return 'EXACT'
 }
 function Process-Matches($o){return (Process-Identity $o) -eq 'EXACT'}
+function Wait-OwnedSingBoxFinalIdentity($ownerRecord,[int]$Checks=25,[int]$PollMs=200){
+ # Process exit and CIM visibility can lag each other briefly after an exact,
+ # identity-pinned stop; do not mistake that race for a confirmed foreign PID.
+ # Never change/kill any PID here; only read identity until ABSENT/DIFFERENT.
+ $state='UNVERIFIED'
+ for($k=0;$k -lt $Checks;$k++){
+  $state=Process-Identity $ownerRecord
+  if($state -in @('ABSENT','DIFFERENT')){return $state}
+  if($k+1 -lt $Checks){Start-Sleep -Milliseconds $PollMs}
+ }
+ return $state
+}
 function Assert-NoResidualPcDnsGuard($ownerRecord){
  # The list inside legacy owner.json may be absent or incomplete.
  # A successful STOP must independently prove all exact FreeNetHub DNS53
@@ -133,8 +145,10 @@ if(Process-Matches $o){
   Start-Sleep -Milliseconds 500
  }
 }
-if((Process-Identity $o) -eq 'UNVERIFIED'){Fail 'OWNED_SINGBOX_IDENTITY_UNVERIFIED_AFTER_STOP' $o}
-if(Process-Matches $o){Fail 'OWNED_SINGBOX_STOP_INCOMPLETE' $o}
+$settled=Wait-OwnedSingBoxFinalIdentity $o
+if($settled -eq 'UNVERIFIED'){Fail 'OWNED_SINGBOX_IDENTITY_UNVERIFIED_AFTER_STOP' $o}
+if($settled -eq 'EXACT'){Fail 'OWNED_SINGBOX_STOP_INCOMPLETE' $o}
+if($settled -notin @('ABSENT','DIFFERENT')){Fail 'OWNED_SINGBOX_UNKNOWN_FINAL_IDENTITY' $o}
 
 # Wait for Wintun to be released. If it lingers after the exact process is gone,
 # remove only the exact FreeNetHub Wintun device.

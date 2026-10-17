@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 40050,
-      "sha256": "763E21863FA95299E5FDFB78C7A8729EB9740A0BC8084AF993E494D652CBB4DB"
+      "bytes": 40213,
+      "sha256": "42BA64E7CA51A09B7F4B1B2BF77B04FBD44574D6E33DE96B82740BFF0FA4F5A4"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1731,7 +1731,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3071,
-      "sha256": "3D85221D6AF5412F1B2462E1652971CAE9C7D438ED2032A142CCE42387EB3A4F"
+      "sha256": "A7240A60CF34D5D1E2A4259FA35FDD3EB48864E6852661793B0EBB4CB7A9B5F3"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1775,8 +1775,8 @@
     },
     {
       "file": "gateway/stop_elevated.ps1",
-      "bytes": 11362,
-      "sha256": "1DC7B3E9177A27148EE83A8C92A9D53662BB4383B0B997499F3FA176504B3D19"
+      "bytes": 12035,
+      "sha256": "7C10892C0B0DECA8DA065770A64F5D3CFC9EE87848B327CDD68D54ECBD00D477"
     },
     {
       "file": "gateway/tests/build_gateway_manifest.py",
@@ -1829,6 +1829,11 @@
       "sha256": "3F6F42311506B309F509FDD151CDE870DD56111A373D0721D68FF634284B5019"
     },
     {
+      "file": "gateway/tests/test_owned_process_stop_transition.ps1",
+      "bytes": 2408,
+      "sha256": "022E8EDE046E9004F3C51E999767E187666FC1473FD462415485F09ABAC03EBB"
+    },
+    {
       "file": "gateway/tests/test_scope_ui_policy.py",
       "bytes": 2732,
       "sha256": "FDC63F73FFD3B5B6F0FCE124D2A134FD9305E474BC9A35937EC56A1DDCC6A83F"
@@ -1875,8 +1880,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 223991,
-      "sha256": "E21C6D57E7855C03911C8D5C7BC97DFB32584F64E96DE2108C3A87E24BA4B6F0"
+      "bytes": 226038,
+      "sha256": "EA0D26D2C9D3EA3B44DE4F8FADD2274A12EC8208D9B05210B0EAD08F215DC00B"
     },
     {
       "file": "pytest.ini",
@@ -1896,7 +1901,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42812,
-      "sha256": "4797D234A4B2FCFF7796FA541E39B73304F4186D7D0D05644A498142FF77EB61"
+      "sha256": "D364E020964082B31BB295C13F2A4A5928A4E4D91D4B0E43518CC1CD1FFFFB63"
     },
     {
       "file": "SECURITY.md",
