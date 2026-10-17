@@ -22,8 +22,9 @@ import urllib.request
 import freenet_hub_linux as legacy
 import nodehub_shared as NH
 import selective_tunnel as selective
+import tailnet_cfon_gateway as tailnet
 
-VERSION = "4.2.0-linux.23-r56"
+VERSION = "4.2.0-linux.24-r57"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -976,6 +977,32 @@ def test_active_sites(targets=ACTIVE_SITE_TARGETS, timeout=8):
             "scope":"BROWSER","results":results,"passed":sum(bool(x["ok"]) for x in results),
             "error":"" if allowed else "NO_INDEPENDENT_TARGET_HEALTH"}
 
+def tailnet_status():
+    return tailnet.status()
+
+
+def tailnet_peer_choices():
+    try:
+        return {"ok": True, "peers": tailnet.windows_peers(), "settingsChanged": False}
+    except (ValueError, OSError, subprocess.SubprocessError) as exc:
+        return {"ok": False, "error": str(exc)}
+
+
+def tailnet_start(peer, domains=None):
+    try:
+        selection = settings()["selectiveDomains"] if domains is None else domains
+        return tailnet.start(peer, selection, limit_minutes=30)
+    except (ValueError, OSError, subprocess.SubprocessError) as exc:
+        return {"ok": False, "error": str(exc)}
+
+
+def tailnet_stop():
+    try:
+        return tailnet.stop()
+    except (ValueError, OSError, subprocess.SubprocessError) as exc:
+        return {"ok": False, "error": str(exc)}
+
+
 def selective_status():
     return selective.status()
 
@@ -1102,6 +1129,10 @@ def connect_method(mode, scope="BROWSER"):
     return legacy.connect_mode(mode,full_system=False)
 
 def stop_all():
+    if tailnet.status().get("enabled"):
+        off = tailnet_stop()
+        if not off.get("ok"):
+            return {"ok": False, "error": "TAILNET_GATEWAY_STOP_REQUIRED", "detail": off}
     if selective.status().get("enabled"):
         off = selective.disable()
         if not off.get("ok"):

@@ -75,6 +75,24 @@ def response(client):
 
 
 class BridgeTests(unittest.TestCase):
+    def test_tailnet_proxy_requires_explicit_mode_and_shared_private_ipv4(self):
+        self.assertEqual(
+            bridge.validate_proxy_host("TAILNET","100.100.42.1",19551),
+            "100.100.42.1")
+        self.assertEqual(
+            bridge.validate_proxy_host("CFON","127.0.0.1",19414),"127.0.0.1")
+        for mode, host, port in (
+            ("CFON","100.100.42.1",19551),
+            ("TAILNET","127.0.0.1",19551),
+            ("TAILNET","8.8.8.8",19551),
+            ("TAILNET","192.168.20.6",19551),
+            ("TAILNET","100.100.42.1",19414),
+            ("TAILNET","evil.example",19551),
+            ("TAILNET","fd7a:115c:a1e0::1",19551),
+        ):
+            with self.subTest(mode=mode,host=host,port=port), self.assertRaises(bridge.BridgeError):
+                bridge.validate_proxy_host(mode,host,port)
+
     def test_target_whitelist_enforces_HTTPS(self):
         allow = ["brave.com", "stripe.com"]
         self.assertEqual(bridge.normalize_connect_target("account.brave.com:443", allow),

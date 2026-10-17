@@ -235,6 +235,23 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(self.reg, prior)
         self.assertFalse(st._load_state()["inFlight"])
 
+    def test_explicit_tailnet_mode_requires_verified_remote_socks_and_restores(self):
+        with mock.patch.object(st, "_check_tailnet_socks", return_value=None) as remote:
+            result=st.enable("google.com",19551,"TAILNET",proxy_host="100.100.42.1")
+            self.assertTrue(result["ok"])
+            self.assertEqual(result["proxyHost"],"100.100.42.1")
+            remote.assert_called_once_with("100.100.42.1",19551)
+            self.assertEqual(st._load_state()["proxyHost"],"100.100.42.1")
+            self.assertTrue(st.status()["healthy"])
+            self.assertTrue(st.disable()["ok"])
+        self.assertEqual(self.reg,self.before)
+        for method,host,port in (("CFON","100.100.42.1",19551),
+                                  ("TAILNET","8.8.8.8",19551),
+                                  ("TAILNET","100.100.42.1",19414)):
+            with self.subTest(method=method,host=host), self.assertRaises(st.SelectiveError):
+                st.enable("google.com",port,method,proxy_host=host)
+        self.assertEqual(self.reg,self.before)
+
     def test_orphan_url_requires_recovery_not_adoption(self):
         self.reg["AutoConfigURL"] = {"present": True, "value": st.URL + "?v=unowned", "kind": 1}
         with self.assertRaises(st.SelectiveError):

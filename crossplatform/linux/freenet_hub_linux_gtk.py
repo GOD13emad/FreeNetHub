@@ -566,6 +566,25 @@ class FreeNetHub(Adw.Application):
                                "فقط برنامه‌های سازگار با PAC/GNOME از این قابلیت استفاده می‌کنند.","muted"))
         root.append(selective)
 
+        tailnet=card()
+        tailnet.append(label("مسیر Google از طریق CFON این Linux برای Windows · فقط Tailscale","section-title"))
+        tailnet.append(label("اشتراک فقط با شروع صریح، صرفاً برای دستگاه Windows انتخاب‌شده، "
+                            "فقط دامنه‌های HTTPS موجود در فهرست بالا و حداکثر ۳۰ دقیقه. "
+                            "هیچ اتصال عمومی یا VPN سراسری فعال نمی‌شود.","muted"))
+        self.tailnet_peer_entry=Gtk.Entry()
+        self.tailnet_peer_entry.set_direction(Gtk.TextDirection.LTR)
+        self.tailnet_peer_entry.set_placeholder_text("100.x.x.x — آدرس Tailscale کامپیوتر Windows")
+        tailnet.append(self.tailnet_peer_entry)
+        tailnet.append(flow([
+            button("یافتن دستگاه‌های Windows",self.tailnet_find_peers),
+            button("شروع اشتراک محدود",self.tailnet_start),
+            button("توقف اشتراک",self.tailnet_stop),
+            button("وضعیت اشتراک",self.tailnet_refresh),
+        ],max_children=2,min_children=1,spacing=8))
+        self.tailnet_state_label=label("اشتراک CFON غیرفعال؛ خود CFON دست‌نخورده است.","muted")
+        tailnet.append(self.tailnet_state_label)
+        root.append(tailnet)
+
         mon=card();mon.append(label("پایایی","section-title"))
         mr=flow(max_children=2,min_children=1)
         a=hbox(7);a.append(label("بررسی دوره‌ای"));self.monitor_switch=Gtk.Switch();self.monitor_switch.set_active(bool(s["monitor"]));a.append(self.monitor_switch);mr.append(a)
@@ -627,6 +646,52 @@ class FreeNetHub(Adw.Application):
             self.confirm_console_start();return
         self.select_method(method)
         self.run_async(f"Connect {self.scope} {method}",lambda:core.connect_method(method,self.scope),self.connect_done)
+
+    def tailnet_find_peers(self,*_):
+        self.run_async("Find Tailnet Windows peers",core.tailnet_peer_choices,self.tailnet_peers_done)
+
+    def tailnet_peers_done(self,result):
+        if not result.get("ok"):
+            self.tailnet_state_label.set_text("Tailscale: "+str(result.get("error")))
+            return
+        rows=list(result.get("peers") or [])
+        if len(rows)==1:
+            self.tailnet_peer_entry.set_text(str(rows[0]["ip"]))
+            self.tailnet_state_label.set_text("دستگاه Windows مجاز: "+str(rows[0]["name"]))
+        elif not rows:
+            self.tailnet_state_label.set_text("دستگاه Windows آنلاین در Tailscale یافت نشد.")
+        else:
+            self.tailnet_state_label.set_text("چند دستگاه Windows آنلاین: "+
+                                              " · ".join(str(r["name"])+": "+str(r["ip"]) for r in rows[:5])+
+                                              " · آدرس درست را انتخاب کن.")
+
+    def tailnet_start(self,*_):
+        peer=self.tailnet_peer_entry.get_text().strip()
+        domains=self.selective_domains_text()
+        self.run_async("Start explicit Tailnet CFON share",
+                       lambda:core.tailnet_start(peer,domains),self.tailnet_done)
+
+    def tailnet_stop(self,*_):
+        self.run_async("Stop Tailnet CFON share",core.tailnet_stop,self.tailnet_done)
+
+    def tailnet_done(self,result):
+        self.tailnet_refresh()
+        if not result.get("ok"):
+            self.tailnet_state_label.set_text("اشتراک انجام نشد: "+str(result.get("error") or "FAILED"))
+
+    def tailnet_refresh(self,*_):
+        try:
+            result=core.tailnet_status()
+            if result.get("active") and not result.get("expired"):
+                msg="فعال · فقط دستگاه "+str(result.get("peer"))+" · دامنه‌ها: "+str(len(result.get("domains") or []))+" · "+str(result.get("port"))
+            elif result.get("enabled"):
+                msg="غیرفعال/منقضی؛ در صورت نیاز ابتدا توقف و سپس شروع را بزن."
+            else:
+                msg="خاموش · CFON اصلی حفظ شده است."
+            self.tailnet_state_label.set_text("CFON خصوصی: "+msg)
+        except Exception as exc:
+            self.tailnet_state_label.set_text("وضعیت نامشخص: "+str(exc))
+        return False
 
     def selective_domains_text(self):
         buf=self.selective_domains_view.get_buffer()

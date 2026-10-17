@@ -1,19 +1,6 @@
 name: R56 Google and 403 Windows isolated acceptance
 
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/r56-google-403-candidate.yml'
-      - 'tests/prepare_r56_google_403_candidate.py'
-      - 'tests/test_windows_r56_isolated.ps1'
-      - 'app/engine.py'
-      - 'app/selective_route_windows.py'
-      - 'app/selective_http_bridge.py'
-      - 'app/FreeNetHub.ps1'
-      - 'app/View.xaml'
-      - 'app/manifest.json'
-      - 'windows/installer/FreeNetHub.iss'
-      - 'windows/installer/Prepare-SelectiveUpgrade.ps1'
   workflow_dispatch:
 
 permissions:

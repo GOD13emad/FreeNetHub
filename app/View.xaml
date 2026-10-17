@@ -596,6 +596,7 @@
            <ComboBoxItem Tag="CFON" Content="CFON"/><ComboBoxItem Tag="WARP" Content="WARP"/>
            <ComboBoxItem Tag="NODE" Content="Node"/><ComboBoxItem Tag="TOR" Content="Tor"/>
            <ComboBoxItem Tag="GOOL" Content="GOOL"/>
+           <ComboBoxItem Tag="TAILNET" Content="Linux CFON · Tailscale"/>
          </ComboBox>
          <Button Name="SelectivePreset" Content="افزودن Brave + Stripe" Margin="0,0,8,0"/>
          <Button Name="SelectiveGooglePreset" Content="افزودن Google" Margin="0,0,8,0"/>
@@ -603,6 +604,12 @@
          <Button Name="SelectiveDisable" Content="■ خاموش / بازگردانی" Margin="0,0,8,0"/>
          <Button Name="SelectiveRefresh" Content="بررسی وضعیت"/>
        </WrapPanel>
+       <TextBlock Text="خروجی Google Cloud از Linux: ابتدا در FreeNet Hub لپ‌تاپ CFON را فقط برای IP Tailscale همین Windows به مدت محدود اشتراک بده. سپس روش Linux CFON · Tailscale را انتخاب کن. WARP Windows خاموش نمی‌شود." Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,9,0,4"/>
+       <WrapPanel>
+         <TextBox Name="SelectiveTailnetEndpoint" Width="220" FlowDirection="LeftToRight" Margin="0,0,8,0" ToolTip="100.x.x.x:19551" />
+         <Button Name="SelectiveTailnetDiscover" Content="یافتن Linux CFON آنلاین" />
+       </WrapPanel>
+       <TextBlock Name="SelectiveTailnetStatus" Text="اشتراک Tailscale در حالت پیش‌فرض خاموش است؛ با شروع صریح دوطرف و تأیید SOCKS5 استفاده می‌شود." Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,6,0,4"/>
        <TextBlock Text="خطای 403 روی سایت دیگر؟ HTTPS سایت را وارد کن؛ فقط دامنه به فهرست می‌رود و تا زدن «اعمال» مسیریابی تغییر نمی‌کند." Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,8,0,4"/>
        <TextBox Name="SelectiveSiteUrl" FlowDirection="LeftToRight" Margin="0,4,0,6" ToolTip="https://console.cloud.google.com/apis/credentials"/>
        <WrapPanel Margin="0,0,0,6">

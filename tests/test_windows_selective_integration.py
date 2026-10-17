@@ -88,6 +88,44 @@ class IntegrationTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     engine.dispatch("SelectiveAddSite","AUTO",str(home/"wrong.json"))
 
+    def test_explicit_tailnet_mode_verified_peer_and_no_local_provider_mutation(self):
+        peers={"BackendState":"Running",
+               "Self":{"TailscaleIPs":["100.100.42.2"],"Online":True},
+               "Peer":{"a":{"OS":"linux","HostName":"LinuxDemo",
+                            "Online":True,"TailscaleIPs":["100.100.42.1"]}}}
+        with mock.patch.object(engine,"_tailnet_peer_status",return_value=peers):
+            self.assertEqual(engine._tailnet_endpoint("100.100.42.1:19551"),
+                             ("100.100.42.1",19551))
+            for ep in ("8.8.8.8:19551","100.100.42.1:19414",
+                       "100.100.42.3:19551","100.100.42.1:80"):
+                with self.subTest(ep=ep),self.assertRaises(ValueError):
+                    engine._tailnet_endpoint(ep)
+        with tempfile.TemporaryDirectory() as d:
+            base=pathlib.Path(d)
+            (base/"jobs").mkdir()
+            req=base/"jobs"/"tailnet.json"
+            req.write_text(json.dumps({"domains":"google.com","endpoint":"100.100.42.1:19551"}),encoding="utf-8")
+            fake=type("GatewayStub",(),{
+                "enable":staticmethod(lambda domains,port,method,proxy_host:
+                    {"ok":True,"domains":domains,"port":port,"method":method,"proxyHost":proxy_host}),
+                "diagnose_403_site":staticmethod(lambda url,port,host,method:
+                    {"ok":True,"site":url,"port":port,"method":method,"proxyHost":host}),
+            })()
+            with mock.patch.object(engine,"ROOT",base),\
+                 mock.patch.object(engine,"_selective_route",return_value=fake),\
+                 mock.patch.object(engine,"_tailnet_peer_status",return_value=peers),\
+                 mock.patch.object(engine,"owned") as owned,\
+                 mock.patch.object(engine,"verify") as verify,\
+                 mock.patch.object(engine,"ensure") as ensure:
+                out=engine.dispatch("SelectiveEnable","TAILNET",str(req))
+                self.assertTrue(out["ok"])
+                self.assertEqual((out["port"],out["proxyHost"]),(19551,"100.100.42.1"))
+                pr=engine.dispatch("SelectiveProbe","TAILNET",str(req))
+                self.assertEqual(pr["method"],"TAILNET")
+                owned.assert_not_called()
+                verify.assert_not_called()
+                ensure.assert_not_called()
+
     def test_no_unverified_provider_starts(self):
         with tempfile.TemporaryDirectory() as d:
             base = pathlib.Path(d)
@@ -131,7 +169,8 @@ class IntegrationTests(unittest.TestCase):
                      "SelectiveDisable", "SelectiveRefresh", "SelectiveRouteStatus",
                      "SelectiveRoutingCard", "MethodsScopeSelective",
                      "SelectiveGooglePreset", "SelectiveSiteUrl", "SelectiveAddSite",
-                     "SelectiveProbe", "SelectiveSiteStatus"):
+                     "SelectiveProbe", "SelectiveSiteStatus",
+                     "SelectiveTailnetEndpoint","SelectiveTailnetDiscover","SelectiveTailnetStatus"):
             self.assertEqual(names.count(name), 1)
             self.assertIn("C." + name, ui)
         for action in ("SelectiveEnable", "SelectiveDisable", "SelectiveStatus"):

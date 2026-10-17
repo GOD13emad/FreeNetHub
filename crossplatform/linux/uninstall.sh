@@ -6,6 +6,32 @@ BIN_HOME="$HOME/.local/bin"
 DESKTOP_HOME="$HOME/.local/share/applications"
 ICON="$HOME/.local/share/icons/hicolor/scalable/apps/freenethub.svg"
 
+if [ -f "$APP_HOME/tailnet_cfon_gateway.py" ] || [ -e "$APP_HOME/tailnet_cfon_gateway.json" ]; then
+  if [ ! -f "$APP_HOME/tailnet_cfon_gateway.py" ]; then
+    echo "FNH_TAILNET_OWNER_MODULE_MISSING: cannot prove safe cleanup" >&2
+    exit 20
+  fi
+  python3 - "$APP_HOME/tailnet_cfon_gateway.py" "$APP_HOME" <<'TAILUN'
+import importlib.util,pathlib,sys,json
+app=pathlib.Path(sys.argv[2]).resolve()
+sys.path.insert(0,str(app))
+spec=importlib.util.spec_from_file_location("fnh_tailnet_owner_uninstall",sys.argv[1])
+m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+r=m.stop()
+if not r.get("ok"):raise SystemExit("FNH_TAILNET_STOP_REQUIRED "+json.dumps(r))
+# Private owner/installed unit cleanup only after positive stop verification.
+if m.UNIT.exists():
+    if m.UNIT.is_symlink() or not m.UNIT.read_text(encoding="utf-8").startswith(m.MARKER):
+        raise SystemExit("FNH_TAILNET_FOREIGN_UNIT_REFUSED")
+    m.UNIT.unlink()
+    import subprocess
+    subprocess.run(["systemctl","--user","daemon-reload"],check=True,timeout=8)
+if m.OWNER.is_file():
+    if not m._load().get("enabled") is False:
+        raise SystemExit("FNH_TAILNET_OWNER_STILL_ENABLED")
+    m.OWNER.unlink()
+TAILUN
+fi
 if [ -f "$APP_HOME/selective_tunnel.py" ]; then
   python3 - "$APP_HOME/selective_tunnel.py" <<'SELECTIVEPY'
 import importlib.util,sys
@@ -78,7 +104,7 @@ PY
 rm -f "$BIN_HOME/freenethub" "$BIN_HOME/freenethub-recover" "$BIN_HOME/freenethub-uninstall"
 rm -f "$DESKTOP_HOME/local.freenethub.desktop" "$DESKTOP_HOME/freenethub.desktop"
 rm -f "$ICON"
-rm -f   "$APP_HOME/freenet_hub_linux.py"   "$APP_HOME/freenet_hub_linux_r37.py"   "$APP_HOME/freenet_hub_linux_gtk.py"   "$APP_HOME/nodehub_shared.py"   "$APP_HOME/selective_tunnel.py"   "$APP_HOME/warp_guard.py"   "$APP_HOME/recover_warp_remote.sh"   "$APP_HOME/uninstall.sh"   "$APP_HOME/INSTALL.sha256"   "$APP_HOME/INSTALL.json"
+rm -f   "$APP_HOME/freenet_hub_linux.py"   "$APP_HOME/freenet_hub_linux_r37.py"   "$APP_HOME/freenet_hub_linux_gtk.py"   "$APP_HOME/nodehub_shared.py"   "$APP_HOME/selective_tunnel.py"   "$APP_HOME/tailnet_cfon_gateway.py"   "$APP_HOME/warp_guard.py"   "$APP_HOME/recover_warp_remote.sh"   "$APP_HOME/uninstall.sh"   "$APP_HOME/INSTALL.sha256"   "$APP_HOME/INSTALL.json"
 
 command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$DESKTOP_HOME" >/dev/null 2>&1 || true
 command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true
