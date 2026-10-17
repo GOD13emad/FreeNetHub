@@ -94,6 +94,15 @@
       "jobsPassed": 10,
       "jobsTotal": 10,
       "attempt": 1
+    },
+    "R25VisualScreenshotsCI": {
+      "sha": "38e7df794da60d8c097d78ac92ad6baac66ddee9",
+      "run": 39068687386,
+      "status": "completed",
+      "conclusion": "success",
+      "jobTotal": 10,
+      "jobSuccessCount": 10,
+      "attempt": 1
     }
   },
   "ownerWindows": {
@@ -175,6 +184,35 @@
       "eventsExecuted": false,
       "guiPolicyAtCheck": "NATIVE_OUTCOME_UNCERTAIN_RESTART_REQUIRED",
       "receiptOperationId": "fe234fc2-5724-4d4b-bebb-2fdd377f2e15"
+    },
+    "nativeHiddenWPF20261018": {
+      "event": "FNH-WIN-R57-HIDDEN-WPF-MMZ-GUI-UNCERTAIN-20261018",
+      "platform": "Installed owner Windows R57 4.3.13",
+      "scope": "Native Windows PowerShell 7 STA instantiated real WPF XAML in memory, not user-foreground GUI",
+      "installedXAML_SHA256": "4B11A70B420828B97D96D62E36A25E7B91A6F3F34B22B724D010C5E806283938",
+      "nativeWindowParsedSuccessfully": true,
+      "XAMLControlsNamedAndResolved": 229,
+      "missingControls": 0,
+      "nativeTabCount": 5,
+      "nativeTabsSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "requiredScopeMethodControlsPresent": 16,
+      "windowEverShown": false,
+      "ownerGUIFocusTouched": false,
+      "HKCUProxyUnchanged": true,
+      "defaultIPv4RoutesUnchanged": true,
+      "TailscalePreserved": true,
+      "privateReceiptSHA256": "DC4C9AD15B9652E7D0A6999EC6F48FDA2E9C94D61B15C56D89F87D2AE16E5135",
+      "privateReceipt": "Owner Windows %LOCALAPPDATA%/FreeNetHub-R57-Verification/R57_NATIVE_WPF_HIDDEN_GUI_20261018.json",
+      "operation": "b5535cf0-063a-4450-9b91-dfc580b4e217",
+      "interactiveWPFAccepted": false,
+      "systemPACApplyRestoreAccepted": false,
+      "status": "NATIVE_WPF_HIDDEN_STA_WINDOW_AND_CONTROLS_PASS_REAL_DESKTOP_OPEN"
     }
   },
   "linux": {
@@ -333,15 +371,15 @@
     "privateUserDataPubliclyCommitted": false
   },
   "remainingGates": [
-    "Owner Windows interactive WPF GUI and opt-in PAC apply/restore",
+    "Owner Windows native hidden WPF 229/229 controls and 5/5 tabs PASS; real interactive WPF and opt-in system PAC apply/restore OPEN",
     "Original Emad Linux R21→R24 physical upgrade remains blocked by active CFON; separate MMZ R24 fresh physical installation PASSED",
     "Installed-to-installed Windows R57 + Linux R24 TAILNET with explicit user PAC apply/restore (temporary Linux R24 source route already PASS)",
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "MMZ local CFON bootstrap fails; R25 Methods/Tailnet and Settings visual GTK Broadway screenshots PASS; real owner interactive GUI, PAC user validation and authenticated Google login remain OPEN"
+    "MMZ R25 selected Tailnet Methods/Settings visual PNG PASS; authorized native Wayland GUI test blocked by Commander GUI outcome-uncertain restart requirement; real owner interaction/PAC validation/authenticated Google remain OPEN"
   ],
-  "status": "WINDOWS_R57_MMZ_LINUX_R25_NATIVE_VIRTUAL_VISUAL_TAILNET_GUI_AND_FROZEN_ROLLBACK_PASS_CI10OF10__EMAD_R21_CFON_PRESERVED__REAL_INTERACTIVE_TUN_MOBILE_AUTH_FINAL_OPEN",
+  "status": "WINDOWS_R57_NATIVE_HIDDEN_WPF_STA_PASS_MMZ_R25_VIRTUAL_GUI_PASS_NATIVE_COMMANDER_GUI_COORDINATOR_UNCERTAIN__CI10OF10__PRIMARY_EMAD_R21_CFON_OK__PRODUCT_FINAL_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -827,6 +865,33 @@
             "d0e16ac5-770b-4b0e-a924-11e447a69dc2"
           ]
         }
+      },
+      "nativeMMZGUIUncertainIncident20261018": {
+        "event": "FNH-WIN-R57-HIDDEN-WPF-MMZ-GUI-UNCERTAIN-20261018",
+        "scope": "Authorized current-turn MMZ-only GNOME Wayland GUI test",
+        "leaseMode": "takeover",
+        "guiLeaseGranted": true,
+        "installedAppWindowLaunched": true,
+        "observedOwnedWindowCount": 1,
+        "nativeFocusExactWindowHandleResult": "GUI_WINDOW_SELECTOR_NOT_UNIQUE",
+        "subsequentCoordinatorState": "NATIVE_OUTCOME_UNCERTAIN_RESTART_REQUIRED",
+        "guiCoordinatorAvailableAfter": false,
+        "guiCoordinatorUncertainAfter": true,
+        "guiCoordinatorIncidentPending": true,
+        "guiCoordinatorLeasedAfter": false,
+        "keyboardInputAfterIncident": false,
+        "mouseClickInputAfterIncident": false,
+        "installedTestAppProcessExited": true,
+        "ownedAppRuntimeOperationExitCode": 0,
+        "installedR25HashIntegrityStillPass": true,
+        "GNOMEProxyUnchanged": true,
+        "TailscalePreserved": true,
+        "noExtraProxyProviderStarted": true,
+        "requiresSafeCommanderGUICoordinatorRestartBeforeNextNativeTakeover": true,
+        "nativeInteractiveGUIAccepted": false,
+        "FreeNetHubAppGUIFailureProven": false,
+        "appOperation": "53f631a4-0c47-4294-a3fe-eb68c220919e",
+        "coordinator": "MMZ ChatGPT Remote Commander 0.10.24"
       }
     }
   },
