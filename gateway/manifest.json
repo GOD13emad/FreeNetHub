@@ -11,8 +11,8 @@
     },
     {
       "file": "gateway_request.ps1",
-      "bytes": 3337,
-      "sha256": "E23D4341AF5DCDC243143925B7511E59BBB3CF0CFAECCDDF87F93AE338549F88"
+      "bytes": 3528,
+      "sha256": "B11353CFA011A8A81D53A2DF7F9D47090E3811BA37F8A1B72BBE725782ED7F46"
     },
     {
       "file": "Setup-GatewayCore.ps1",

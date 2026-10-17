@@ -108,7 +108,9 @@ class GatewayTests(unittest.TestCase):
   text=(G/"gateway_request.ps1").read_text(encoding="utf-8-sig")
   self.assertIn("[ValidateSet('WARP','NODE')][string]$Provider='WARP'",text)
   self.assertIn("[ValidateSet('SELECTED','AUTO')][string]$NodePolicy='SELECTED'",text)
-  self.assertIn("if($Action -eq 'StartPc'){$args+=@('-Provider',$Provider);if($Provider -eq 'NODE'){$args+=@('-NodePolicy',$NodePolicy)}}",text)
+  self.assertIn("[switch]$ReuseVerifiedWarp",text)
+  self.assertIn("if($ReuseVerifiedWarp -and ($Action -ne 'StartPc' -or $Provider -ne 'WARP')){throw 'REUSE_WARP_STARTPC_ONLY'}",text)
+  self.assertIn("if($Action -eq 'StartPc'){$args+=@('-Provider',$Provider);if($Provider -eq 'NODE'){$args+=@('-NodePolicy',$NodePolicy)};if($ReuseVerifiedWarp){$args+= '-ReuseVerifiedWarp'}}",text)
  def test_profile_path_has_no_warp_socks_underlay_exclusion(self):
   import tempfile,json
   prof={"kind":"wireguard","name":"TEST","country":"NL","capabilities":{"tcp":True,"udp":True,"country_verified":True},"endpoint":{"type":"wireguard","tag":"provider","system":False,"address":["10.0.0.2/32"],"private_key":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=","peers":[{"address":"203.0.113.1","port":51820,"public_key":"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=","allowed_ips":["0.0.0.0/0"]}]}}

@@ -65,6 +65,9 @@ jobs:
       - name: Reuse installed WARP identity and fail-closed negatives
         shell: pwsh
         run: ./gateway/tests/test_warp_reuse_contract.ps1
+      - name: Verify WARP UI to Gateway reuse consent and fail-closed contract
+        shell: pwsh
+        run: ./gateway/tests/test_warp_reuse_ui_contract.ps1
       - name: Clean self-contained packaging regression
         run: python -m unittest tests.test_clean_install
       - name: Parse PowerShell sources

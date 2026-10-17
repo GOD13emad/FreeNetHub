@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39890,
-      "sha256": "FA1AABD93441F3E6E235B34BF44ECC3D6062F389C6F50F4798EB7B7E813CD24B"
+      "bytes": 40050,
+      "sha256": "763E21863FA95299E5FDFB78C7A8729EB9740A0BC8084AF993E494D652CBB4DB"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -140,13 +140,13 @@
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 116848,
-      "sha256": "2E9104CEC51A9B97885B651464B02E46522F214537DCAFBF508D5748D74FD3EA"
+      "bytes": 117934,
+      "sha256": "E424259C9C5F4572462A49E9D2012624A7F16B43F5CBC758424ABC8420CF773A"
     },
     {
       "file": "app/manifest.json",
       "bytes": 5484,
-      "sha256": "3909530B1B51F3109F8B71FA818E5B2F9544BFBA663BF174A45E2642231F159D"
+      "sha256": "B2E662A20EE7854488CB349C97A6E51413863CF6650B2272BACFF14036D3128C"
     },
     {
       "file": "app/nodehub.py",
@@ -1715,8 +1715,8 @@
     },
     {
       "file": "gateway/gateway_request.ps1",
-      "bytes": 3337,
-      "sha256": "E23D4341AF5DCDC243143925B7511E59BBB3CF0CFAECCDDF87F93AE338549F88"
+      "bytes": 3528,
+      "sha256": "B11353CFA011A8A81D53A2DF7F9D47090E3811BA37F8A1B72BBE725782ED7F46"
     },
     {
       "file": "gateway/generate_config.py",
@@ -1731,7 +1731,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3071,
-      "sha256": "10EE70E5D27E9BA538C8B13F99A4F014F11CC5C566ED08D7D86CE16A80C43C16"
+      "sha256": "3D85221D6AF5412F1B2462E1652971CAE9C7D438ED2032A142CCE42387EB3A4F"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1825,8 +1825,8 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 12076,
-      "sha256": "A75E213215A5E753028AB783795696E64D1DF451E872583DF8103648C00253D6"
+      "bytes": 12314,
+      "sha256": "3F6F42311506B309F509FDD151CDE870DD56111A373D0721D68FF634284B5019"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
@@ -1837,6 +1837,11 @@
       "file": "gateway/tests/test_warp_reuse_contract.ps1",
       "bytes": 5785,
       "sha256": "F686A29074A49E5740C9797B3BDE01578539FB4A2BFB6C3721E957F03B521427"
+    },
+    {
+      "file": "gateway/tests/test_warp_reuse_ui_contract.ps1",
+      "bytes": 3584,
+      "sha256": "6F5EFDFA66F6FBF71C59C787FA054AED30583DAF6714B6DA6DE6CAB701F03D5F"
     },
     {
       "file": "gateway/tests/virtual_console_e2e.py",
@@ -1870,8 +1875,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 221580,
-      "sha256": "4B65A8D2EB53A70E3F0CD2551F14D9D1B67B4DA42B4CDEB9C342F730D01EF2E7"
+      "bytes": 223991,
+      "sha256": "E21C6D57E7855C03911C8D5C7BC97DFB32584F64E96DE2108C3A87E24BA4B6F0"
     },
     {
       "file": "pytest.ini",
@@ -1890,8 +1895,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 42811,
-      "sha256": "12C6898E46F02467D85E73CB922B8A1DFE5417E0E7E27D42237032C0CC27CDDA"
+      "bytes": 42812,
+      "sha256": "4797D234A4B2FCFF7796FA541E39B73304F4186D7D0D05644A498142FF77EB61"
     },
     {
       "file": "SECURITY.md",
