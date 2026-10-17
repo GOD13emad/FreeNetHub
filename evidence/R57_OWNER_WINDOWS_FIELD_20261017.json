@@ -53,6 +53,14 @@
       "conclusion": "success",
       "jobsPassed": 10,
       "jobsTotal": 10
+    },
+    "latestMainEvidenceCI": {
+      "sourceCommit": "044cea5983d845af8d632d7baa4847072b5aa0d7",
+      "run": 39061805270,
+      "status": "completed",
+      "conclusion": "success",
+      "jobsPassed": 10,
+      "jobsTotal": 10
     }
   },
   "ownerWindows": {
@@ -240,7 +248,7 @@
       "manifestFilesVerified": 24
     },
     "r24RollbackResidueCleanup": {
-      "status": "SOURCE_LOCAL_TESTED_ONLY; EXACT_SHA_HOSTED_CI_PENDING",
+      "status": "HOSTED_CI_ACCEPTED_AND_ACTUAL_MMZ_PHYSICAL_R24_TO_R21_QUARANTINE_RESTORE_PASS",
       "ownerHost": "Ubuntu Linux user-local shell",
       "helper": "tests/cleanup_r24_rollback_residue.py",
       "documentation": "docs/LINUX_ROLLBACK_RESIDUE.md",
@@ -269,7 +277,17 @@
       "ownerLiveDryRunFileHashSamplesPreserved": 5,
       "ownerLiveCfonSocksHealthyAfterDryRun": true,
       "realOwnerRollbackOrQuarantineApplied": false,
-      "physicalOwnerR24Install": false
+      "physicalOwnerR24Install": false,
+      "realOwnerMMZQuarantineValidated": true,
+      "actualCurrentMMZInstalledR25Restored": true,
+      "r25OrphanSeparate": true,
+      "hostedExactSourceCI": {
+        "sourceCommit": "649a5b48c18ddb324b4f2029751738a59beb1e41",
+        "run": 39050270712,
+        "conclusion": "success",
+        "jobsPassed": 10,
+        "jobsTotal": 10
+      }
     }
   },
   "privateEvidence": {
@@ -288,10 +306,10 @@
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "R24→R21 physical cleanup of orphan R24 modules (reversible exact-SHA helper local 11/11 PASS; deployed owner run and CI still pending)",
+    "R25-only orphan tailnet_client_browser.py remains after R25→R21 downgrade; R24 two-module cleanup real-host reversible PASS, R25-only exact-hash cleanup not yet tested",
     "MMZ local CFON bootstrap fails; R25 firstparty launch real Firefox headless and GTK offscreen handlers PASS; interactive owner-authorized desktop/Google login remains OPEN"
   ],
-  "status": "WINDOWS_R57_MMZ_LINUX_R25_PEER_HEADLESS_PAC_AND_PHYSICAL_ROLLBACK_PASS__EMAD_R21_CFON_PRESERVED__FINAL_OPEN",
+  "status": "WIN_R57_AND_MMZ_LINUX_R25_PHYSICAL_ROUNDTRIP_R21_R24_MODULE_CLEANUP_PASS__EMAD_R21_CFON_PRESERVED__R25_ONLY_ORPHAN_AND_SYSTEM_FINAL_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -567,6 +585,64 @@
         "MMZObserveOnlyGUI": true,
         "OwnerAuthorizedTakeover": false,
         "noSessionFocusChanged": true
+      },
+      "physicalR21RollbackWithR24OrphanCleanup": {
+        "status": "PASS_R24_ONLY_MODULES_ON_ACTUAL_MMZ_OWNER_R21; R25_ONLY_ORPHAN_SEPARATELY_OPEN",
+        "actualOwnerHost": "MMZ Ubuntu26 user-local original installed Home",
+        "versionsTestedInOrder": [
+          "4.2.0-linux.25-r58",
+          "4.2.0-linux.24-r57",
+          "4.2.0-linux.21-r54",
+          "4.2.0-linux.25-r58"
+        ],
+        "frozenZIPSHA256": {
+          "R21": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+          "R24": "D76958F80923BFC1B77E406FE00F4CE96CC83A9A54521415DBBDAE53AFFB1824",
+          "R25": "4F035E158F9580F1ACA0554ED1FAE6DC45F6D74FD02F686744433CF35E75AD22"
+        },
+        "actualInstallerExitCodes": [
+          0,
+          0,
+          0
+        ],
+        "installedIntegrityManifestCounts": [
+          11,
+          9,
+          12
+        ],
+        "retainedOwnerPrivateSamplesHashIdentical": 3,
+        "prestateBackupTarBytes": 113285120,
+        "prestateBackupTarSHA256": "3899754C1B4D4DFB3B1EB6DF954790838F9935E5DF0ECF0C74E095B6F6758842",
+        "actualR21OrphansDetected": [
+          "selective_tunnel.py",
+          "tailnet_cfon_gateway.py"
+        ],
+        "cleanupHelperSHA256": "C3E0BF097005A04B515601352EA77518BEBBEF2911C2295C01F99C6F1E7608E4",
+        "actualQuarantineStatus": "QUARANTINED",
+        "repeatQuarantineStatus": "ALREADY_QUARANTINED",
+        "actualRestoreStatus": "RESTORED",
+        "repeatRestoreStatus": "ALREADY_RESTORED",
+        "quarantineUserOwned0700": true,
+        "receipt0600": true,
+        "modulesAfterExplicitRestoreSameOriginalSHA256": true,
+        "R25OnlyModuleNotModifiedWhenOnR21": true,
+        "fullR25OnlyOrphanCleanupPerformed": false,
+        "finalRealOwnerInstalled": "4.2.0-linux.25-r58",
+        "finalR25BrowserSourceIdenticalToPrestate": true,
+        "defaultRoutesGNOMEProxyAndTailscalePreserved": true,
+        "EmadPrimaryR21CFONNotStopped": true,
+        "physicalReceiptSHA256": {
+          "prestate": "E79F5857460CCAD419A7E2104C80710201A3788AD6646071CE51E520B57199ED",
+          "R24Install": "AFE0141BEB9138B4BEB7DE60C66094A7B4396692B7BFC0A2FE2C4B5F9452676B",
+          "R21Install": "78878A3AED5D619B53B057D8ACB74C826ED12EBE428AEADD6B86C5B89B774548",
+          "R24OrphansQuarantinedAndRestored": "03C69A002FE7226ED8DAC52FEB58B4A9756254B0F1050EE3EE39648B4D69F9BC",
+          "finalR25Restored": "D9C31BF1E7718C7EEF760663310D8A16C409C425C0A9F45A83F4636B3CD0941A"
+        },
+        "operations": [
+          "bdf447ff-6d48-4eb8-8657-e79cfdafde28",
+          "a0c2ed34-a66f-4f08-b1d6-a9f3b64eb29d",
+          "e6c8c129-3007-4f1b-b0c0-90bb7439c726"
+        ]
       }
     }
   },
