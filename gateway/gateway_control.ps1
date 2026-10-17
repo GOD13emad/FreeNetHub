@@ -91,6 +91,22 @@ function Verify-ProviderUdp([string]$p,[string]$target){
  }
  [ordered]@{status='PASS';publicIp=[string]$j.udp_public_ip;country=$country;countryVerified=($target -and $target -ne 'AUTO');seconds=$j.seconds;relay=$j.relay}
 }
+function Assert-WarpReuseLoopProtection($config){
+ # A route rule may legally omit process_name and outbound; StrictMode must not
+ # turn those unrelated rules into a false negative or abort an otherwise safe start.
+ Assert ($null -ne $config -and @($config.inbounds).Count -gt 0) 'REUSE_WARP_LOOP_PROTECTION_MISSING'
+ $bypass=@($config.inbounds[0].route_exclude_address)
+ $rules=@($config.route.rules)
+ $processBypass=@($rules|Where-Object{
+  $name=$_.PSObject.Properties['process_name']
+  $out=$_.PSObject.Properties['outbound']
+  $act=$_.PSObject.Properties['action']
+  ($null -ne $name) -and ($null -ne $out) -and ($null -ne $act) -and
+   ([string]$act.Value -eq 'route') -and ([string]$out.Value -eq 'direct') -and
+   ('warp-plus.exe' -in @($name.Value))
+ })
+ Assert ([bool]$config.route.auto_detect_interface -and $processBypass.Count -eq 1 -and ('162.159.192.0/24' -in $bypass) -and ('100.64.0.0/10' -in $bypass)) 'REUSE_WARP_LOOP_PROTECTION_MISSING'
+}
 function Get-VerifiedInstalledWarp([switch]$IdentityOnly){
  # Cross-install WARP must match one pinned executable and localhost listener; never adopt/stop it.
  $cfg=$Defaults.providers.WARP
@@ -328,10 +344,7 @@ try{
     $SB=[string](Get-FnhSingBox).path;& $SB check -c $cfg;Assert ($LASTEXITCODE -eq 0) 'CONFIG_CHECK_FAIL'
     if($externalWarp){
      $loopCfg=Get-Content -LiteralPath $cfg -Raw -Encoding UTF8|ConvertFrom-Json
-     $bypass=@($loopCfg.inbounds[0].route_exclude_address)
-     $rules=@($loopCfg.route.rules)
-     $processBypass=@($rules|Where-Object{$_.action -eq 'route' -and $_.outbound -eq 'direct' -and 'warp-plus.exe' -in @($_.process_name)})
-     Assert ([bool]$loopCfg.route.auto_detect_interface -and $processBypass.Count -eq 1 -and ('162.159.192.0/24' -in $bypass) -and ('100.64.0.0/10' -in $bypass)) 'REUSE_WARP_LOOP_PROTECTION_MISSING'
+     Assert-WarpReuseLoopProtection $loopCfg
      $repeat=Get-VerifiedInstalledWarp -IdentityOnly
      Assert ($repeat.pid -eq $externalWarp.pid -and $repeat.startTicks -eq $externalWarp.startTicks -and $repeat.sha256 -eq $externalWarp.sha256) 'REUSE_WARP_OWNER_CHANGED_BEFORE_TUN'
     }

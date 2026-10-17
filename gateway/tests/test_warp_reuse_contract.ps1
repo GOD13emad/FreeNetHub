@@ -10,6 +10,9 @@ if(@($parseErrors).Count){throw 'CONTROLLER_POWERSHELL_PARSE_FAILED'}
 $functionAst=$ast.Find({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'Get-VerifiedInstalledWarp'},$true)
 if(!$functionAst){throw 'REUSE_FUNCTION_MISSING'}
 . ([ScriptBlock]::Create($functionAst.Extent.Text))
+$loopAst=$ast.Find({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'Assert-WarpReuseLoopProtection'},$true)
+if(!$loopAst){throw 'WARP_LOOP_PROTECTION_FUNCTION_MISSING'}
+. ([ScriptBlock]::Create($loopAst.Extent.Text))
 function Assert([bool]$ok,[string]$message){if(!$ok){throw $message}}
 function Get-NetTCPConnection{
  param([int]$LocalPort,[string]$State,$ErrorAction)
@@ -62,6 +65,30 @@ try{
  [IO.File]::WriteAllText($deps,($pinned|ConvertTo-Json -Depth 5),[Text.UTF8Encoding]::new($false))
  Reset-Fixture;Assert-Failed 'REUSE_WARP_BINARY_HASH_CHANGED'
  'WARP_REUSE_IDENTITY_POSITIVE_AND_SIX_NEGATIVES_PASS'
+ # Exercise the ACTUAL generated sing-box native route under StrictMode, then
+ # remove mandatory fields to require hard failure without real network mutation.
+ $cfg=Join-Path $td 'native-loop-check.json'
+ & python (Join-Path $rootDir 'gateway\generate_config.py') --mode PC_TUNNEL --provider WARP --dns-mode native --output $cfg | Out-Null
+ if($LASTEXITCODE -ne 0){throw 'LOOP_FIXTURE_GENERATOR_FAILED'}
+ $c=Get-Content -LiteralPath $cfg -Raw|ConvertFrom-Json
+ Assert-WarpReuseLoopProtection $c
+ function Assert-LoopFails([object]$fixture){
+  try{Assert-WarpReuseLoopProtection $fixture;throw 'UNSAFE_LOOP_FALSE_PASS'}
+  catch{if($_.Exception.Message -notlike '*REUSE_WARP_LOOP_PROTECTION_MISSING*'){throw ('WRONG_LOOP_FAILURE:'+ $_.Exception.Message)}}
+ }
+ $missingProcess=$c|ConvertTo-Json -Depth 28|ConvertFrom-Json
+ $missingProcess.route.rules[2].PSObject.Properties.Remove('process_name')
+ Assert-LoopFails $missingProcess
+ $missingRoute=$c|ConvertTo-Json -Depth 28|ConvertFrom-Json
+ $missingRoute.inbounds[0].route_exclude_address=@($missingRoute.inbounds[0].route_exclude_address|Where-Object{$_ -ne '100.64.0.0/10'})
+ Assert-LoopFails $missingRoute
+ $noAuto=$c|ConvertTo-Json -Depth 28|ConvertFrom-Json
+ $noAuto.route.auto_detect_interface=$false
+ Assert-LoopFails $noAuto
+ $wrongProcess=$c|ConvertTo-Json -Depth 28|ConvertFrom-Json
+ $wrongProcess.route.rules[2].process_name=@('other.exe')
+ Assert-LoopFails $wrongProcess
+ 'WARP_REUSE_REAL_CONFIG_STRICTMODE_AND_FOUR_LOOP_NEGATIVES_PASS'
 }
 finally{
  if(Test-Path -LiteralPath $td){Remove-Item -LiteralPath $td -Recurse -Force -ErrorAction SilentlyContinue}

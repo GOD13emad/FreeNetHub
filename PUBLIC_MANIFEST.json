@@ -1650,8 +1650,8 @@
     },
     {
       "file": "gateway/gateway_control.ps1",
-      "bytes": 24609,
-      "sha256": "BE32471EF66BF9F924CEAE892B7F3C80BE6EE8E4EA9C0CED17175B0D489D802B"
+      "bytes": 25180,
+      "sha256": "6E6CA1CFC0C0F78DE00FBB0EBE819CF83BA6C4810BFD0E38BDDA2A4063DA8672"
     },
     {
       "file": "gateway/gateway_defaults.json",
@@ -1676,7 +1676,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3071,
-      "sha256": "80788AB5C251AEF8ABBC4D815F8E79C15D15568F1723D2C27C6109A0F3A9686E"
+      "sha256": "10EE70E5D27E9BA538C8B13F99A4F014F11CC5C566ED08D7D86CE16A80C43C16"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1780,8 +1780,8 @@
     },
     {
       "file": "gateway/tests/test_warp_reuse_contract.ps1",
-      "bytes": 4028,
-      "sha256": "5B1A8EA295F7A00BFCB98C5209171BA32412E707FE2DED8E7BCD0ACC6276B892"
+      "bytes": 5785,
+      "sha256": "F686A29074A49E5740C9797B3BDE01578539FB4A2BFB6C3721E957F03B521427"
     },
     {
       "file": "gateway/tests/virtual_console_e2e.py",
@@ -1836,7 +1836,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 42755,
-      "sha256": "1B317526FECFEF734C10EB56EBFC872A5E70F02417F2D08A7913E29477739ABB"
+      "sha256": "4E636A1955C9816FC44FEAF8E8AFCCB41D42485E12BA8A055056B31ECFE6C31C"
     },
     {
       "file": "SECURITY.md",
