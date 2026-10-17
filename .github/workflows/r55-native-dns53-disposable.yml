@@ -1,0 +1,164 @@
+name: R55 disposable Native DNS53 guard lifecycle
+
+on:
+  push:
+    branches:
+      - candidate/r55-v519-private-review
+
+permissions:
+  contents: read
+
+jobs:
+  native-dns53-guard-lifecycle:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Validate exact R55 private source and ephemeral host readiness
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          python tests/verify_public_tree.py
+          if($LASTEXITCODE){throw 'PRIVATE_SOURCE_MANIFEST_INVALID'}
+          python tests/verify_release_line.py --expected R55
+          if($LASTEXITCODE){throw 'PRIVATE_R55_LINE_INVALID'}
+          if(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){throw 'EPHEMERAL_RUNNER_NEEDS_ADMIN'}
+          if(@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object Name -eq 'FreeNetHub').Count){throw 'TUN_PREEXISTS'}
+          if(@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop).Count){throw 'DNS_GUARDS_PREEXIST'}
+          Write-Host 'R55_NATIVE_DNS53_SOURCE_AND_IDLE_PASS'
+      - name: Build and install exact private R55 onto disposable Runner
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $iscc=@(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
+            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+          )|Where-Object{Test-Path $_}|Select-Object -First 1
+          if(!$iscc){
+            choco install innosetup --no-progress -y
+            if($LASTEXITCODE){throw 'INNO_NOT_INSTALLED'}
+            $iscc=@(
+              (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+              (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+            )|Where-Object{Test-Path $_}|Select-Object -First 1
+          }
+          if(!$iscc){throw 'INNO_ISCC_MISSING'}
+          & $iscc /Qp windows/installer/FreeNetHub.iss
+          if($LASTEXITCODE){throw 'R55_PRIVATE_BUILD_FAILED'}
+          $exe=(Resolve-Path 'delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_V519_PRIVATE_REVIEW_DO_NOT_RELEASE.exe').Path
+          $root=Join-Path $env:RUNNER_TEMP 'fnh-r55-dns53-disposable'
+          if(Test-Path $root){throw 'ROOT_PREEXISTS'}
+          $p=Start-Process -FilePath $exe -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',('/DIR='+$root)) -Wait -PassThru
+          if($p.ExitCode){throw ('PRIVATE_INSTALL_FAILED_'+$p.ExitCode)}
+          if((Get-Content (Join-Path $root 'RELEASE.json') -Raw|ConvertFrom-Json).releaseRevision -ne '4.3.11-r55-native-status-review'){throw 'VERSION_NOT_R55'}
+          & pwsh -NoProfile -NonInteractive -File (Join-Path $root 'gateway\Setup-GatewayCore.ps1')|Out-Null
+          if($LASTEXITCODE){throw 'PINNED_CORE_BOOTSTRAP_FAILED'}
+          "R55_NATIVE_DNS_ROOT=$root" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "R55_NATIVE_DNS_INSTALLER=$exe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host 'R55_NATIVE_DNS53_PRIVATE_INSTALL_PASS'
+      - name: Bounded real native DNS53 firewall create, identity-check and STOP
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $root=$env:R55_NATIVE_DNS_ROOT
+          if(!$root -or !(Test-Path $root)){throw 'ROOT_NOT_READY'}
+          $gateway=Join-Path $root 'gateway'
+          $runtime=Join-Path $gateway 'runtime'
+          $base=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction Stop|Sort-Object RouteMetric|Select-Object -First 1
+          if(!$base){throw 'ORIGINAL_ROUTE_UNREADABLE'}
+          $cfg=Join-Path $runtime 'dns53_native_config.json'
+          & python (Join-Path $gateway 'generate_config.py') --mode PC_TUNNEL --provider WARP --dns-mode native --output $cfg|Out-Null
+          if($LASTEXITCODE){throw 'NATIVE_DNS_CONFIG_GENERATION_FAILED'}
+          $cfgBody=Get-Content $cfg -Raw|ConvertFrom-Json
+          if(@($cfgBody.inbounds|Where-Object{$_.type -eq 'tun' -and $_.dns_mode -eq 'native'}).Count -ne 1){throw 'NATIVE_DNS_MODE_NOT_SET'}
+          $core=(Get-Content (Join-Path $runtime 'local_gateway.json') -Raw|ConvertFrom-Json).singbox.path
+          & $core check -c $cfg | Out-Null
+          if($LASTEXITCODE){throw 'NATIVE_DNS_CONFIG_INVALID'}
+          $applied=$false
+          $primaryError=''
+          $cleanupError=''
+          $rules=@(
+            'FreeNetHub-PC-DNS53-Guard-UDP-Wired',
+            'FreeNetHub-PC-DNS53-Guard-TCP-Wired',
+            'FreeNetHub-PC-DNS53-Guard-UDP-Wireless',
+            'FreeNetHub-PC-DNS53-Guard-TCP-Wireless'
+          )
+          try{
+            $applyScript=Join-Path $gateway 'apply_elevated.ps1'
+            $applyArgs=@('-NoProfile','-NonInteractive','-File',('"'+$applyScript+'"'),'-Mode','PC_TUNNEL','-ConfigPath',('"'+$cfg+'"'),'-ConfigSha256',(Get-FileHash $cfg -Algorithm SHA256).Hash)
+            $process=Start-Process -FilePath pwsh.exe -ArgumentList $applyArgs -PassThru -WindowStyle Hidden
+            if(!$process.WaitForExit(65000)){
+              try{$process.Kill($true);[void]$process.WaitForExit(2000)}catch{}
+              throw 'NATIVE_APPLY_TIMEOUT'
+            }
+            $applyReceipt=Join-Path $runtime 'apply_result.json'
+            if(!(Test-Path $applyReceipt)){throw 'APPLY_RECEIPT_MISSING'}
+            $apply=Get-Content $applyReceipt -Raw|ConvertFrom-Json
+            if($process.ExitCode -ne 0 -or $apply.status -ne 'PASS'){throw ('APPLY_REJECTED_'+[string]$apply.error)}
+            $applied=$true
+            $owner=Get-Content (Join-Path $runtime 'owner.json') -Raw|ConvertFrom-Json
+            $ownedNames=@($owner.dnsGuardNames)
+            if($ownedNames.Count -ne 4 -or @($rules|Where-Object{$_ -notin $ownedNames}).Count){throw 'GUARD_OWNER_IDENTITY_UNVERIFIED'}
+            $active=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
+            if($active.Count -ne 4){throw 'GUARD_COUNT_NOT_FOUR'}
+            foreach($n in $rules){
+              $r=@($active|Where-Object Name -eq $n)
+              if($r.Count -ne 1 -or $r[0].Action -ne 'Block' -or $r[0].Direction -ne 'Outbound'){throw ('GUARD_BAD_'+$n)}
+              $filter=Get-NetFirewallPortFilter -AssociatedNetFirewallRule $r[0] -ErrorAction Stop
+              if('53' -notin @([string]$filter.RemotePort)){throw ('GUARD_BAD_PORT_'+$n)}
+            }
+            if(@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object Name -eq 'FreeNetHub').Count -ne 1){throw 'NATIVE_TUN_MISSING'}
+            Write-Host 'R55_NATIVE_DNS53_GUARDS_CREATED_AND_TUN_PASS'
+          }catch{$primaryError=$_.Exception.Message;Write-Host ('R55_NATIVE_DNS53_PRIMARY_ERROR='+$primaryError)}
+          finally{
+            $stopScript=Join-Path $gateway 'stop_elevated.ps1'
+            try{
+              $stop=Start-Process -FilePath pwsh.exe -ArgumentList @('-NoProfile','-NonInteractive','-File',('"'+$stopScript+'"')) -PassThru -WindowStyle Hidden
+              if(!$stop.WaitForExit(65000)){
+                try{$stop.Kill($true);[void]$stop.WaitForExit(2000)}catch{}
+                throw 'STOP_EXCEEDED_65S'
+              }
+              $stopFile=Join-Path $runtime 'stop_result.json'
+              $result=$null
+              if(Test-Path $stopFile){try{$result=Get-Content $stopFile -Raw|ConvertFrom-Json}catch{}}
+              if($stop.ExitCode -ne 0 -or !$result -or $result.status -ne 'PASS'){throw ('NATIVE_STOP_NOT_VERIFIED_'+[string]$result.error)}
+            }catch{$cleanupError=$_.Exception.Message}
+          }
+          $leftTun=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object Name -eq 'FreeNetHub')
+          $leftGuards=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
+          $after=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction Stop|Sort-Object RouteMetric|Select-Object -First 1
+          if($leftTun.Count -or $leftGuards.Count){throw 'NATIVE_DNS53_RESIDUAL_NETWORK_MUTATION'}
+          if($after.InterfaceIndex -ne $base.InterfaceIndex -or $after.NextHop -ne $base.NextHop){throw 'NATIVE_DNS53_ROUTE_NOT_RESTORED'}
+          if($primaryError){throw ('NATIVE_DNS53_PRIMARY_NOT_PASS_'+$primaryError)}
+          if($cleanupError){throw ('NATIVE_DNS53_STOP_NOT_PASS_'+$cleanupError)}
+          if(!$applied){throw 'NATIVE_DNS53_NEVER_APPLIED'}
+          [ordered]@{
+            status='R55_DISPOSABLE_NATIVE_DNS53_GUARD_LIFECYCLE_PASS'
+            sourceSha=$env:GITHUB_SHA
+            installerSHA256=(Get-FileHash $env:R55_NATIVE_DNS_INSTALLER -Algorithm SHA256).Hash
+            physicalMediaTested='WIRED_RUNNER_ONLY'
+            guardNames=$rules
+            activeGuardsVerified=4
+            nativeTunObserved=$true
+            dnsMode='native'
+            restoredRoute=$true
+            residualTunCount=0
+            residualDnsGuardCount=0
+            ownerHostChanged=$false
+            publicRelease=$false
+          }|ConvertTo-Json -Depth 5|Set-Content (Join-Path $env:RUNNER_TEMP 'r55-native-dns53-guard-receipt.json') -Encoding utf8
+          Write-Host 'R55_NATIVE_DNS53_GUARD_AND_STOP_PASS'
+      - name: Upload metadata only
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: r55-native-dns53-lifecycle
+          path: ${{ runner.temp }}/r55-native-dns53-guard-receipt.json
+          if-no-files-found: error
+          retention-days: 14

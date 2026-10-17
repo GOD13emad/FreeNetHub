@@ -7,7 +7,26 @@ permissions:
   contents: read
 
 jobs:
+  release-line:
+    runs-on: ubuntu-24.04
+    outputs:
+      line: ${{ steps.identify.outputs.line }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Classify exact pinned source release line
+        id: identify
+        shell: bash
+        run: |
+          set -euo pipefail
+          line=$(python3 tests/verify_release_line.py)
+          case "$line" in R53|R55) ;; *) echo "UNSUPPORTED_RELEASE_LINE" >&2; exit 1;; esac
+          echo "line=$line" >> "$GITHUB_OUTPUT"
+          echo "VERIFIED_RELEASE_LINE=$line"
+
   windows-unit:
+    needs: release-line
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -21,7 +40,11 @@ jobs:
       - name: Verify mobile fail-closed gates
         run: python crossplatform/common/verify_fail_closed.py
       - name: R53 revision-aware update and installer identity
+        if: needs.release-line.outputs.line == 'R53'
         run: python tests/test_r53_release_identity.py
+      - name: R55 exact source identity and release isolation
+        if: needs.release-line.outputs.line == 'R55'
+        run: python tests/verify_release_line.py --expected R55
       - name: Installer owned-process shutdown bounded-wait regression
         shell: pwsh
         run: ./tests/test_prepare_upgrade_wait.ps1
@@ -39,6 +62,9 @@ jobs:
         run: python tests/test_node_health_freshness.py
       - name: Gateway unit tests
         run: python gateway/tests/test_gateway.py
+      - name: Reuse installed WARP identity and fail-closed negatives
+        shell: pwsh
+        run: ./gateway/tests/test_warp_reuse_contract.ps1
       - name: Clean self-contained packaging regression
         run: python -m unittest tests.test_clean_install
       - name: Parse PowerShell sources
@@ -400,7 +426,12 @@ jobs:
           )"
           test -n "$UDID"
           xcrun simctl boot "$UDID" 2>/dev/null || true
-          xcrun simctl bootstatus "$UDID" -b
+          # Bound cold-boot hangs on hosted macOS; never silently pass a missing simulator.
+          if ! perl -e 'alarm 720; exec @ARGV' xcrun simctl bootstatus "$UDID" -b; then
+            echo 'SIMULATOR_BOOT_TIMEOUT_OR_FAILURE' >&2
+            xcrun simctl list devices booted || true
+            exit 1
+          fi
           APP=build/Build/Products/Debug-iphonesimulator/FreeNetHub.app
           xcrun simctl install "$UDID" "$APP"
           xcrun simctl launch "$UDID" com.freenethub.app | tee /tmp/fnh-ios-launch.txt
@@ -420,6 +451,8 @@ jobs:
           test -s /tmp/fnh-ios-relaunch.png
 
   windows-installer-fresh:
+    needs: release-line
+    if: needs.release-line.outputs.line == 'R53'
     runs-on: windows-latest
     timeout-minutes: 25
     steps:
@@ -595,8 +628,15 @@ jobs:
           Write-Host 'R52_TO_R53_DATA_PRESERVATION_AND_EXPLICIT_R52_ROLLBACK_PASS'
 
 
+  windows-installer-r55:
+    needs: release-line
+    if: needs.release-line.outputs.line == 'R55'
+    uses: ./.github/workflows/r55-private-acceptance.yml
+
   virtual-acceptance:
     needs:
+      - release-line
+      - windows-installer-r55
       - windows-unit
       - linux-static
       - android-build
@@ -606,6 +646,7 @@ jobs:
       - windows-installer-fresh
       - android-emulator-runtime
       - ios-simulator-runtime
+    if: ${{ always() && needs.release-line.result == 'success' && needs.windows-unit.result == 'success' && needs.linux-static.result == 'success' && needs.android-build.result == 'success' && needs.ios-static.result == 'success' && needs.console-virtual-e2e.result == 'success' && needs.windows-virtual-signing.result == 'success' && needs.android-emulator-runtime.result == 'success' && needs.ios-simulator-runtime.result == 'success' && ((needs.release-line.outputs.line == 'R53' && needs.windows-installer-fresh.result == 'success' && needs.windows-installer-r55.result == 'skipped') || (needs.release-line.outputs.line == 'R55' && needs.windows-installer-fresh.result == 'skipped' && needs.windows-installer-r55.result == 'success')) }}
     runs-on: ubuntu-24.04
     steps:
-      - run: echo 'All desktop and virtualized external-gate validations passed.'
+      - run: echo 'All version-matched desktop and virtualized gates passed.'
