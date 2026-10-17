@@ -2,7 +2,7 @@
   "schema": 1,
   "event": "FNH-R57-WIN-OWNER-FIELD-20261017",
   "date": "2026-10-17",
-  "purpose": "Exact-binary owner Windows R54-to-R57 install, selective Google 403 diagnosis and scoped CFON recovery",
+  "purpose": "Owner Windows R54→R57 installation, scoped CFON, and restricted cross-device TAILNET interoperability with temporary Linux R24 source",
   "source": {
     "candidateSourceSha": "27faa846f0e1ad9759cebcd2eb1bc5eca3f58196",
     "mergeMainSha": "aae8cc96c648195368147210b958307d99ed2df2",
@@ -11,7 +11,16 @@
     "windowsIsolatedRun": 39008318018,
     "windowsR57InstallerSHA256": "235B5451410DED77DEBD3418249547B5243C7E65DF2F70032165FAC5DF411EE5",
     "windowsR57InstallerBytes": 24266284,
-    "windowsR54PhysicalRollbackSHA256": "6D3F46C952EFCB0BB653454DA39F6E80754997BD15CB11376FC19E4535BF2DB5"
+    "windowsR54PhysicalRollbackSHA256": "6D3F46C952EFCB0BB653454DA39F6E80754997BD15CB11376FC19E4535BF2DB5",
+    "mainAfterManifestFix": "51547f446acffc05e97c6c91ec35e9bbd8944216",
+    "mainAfterManifestFixCI": {
+      "run": 39044336460,
+      "commit": "51547f446acffc05e97c6c91ec35e9bbd8944216",
+      "status": "completed",
+      "conclusion": "success",
+      "jobSuccess": 10,
+      "jobTotal": 10
+    }
   },
   "ownerWindows": {
     "baselineVersion": "4.3.10",
@@ -46,7 +55,32 @@
     "activeUIOwnerSmokeTested": false,
     "selectivePACOSEnabled": false,
     "fullSystemTunnelValidated": false,
-    "installRollbackActuallyExecuted": false
+    "installRollbackActuallyExecuted": false,
+    "tailnetHealthyPeerCandidatesBeforeTempShare": 0,
+    "crossDeviceInstalledWindowsTemporaryLinuxR24Gateway": {
+      "scope": "Installed Windows R57 engine + temporary Linux R24 gateway source on host still installed R21; no full installed R24 acceptance",
+      "oneAuthorizedTailnetPeer": true,
+      "upstreamCFONOwned": true,
+      "sourceGatewayTTLMinutes": 4,
+      "sourceGatewayPort": 19551,
+      "domainAllowlist": [
+        "google.com",
+        "cloud.google.com"
+      ],
+      "installedWindowsPeerDiscoveryActiveCandidates": 1,
+      "googleCloudUnsignedOriginRootDirectHTTPStatus": 403,
+      "googleCloudUnsignedOriginRootTailnetHTTPStatus": 302,
+      "googleSOCKSGenerate204ViaTailnet": 204,
+      "outOfAllowlistExampleOrgSOCKSRejected": true,
+      "windowsProxyAndPACUnchanged": true,
+      "linuxTemporarySystemdUnitAndOwnerRecordRemoved": true,
+      "linuxOriginalCFONStillOwnedAndHealthy": true,
+      "linuxOriginalTailscaleAndGnomeAutoProxyPreserved": true,
+      "winGUIInteractiveUnverified": true,
+      "linuxR24Installed": false,
+      "authenticatedGoogleCloudPermissionsNotTested": true,
+      "evidenceBasis": "Durable Linux start/stop operations fc38c82e-b63f-4a37-b3f1-02dfeb9d970b and 03637f9b-eeb6-4436-8c03-cf67d98aa741; Windows installed-engine probe bb141d0a-ad74-456d-8c96-bce8848a92df; private raw Win jobs c57a17ccf3e14ca7a4c602e9ac114751 and c57a17ccf3e14ca7a4c602e9ac114752"
+    }
   },
   "linux": {
     "installed": "4.2.0-linux.21-r54",
@@ -70,10 +104,10 @@
   "remainingGates": [
     "Owner Windows interactive WPF GUI and opt-in PAC apply/restore",
     "Linux R24 physical install after active CFON idle; opt-in tailnet sharing",
-    "Installed cross-device Windows TAILNET CFON",
+    "Installed-to-installed Windows R57 + Linux R24 TAILNET with explicit user PAC apply/restore (temporary Linux R24 source route already PASS)",
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD"
   ],
-  "status": "SCOPED_OWNER_WINDOWS_R57_INSTALL_AND_CFON_DIAG_PASS_NOT_WHOLE_PRODUCT_FINAL"
+  "status": "SCOPED_OWNER_WINDOWS_R57_AND_TEMP_LINUX_R24_SOURCE_TAILNET_PASS_NOT_PRODUCT_FINAL"
 }
