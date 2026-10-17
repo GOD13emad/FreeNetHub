@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 37148,
-      "sha256": "7CA66E7D0C91C408D93E2F05B8F441DBE41432A28B0CDADDF3E4103BC23381AC"
+      "bytes": 37325,
+      "sha256": "8623B67BCD89EFB741F475E0E4057846DC3CD3427D04567A5222066228BAB5EE"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -20,8 +20,13 @@
     },
     {
       "file": ".github/workflows/r55-selective-candidate.yml",
-      "bytes": 9961,
-      "sha256": "F15F0CCA8939B57F169E07D275ADDE9FC097815B3E6BA5339415D0805B30424D"
+      "bytes": 9496,
+      "sha256": "F8208BF8555D244A3E6F935FFCE86F56423F4D92BE2B366DD4F46542782193A4"
+    },
+    {
+      "file": ".github/workflows/r56-google-403-candidate.yml",
+      "bytes": 9963,
+      "sha256": "9881AEAB32536667CF1A22FB728EB5046ED62775C98F44AA75CF4BFF61DDB55E"
     },
     {
       "file": ".github/workflows/v465-private-gateway-review.yml",
@@ -110,18 +115,18 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 118678,
-      "sha256": "DAFB1E09602408B8ECDC7DE05955E13E8B04EF0CE5BD373DB49331EC08B83925"
+      "bytes": 119538,
+      "sha256": "249317ED15E2513291BEFA34D5C95A2C56970055C3F0F13E65785AEB18C2AD98"
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 109646,
-      "sha256": "0D7C47285926A370DD49D40BCE5242C8AE2EFD845FE12AC4273EDAB6CC37C6C2"
+      "bytes": 115275,
+      "sha256": "70E6986B90831C28C68ED1129C7067FC484537EC6B3E053C452E349E2C5EDC7B"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 5440,
-      "sha256": "8B6F912DF8A846244AC5CD1450F057E66B3F5D9773811D300FCB6A59911F1516"
+      "bytes": 5434,
+      "sha256": "EB404DD326DCAC46264B7C1498BD681D5DB1B4081BF9DC4310CC37367A13A28D"
     },
     {
       "file": "app/nodehub.py",
@@ -135,13 +140,13 @@
     },
     {
       "file": "app/selective_route_windows.py",
-      "bytes": 19913,
-      "sha256": "6E3021784A328E936B8780AFE2114EE73BA3FB4BCF592398C48C5252DD684DFC"
+      "bytes": 24286,
+      "sha256": "FD2A54E5B2F9065A0B1279DF6C274515AA46721A9510AC6D718AD49E18608993"
     },
     {
       "file": "app/View.xaml",
-      "bytes": 76813,
-      "sha256": "C2DB59DFA16C8AB503F7481AB37E9E117470BF747F9955E6A7ABF7BEF14EC00D"
+      "bytes": 77919,
+      "sha256": "C2840B21C5E3D3B02ED48219F55C2C16B8CEC57C425724F4A5886481D538390E"
     },
     {
       "file": "crossplatform/android/app/build.gradle.kts",
@@ -251,17 +256,17 @@
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
       "bytes": 44627,
-      "sha256": "88FA20A9FC70C74D569971C449D4604A17FBDB084AC54FFCFB3A2638AD5FB357"
+      "sha256": "A0553B3A647A86CD327D74FDF27EF777F1CB2EBDB4168FE4BCEC8C31BCA73357"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
-      "bytes": 64415,
-      "sha256": "E4ED2B855272DDA6FBB23FB1F47B1C443D83CCD624513889142D92117DC49E8E"
+      "bytes": 67624,
+      "sha256": "7865F325A339C8AA04E272E02B62975950465D6FE83A8BB91639E544AFDD7772"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_r37.py",
-      "bytes": 62711,
-      "sha256": "F57AC30A63D531C24F0084280E0E448513789B877DCA5D28E59964CCC479BFA9"
+      "bytes": 63688,
+      "sha256": "DDBDAB071B1B773645B9C09D60326A483322398D59F0ECCC0E1691F4B4242197"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -275,8 +280,8 @@
     },
     {
       "file": "crossplatform/linux/install.sh",
-      "bytes": 7738,
-      "sha256": "88E28DC70895335872259EDE88BEB68604F86B33C12F540CDAC6E3197D7868A5"
+      "bytes": 7744,
+      "sha256": "3899601D4385A093D2EED34ABD00A8B8C0412ED8125D5409F6B15FC0D1BAD683"
     },
     {
       "file": "crossplatform/linux/install_singbox_pinned.sh",
@@ -300,8 +305,8 @@
     },
     {
       "file": "crossplatform/linux/README_FA.md",
-      "bytes": 8046,
-      "sha256": "8DC401E797D040C14C3B483CDF90BFBC0D2675AA92314A3DB9FEE3A44DC950AA"
+      "bytes": 9867,
+      "sha256": "3FE96D00C991D838E973A76737AB59A0C44A7B26D94519C478B6E51255998F1D"
     },
     {
       "file": "crossplatform/linux/recover_warp_remote.sh",
@@ -310,13 +315,13 @@
     },
     {
       "file": "crossplatform/linux/selective_tunnel.py",
-      "bytes": 14826,
-      "sha256": "6A4DC437D1AFF8422B4F86C625884FAAB8DB090428E8AC5989439730F5A109D0"
+      "bytes": 19070,
+      "sha256": "9462A2E5E280E56D569ABC3365CB00539A613302E7AB0C0CAA2CA45EE23E6D27"
     },
     {
       "file": "crossplatform/linux/selftest.py",
       "bytes": 1829,
-      "sha256": "AD07E45B912CF433042970F39D2FB63947AA6888461C3604370D4EA12EFF6306"
+      "sha256": "BCA124C78381B31D6172B83435B4F85B904D9CA59DED033B582287CAE58ED91F"
     },
     {
       "file": "crossplatform/linux/test_browser_profile.py",
@@ -336,7 +341,7 @@
     {
       "file": "crossplatform/linux/test_r37_parity.py",
       "bytes": 9292,
-      "sha256": "542C2D3DECF51FE91615D6C34B1B2E894AA82369D280F31BD88E648663C3AACB"
+      "sha256": "536E76EFA2633B25C0442D6262347B4CC4999F7986E415FA2608485B3CE8D453"
     },
     {
       "file": "crossplatform/linux/test_scope_policy.py",
@@ -345,18 +350,18 @@
     },
     {
       "file": "crossplatform/linux/test_selective_integration.py",
-      "bytes": 2780,
-      "sha256": "5F3E119B453CE966FC39C0AAF4535AB27520FF2C5AA4FECD0573D8A7119CDB28"
+      "bytes": 2990,
+      "sha256": "E1214EFB6E1157840CEF5BBE98DFFC0EED4E81C7F095500546272EA468FFAFC5"
     },
     {
       "file": "crossplatform/linux/test_selective_tunnel.py",
-      "bytes": 8056,
-      "sha256": "657E2C1EDBC9688D3458717A025400D32DCB394EAA93D72DE48895FCE3876BBE"
+      "bytes": 9612,
+      "sha256": "2482018BB6ACBB9C7F5DFA10AE57F63A9C204209E933946686F9F8138B107D47"
     },
     {
       "file": "crossplatform/linux/test_update_revision.py",
       "bytes": 2306,
-      "sha256": "DB3318ECFA9E409FD5F8D22DA1AA166C1380C441CC8989B00B0195B777E9B8FE"
+      "sha256": "0357FF54C5F6076AE67E5BEC748EB06615752E7167884D4EFC7BA003935EE901"
     },
     {
       "file": "crossplatform/linux/test_warp_tos_owner_consent.py",
@@ -376,7 +381,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 7761,
-      "sha256": "007A13E191A50417EA6172129D3413B795DB1DECC2199ED0ED6F9FA07918D3FF"
+      "sha256": "45BE9BC678436C33F6929CFFACF2A4BED7CCC6657E3AD028916FD1E35B8AAB50"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1815,8 +1820,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 214501,
-      "sha256": "713D9BAC4B54E2A808427A88F4D3167E7BFF3213A1F8DAF1F2E0855B07A209B8"
+      "bytes": 216487,
+      "sha256": "ABD1C6E223CB370610FABA6CD178476C7FE55A816F973BA5E109F2C7648E26EB"
     },
     {
       "file": "pytest.ini",
@@ -1835,8 +1840,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 43563,
-      "sha256": "283C88122574B4BE97BB2276F0C8CD7EBDF695465E22E9EE95269CE8A037381E"
+      "bytes": 43871,
+      "sha256": "7CCFE244A891DF5DA368C8C595D9FDB90FCEE4268B6B0E04BC67059DCCA44464"
     },
     {
       "file": "SECURITY.md",
@@ -1912,6 +1917,11 @@
       "file": "tests/build_linux_r22_package.py",
       "bytes": 3072,
       "sha256": "41913252A35F92CD9E2548C13B90A349A45976C57496A1D4387F283F646CEAEE"
+    },
+    {
+      "file": "tests/build_linux_r23_package.py",
+      "bytes": 3084,
+      "sha256": "80775834302DB37D8B35CA93722C8E2246AF1264084002519EE179215F164849"
     },
     {
       "file": "tests/build_linux_r9_package.py",
@@ -2162,6 +2172,11 @@
       "file": "tests/prepare_r55_selective_candidate.py",
       "bytes": 8409,
       "sha256": "56D5AD8F1D822D8B15A82D365261DBD3577DA36CEA167F2D22D38E3DD0462EC4"
+    },
+    {
+      "file": "tests/prepare_r56_google_403_candidate.py",
+      "bytes": 8587,
+      "sha256": "A5E7ACA5E5C6F487F39BEBA09D2BF948C2213E71841B53A8C605E990F9BE70A7"
     },
     {
       "file": "tests/prepare_v465_gateway_review.py",
@@ -2549,6 +2564,11 @@
       "sha256": "0E569450C5D604E33C49E23A3016EC5491CB7F0CE2C2C8CC0ACAA0EF68393F80"
     },
     {
+      "file": "tests/test_linux_r23_upgrade_preserves_data.py",
+      "bytes": 4829,
+      "sha256": "7A6A0F1B0C15172677DE3BD315CEAE8B79750E38F659EBDC1EBB74725E1BE443"
+    },
+    {
       "file": "tests/test_linux_site_diagnostics_auto.py",
       "bytes": 4894,
       "sha256": "066FC4D6958E5812C62724EB7489C36178AA8F1F480D436051ED79A150DC0271"
@@ -2689,19 +2709,24 @@
       "sha256": "F6752FCB687638674EFB6A34D662D1AF9C701EC963772E47F6E03746679B3232"
     },
     {
+      "file": "tests/test_windows_r56_isolated.ps1",
+      "bytes": 8265,
+      "sha256": "0025C13F824B73C6B129D6E071332D12D51995F31737032284E9EB25290C34F7"
+    },
+    {
       "file": "tests/test_windows_selective_http_bridge.py",
       "bytes": 6607,
       "sha256": "890FACD89E6823DF6889D7F38193B5C461680DCA43F22FA3F4C09CA78048E5D4"
     },
     {
       "file": "tests/test_windows_selective_integration.py",
-      "bytes": 6697,
-      "sha256": "3D37BFAADD865235848F652145AADFC36706D22165666000FF2B2C8017D28046"
+      "bytes": 9542,
+      "sha256": "DD8BD83E4EA4D48F73E7DDF8E3538CCB191D6CF28D481CCDA4C9F9A5E929D986"
     },
     {
       "file": "tests/test_windows_selective_routing.py",
-      "bytes": 9299,
-      "sha256": "FB9FF7A8150BAFD416BA9E84EEFF2A92DA40864A507D602ADE8093A178021D91"
+      "bytes": 12038,
+      "sha256": "67DAAC7897FF276A97EC6ED8CA6C8E1711770D40D02CC8A05D978FFF94EFF97D"
     },
     {
       "file": "tests/verify_frozen_linux_r20_asset.py",

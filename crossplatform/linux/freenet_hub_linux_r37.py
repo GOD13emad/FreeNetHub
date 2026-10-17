@@ -23,7 +23,7 @@ import freenet_hub_linux as legacy
 import nodehub_shared as NH
 import selective_tunnel as selective
 
-VERSION = "4.2.0-linux.22-r55"
+VERSION = "4.2.0-linux.23-r56"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -982,6 +982,25 @@ def selective_status():
 
 def selective_disable():
     return selective.disable()
+
+
+def selective_probe_403(url, mode="AUTO"):
+    """No new provider start, no system proxy change, no browser profile access."""
+    requested=str(mode or "AUTO").upper()
+    active=str(legacy.session().get("mode") or "").upper()
+    mapped={"WARP_PROXY":"WARP","OBFS4":"TOR","SNOWFLAKE":"TOR"}
+    live=mapped.get(active,active)
+    if not active or requested not in ("AUTO",live):
+        return {"ok":False,"error":"SELECTIVE_PROBE_REQUIRES_OWNED_ACTIVE_METHOD"}
+    proxy,name=_active_proxy_for_diagnostics()
+    parsed=urllib.parse.urlparse(proxy or "")
+    actual=mapped.get(str(name).upper(),str(name).upper())
+    if actual!=live or parsed.scheme not in ("socks5","socks5h") or parsed.hostname!="127.0.0.1" or not parsed.port:
+        return {"ok":False,"error":"SELECTIVE_PROBE_REQUIRES_LOCAL_OWNED_SOCKS5"}
+    try:
+        return selective.diagnose_403_site(url,int(parsed.port))
+    except (ValueError, OSError) as exc:
+        return {"ok":False,"error":str(exc)}
 
 
 def selective_connect(mode="AUTO", domains=None):

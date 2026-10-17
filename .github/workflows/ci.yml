@@ -89,8 +89,10 @@ jobs:
             -o delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R21.zip
           echo "82305e1a15684662b7711b53a84522122c6a11d618366314d9dd297b3a7fec1a  delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R21.zip" | sha256sum -c -
           python3 tests/test_linux_r21_upgrade_preserves_data.py
-          python3 tests/build_linux_r22_package.py
-          python3 tests/test_linux_r22_upgrade_preserves_data.py
+          # R22 historical binary has immutable acceptance proof in Actions run 39000686983.
+          # Build only a distinct R23 package from the changed R56 source.
+          python3 tests/build_linux_r23_package.py
+          python3 tests/test_linux_r23_upgrade_preserves_data.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
           cd /tmp/fnh-r20-ci/FreeNetHub_4.2.0_Linux_R20
@@ -98,23 +100,23 @@ jobs:
           for f in selftest.py test_browser_profile.py test_console_policy.py test_private_state_permissions.py test_scope_policy.py test_r37_parity.py test_update_revision.py; do python3 "$f"; done
           cd "$GITHUB_WORKSPACE"
           bash -n crossplatform/linux/install.sh crossplatform/linux/uninstall.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/install_singbox_pinned.sh crossplatform/linux/install_warpplus_pinned.sh crossplatform/linux/recover_warp_remote.sh
-      - name: Seal exact R22 Linux ZIP against passed fresh upgrade/rollback fixtures
+      - name: Seal exact R23 Linux ZIP against passed R21 upgrade/rollback fixtures
         shell: bash
         run: |
           set -euo pipefail
-          package=delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R22.zip
+          package=delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R23.zip
           test -s "$package"
-          echo "5ffa0d7fe5ce6971000693185687c0e1870bbba15484416c1c297ba3902869ee  $package" | sha256sum -c -
-          unzip -p "$package" FreeNetHub_4.2.0_Linux_R22/PACKAGE_MANIFEST.json | python3 -c 'import json,sys;m=json.load(sys.stdin);assert m["version"]=="4.2.0-linux.22-r55" and len(m["files"])==27'
-          printf '%s  %s\n' '5ffa0d7fe5ce6971000693185687c0e1870bbba15484416c1c297ba3902869ee' 'FreeNetHub_4.2.0_Linux_R22.zip' > delivery/github_v4.2.0/R22_SHA256SUMS.txt
-          echo 'R22_EXACT_CI_TESTED_PACKAGE_STAGED_NOT_PUBLIC_RELEASE'
-      - name: Archive versioned R22 Linux preview without replacing installed R21
+          echo "ae3e02e791aae9ce6740a7df5c9ad08e910e0d18ebafb37b379c3e003ba28d48  $package" | sha256sum -c -
+          unzip -p "$package" FreeNetHub_4.2.0_Linux_R23/PACKAGE_MANIFEST.json | python3 -c 'import json,sys;m=json.load(sys.stdin);assert m["version"]=="4.2.0-linux.23-r56" and len(m["files"])==27'
+          printf '%s  %s\n' 'ae3e02e791aae9ce6740a7df5c9ad08e910e0d18ebafb37b379c3e003ba28d48' 'FreeNetHub_4.2.0_Linux_R23.zip' > delivery/github_v4.2.0/R23_SHA256SUMS.txt
+          echo 'R23_EXACT_CI_TESTED_PACKAGE_STAGED_NOT_PUBLIC_RELEASE'
+      - name: Archive versioned R23 Google/403 Linux preview without replacing installed R21
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: FreeNetHub_4.2.0_Linux_R22_CI_TESTED_UNSIGNED
+          name: FreeNetHub_4.2.0_Linux_R23_CI_TESTED_UNSIGNED
           path: |
-            delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R22.zip
-            delivery/github_v4.2.0/R22_SHA256SUMS.txt
+            delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R23.zip
+            delivery/github_v4.2.0/R23_SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30
   android-build:

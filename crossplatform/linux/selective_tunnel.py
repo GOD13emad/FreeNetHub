@@ -7,6 +7,7 @@ The sole external setting is GNOME's per-user PAC URL, with ownership/rollback.
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import http.server
 import json
 import os
@@ -19,6 +20,7 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+import urllib.parse
 
 STATE = pathlib.Path.home() / ".local" / "share" / "FreeNetHub"
 DATA = STATE / "selective"
@@ -27,7 +29,45 @@ PAC_FILE = DATA / "route.pac"
 SERVICE = pathlib.Path.home() / ".config" / "systemd" / "user" / "freenethub-selective-pac.service"
 PORT = 19416
 URL = f"http://127.0.0.1:{PORT}/route.pac"
-DEFAULT_DOMAINS = "brave.com\nbravesoftware.com\nstripe.com\nstripe.network"
+BRAVE_STRIPE_DOMAINS = ("brave.com", "bravesoftware.com", "stripe.com", "stripe.network")
+# Explicit, audit-friendly Google ecosystem set. Do not wildcard arbitrary google.*:
+# an unrelated domain could otherwise be proxied without user consent.
+GOOGLE_DOMAINS = (
+    'google.com',
+    'googleapis.com',
+    'googleusercontent.com',
+    'gstatic.com',
+    'googlevideo.com',
+    'ggpht.com',
+    'gvt1.com',
+    'gvt2.com',
+    'gvt3.com',
+    'g.co',
+    'goo.gl',
+    'appspot.com',
+    'firebaseapp.com',
+    'firebaseio.com',
+    'google.co.uk',
+    'google.de',
+    'google.co.in',
+    'google.com.au',
+    'google.ca',
+    'google.fr',
+    'google.co.jp',
+    'google.ir',
+    'youtube.com',
+    'youtu.be',
+    'ytimg.com',
+    'youtube-nocookie.com',
+    'blogspot.com',
+    'blogger.com',
+    'recaptcha.net',
+    'doubleclick.net',
+)
+DEFAULT_DOMAINS = "\n".join(BRAVE_STRIPE_DOMAINS + GOOGLE_DOMAINS)
+# A newly selected hostname is opt-in: PAC cannot inspect HTTP status codes
+# and neither 403 nor a proxy 302 can establish account authorization.
+
 UNIT_MARKER = "# FreeNetHub-owned selective domain proxy PAC service"
 DOMAIN_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$")
 
@@ -71,6 +111,78 @@ def parse_domains(value):
     if not result:
         raise ValueError("SELECTIVE_DOMAINS_EMPTY")
     return result
+
+
+def merge_domains(current, extra):
+    """Merge explicitly selected suffixes; preserve custom entries and ordering."""
+    existing = parse_domains(current) if str(current).strip() else []
+    addition = parse_domains(extra)
+    return parse_domains("\n".join(existing + addition))
+
+
+def host_from_url(text):
+    """Paste a public HTTPS URL/host; never store paths, queries or login tokens."""
+    if not isinstance(text, str) or not (0 < len(text.strip()) <= 2048):
+        raise ValueError("SELECTIVE_SITE_URL_INVALID")
+    text = text.strip()
+    if any(ch in text for ch in ("\r", "\n", "\t", "\\", " ")):
+        raise ValueError("SELECTIVE_SITE_URL_INVALID")
+    if "://" not in text:
+        text = "https://" + text
+    u = urllib.parse.urlsplit(text)
+    try:
+        valid_port = u.port is None or u.port == 443
+        host = u.hostname or ""
+    except ValueError as exc:
+        raise ValueError("SELECTIVE_SITE_URL_INVALID") from exc
+    if u.scheme != "https" or not host or u.username or u.password or not valid_port:
+        raise ValueError("SELECTIVE_SITE_HTTPS_PUBLIC_HOST_REQUIRED")
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("SELECTIVE_IP_TARGET_DENIED")
+    return parse_domains(host)[0]
+
+
+def diagnose_403_site(text, proxy_port):
+    """Unsigned, no-cookie HEAD to the public origin only; never inspect user traffic.
+
+    This is a diagnostic/suggestion, not transparent replay or automatic
+    interception. Authentication, project permissions and path-specific 403s
+    cannot be determined by this privacy-preserving origin-only request.
+    """
+    host = host_from_url(text)
+    if type(proxy_port) is not int or not 1024 <= proxy_port <= 65535:
+        raise ValueError("SELECTIVE_PROXY_PORT_INVALID")
+
+    def check(proxy):
+        args = ["curl", "--silent", "--show-error", "--head",
+                "--max-time", "8", "--max-redirs", "0",
+                "--output", os.devnull, "--write-out", "%{http_code}"]
+        if proxy:
+            args += ["--noproxy", "", "--socks5-hostname", f"127.0.0.1:{proxy_port}"]
+        else:
+            args += ["--noproxy", "*"]
+        args.append("https://" + host + "/")
+        try:
+            result = subprocess.run(args, capture_output=True, text=True, timeout=11)
+            status = result.stdout.strip()
+            return int(status) if result.returncode == 0 and status.isdecimal() and len(status) == 3 else 0
+        except (OSError, subprocess.SubprocessError):
+            return 0
+
+    direct, tunneled = check(False), check(True)
+    suggested = direct == 403 and tunneled in (200, 201, 202, 204, 301, 302, 303, 307, 308)
+    verdict = ("REGIONAL_403_IMPROVED" if suggested else
+               "BOTH_ROUTES_FORBIDDEN" if direct == 403 and tunneled == 403 else
+               "TUNNEL_FORBIDDEN" if tunneled == 403 else
+               "PROBE_INCONCLUSIVE" if not direct or not tunneled else
+               "NO_UNAUTHENTICATED_ORIGIN_403")
+    return {"ok": True, "host": host, "directCode": direct,
+            "tunnelCode": tunneled, "suggestAdd": suggested, "verdict": verdict,
+            "pathTested": "/", "authenticated": False, "settingsChanged": False}
 
 
 def pac_script(domains, port):

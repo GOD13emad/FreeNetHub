@@ -1,19 +1,6 @@
 name: R55 selective Windows isolated candidate acceptance
 
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/r55-selective-candidate.yml'
-      - 'tests/prepare_r55_selective_candidate.py'
-      - 'tests/test_windows_r55_isolated.ps1'
-      - 'app/engine.py'
-      - 'app/selective_route_windows.py'
-      - 'app/selective_http_bridge.py'
-      - 'app/FreeNetHub.ps1'
-      - 'app/View.xaml'
-      - 'app/manifest.json'
-      - 'windows/installer/FreeNetHub.iss'
-      - 'windows/installer/Prepare-SelectiveUpgrade.ps1'
   workflow_dispatch:
 
 permissions:

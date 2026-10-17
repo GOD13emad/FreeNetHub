@@ -23,6 +23,31 @@ class DomainTests(unittest.TestCase):
                          ["brave.com", "stripe.com", "stripe.network"])
         self.assertEqual(st.parse_domains("bücher.example"), ["xn--bcher-kva.example"])
 
+    def test_google_domains_403_and_custom_preservation(self):
+        self.assertIn("google.com", st.GOOGLE_DOMAINS)
+        self.assertIn("googleapis.com", st.GOOGLE_DOMAINS)
+        self.assertGreaterEqual(len(st.GOOGLE_DOMAINS),25)
+        self.assertEqual(st.merge_domains("custom.example\nbrave.com",
+                         "google.com\ncustom.example"),
+                         ["custom.example","brave.com","google.com"])
+        self.assertEqual(st.host_from_url("https://console.cloud.google.com/apis/credentials?key=private"),
+                         "console.cloud.google.com")
+        for bad in ("http://google.com", "https://127.0.0.1/", "https://admin@google.com",
+                    "https://google.com:1234/", "https://private.local/", "file:///root"):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                st.host_from_url(bad)
+        def run(args,**kwargs):
+            self.assertEqual(kwargs["timeout"],11)
+            self.assertIn("--head",args)
+            self.assertEqual(args[-1],"https://console.cloud.google.com/")
+            return subprocess.CompletedProcess(args,0,
+                     "302" if "--socks5-hostname" in args else "403","")
+        with mock.patch.object(st.subprocess,"run",side_effect=run):
+            out=st.diagnose_403_site("https://console.cloud.google.com/apis/credentials?token=private",19414)
+        self.assertEqual((out["directCode"],out["tunnelCode"]),(403,302))
+        self.assertTrue(out["suggestAdd"])
+        self.assertFalse(out["authenticated"])
+
     def test_fail_closed_input(self):
         bad = [
             "", "*", "*.com", "com", "co.uk", "127.0.0.1", "localhost", "hello.local",

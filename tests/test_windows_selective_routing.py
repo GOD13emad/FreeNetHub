@@ -23,6 +23,48 @@ class DomainTests(unittest.TestCase):
             ["brave.com", "stripe.com", "stripe.network"],
         )
 
+    def test_google_ecosystem_preset_and_non_destructive_merge(self):
+        self.assertGreaterEqual(len(st.GOOGLE_DOMAINS), 25)
+        self.assertIn("google.com", st.GOOGLE_DOMAINS)
+        self.assertIn("googleapis.com", st.GOOGLE_DOMAINS)
+        self.assertIn("youtube.com", st.GOOGLE_DOMAINS)
+        self.assertEqual(st.merge_domains("example.net\nbrave.com",
+                         "google.com\nexample.net"),
+                         ["example.net", "brave.com", "google.com"])
+        self.assertIn("console.cloud.google.com",
+                      ["console.cloud.google.com"])
+        self.assertEqual(st.host_from_url("https://console.cloud.google.com/apis/credentials?token=secret"),
+                         "console.cloud.google.com")
+        self.assertEqual(st.host_from_url("accounts.google.com/"), "accounts.google.com")
+        for bad in ("http://console.cloud.google.com", "https://127.0.0.1/",
+                    "https://localhost/", "https://user:pass@google.com/",
+                    "https://google.com:444/", "file:///secret",
+                    "https://google.com.evil.test\\injection"):
+            with self.subTest(bad=bad), self.assertRaises(st.SelectiveError):
+                st.host_from_url(bad)
+
+    def test_403_diagnostic_is_unsigned_head_and_does_not_change_settings(self):
+        def fake_run(args, **kwargs):
+            self.assertIn("--head", args)
+            self.assertEqual(args[-1], "https://console.cloud.google.com/")
+            self.assertFalse(any("token=" in v for v in args))
+            self.assertEqual(kwargs.get("timeout"), 11)
+            proxy="--socks5-hostname" in args
+            return subprocess.CompletedProcess(args,0,"302" if proxy else "403","")
+        with mock.patch.object(st.subprocess,"run",side_effect=fake_run) as run:
+            result=st.diagnose_403_site("https://console.cloud.google.com/apis/credentials?token=secret",19414)
+        self.assertEqual(run.call_count,2)
+        self.assertEqual(result["directCode"],403)
+        self.assertEqual(result["tunnelCode"],302)
+        self.assertTrue(result["suggestAdd"])
+        self.assertFalse(result["authenticated"])
+        self.assertFalse(result["settingsChanged"])
+        with mock.patch.object(st.subprocess,"run",
+                     return_value=subprocess.CompletedProcess([],0,"403","")):
+            result=st.diagnose_403_site("https://other.example/forbidden",19414)
+        self.assertEqual(result["verdict"],"BOTH_ROUTES_FORBIDDEN")
+        self.assertFalse(result["suggestAdd"])
+
     def test_rejects_unsafe_domains(self):
         bad = (
             "", "*", "co.uk", "com", "127.0.0.1", "localhost",
@@ -48,7 +90,7 @@ class DomainTests(unittest.TestCase):
             "['checkout.stripe.com','PROXY 127.0.0.1:19417'],"
             "['js.stripe.com','PROXY 127.0.0.1:19417'],"
             "['m.stripe.network','PROXY 127.0.0.1:19417'],"
-            "['www.google.com','DIRECT'],"
+            "['console.cloud.google.com','PROXY 127.0.0.1:19417'],['accounts.google.com','PROXY 127.0.0.1:19417'],['www.googleapis.com','PROXY 127.0.0.1:19417'],['www.google.com','PROXY 127.0.0.1:19417'],['google.com.evil.test','DIRECT'],"
             "['notbrave.com','DIRECT'],"
             "['badstripe.com','DIRECT']];"
             "for(const [host,e] of tests){"
