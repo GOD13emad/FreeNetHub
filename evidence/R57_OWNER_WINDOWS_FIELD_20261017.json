@@ -111,6 +111,14 @@
       "conclusion": "success",
       "jobsSuccess": 10,
       "totalJobs": 10
+    },
+    "lastAcceptedSourceCI": {
+      "commit": "dfc66d4f2b174dea02c59e739547cfb0c5bd6032",
+      "run": 39072052453,
+      "status": "completed",
+      "conclusion": "success",
+      "jobsPassed": 10,
+      "jobsTotal": 10
     }
   },
   "ownerWindows": {
@@ -221,6 +229,52 @@
       "interactiveWPFAccepted": false,
       "systemPACApplyRestoreAccepted": false,
       "status": "NATIVE_WPF_HIDDEN_STA_WINDOW_AND_CONTROLS_PASS_REAL_DESKTOP_OPEN"
+    },
+    "realChromePACBridgeTailnetToEmadR21_20261018": {
+      "event": "FNH-R57-CHROME-PAC-REAL-TAILNET-20261018",
+      "installedR57": "4.3.13",
+      "sourceGitMainAtField": "dfc66d4f2b174dea02c59e739547cfb0c5bd6032",
+      "pinnedInstalledWindowsPACSourceSHA256": "8B2CB7A58983AE8F2E18100A91F15475B5B71A566D9F0F64C74ECCE21019BB3A",
+      "pinnedInstalledWindowsHTTPBridgeSHA256": "A7A4431B6749AD660C2B2CB42C23C6E0295D7CC5CB3D3CC19AB6E659F413E328",
+      "ChromeIsolatedFreshProfileAndPerProcessPACOnly": true,
+      "selectedDomains": [
+        "google.com",
+        "cloud.google.com"
+      ],
+      "offlineStubSelectedCloudConnectError502": true,
+      "nativeChromeObservedERR_TUNNEL_CONNECTION_FAILED": true,
+      "negativeChromeIndependentDirectExampleOrgDOMLoaded": true,
+      "negativeChromeScopedReceiptSHA256": "5F58A457F56AB754C2EDDC46D709C7D25BDA6DC8CE14D5B7A8C91AC20E2FF1E8",
+      "peerWindowsTailnet": "100.69.162.23",
+      "peerLinuxTailnet": "100.115.125.114",
+      "realPeerServerOnlyWindowsPeerAndGoogleDomains": true,
+      "LinuxCFONOwnedListeningLocally19414Unchanged": true,
+      "PeerServerPort": 19551,
+      "realInstalledHTTPBridgeGoogle204Response": 204,
+      "realChromeGooglePublicDOMLoaded": true,
+      "realChromeCloudPublicDOMLoaded": true,
+      "nativeBridgeSelectedGoogleAndCloudHTTPSCONNECT200": true,
+      "non443IncidentalGooglePortRefused502": true,
+      "nonselectedExampleOrgNeverBridged": true,
+      "nonselectedExampleOrgSameTrialDOMLoaded": false,
+      "noPersonalCookiesOrChromeProfilesAccessed": true,
+      "WinInetAutoConfigURLAndProxyEnableUnchanged": true,
+      "WindowsPrivateChromeProcessesRemaining": 0,
+      "WindowsTemporaryPACBridgeListenerStopped": true,
+      "LinuxTemporarySharingStoppedAndDeleted": true,
+      "originalEmadLinuxCFONPreserved": true,
+      "authenticatedGoogleCloudProjectAccessProven": false,
+      "fullSystemTunnelTested": false,
+      "userSystemPACApplyRestoreTested": false,
+      "universalDNSUDPNoLeakProven": false,
+      "nativePositiveTrialRunStatus": "FAILED_ONLY_EXTRA_SAME_TRIAL_DIRECT_PAGE_RENDER_ASSERT",
+      "nativeTrialOperationId": "8574191c-7fae-4ece-8b50-e088637bcd45",
+      "originalNativeStdoutSHA256": "07A70C9B48C882F06465F41D798A9C2408BFDC5593EDEBA0743DE3F41014D54A",
+      "fieldReceiptSHA256": "8438CB68C39686D3EA08E2461AE4AA3D7B8C61C359E85EF80910500BE0A8A3A6",
+      "fieldReceiptPrivatePath": "%LOCALAPPDATA%/FreeNetHub-R57-Verification/R57_BROWSER_PAC_REAL_TAILNET_20261018/native-browser-scoped-acceptance.json",
+      "LinuxGateStartOperation": "a1d838bb-7269-44d7-a87a-19fc869e7490",
+      "LinuxGateOfficialStopOperation": "10f79dcc-dc60-4249-8c03-cba9570dfcf3",
+      "status": "PHYSICAL_WINDOWS_R57_CHROME_PAC_AND_NATIVE_BRIDGE_REAL_EMAD_LINUX_R21_CFON_GOOGLE_CLOUD_PUBLIC_EGRESS_PASS_GLOBAL_SYSTEM_PAC_OPEN"
     }
   },
   "linux": {
@@ -381,13 +435,13 @@
   "remainingGates": [
     "Owner Windows native hidden WPF 229/229 controls and 5/5 tabs PASS; real interactive WPF and opt-in system PAC apply/restore OPEN",
     "Original Emad Linux R21→R24 physical upgrade remains blocked by active CFON; separate MMZ R24 fresh physical installation PASSED",
-    "Installed-to-installed Windows R57 + Linux R24 TAILNET with explicit user PAC apply/restore (temporary Linux R24 source route already PASS)",
+    "Windows R57 isolated real Chrome PAC plus installed HTTP bridge to live original Linux R21 CFON via exact Tailnet peer Google/Cloud public egress PASS; WinInet global PAC apply/restore and installed Linux R24 serving gateway still OPEN",
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "MMZ R25 selected Tailnet Methods/Settings visual PNG PASS; Commander GUI recovered and real R25 window observed but closed before owner interactive method click; real owner input/PAC validation/authenticated Google remain OPEN"
+    "MMZ R25 virtual Methods/Settings visual PNG PASS; real Wayland window mapped and held 11s then got repeated unproven-origin exit requests and close; owner interactive click/PAC UI and Google login remain OPEN"
   ],
-  "status": "WINDOWS_R57_MMZ_R25_COMMANDER_GUI_RECOVERED_VISUAL_GUI_AND_HIDDEN_WPF_PASS__OWNER_INTERACTIVE_TUN_MOBILE_LOGIN_OPEN__EMAD_R21_CFON_STABLE",
+  "status": "WIN_R57_NATIVE_CHROME_REAL_GOOGLE_CLOUD_OVER_EMAD_LINUX_R21_CFON_TAILNET_PASS__MMZ_R25_GUI_LIFECYCLE_PROVEN__GLOBAL_PAC_TUN_MOBILE_AUTH_FINAL_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -933,6 +987,22 @@
         "receiptSHA256": "A14523F14AD284CF686628F0EE48E08CCBB54732F58778D840C893DCD7D21D33",
         "receiptLocation": "MMZ owner-private state fnh-mmz-r25-field-20261017/native-gui-coordinator-recovery-20261018/reconciliation-and-native-gui.json",
         "outcome": "COMMANDER_GUI_COORDINATOR_RECOVERED_REAL_OWNER_GUI_CLICK_NOT_ACCEPTED"
+      },
+      "realOwnerWaylandLifecycle20261018": {
+        "baseline": "dfc66d4f2b174dea02c59e739547cfb0c5bd6032",
+        "MMZInstalledR25": "4.2.0-linux.25-r58",
+        "nativeMappedGTKWindowObserved": true,
+        "visibleAndMappedAt11SecondWatchdog": true,
+        "exitCallbackCount": 10,
+        "exitCallbackOriginUnverified": true,
+        "nativeCloseRequestAndHideObserved": true,
+        "boundedTestEndedCode0At21Seconds": true,
+        "realNativeMethodClickTested": false,
+        "noMouseOrKeyboardInjectedByTest": true,
+        "installedHashesAndGNOMEProxyAndTailscalePreserved": true,
+        "privateReceiptSHA256": "2809365588CBB9A7206908B7B086DF231B7523C80A8D39BAF22CCC17F5306C4C",
+        "sourceOperationId": "b8b4ecee-9f73-4e39-b501-6636b28569de",
+        "status": "REAL_WAYLAND_WINDOW_LIFECYCLE_PROVEN_OWNER_NATIVE_CLICK_OPEN"
       }
     }
   },
