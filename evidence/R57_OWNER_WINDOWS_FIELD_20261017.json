@@ -28,6 +28,15 @@
       "jobsPassed": 10,
       "jobsTotal": 10,
       "platformScope": "hosted CI runners with mobile emulators; not owner physical mobile device"
+    },
+    "mainHostNativeGateCI": {
+      "commit": "4cc3051b65fce535df0a9846510446e03007ada9",
+      "run": 39047329149,
+      "status": "completed",
+      "conclusion": "success",
+      "jobsPassed": 10,
+      "jobsTotal": 10,
+      "scope": "hosted CI all ten jobs; emulators are not physical-device tests"
     }
   },
   "ownerWindows": {
@@ -145,6 +154,41 @@
       "r24InstallationPerformed": false,
       "firstProbeError": "Test-harness precondition expected Windows-style settings.json and data/nodes.json paths absent on Linux; corrected to real Linux owner files before invoking installer",
       "receiptOperationId": "6495b87f-3cf3-495e-92bd-58349cd21c99"
+    },
+    "r24OwnerUbuntuIsolatedFreshInstall": {
+      "status": "PASS_IN_SCOPE",
+      "installedR24Version": "4.2.0-linux.24-r57",
+      "release": "LINUX_4.2.0_R24_R57_OWNER_TAILNET_CFON",
+      "platform": "owner Ubuntu Linux machine, disposable HOME not real installed HOME",
+      "realInstallerExit": 0,
+      "pinnedSingBoxVersion": "1.14.2",
+      "pinnedWarpPlusVersion": "1.2.6",
+      "pinnedBinarySHAProvenance": "live R21 installed runtime SHA-verified against corresponding pin manifest, staged byte-identical in isolated HOME",
+      "installedIntegrityFilesVerified": 11,
+      "userLauncherPresent": true,
+      "desktopEntryPresent": true,
+      "autoStartedNetwork": false,
+      "installedUserHomeChanged": false,
+      "realOwnerStateHashesUnchanged": 7,
+      "realOwnerCFONHealthy": true,
+      "originalGnomeProxyAutoPreserved": true,
+      "originalDefaultRoutePreserved": true,
+      "operationId": "13258589-5b2c-4d03-8123-cb824629f61c"
+    },
+    "r24OwnerUbuntuIsolatedR21Upgrade": {
+      "status": "PASS_IN_SCOPE",
+      "platform": "same owner Ubuntu host with disposable HOME and copied R21 program source snapshot; synthetic settings, not a production in-place upgrade",
+      "oldVersion": "4.2.0-linux.21-r54",
+      "newVersion": "4.2.0-linux.24-r57",
+      "realR24InstallerExit": 0,
+      "syntheticFixtureHashesPreserved": 9,
+      "R21RollbackBackupDirectories": 1,
+      "R21InstallMetadataInBackupByteIdentical": true,
+      "installedIntegrityFilesVerified": 11,
+      "tailnetSharingNotAutoEnabled": true,
+      "originalLiveOwnerFilesSha256Preserved": 6,
+      "originalCFONAndRouteAndGnomeProxyPreserved": true,
+      "operationId": "cf5da55f-5faa-4b46-83bd-75c73328f1db"
     }
   },
   "privateEvidence": {
@@ -164,5 +208,5 @@
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD"
   ],
-  "status": "SCOPED_OWNER_WINDOWS_R57_AND_TEMP_LINUX_R24_SOURCE_TAILNET_PASS_NOT_PRODUCT_FINAL"
+  "status": "OWNER_WINDOWS_R57_SCOPED_FIELD_AND_LINUX_R24_OWNER_OS_ISOLATED_PASS__REAL_LINUX_R24_INSTALL_OPEN"
 }
