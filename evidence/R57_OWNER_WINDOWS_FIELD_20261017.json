@@ -45,6 +45,14 @@
       "conclusion": "success",
       "jobsPassed": 10,
       "jobsTotal": 10
+    },
+    "r53ReadmeLatestMainCI": {
+      "commit": "4061818be4a7c591411f91e57163de438f7b9fc9",
+      "run": 39052912422,
+      "status": "completed",
+      "conclusion": "success",
+      "jobsPassed": 10,
+      "jobsTotal": 10
     }
   },
   "ownerWindows": {
@@ -275,12 +283,70 @@
   },
   "remainingGates": [
     "Owner Windows interactive WPF GUI and opt-in PAC apply/restore",
-    "Linux R24 physical install after active CFON idle; opt-in tailnet sharing",
+    "Original Emad Linux R21→R24 physical upgrade remains blocked by active CFON; separate MMZ R24 fresh physical installation PASSED",
     "Installed-to-installed Windows R57 + Linux R24 TAILNET with explicit user PAC apply/restore (temporary Linux R24 source route already PASS)",
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "R24→R21 physical cleanup of orphan R24 modules (reversible exact-SHA helper local 11/11 PASS; deployed owner run and CI still pending)"
+    "R24→R21 physical cleanup of orphan R24 modules (reversible exact-SHA helper local 11/11 PASS; deployed owner run and CI still pending)",
+    "MMZ R24 local CFON bootstrap failed; implement and validate opt-in first-party Linux remote Tailscale CFON client or native owner-approved upstream recovery"
   ],
-  "status": "OWNER_WINDOWS_R57_SCOPED_FIELD_AND_LINUX_R24_OWNER_OS_ISOLATED_PASS__REAL_LINUX_R24_INSTALL_OPEN"
+  "status": "WINDOWS_R57_INSTALLED_MMZ_LINUX_R24_PHYSICAL_FRESH_PASS_EMAD_LINUX_R21_ACTIVE__PRODUCT_FINAL_OPEN",
+  "additionalPhysicalLinuxHosts": {
+    "MMZ": {
+      "platform": "Ubuntu 26.04",
+      "installation": "ACTUAL_OWNER_USER_LOCAL_R24_FRESH",
+      "installedVersion": "4.2.0-linux.24-r57",
+      "exactPackageSha256": "D76958F80923BFC1B77E406FE00F4CE96CC83A9A54521415DBBDAE53AFFB1824",
+      "networkTransportToHost": "ephemeral peer-only private Tailscale bundle transfer, source server closed",
+      "installedIntegrityVerified": 11,
+      "realGtk4AdwApplicationConstructed": true,
+      "interactiveGUIAcceptance": false,
+      "launchersPresent": 3,
+      "desktopEntryPresent": true,
+      "systemProxyUnchanged": true,
+      "defaultRoutesUnchanged": true,
+      "tailscaleRunningPreserved": true,
+      "automaticNetworkConnection": false,
+      "localCFON": {
+        "tested": true,
+        "connected": false,
+        "failureCode": "WARPPLUS_PROXY_START_FAILED",
+        "logLastStep": "attempting TLS dial fprint 1",
+        "scanAttempt": {
+          "option": "--scan --rtt 750ms",
+          "durationSeconds": 80,
+          "socksListenerObserved": false
+        },
+        "cloudflareBootstrapDirect": {
+          "curlExitCode": 28,
+          "httpCode": 0
+        },
+        "directGoogleGenerate204": 204,
+        "cleanupPass": true,
+        "rootCauseIsHypothesis": "Cloudflare bootstrap API route inaccessible while other HTTPS destinations reachable; not a definitive causal proof"
+      },
+      "tailnetEgressTrial": {
+        "proxyProvider": "Existing Emad Linux owned CFON, temporarily shared to exact MMZ Tailscale peer",
+        "explicitDomainAllowlist": [
+          "google.com",
+          "cloud.google.com"
+        ],
+        "google204": 204,
+        "cloudOriginCode": 302,
+        "disallowedSocksConnectionExit": 97,
+        "temporaryListenerRemoved": true,
+        "MMZProxyUntouched": true,
+        "firstPartyLinuxR24TailnetClientTested": false
+      },
+      "tailnetSharingGuard": {
+        "result": "PASS_FAIL_CLOSED_WITHOUT_LOCAL_CFON",
+        "error": "FNH_CFON_SESSION_REQUIRED"
+      },
+      "privateEvidenceReceiptSHA256": "2217FE869F13D39419044CEF3992D93F8D7468ABADCFA87F27E6408FDE0F1A49",
+      "privateEvidenceLocation": "MMZ user-local state fnh-mmz-r24-field-20261017/field-acceptance.json",
+      "physicalConsoleAndSystemTUNAccepted": false,
+      "signingOrPublicPreviewPromotion": false
+    }
+  }
 }
