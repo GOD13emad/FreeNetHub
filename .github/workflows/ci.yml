@@ -106,6 +106,9 @@ jobs:
           # Frozen R21 cannot remove R24-only modules. Test reversible,
           # SHA-pinned rollback residue quarantine only in disposable HOME.
           python3 tests/test_r24_rollback_residue.py
+          # R25-only Firefox client source may remain after a frozen
+          # R25→R24/R21 rollback; verify its separately pinned reversible tool.
+          python3 tests/test_r25_rollback_residue.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
           cd /tmp/fnh-r20-ci/FreeNetHub_4.2.0_Linux_R20

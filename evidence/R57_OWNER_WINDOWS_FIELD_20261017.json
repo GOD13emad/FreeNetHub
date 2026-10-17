@@ -61,6 +61,13 @@
       "conclusion": "success",
       "jobsPassed": 10,
       "jobsTotal": 10
+    },
+    "previousEvidenceMainCI": {
+      "sha": "ae5760e40fc464b439b38ea5ecdb1844f79228e7",
+      "run": 39063087946,
+      "conclusion": "success",
+      "passedJobs": 10,
+      "totalJobs": 10
     }
   },
   "ownerWindows": {
@@ -306,10 +313,10 @@
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "R25-only orphan tailnet_client_browser.py remains after R25→R21 downgrade; R24 two-module cleanup real-host reversible PASS, R25-only exact-hash cleanup not yet tested",
+    "R24+R25 three-module physical orphan cleanup/reversibility PASS; new standalone R25 helper exact-SHA hosted CI still pending; frozen old installers do not automatically clean leftovers",
     "MMZ local CFON bootstrap fails; R25 firstparty launch real Firefox headless and GTK offscreen handlers PASS; interactive owner-authorized desktop/Google login remains OPEN"
   ],
-  "status": "WIN_R57_AND_MMZ_LINUX_R25_PHYSICAL_ROUNDTRIP_R21_R24_MODULE_CLEANUP_PASS__EMAD_R21_CFON_PRESERVED__R25_ONLY_ORPHAN_AND_SYSTEM_FINAL_OPEN",
+  "status": "WIN_R57_MMZ_R25_PHYSICAL_ALL_THREE_ROLLBACK_ORPHANS_QUARANTINE_AND_RESTORE_PASS__EMAD_R21_CFON_ACTIVE__NEW_R25_HELPER_EXACT_CI_PENDING__PRODUCT_FINAL_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -643,6 +650,71 @@
           "a0c2ed34-a66f-4f08-b1d6-a9f3b64eb29d",
           "e6c8c129-3007-4f1b-b0c0-90bb7439c726"
         ]
+      },
+      "physicalR25OnlyOrphanCleanup": {
+        "status": "ACTUAL_MMZ_R25_TO_R21_SOURCE_HISTORIC_AND_ALL_THREE_PRIVATE_ORPHAN_QUARANTINE_RESTORE_PASS; NEW_SOURCE_HOSTED_CI_PENDING",
+        "sourceBaseSHA": "ae5760e40fc464b439b38ea5ecdb1844f79228e7",
+        "targetMachine": "MMZ Ubuntu 26 user-local install; Emad active Linux R21 unchanged",
+        "targetVersionsVerified": [
+          "4.2.0-linux.25-r58",
+          "4.2.0-linux.21-r54",
+          "4.2.0-linux.25-r58"
+        ],
+        "packageSHA256": {
+          "R21": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+          "R24": "D76958F80923BFC1B77E406FE00F4CE96CC83A9A54521415DBBDAE53AFFB1824",
+          "R25": "4F035E158F9580F1ACA0554ED1FAE6DC45F6D74FD02F686744433CF35E75AD22"
+        },
+        "newHelper": "tests/cleanup_r25_rollback_residue.py",
+        "newHelperSHA256": "839649B0C566275336CEA0D82E3B1BBB8C35D44A39585EF614E42CD1D351C5B7",
+        "localRegressionCasesPassed": 12,
+        "localRegressionCasesTotal": 12,
+        "existingR24RollbackRegressionCasesPassed": 11,
+        "physicalOrphanModulesQuarantined": [
+          "selective_tunnel.py",
+          "tailnet_cfon_gateway.py",
+          "tailnet_client_browser.py"
+        ],
+        "sourceFilesSHAIdenticalAfterRestore": true,
+        "allThreeModulesAbsentOnLegacyR21AfterQuarantine": true,
+        "actionStatuses": {
+          "R24Helper": [
+            "QUARANTINED",
+            "ALREADY_QUARANTINED",
+            "RESTORED",
+            "ALREADY_RESTORED"
+          ],
+          "R25Helper": [
+            "QUARANTINED",
+            "ALREADY_QUARANTINED",
+            "RESTORED",
+            "ALREADY_RESTORED"
+          ]
+        },
+        "quarantinePermissions0700": true,
+        "quarantineReceiptPermissions0600": true,
+        "oldInstalledR21ChecksumRowsVerified": 9,
+        "restoredInstalledR25ChecksumRowsVerified": 12,
+        "finalInstalledR25Version": "4.2.0-linux.25-r58",
+        "R25BrowserSourceSha256AfterRestore": "EEE303930265368928588C460B417B61BA4EE7D8016BC2EB7B0ACFDBB3166322",
+        "privateOwnerStateFilesSha256Preserved": 3,
+        "networkProxyRoutesAndTailscalePreserved": true,
+        "originalEmadCFONKeptActive": true,
+        "newHelperHostedExactShaCi": "PENDING",
+        "privateReceiptSHA256": {
+          "prestate": "01FF0A440271EB5415B1CD3B9667C74B02B65FEC4F203438C53870AEFE95A9A8",
+          "physicalR25ToR21": "91B824264B691C6AEEC45025034F687B9C97426C29BB6BD86801CFEF3B79C5F1",
+          "allThreeModulesQuarantineAndRestore": "39D7F3AE5551EEFCA5CD30EB71C21CD49F1E46C7B192EEF4420B02FA985B3EE8",
+          "R25FinalReinstall": "94675CEE71EA28EAC29C4F9F8695F23B34062D9D9D77AEBBA44992A908DF4C55"
+        },
+        "operations": [
+          "c797c6e1-59c4-47ca-8397-f5ae2a287f46",
+          "f0f4d9b0-ffad-4046-99a4-955ec34f713a",
+          "8d1ca95a-ab27-4d0f-8c05-46b3d24db6ba",
+          "75d8df32-716b-45ae-9e8e-f9474a8b17b6"
+        ],
+        "notPartOfFrozenR21OrR24Installer": true,
+        "noClaimWholeDeviceOrPacketDNSLeakSafety": true
       }
     }
   },

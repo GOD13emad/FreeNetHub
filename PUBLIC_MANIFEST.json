@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39556,
-      "sha256": "448C5F4CCC05EB85B0396C6FD0359DA7574834803E85886EB1160AFAC25EA526"
+      "bytes": 39760,
+      "sha256": "82C29AA1A98A1E0633FACCFAEAB5A2418AF7808A87C1BFB2B8631BCD4E464874"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -440,8 +440,8 @@
     },
     {
       "file": "docs/LINUX_ROLLBACK_RESIDUE.md",
-      "bytes": 1940,
-      "sha256": "0A9528F531B483D65C8120B54ACE22E3A97E29B0FB0476A795BD14AFC8410F7B"
+      "bytes": 4064,
+      "sha256": "97F8C3A7A54FA97D5A7A3D53925EB71E11E84DA08D6992DFA6B64327E64EC2D6"
     },
     {
       "file": "docs/RELEASE_NOTES_FA.txt",
@@ -1240,8 +1240,8 @@
     },
     {
       "file": "evidence/R57_OWNER_WINDOWS_FIELD_20261017.json",
-      "bytes": 30468,
-      "sha256": "0C9063CCC7202EE01B6AEC9F69A7E8E760CDD65022A087FC535AA528B49E71F4"
+      "bytes": 33775,
+      "sha256": "AB602F900A97EC9A17C1062BB02FE8EE76F3EE639EBB0F029119B8A6B90836A4"
     },
     {
       "file": "evidence/SCOPE_UI_R15_ACCEPTANCE.json",
@@ -1855,8 +1855,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 247198,
-      "sha256": "482367ABEE2109021AF7399A40212FD1C9250F7F923CD3FE1387E0F50D51EF98"
+      "bytes": 250015,
+      "sha256": "1B3C3636724E2BD9D226F6E9B2C96980FB243C3E3E00D01FB86DAD6B7AA07637"
     },
     {
       "file": "pytest.ini",
@@ -2192,6 +2192,11 @@
       "file": "tests/cleanup_r24_rollback_residue.py",
       "bytes": 13088,
       "sha256": "C3E0BF097005A04B515601352EA77518BEBBEF2911C2295C01F99C6F1E7608E4"
+    },
+    {
+      "file": "tests/cleanup_r25_rollback_residue.py",
+      "bytes": 10646,
+      "sha256": "839649B0C566275336CEA0D82E3B1BBB8C35D44A39585EF614E42CD1D351C5B7"
     },
     {
       "file": "tests/finalize_r22_metadata.py",
@@ -2692,6 +2697,11 @@
       "file": "tests/test_r25_country_availability.py",
       "bytes": 393,
       "sha256": "B2C03E76818F971B6DE681A3A511B0E45512637E5DED7986CEFF170DFC7509D2"
+    },
+    {
+      "file": "tests/test_r25_rollback_residue.py",
+      "bytes": 11041,
+      "sha256": "E171BFF0A3EAACCC3071732DFC60D4842A3E372D0283DBC2B6EEDC7CB6C119B9"
     },
     {
       "file": "tests/test_r26_hy2_preflight.py",
