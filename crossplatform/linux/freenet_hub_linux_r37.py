@@ -23,8 +23,9 @@ import freenet_hub_linux as legacy
 import nodehub_shared as NH
 import selective_tunnel as selective
 import tailnet_cfon_gateway as tailnet
+import tailnet_client_browser as tailnet_client
 
-VERSION = "4.2.0-linux.24-r57"
+VERSION = "4.2.0-linux.25-r58"
 STATE = legacy.STATE
 SETTINGS_PATH = STATE / "settings-r37.json"
 NODE_STORE_PATH = STATE / "nodes.json"
@@ -55,6 +56,8 @@ DEFAULT_SETTINGS = {
     "autoRepair": False,
     "customProxy": "",
     "selectiveDomains": selective.DEFAULT_DOMAINS,
+    "tailnetClientPeer": "",
+    "tailnetClientDomains": "google.com\ncloud.google.com",
 }
 ALLOWED_COUNTRIES = ("AUTO","AT","DE","NL","US","CA","GB","FR","SG","JP")
 PUBLIC_NODE_SOURCES = (
@@ -97,6 +100,12 @@ def settings():
     if isinstance(raw, dict):
         out.update(raw)
     out["theme"] = out["theme"] if out["theme"] in ("dark","light") else "dark"
+    peer = out.get("tailnetClientPeer")
+    out["tailnetClientPeer"] = peer.strip() if isinstance(peer,str) and len(peer)<=64 else ""
+    try:
+        out["tailnetClientDomains"] = "\n".join(selective.parse_domains(out.get("tailnetClientDomains")))
+    except (ValueError, TypeError):
+        out["tailnetClientDomains"] = "google.com\ncloud.google.com"
     out["country"] = out["country"] if out["country"] in ALLOWED_COUNTRIES else "AUTO"
     out["testPathMode"] = out["testPathMode"] if out["testPathMode"] in ("BASE","SELECTED") else "BASE"
     try:
@@ -977,6 +986,19 @@ def test_active_sites(targets=ACTIVE_SITE_TARGETS, timeout=8):
             "scope":"BROWSER","results":results,"passed":sum(bool(x["ok"]) for x in results),
             "error":"" if allowed else "NO_INDEPENDENT_TARGET_HEALTH"}
 
+def tailnet_client_choices():
+    return tailnet_client.discover()
+
+def tailnet_client_test(peer, domains):
+    return tailnet_client.preflight(peer, domains)
+
+def tailnet_client_open(peer, domains, url=None):
+    return tailnet_client.launch(peer, domains, url)
+
+def tailnet_client_close():
+    return tailnet_client.stop_browser()
+
+
 def tailnet_status():
     return tailnet.status()
 
@@ -1129,6 +1151,11 @@ def connect_method(mode, scope="BROWSER"):
     return legacy.connect_mode(mode,full_system=False)
 
 def stop_all():
+    # The separately owned peer browser is closed only by explicit Stop or
+    # application cleanup; no other Firefox profile or system PAC is changed.
+    browser = tailnet_client_close()
+    if not browser.get("ok"):
+        return {"ok":False,"error":"TAILNET_CLIENT_BROWSER_STOP_REQUIRED","detail":browser}
     if tailnet.status().get("enabled"):
         off = tailnet_stop()
         if not off.get("ok"):

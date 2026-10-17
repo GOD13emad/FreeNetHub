@@ -79,6 +79,7 @@ METHODS=[
     ("DIRECT","Direct","مسیر فعلی سیستم بدون تونل","پایه سیستم"),
     ("GOOL","GOOL","warp-plus · Warp-in-Warp","مرورگر ✓"),
     ("CFON","CFON","warp-plus · Psiphon country mode","مرورگر ✓"),
+    ("TAILNET","Tailnet CFON Peer","CFON همتای Linux · مرورگر مجزا","مرورگر انتخابی ✓ · بدون PAC سیستم"),
 ]
 
 def label(text="",css=None,xalign=1.0,wrap=True):
@@ -279,7 +280,7 @@ class FreeNetHub(Adw.Application):
         top=hbox(10);st=vbox(2);st.set_hexpand(True)
         self.status_title=label("در حال خواندن وضعیت","section-title");self.status_detail=label("—","muted")
         st.append(self.status_title);st.append(self.status_detail);top.append(st)
-        self.tunnel_browser_button=button("مرورگر تونلی",lambda *_:self.run_async("Browser",core.open_browser))
+        self.tunnel_browser_button=button("مرورگر تونلی",lambda *_:(self.tailnet_client_open() if self.method=="TAILNET" else self.run_async("Browser",core.open_browser)))
         top.append(self.tunnel_browser_button)
         top.append(button("مرورگر عادی (بدون تونل)",lambda *_:self.run_async("Direct browser",core.open_direct_browser)))
         status.append(top)
@@ -317,7 +318,7 @@ class FreeNetHub(Adw.Application):
         ch=hbox(8);txt=vbox(2);txt.set_hexpand(True);txt.append(label("۲ · روش اتصال","section-title"));self.selected_method_label=label("روش انتخاب‌شده: هوشمند","good");txt.append(self.selected_method_label);txt.append(label("روی «انتخاب» هر کارت بزن؛ کارت انتخاب‌شده با کادر مشخص می‌شود.","muted"));ch.append(txt)
         ch.append(button("نمایش همه روش‌ها",lambda *_:self.show_page("methods")));choose.append(ch)
         quick=[]
-        for key in ["AUTO","NODE","WARP","TOR","DIRECT"]:
+        for key in ["AUTO","NODE","WARP","TOR","DIRECT","TAILNET"]:
             title,desc,cap=next((x[1],x[2],x[3]) for x in METHODS if x[0]==key)
             quick.append(self.method_card(key,title,desc,cap,compact=True))
         choose.append(flow(quick,max_children=3,min_children=1,spacing=8));root.append(choose)
@@ -338,7 +339,7 @@ class FreeNetHub(Adw.Application):
         cmp=card();cmp.append(label("نتیجه آخرین تست روش‌ها","section-title"))
         grid=Gtk.Grid(column_spacing=12,row_spacing=6)
         for cidx,t in enumerate(["روش","Ping","Download","Upload","وضعیت"]):grid.attach(label(t,"metric"),cidx,0,1,1)
-        for ridx,key in enumerate(["AUTO","NODE","WARP","GOOL","CFON","TOR","CUSTOM","DIRECT"],start=1):
+        for ridx,key in enumerate(["AUTO","NODE","WARP","GOOL","CFON","TOR","CUSTOM","DIRECT","TAILNET"],start=1):
             grid.attach(label(key,xalign=1.0),0,ridx,1,1)
             vals=[]
             for cidx in range(1,5):
@@ -372,7 +373,7 @@ class FreeNetHub(Adw.Application):
             b=Gtk.ToggleButton(label=text);b.connect("toggled",lambda x,k=key:self.scope_toggled(k,x));sw.append(b);self.scope_buttons.setdefault(key,[]).append(b)
         current.append(flow(sw,max_children=4,min_children=1));root.append(current)
 
-        alltests=card();alltests.append(label("تست همه روش‌ها","section-title"));alltests.append(label("تست‌ها به‌ترتیب اجرا می‌شوند تا port/providerها با هم تداخل نکنند. اگر اتصال FreeNet Hub فعال باشد، برای حفظ state تست همه متوقف می‌شود.","muted"))
+        alltests=card();alltests.append(label("تست همه روش‌ها","section-title"));alltests.append(label("تست‌ها به‌ترتیب اجرا می‌شوند تا port/providerها با هم تداخل نکنند. اگر اتصال FreeNet Hub فعال باشد، برای حفظ state تست همه متوقف می‌شود. روش TAILNET تنها با انتخاب صریح همتا در Settings تست می‌شود.","muted"))
         alltests.append(flow([
             button("تست سریع همه · Ping",lambda *_:self.test_all_methods(True)),
             button("تست کامل همه · Ping + Download + Upload",lambda *_:self.test_all_methods(False),"primary"),
@@ -585,6 +586,40 @@ class FreeNetHub(Adw.Application):
         tailnet.append(self.tailnet_state_label)
         root.append(tailnet)
 
+        # Consumer route: a separate Firefox profile with a local file PAC.
+        # This is not the Linux peer-sharing server above, nor a system VPN.
+        client=card()
+        client.append(label("روش TAILNET · مصرف CFON لینوکس دیگر فقط در Firefox","section-title"))
+        client.append(label("برای شبکه‌هایی که CFON محلی برقرار نمی‌شود. همتای Linux باید از سمت خودش "
+                            "اشتراک محدود CFON را صریحاً فعال کرده باشد. فقط دامنه‌های بالا از "
+                            "SOCKS5 همتا عبور می‌کنند؛ بقیه سایت‌ها DIRECT هستند. "
+                            "هیچ Proxy یا VPN سیستمی عوض نمی‌شود.","muted"))
+        self.tailnet_client_peer_entry=Gtk.Entry()
+        self.tailnet_client_peer_entry.set_text(str(s.get("tailnetClientPeer") or ""))
+        self.tailnet_client_peer_entry.set_direction(Gtk.TextDirection.LTR)
+        self.tailnet_client_peer_entry.set_placeholder_text("100.x.x.x — IP همتای Linux آنلاین")
+        client.append(self.tailnet_client_peer_entry)
+        client.append(label("دامنه‌های مجاز همتا (هر خط یک دامنه؛ فقط هم‌پوشانی با فهرست سمت سرور کار می‌کند)","muted"))
+        self.tailnet_client_domains_view=Gtk.TextView()
+        self.tailnet_client_domains_view.set_monospace(True)
+        self.tailnet_client_domains_view.set_direction(Gtk.TextDirection.LTR)
+        self.tailnet_client_domains_view.get_buffer().set_text(s["tailnetClientDomains"])
+        cv=Gtk.ScrolledWindow()
+        cv.set_min_content_height(70)
+        cv.set_child(self.tailnet_client_domains_view)
+        client.append(cv)
+        self.tailnet_client_status_label=label("همتا انتخاب نشده؛ اتصال خودکار وجود ندارد.","muted")
+        client.append(self.tailnet_client_status_label)
+        client.append(flow([
+            button("یافتن همتاهای Linux",self.tailnet_client_find),
+            button("آزمون مسیر SOCKS5",self.tailnet_client_test),
+            button("▶ بازکردن Firefox انتخابی",self.tailnet_client_open,"primary"),
+            button("توقف فقط Firefox انتخابی",self.tailnet_client_close,"danger"),
+        ],max_children=2,min_children=1,spacing=7))
+        client.append(label("تست فقط SOCKS5 CONNECT به اولین دامنهٔ مجاز است؛ "
+                            "پذیرش صفحهٔ دارای حساب/کوکی یا VPN کل سیستم نیست.","muted"))
+        root.append(client)
+
         mon=card();mon.append(label("پایایی","section-title"))
         mr=flow(max_children=2,min_children=1)
         a=hbox(7);a.append(label("بررسی دوره‌ای"));self.monitor_switch=Gtk.Switch();self.monitor_switch.set_active(bool(s["monitor"]));a.append(self.monitor_switch);mr.append(a)
@@ -637,15 +672,77 @@ class FreeNetHub(Adw.Application):
         if hasattr(self,"methods_current"):
             names={"BROWSER":"مرورگر","SELECTIVE":"تونل انتخابی","SYSTEM":"کل سیستم","CONSOLE":"کنسول"}
             self.methods_current.set_text(f"{title} · {names.get(self.scope,self.scope)}")
+        if key=="TAILNET" and hasattr(self,"tunnel_browser_button"):
+            self.tunnel_browser_button.set_sensitive(True)
 
     def connect_selected(self):
         self.connect_method(self.method)
 
     def connect_method(self,method):
+        self.select_method(method)
+        if method=="TAILNET":
+            # Separate browser-only action; never invoke a system provider.
+            if self.scope not in ("BROWSER","SELECTIVE"):
+                self.run_async("Tailnet requires browser scope",
+                               lambda:{"ok":False,"error":"TAILNET_CLIENT_BROWSER_SCOPE_ONLY"})
+                return
+            self.tailnet_client_open();return
         if self.scope=="CONSOLE":
             self.confirm_console_start();return
-        self.select_method(method)
         self.run_async(f"Connect {self.scope} {method}",lambda:core.connect_method(method,self.scope),self.connect_done)
+
+    def tailnet_client_find(self,*_):
+        self.run_async("Discover online Linux Tailnet peers",
+                       core.tailnet_client_choices,self.tailnet_client_peers_done)
+
+    def tailnet_client_peers_done(self,result):
+        rows=list(result.get("peers") or [])
+        if not result.get("ok"):
+            msg="Tailscale: "+str(result.get("error") or "unavailable")
+        elif len(rows)==1:
+            self.tailnet_client_peer_entry.set_text(str(rows[0]["ip"]))
+            msg="همتای Linux: "+str(rows[0]["name"])+". برای اتصال، آزمون را بزن."
+        elif not rows:
+            msg="همتای Linux آنلاین موجود نیست."
+        else:
+            msg="چند همتای Linux وجود دارد: "+", ".join(
+                str(x["name"])+": "+str(x["ip"]) for x in rows[:5]
+            )+"؛ IP درست را صریحاً انتخاب کن."
+        self.tailnet_client_status_label.set_text(msg)
+
+    def tailnet_client_domains_text(self):
+        buf=self.tailnet_client_domains_view.get_buffer()
+        return buf.get_text(buf.get_start_iter(),buf.get_end_iter(),False)
+
+    def tailnet_client_test(self,*_):
+        peer=self.tailnet_client_peer_entry.get_text().strip()
+        domains=self.tailnet_client_domains_text()
+        self.run_async("Tailnet peer selected-host SOCKS5 test",
+                       lambda:core.tailnet_client_test(peer,domains),
+                       self.tailnet_client_done)
+
+    def tailnet_client_open(self,*_):
+        peer=self.tailnet_client_peer_entry.get_text().strip()
+        domains=self.tailnet_client_domains_text()
+        self.run_async("Open isolated Tailnet Firefox browser",
+                       lambda:core.tailnet_client_open(peer,domains),
+                       self.tailnet_client_done)
+
+    def tailnet_client_close(self,*_):
+        self.run_async("Close isolated Tailnet Firefox browser",
+                       core.tailnet_client_close,self.tailnet_client_done)
+
+    def tailnet_client_done(self,result):
+        if result.get("ok"):
+            if result.get("browserLaunched"):
+                msg="Firefox انتخابی باز شد؛ فقط دامنه‌های مجاز از همتا عبور می‌کنند."
+            elif result.get("state") in ("already-off","stopped"):
+                msg="مرورگر اختصاصی متوقف است؛ مسیر سیستم تغییر نکرده."
+            else:
+                msg="آزمون SOCKS5 همتا موفق: "+str((result.get("peer") or {}).get("name") or "Linux")
+        else:
+            msg="TAILNET: "+str(result.get("error") or "UNAVAILABLE")
+        self.tailnet_client_status_label.set_text(msg)
 
     def tailnet_find_peers(self,*_):
         self.run_async("Find Tailnet Windows peers",core.tailnet_peer_choices,self.tailnet_peers_done)
@@ -788,10 +885,14 @@ class FreeNetHub(Adw.Application):
 
     def test_selected(self,ping_only):
         self.select_method(self.method)
+        if self.method=="TAILNET":
+            self.tailnet_client_test();return
         self.run_async(("Ping " if ping_only else "Benchmark ")+self.method,lambda:core.benchmark_method(self.method,ping_only),lambda r,m=self.method:self.metric_done(m,r))
 
     def test_method(self,method,ping_only=False):
         self.select_method(method)
+        if method=="TAILNET":
+            self.tailnet_client_test();return
         self.run_async(("Ping " if ping_only else "Benchmark ")+method,lambda:core.benchmark_method(method,ping_only),lambda r,m=method:self.metric_done(m,r))
 
     def test_all_methods(self,ping_only=False):
@@ -848,7 +949,7 @@ class FreeNetHub(Adw.Application):
         try:s=core.current_snapshot()
         except Exception as e:s={"ok":False,"error":str(e)}
         if hasattr(self,"tunnel_browser_button"):
-            self.tunnel_browser_button.set_sensitive(bool(s.get("ok") and s.get("mode")))
+            self.tunnel_browser_button.set_sensitive(bool(s.get("ok") and s.get("mode")) or self.method=="TAILNET")
         self.refresh_selective()
         mode=s.get("mode") or "—";provider=s.get("provider") or "—";country=s.get("country") or "—";warp=s.get("warp") or ""
         if not warp and isinstance(s.get("trace"),dict):warp=(s.get("trace") or {}).get("trace",{}).get("warp","")
@@ -1086,6 +1187,8 @@ class FreeNetHub(Adw.Application):
             "home":self.home_entry.get_text().strip(),
             "customProxy":self.proxy_entry.get_text().strip(),
             "selectiveDomains":self.selective_domains_text(),
+            "tailnetClientPeer":self.tailnet_client_peer_entry.get_text().strip(),
+            "tailnetClientDomains":self.tailnet_client_domains_text(),
             "monitor":self.monitor_switch.get_active(),
             "autoRepair":self.repair_switch.get_active(),
         }

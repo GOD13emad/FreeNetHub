@@ -289,9 +289,9 @@
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
     "R24→R21 physical cleanup of orphan R24 modules (reversible exact-SHA helper local 11/11 PASS; deployed owner run and CI still pending)",
-    "MMZ R24 local CFON bootstrap failed; implement and validate opt-in first-party Linux remote Tailscale CFON client or native owner-approved upstream recovery"
+    "MMZ local CFON bootstrap still fails; R25 source peer-browser implementation local PASS, exact CI + actual R25 install/Firefox PAC network test OPEN"
   ],
-  "status": "WINDOWS_R57_INSTALLED_MMZ_LINUX_R24_PHYSICAL_FRESH_PASS_EMAD_LINUX_R21_ACTIVE__PRODUCT_FINAL_OPEN",
+  "status": "WINDOWS_R57_AND_MMZ_R24_PHYSICAL; R25_PEER_BROWSER_SOURCE_LOCAL_PASS_CI_FIELD_OPEN; EMAD_R21_CFON_INTACT",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -347,6 +347,47 @@
       "privateEvidenceLocation": "MMZ user-local state fnh-mmz-r24-field-20261017/field-acceptance.json",
       "physicalConsoleAndSystemTUNAccepted": false,
       "signingOrPublicPreviewPromotion": false
+    }
+  },
+  "linuxPreviewCandidates": {
+    "R25": {
+      "name": "4.2.0-linux.25-r58",
+      "release": "LINUX_4.2.0_R25_R58_PEER_BROWSER_SELECTIVE",
+      "baselineGitMain": "428fea704225b70b1640c5d085cf6e8e8a9ae23b",
+      "candidateZipSHA256": "4F035E158F9580F1ACA0554ED1FAE6DC45F6D74FD02F686744433CF35E75AD22",
+      "candidateZipBytes": 379019,
+      "manifestFiles": 31,
+      "installedIntegrityFiles": 12,
+      "publicReleasePromoted": false,
+      "physicallyInstalledOnMMZ": false,
+      "semantics": "online same-tailnet Linux peer discovery, exact 100.64/10 identity; explicit browser-only selected SOCKS5 peer, file PAC, nonlisted DIRECT, no selected direct fallback",
+      "localTests": {
+        "peerClientUnitPassed": 14,
+        "combinedLinuxScriptsPassed": 18,
+        "r24ToR25ToR24Isolated": true,
+        "privateFixtureHashesPreserved": 7,
+        "corruptPackageRefusedExit": 75,
+        "activeCFONInstallGuardExit": 72,
+        "activePrivateFirefoxGuardExit": 72,
+        "publishedR24PackageBytesUnchanged": true
+      },
+      "browserFirefoxRealSessionAcceptance": false,
+      "actualDNSTrafficRoutingVerified": false,
+      "GUIInteractiveTested": false,
+      "systemTunnelChanged": false,
+      "originalEmadLinuxR21Intact": true,
+      "r25ToR24Orphan": "tailnet_client_browser.py remains inert after frozen R24 rollback; physical cleanup not accepted",
+      "sourceFiles": [
+        "crossplatform/linux/tailnet_client_browser.py",
+        "crossplatform/linux/freenet_hub_linux_gtk.py",
+        "crossplatform/linux/freenet_hub_linux_r37.py"
+      ],
+      "primaryDocumentation": [
+        "https://support.mozilla.org/en-US/kb/connection-settings-firefox",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file",
+        "https://tailscale.com/docs/reference/faq/other-vpns"
+      ],
+      "status": "SOURCE_LOCAL_PASS_EXACT_SHA_HOSTED_CI_AND_OWNER_FIELD_OPEN"
     }
   }
 }
