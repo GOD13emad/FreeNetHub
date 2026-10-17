@@ -189,6 +189,39 @@
       "originalLiveOwnerFilesSha256Preserved": 6,
       "originalCFONAndRouteAndGnomeProxyPreserved": true,
       "operationId": "cf5da55f-5faa-4b46-83bd-75c73328f1db"
+    },
+    "r24OwnerUbuntuIsolatedRoundtrip": {
+      "status": "PASS_VERSION_AND_SYNTHETIC_STATE_WITH_CLEANUP_LIMITATION",
+      "platform": "actual owner Ubuntu host, fully isolated disposable HOME not production install",
+      "r21PublicZIPsha256": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+      "r24ZIPsha256": "D76958F80923BFC1B77E406FE00F4CE96CC83A9A54521415DBBDAE53AFFB1824",
+      "sequence": [
+        "R21",
+        "R24",
+        "R21"
+      ],
+      "actualInstallerExits": [
+        0,
+        0,
+        0
+      ],
+      "eachPhaseInstallChecksumsPassed": true,
+      "syntheticPrivateFilesPreserved": 6,
+      "ownerLiveR21AndCFONAndDefaultRouteAndGnomeAutoProxyPreserved": true,
+      "sourceModulesOrphanedAfterReinstallingR21": [
+        "selective_tunnel.py",
+        "tailnet_cfon_gateway.py"
+      ],
+      "r21EntryAndCoreImportsOrphanModules": false,
+      "completeFileCleanupAcceptance": false,
+      "explicitPhysicalRollbackTested": false,
+      "operationId": "0f9a351c-5446-4597-8ae0-a151cf74965b"
+    },
+    "r21PublicRollbackAssetAlreadyLocalAndVerified": {
+      "asset": "delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R21.zip",
+      "sha256": "82305E1A15684662B7711B53A84522122C6A11D618366314D9DD297B3A7FEC1A",
+      "archiveTest": "PASS",
+      "manifestFilesVerified": 24
     }
   },
   "privateEvidence": {
@@ -206,7 +239,8 @@
     "Installed-to-installed Windows R57 + Linux R24 TAILNET with explicit user PAC apply/restore (temporary Linux R24 source route already PASS)",
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
-    "Authenticated Google Cloud application path distinct from anonymous origin HEAD"
+    "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
+    "R24→R21 physical rollback clean-up of orphan R24 modules with strict exact-hash provenance; inert in tested R21 launch path, NOT auto-deleted"
   ],
   "status": "OWNER_WINDOWS_R57_SCOPED_FIELD_AND_LINUX_R24_OWNER_OS_ISOLATED_PASS__REAL_LINUX_R24_INSTALL_OPEN"
 }
