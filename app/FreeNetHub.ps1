@@ -72,7 +72,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  $work=[Windows.SystemParameters]::WorkArea;$script:Window.MinWidth=[Math]::Min(1180,$work.Width);$script:Window.MinHeight=[Math]::Min(760,$work.Height);$script:Window.Width=[Math]::Min(1440,$work.Width);$script:Window.Height=[Math]::Min(1020,$work.Height)
 
- $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false;testPathMode='BASE';pingTimeoutSec=10;downloadTimeoutSec=30;uploadTimeoutSec=30;selectiveDomains=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network"+[Environment]::NewLine+"google.com"+[Environment]::NewLine+"googleapis.com"+[Environment]::NewLine+"googleusercontent.com"+[Environment]::NewLine+"gstatic.com"+[Environment]::NewLine+"googlevideo.com"+[Environment]::NewLine+"ggpht.com"+[Environment]::NewLine+"gvt1.com"+[Environment]::NewLine+"gvt2.com"+[Environment]::NewLine+"gvt3.com"+[Environment]::NewLine+"g.co"+[Environment]::NewLine+"goo.gl"+[Environment]::NewLine+"appspot.com"+[Environment]::NewLine+"firebaseapp.com"+[Environment]::NewLine+"firebaseio.com"+[Environment]::NewLine+"google.co.uk"+[Environment]::NewLine+"google.de"+[Environment]::NewLine+"google.co.in"+[Environment]::NewLine+"google.com.au"+[Environment]::NewLine+"google.ca"+[Environment]::NewLine+"google.fr"+[Environment]::NewLine+"google.co.jp"+[Environment]::NewLine+"google.ir"+[Environment]::NewLine+"youtube.com"+[Environment]::NewLine+"youtu.be"+[Environment]::NewLine+"ytimg.com"+[Environment]::NewLine+"youtube-nocookie.com"+[Environment]::NewLine+"blogspot.com"+[Environment]::NewLine+"blogger.com"+[Environment]::NewLine+"recaptcha.net"+[Environment]::NewLine+"doubleclick.net")}
+ $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false;testPathMode='BASE';pingTimeoutSec=10;downloadTimeoutSec=30;uploadTimeoutSec=30;selectiveTailnetEndpoint='';selectiveDomains=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network"+[Environment]::NewLine+"google.com"+[Environment]::NewLine+"googleapis.com"+[Environment]::NewLine+"googleusercontent.com"+[Environment]::NewLine+"gstatic.com"+[Environment]::NewLine+"googlevideo.com"+[Environment]::NewLine+"ggpht.com"+[Environment]::NewLine+"gvt1.com"+[Environment]::NewLine+"gvt2.com"+[Environment]::NewLine+"gvt3.com"+[Environment]::NewLine+"g.co"+[Environment]::NewLine+"goo.gl"+[Environment]::NewLine+"appspot.com"+[Environment]::NewLine+"firebaseapp.com"+[Environment]::NewLine+"firebaseio.com"+[Environment]::NewLine+"google.co.uk"+[Environment]::NewLine+"google.de"+[Environment]::NewLine+"google.co.in"+[Environment]::NewLine+"google.com.au"+[Environment]::NewLine+"google.ca"+[Environment]::NewLine+"google.fr"+[Environment]::NewLine+"google.co.jp"+[Environment]::NewLine+"google.ir"+[Environment]::NewLine+"youtube.com"+[Environment]::NewLine+"youtu.be"+[Environment]::NewLine+"ytimg.com"+[Environment]::NewLine+"youtube-nocookie.com"+[Environment]::NewLine+"blogspot.com"+[Environment]::NewLine+"blogger.com"+[Environment]::NewLine+"recaptcha.net"+[Environment]::NewLine+"doubleclick.net")}
 
  $stored=Read-Json (Join-Path $script:Root 'settings.json');if($stored){foreach($k in @($script:Settings.Keys)){if($stored.ContainsKey($k)){$script:Settings[$k]=$stored[$k]}}}
  $legacySelectiveDefault=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network")
@@ -97,7 +97,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
  Set-ComboContent $script:C.UploadTimeoutBox ([string]$script:Settings.uploadTimeoutSec)
  Paint-TestSettings
 
- $script:C.Home.Text=$script:Settings.home;$script:C.CustomProxy.Text=$script:Settings.localProxy;$script:C.SelectiveDomains.Text=[string]$script:Settings.selectiveDomains;$script:C.ShowIp.IsChecked=$script:Settings.showIp;if($script:C.ContainsKey('ShowIpDashboard')){$script:C.ShowIpDashboard.IsChecked=$script:Settings.showIp;}$script:C.FullSystem.IsChecked=$false;$script:C.ScopeText.Text='مرورگر · پیش‌فرض امن';$script:C.ConnectionScopeText.Text='حالت: مرورگر';$script:C.TrayOption.IsChecked=$(if($script:ShellHosted){$true}else{$script:Settings.minimizeToTray});if($script:ShellHosted){$script:C.TrayOption.IsEnabled=$false;$script:C.TrayOption.ToolTip='Tray is managed by FreeNetHub.exe'};$script:C.Monitor.IsChecked=$script:Settings.monitor;$script:C.AutoRepair.IsChecked=$script:Settings.autoRepair;if($script:C.ContainsKey('UpdateInstallMain')){$script:C.UpdateInstallMain.IsEnabled=$false}
+ $script:C.Home.Text=$script:Settings.home;$script:C.CustomProxy.Text=$script:Settings.localProxy;$script:C.SelectiveDomains.Text=[string]$script:Settings.selectiveDomains;$script:C.SelectiveTailnetEndpoint.Text=[string]$script:Settings.selectiveTailnetEndpoint;$script:C.ShowIp.IsChecked=$script:Settings.showIp;if($script:C.ContainsKey('ShowIpDashboard')){$script:C.ShowIpDashboard.IsChecked=$script:Settings.showIp;}$script:C.FullSystem.IsChecked=$false;$script:C.ScopeText.Text='مرورگر · پیش‌فرض امن';$script:C.ConnectionScopeText.Text='حالت: مرورگر';$script:C.TrayOption.IsChecked=$(if($script:ShellHosted){$true}else{$script:Settings.minimizeToTray});if($script:ShellHosted){$script:C.TrayOption.IsEnabled=$false;$script:C.TrayOption.ToolTip='Tray is managed by FreeNetHub.exe'};$script:C.Monitor.IsChecked=$script:Settings.monitor;$script:C.AutoRepair.IsChecked=$script:Settings.autoRepair;if($script:C.ContainsKey('UpdateInstallMain')){$script:C.UpdateInstallMain.IsEnabled=$false}
 
  foreach($i in $script:C.Country.Items){if($i.Content -eq $script:Settings.country){$script:C.Country.SelectedItem=$i}}
 
@@ -146,7 +146,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','ImportWebClipboard','ImportObfsClipboard','Save','SelectivePreset','SelectiveGooglePreset','SelectiveAddSite','SelectiveProbe','SelectiveApply','SelectiveDisable','SelectiveRefresh','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','SelectiveRoutingCard','MethodsScopeSelective','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','ImportWebClipboard','ImportObfsClipboard','Save','SelectivePreset','SelectiveGooglePreset','SelectiveAddSite','SelectiveProbe','SelectiveTailnetDiscover','SelectiveApply','SelectiveDisable','SelectiveRefresh','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','SelectiveRoutingCard','MethodsScopeSelective','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
   $cap=Paint-ConsoleCapability
@@ -1101,13 +1101,19 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
   Write-Json $p @{url=$url}
   Start-Work 'SelectiveAddSite' 'AUTO' $p
  })
+ $script:C.SelectiveTailnetDiscover.Add_Click({
+  if(!$script:Task -and !$script:GatewayTask){
+   $script:C.SelectiveTailnetStatus.Text='در حال بررسی Linuxهای آنلاین و درگاه CFON متعلق به Tailscale…'
+   Start-Work 'SelectiveTailnetPeers' 'AUTO'
+  }
+ })
  $script:C.SelectiveProbe.Add_Click({
   if($script:Task -or $script:GatewayTask){return}
   $method=[string]$script:C.SelectiveMethod.SelectedItem.Tag
-  if($method -notin @('CFON','WARP','GOOL','TOR','NODE')){return}
+  if($method -notin @('CFON','WARP','GOOL','TOR','NODE','TAILNET')){return}
   $url=[string]$script:C.SelectiveSiteUrl.Text
   $p=Join-Path $script:Root ('jobs\selective-probe-'+[guid]::NewGuid().ToString('N')+'.json')
-  Write-Json $p @{url=$url}
+  Write-Json $p @{url=$url;endpoint=[string]$script:C.SelectiveTailnetEndpoint.Text}
   $script:C.SelectiveSiteStatus.Text='در حال مقایسه HEAD ناشناسِ ریشهٔ دامنه؛ هیچ تنظیمی تغییر نمی‌کند.'
   Start-Work 'SelectiveProbe' $method $p
  })
@@ -1118,10 +1124,10 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
    return
   }
   $method=[string]$script:C.SelectiveMethod.SelectedItem.Tag
-  if($method -notin @('CFON','WARP','GOOL','TOR','NODE')){return}
+  if($method -notin @('CFON','WARP','GOOL','TOR','NODE','TAILNET')){return}
   $domains=[string]$script:C.SelectiveDomains.Text
   $p=Join-Path $script:Root ('jobs\selective-request-'+[guid]::NewGuid().ToString('N')+'.json')
-  Write-Json $p @{domains=$domains}
+  Write-Json $p @{domains=$domains;endpoint=[string]$script:C.SelectiveTailnetEndpoint.Text}
   $script:C.SelectiveRouteStatus.Text='در حال بررسی سلامت روش انتخاب‌شده و اعمال PAC...'
   Start-Work 'SelectiveEnable' $method $p
  })
@@ -1134,7 +1140,7 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
   if(!$script:Task -and !$script:GatewayTask){Start-Work 'SelectiveStatus' 'AUTO'}
  })
 
- $script:C.Save.Add_Click({$script:Settings.selectiveDomains=[string]$script:C.SelectiveDomains.Text;$script:Settings.country=[string]$script:C.Country.SelectedItem.Content;$script:Settings.home=$script:C.Home.Text;$script:Settings.localProxy=$script:C.CustomProxy.Text;$script:Settings.monitor=[bool]$script:C.Monitor.IsChecked;$script:Settings.autoRepair=[bool]$script:C.AutoRepair.IsChecked;$script:Settings.showIp=[bool]$script:C.ShowIp.IsChecked;$script:Settings.minimizeToTray=[bool]$script:C.TrayOption.IsChecked;$p=Join-Path $script:Root 'jobs\settings-request.json';Write-Json $p $script:Settings;Start-Work 'Settings' 'AUTO' $p})
+ $script:C.Save.Add_Click({$script:Settings.selectiveTailnetEndpoint=[string]$script:C.SelectiveTailnetEndpoint.Text;$script:Settings.selectiveDomains=[string]$script:C.SelectiveDomains.Text;$script:Settings.country=[string]$script:C.Country.SelectedItem.Content;$script:Settings.home=$script:C.Home.Text;$script:Settings.localProxy=$script:C.CustomProxy.Text;$script:Settings.monitor=[bool]$script:C.Monitor.IsChecked;$script:Settings.autoRepair=[bool]$script:C.AutoRepair.IsChecked;$script:Settings.showIp=[bool]$script:C.ShowIp.IsChecked;$script:Settings.minimizeToTray=[bool]$script:C.TrayOption.IsChecked;$p=Join-Path $script:Root 'jobs\settings-request.json';Write-Json $p $script:Settings;Start-Work 'Settings' 'AUTO' $p})
 
  if(!$script:ShellHosted){
 
@@ -1189,6 +1195,21 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
      if(!$r -or $r.job -ne $script:Job -or $r.action -ne $script:Action -or $r.exit -ne $ec){$r=@{exit=1;result=@{error='RESULT_PROTOCOL_MISMATCH'};action=$script:Action}}
 
      $script:Last=$r;$script:C.Details.Text=(Sanitize $r)|ConvertTo-Json -Depth 16
+     if($r.action -eq 'SelectiveTailnetPeers'){
+      if($r.exit -ne 0 -or !$r.result.ok){
+       $script:C.SelectiveTailnetStatus.Text='Tailscale: '+[string]$r.result.error
+      }else{
+       $p=@($r.result.peers)
+       if($p.Count -eq 1){
+        $script:C.SelectiveTailnetEndpoint.Text=([string]$p[0].ip+':'+[string]$p[0].port)
+        $script:C.SelectiveTailnetStatus.Text='درگاه Linux تأیید شد: '+[string]$p[0].name
+       }elseif($p.Count -gt 1){
+        $script:C.SelectiveTailnetStatus.Text='چند Linux موجود: '+[string]::Join(' · ',@($p|ForEach-Object{[string]$_.name+' '+[string]$_.ip+':'+[string]$_.port}))+' · مقصد درست را انتخاب کن.'
+       }else{
+        $script:C.SelectiveTailnetStatus.Text='هیچ CFON اشتراکیِ سالمی پیدا نشد؛ ابتدا در FreeNet Hub لینوکس اشتراک محدود را شروع کن.'
+       }
+      }
+     }
      if($r.action -in @('SelectiveGooglePreset','SelectiveAddSite','SelectiveProbe')){
       if($r.exit -ne 0 -or !$r.result.ok){
        $script:C.SelectiveSiteStatus.Text='آزمایش/افزودن انجام نشد: '+[string]$r.result.error

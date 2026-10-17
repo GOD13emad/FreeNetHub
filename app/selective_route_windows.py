@@ -160,7 +160,7 @@ def host_from_url(text):
     return normalize_domains(host)[0]
 
 
-def diagnose_403_site(text, proxy_port):
+def diagnose_403_site(text, proxy_port, proxy_host="127.0.0.1", method="CFON"):
     """Unsigned, no-cookie HEAD to the public origin only; never inspect user traffic.
 
     This is a diagnostic/suggestion, not transparent replay or automatic
@@ -168,15 +168,17 @@ def diagnose_403_site(text, proxy_port):
     cannot be determined by this privacy-preserving origin-only request.
     """
     host = host_from_url(text)
-    if type(proxy_port) is not int or not 1024 <= proxy_port <= 65535:
-        raise SelectiveError("SELECTIVE_PROXY_PORT_INVALID")
+    try:
+        proxy_host = bridge.validate_proxy_host(str(method).upper(), proxy_host, proxy_port)
+    except bridge.BridgeError as exc:
+        raise SelectiveError(str(exc)) from exc
 
     def check(proxy):
         args = ["curl", "--silent", "--show-error", "--head",
                 "--max-time", "8", "--max-redirs", "0",
                 "--output", os.devnull, "--write-out", "%{http_code}"]
         if proxy:
-            args += ["--noproxy", "", "--socks5-hostname", f"127.0.0.1:{proxy_port}"]
+            args += ["--noproxy", "", "--socks5-hostname", f"{proxy_host}:{proxy_port}"]
         else:
             args += ["--noproxy", "*"]
         args.append("https://" + host + "/")
@@ -412,6 +414,18 @@ def _check_local_socks(port):
         raise SelectiveError("SELECTIVE_SOCKS5_UNREACHABLE") from exc
 
 
+def _check_tailnet_socks(host, port):
+    try:
+        host = bridge.validate_proxy_host("TAILNET", host, port)
+        with socket.create_connection((host, port), timeout=3) as sock:
+            sock.settimeout(3)
+            sock.sendall(b"\x05\x01\x00")
+            if sock.recv(2) != b"\x05\x00":
+                raise SelectiveError("TAILNET_PEER_SOCKS5_UNAVAILABLE")
+    except (OSError, bridge.BridgeError) as exc:
+        raise SelectiveError("TAILNET_CFON_NOT_REACHABLE") from exc
+
+
 def _active_registry(pac_url):
     # Verify ownership of *both* values the feature writes, including types.
     return {
@@ -438,22 +452,32 @@ def status():
     healthy = bool(bound and _health(state.get("serverToken", ""))
                    and _bridge_health(state.get("serverToken", ""))
                    and PAC_FILE.is_file() and _pac_ready(PAC_FILE.read_text(encoding="utf-8")))
+    if healthy and state.get("method") == "TAILNET":
+        try:
+            _check_tailnet_socks(state.get("proxyHost"), state.get("proxyPort"))
+        except SelectiveError:
+            healthy = False
     return {
         "ok": healthy if enabled else not orphan, "enabled": enabled,
         "healthy": healthy, "bound": bound,
         "domains": state.get("domains") or [], "method": state.get("method") or "",
         "proxyPort": state.get("proxyPort"),
+        "proxyHost": state.get("proxyHost", "127.0.0.1"),
         "error": ("SELECTIVE_WINDOWS_ORPHAN_PAC" if orphan else
                   "SELECTIVE_WINDOWS_PROXY_DRIFT" if enabled and not bound else
                   "SELECTIVE_WINDOWS_PAC_UNAVAILABLE" if enabled and not healthy else ""),
     }
 
 
-def enable(domains, port, method):
+def enable(domains, port, method, proxy_host="127.0.0.1"):
     _require_windows()
     method = str(method or "").upper()
-    if method not in ("NODE", "WARP", "GOOL", "CFON", "TOR", "WEBTUNNEL", "OBFS4"):
+    if method not in ("NODE", "WARP", "GOOL", "CFON", "TOR", "WEBTUNNEL", "OBFS4", "TAILNET"):
         raise SelectiveError("SELECTIVE_METHOD_NOT_SUPPORTED")
+    try:
+        proxy_host = bridge.validate_proxy_host(method, proxy_host, port)
+    except bridge.BridgeError as exc:
+        raise SelectiveError(str(exc)) from exc
     domains = normalize_domains(domains)
     source = pac(domains, port)
     url = pac_url(source)
@@ -472,9 +496,16 @@ def enable(domains, port, method):
             raise SelectiveError("SELECTIVE_WINDOWS_FOREIGN_OR_ORPHAN_PAC")
         restore = snapshot
         token = secrets.token_hex(24)
-    if previous.get("enabled") and previous.get("domains") == domains and previous.get("proxyPort") == port and previous.get("method") == method and status()["healthy"]:
-        return {"ok": True, "state": "unchanged", "method": method, "domains": domains}
-    _check_local_socks(port)
+    if (previous.get("enabled") and previous.get("domains") == domains
+        and previous.get("proxyPort") == port
+        and previous.get("proxyHost", "127.0.0.1") == proxy_host
+        and previous.get("method") == method and status()["healthy"]):
+        return {"ok": True, "state": "unchanged", "method": method, "domains": domains,
+                "proxyHost": proxy_host}
+    if method == "TAILNET":
+        _check_tailnet_socks(proxy_host, port)
+    else:
+        _check_local_socks(port)
     old_pac = PAC_FILE.read_bytes() if PAC_FILE.exists() else None
     changed = False
     try:
@@ -482,6 +513,7 @@ def enable(domains, port, method):
         # Prepare the local owner token before starting a background process.
         pending = dict(previous, schema=1, enabled=bool(previous.get("enabled")),
                        serverToken=token, previous=restore,
+                       proxyHost=proxy_host, proxyPort=port, method=method,
                        pacUrl=url, inFlight=True)
         _write_state(pending)
         _start_service(token)
@@ -494,10 +526,11 @@ def enable(domains, port, method):
         if _snapshot() != _active_registry(url):
             raise SelectiveError("SELECTIVE_WININET_APPLY_UNVERIFIED")
         _write_state(dict(schema=1, enabled=True, domains=domains,
-                          proxyPort=port, method=method, pacUrl=url,
+                          proxyPort=port, proxyHost=proxy_host,
+                          method=method, pacUrl=url,
                           serverToken=token, previous=restore))
         return {"ok": True, "state": "enabled", "method": method,
-                "domains": domains, "proxyPort": port}
+                "domains": domains, "proxyPort": port, "proxyHost": proxy_host}
     except Exception:
         if changed:
             try:

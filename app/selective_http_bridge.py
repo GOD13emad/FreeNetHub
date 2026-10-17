@@ -36,8 +36,31 @@ def _read_exact(sock, count):
     return b"".join(chunks)
 
 
-def socks5_connect(port, hostname, dest_port=443):
-    """Ask the owned local SOCKS5 proxy to resolve hostname remotely."""
+TAILNET_RANGE = ipaddress.ip_network("100.64.0.0/10")
+TAILNET_PORT = 19551
+
+
+def validate_proxy_host(method, proxy_host, port):
+    """Only an explicitly selected Tailnet mode can escape local loopback."""
+    if type(port) is not int or not 1024 <= port <= 65535:
+        raise BridgeError("INVALID_SOCKS5_PORT")
+    if method == "TAILNET":
+        if port != TAILNET_PORT:
+            raise BridgeError("TAILNET_ONLY_OWNED_GATEWAY_PORT")
+        try:
+            ip = ipaddress.ip_address(proxy_host)
+            if ip.version != 4 or ip not in TAILNET_RANGE:
+                raise BridgeError("TAILNET_IPV4_REQUIRED")
+        except (ValueError, TypeError) as exc:
+            raise BridgeError("TAILNET_IPV4_REQUIRED") from exc
+        return str(ip)
+    if proxy_host != "127.0.0.1":
+        raise BridgeError("LOCAL_PROVIDER_MUST_USE_LOOPBACK")
+    return "127.0.0.1"
+
+
+def socks5_connect(port, hostname, dest_port=443, proxy_host="127.0.0.1", method="CFON"):
+    """Ask the selected, validated SOCKS5 provider to resolve DNS remotely."""
     if type(port) is not int or not 1024 <= port <= 65535:
         raise BridgeError("INVALID_SOCKS5_PORT")
     if type(hostname) is not str or not hostname or len(hostname) > 253:
@@ -45,8 +68,9 @@ def socks5_connect(port, hostname, dest_port=443):
     host = hostname.encode("ascii")
     if len(host) > 255 or dest_port != 443:
         raise BridgeError("INVALID_SOCKS5_TARGET")
+    proxy_host = validate_proxy_host(method, proxy_host, port)
     try:
-        sock = socket.create_connection(("127.0.0.1", port), timeout=8)
+        sock = socket.create_connection((proxy_host, port), timeout=8)
         sock.settimeout(16)
         sock.sendall(b"\x05\x01\x00")
         if _read_exact(sock, 2) != b"\x05\x00":
@@ -146,7 +170,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     not policy.get("serverToken")):
                 raise BridgeError("BRIDGE_NOT_ACTIVE")
             host, port = normalize_connect_target(self.path, policy.get("domains"))
-            upstream = socks5_connect(policy.get("proxyPort"), host, port)
+            upstream = socks5_connect(
+                policy.get("proxyPort"), host, port,
+                proxy_host=policy.get("proxyHost", "127.0.0.1"),
+                method=policy.get("method", "CFON"),
+            )
             self.send_response(200, "Connection Established")
             self.end_headers()
             self.wfile.flush()

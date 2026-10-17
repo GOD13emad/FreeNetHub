@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Linux static checks
         run: |
-          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/selective_tunnel.py crossplatform/linux/test_selective_tunnel.py crossplatform/linux/test_selective_integration.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_r37_parity.py crossplatform/linux/test_update_revision.py
+          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/selective_tunnel.py crossplatform/linux/test_selective_tunnel.py crossplatform/linux/tailnet_cfon_gateway.py crossplatform/linux/test_tailnet_cfon_gateway.py crossplatform/linux/test_selective_integration.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_r37_parity.py crossplatform/linux/test_update_revision.py
           python3 crossplatform/linux/selftest.py
           python3 crossplatform/linux/test_console_policy.py
           python3 crossplatform/linux/test_private_state_permissions.py
@@ -68,6 +68,7 @@ jobs:
           python3 crossplatform/linux/test_update_revision.py
           python3 crossplatform/linux/test_selective_tunnel.py
           python3 crossplatform/linux/test_selective_integration.py
+          python3 crossplatform/linux/test_tailnet_cfon_gateway.py
           python3 tests/test_windows_selective_routing.py
           python3 tests/test_windows_selective_http_bridge.py
           python3 tests/test_windows_selective_integration.py
@@ -91,8 +92,9 @@ jobs:
           python3 tests/test_linux_r21_upgrade_preserves_data.py
           # R22 historical binary has immutable acceptance proof in Actions run 39000686983.
           # Build only a distinct R23 package from the changed R56 source.
-          python3 tests/build_linux_r23_package.py
-          python3 tests/test_linux_r23_upgrade_preserves_data.py
+          # Never reconstruct the already CI-proven immutable R23 with R24 sources.
+          python3 tests/build_linux_r24_package.py
+          python3 tests/test_linux_r24_upgrade_preserves_data.py
           rm -rf /tmp/fnh-r20-ci && mkdir -p /tmp/fnh-r20-ci
           unzip -q delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R20.zip -d /tmp/fnh-r20-ci
           cd /tmp/fnh-r20-ci/FreeNetHub_4.2.0_Linux_R20
@@ -100,23 +102,23 @@ jobs:
           for f in selftest.py test_browser_profile.py test_console_policy.py test_private_state_permissions.py test_scope_policy.py test_r37_parity.py test_update_revision.py; do python3 "$f"; done
           cd "$GITHUB_WORKSPACE"
           bash -n crossplatform/linux/install.sh crossplatform/linux/uninstall.sh crossplatform/linux/install_warp_official.sh crossplatform/linux/install_singbox_pinned.sh crossplatform/linux/install_warpplus_pinned.sh crossplatform/linux/recover_warp_remote.sh
-      - name: Seal exact R23 Linux ZIP against passed R21 upgrade/rollback fixtures
+      - name: Seal exact R24 Linux ZIP against passed R21 upgrade/rollback fixtures
         shell: bash
         run: |
           set -euo pipefail
-          package=delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R23.zip
+          package=delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R24.zip
           test -s "$package"
-          echo "ae3e02e791aae9ce6740a7df5c9ad08e910e0d18ebafb37b379c3e003ba28d48  $package" | sha256sum -c -
-          unzip -p "$package" FreeNetHub_4.2.0_Linux_R23/PACKAGE_MANIFEST.json | python3 -c 'import json,sys;m=json.load(sys.stdin);assert m["version"]=="4.2.0-linux.23-r56" and len(m["files"])==27'
-          printf '%s  %s\n' 'ae3e02e791aae9ce6740a7df5c9ad08e910e0d18ebafb37b379c3e003ba28d48' 'FreeNetHub_4.2.0_Linux_R23.zip' > delivery/github_v4.2.0/R23_SHA256SUMS.txt
-          echo 'R23_EXACT_CI_TESTED_PACKAGE_STAGED_NOT_PUBLIC_RELEASE'
-      - name: Archive versioned R23 Google/403 Linux preview without replacing installed R21
+          echo "d76958f80923bfc1b77e406fe00f4ce96cc83a9a54521415dbbdae53affb1824  $package" | sha256sum -c -
+          unzip -p "$package" FreeNetHub_4.2.0_Linux_R24/PACKAGE_MANIFEST.json | python3 -c 'import json,sys;m=json.load(sys.stdin);assert m["version"]=="4.2.0-linux.24-r57" and len(m["files"])==29'
+          printf '%s  %s\n' 'd76958f80923bfc1b77e406fe00f4ce96cc83a9a54521415dbbdae53affb1824' 'FreeNetHub_4.2.0_Linux_R24.zip' > delivery/github_v4.2.0/R24_SHA256SUMS.txt
+          echo 'R24_EXACT_CI_TESTED_PACKAGE_STAGED_NOT_PUBLIC_RELEASE'
+      - name: Archive versioned R24 Google/403 Linux preview without replacing installed R21
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: FreeNetHub_4.2.0_Linux_R23_CI_TESTED_UNSIGNED
+          name: FreeNetHub_4.2.0_Linux_R24_CI_TESTED_UNSIGNED
           path: |
-            delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R23.zip
-            delivery/github_v4.2.0/R23_SHA256SUMS.txt
+            delivery/github_v4.2.0/FreeNetHub_4.2.0_Linux_R24.zip
+            delivery/github_v4.2.0/R24_SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30
   android-build:
