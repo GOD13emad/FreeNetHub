@@ -37,6 +37,27 @@ class ReleaseRoutingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             classifier.classify(release,dict(app,scope="R55_NATIVE_ONLY"),iss)
 
+    def test_r57_disposable_requires_an_actual_r53_source_line(self):
+        # Hosted R57 installer preflight assumes R53; combined R55+R57 source is
+        # tested through its own R55 private CI, never mistaken for an R53 fixture.
+        path=ROOT/"tests/r57_source_eligibility.py"
+        module_spec=importlib.util.spec_from_file_location("fnh_r57_source_eligibility",path)
+        chooser=importlib.util.module_from_spec(module_spec)
+        module_spec.loader.exec_module(chooser)
+        chooser.selftest()
+        r=classifier.load("RELEASE.json")
+        a=classifier.load("app/manifest.json")
+        self.assertFalse(chooser.eligible_for_r57_r53_fixture(r,a))
+        good={"version":"4.3.9","releaseRevision":"4.3.9-r53-inno-root-guard","status":"R53_UNSIGNED_INSTALLER_RELEASE_LINE"}
+        goodapp={"version":"4.3.9","coreVersion":"4.3.9-r53-inno-root-guard"}
+        self.assertTrue(chooser.eligible_for_r57_r53_fixture(good,goodapp))
+        workflow=(ROOT/".github/workflows/r57-tailnet-cfon-candidate.yml").read_text(encoding="utf-8")
+        self.assertIn("r57_source_line:",workflow)
+        self.assertIn("needs: r57_source_line",workflow)
+        self.assertIn("if: needs.r57_source_line.outputs.eligible == 'true'",workflow)
+        self.assertIn("run: python3 tests/r57_source_eligibility.py --github-output",workflow)
+        self.assertIn("python tests/test_r53_release_identity.py",workflow)
+
     def test_reject_revision_and_untrusted_promotion(self):
         r=classifier.load("RELEASE.json")
         a=classifier.load("app/manifest.json")

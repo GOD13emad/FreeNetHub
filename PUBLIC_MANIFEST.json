@@ -45,8 +45,8 @@
     },
     {
       "file": ".github/workflows/r57-tailnet-cfon-candidate.yml",
-      "bytes": 9977,
-      "sha256": "157F6CE3417F88570ACBDE2C3DCABB035A9396F89887EE2B391B46A85D117008"
+      "bytes": 10675,
+      "sha256": "5BC50080F1D2BE8B3AAD1A459614CFA906517F97D37F5174969EB47BE43AB37E"
     },
     {
       "file": ".github/workflows/v465-private-gateway-review.yml",
@@ -2559,6 +2559,11 @@
       "sha256": "263D5E8209E810E6DD38F3E9BC9AE754627D4469C4CFE5B29D745C8E0B6A73EB"
     },
     {
+      "file": "tests/r57_source_eligibility.py",
+      "bytes": 2498,
+      "sha256": "C1F816A8C3994EAAA983F7344C5E1AEF233223C48145CC3E0360BD58F5A7E1B0"
+    },
+    {
       "file": "tests/rebuild_crossplatform_manifest.py",
       "bytes": 1398,
       "sha256": "1A6572B7911000A938EBA28A70E97E049300A63D7FF878EEFD9475A537710397"
@@ -2780,8 +2785,8 @@
     },
     {
       "file": "tests/test_v521_ci_routing.py",
-      "bytes": 6393,
-      "sha256": "8636462B204A44E9BF481D3ED5D46292860A748842C7B0A5836E7345303E84C2"
+      "bytes": 7817,
+      "sha256": "07D9EC4AECCE7A0B9FA370B77B014EB48A7563F59C5B7BB9BDAB3884A391F9B6"
     },
     {
       "file": "tests/test_windows_r55_isolated.ps1",
