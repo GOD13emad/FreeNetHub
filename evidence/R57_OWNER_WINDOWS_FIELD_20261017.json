@@ -77,6 +77,14 @@
       "conclusion": "success",
       "jobsPassed": 10,
       "total": 10
+    },
+    "currentMainPriorHostedCI": {
+      "sha": "9e6cdc3073788d1cdb865f9bf76a675869474b86",
+      "run": 39065046956,
+      "status": "completed",
+      "conclusion": "success",
+      "totalJobs": 10,
+      "jobsPassed": 10
     }
   },
   "ownerWindows": {
@@ -322,9 +330,9 @@
     "Windows/Linux full-system TUN real traffic/DNS/UDP/leak-safe tests with native consent",
     "Mobile hardware and publisher/signing/rights decision",
     "Authenticated Google Cloud application path distinct from anonymous origin HEAD",
-    "MMZ local CFON bootstrap fails; R25 firstparty launch real Firefox headless and GTK offscreen handlers PASS; interactive owner-authorized desktop/Google login remains OPEN"
+    "MMZ local CFON bootstrap fails; R25 firstparty real headless Firefox and mapped virtual Broadway GTK Methods/Settings PASS; owner interactive GUI/PAC screenshot and Google login remain OPEN"
   ],
-  "status": "WINDOWS_R57_MMZ_LINUX_R25_ACTUAL_OWNER_ROLLBACK_ALL_THREE_ORPHANS_QUARANTINE_SOURCE_CI_PASS__EMAD_LINUX_R21_CFON_HEALTHY__FULL_PRODUCT_FINAL_STILL_OPEN",
+  "status": "WINDOWS_R57_MMZ_LINUX_R25_NATIVE_VIRTUAL_GTK_NAV_AND_ALL_ROLLBACK_CI_10_OF_10_PASS__EMAD_R21_CFON_STABLE__OWNER_INTERACTIVE_GUI_TUN_MOBILE_ACCEPTANCE_OPEN",
   "additionalPhysicalLinuxHosts": {
     "MMZ": {
       "platform": "Ubuntu 26.04",
@@ -744,6 +752,41 @@
           "upstreamOwnedSocksReply": "0500",
           "quarantineNotCreated": true
         }
+      },
+      "realVirtualBroadwayGtkUI": {
+        "scope": "Independent MMZ Ubuntu26 GTK4 Broadway display on loopback (virtual mapped native GTK), not owner GUI takeover",
+        "installedVersion": "4.2.0-linux.25-r58",
+        "backend": "gtk4-broadwayd GDK_BACKEND=broadway",
+        "broadwayDisplay": ":77",
+        "broadwayFrontendLoopback": "127.0.0.1:19889",
+        "broadwayFrontendHTTP": 200,
+        "separateIsolatedHOMEAndXDG": true,
+        "actualAdwApplicationWindowMapped": true,
+        "clickedRealMethodsNavWidget": true,
+        "selectedTailnetInLiveMappedWidget": true,
+        "tailnetBrowserButtonSensitive": true,
+        "clickedRealSettingsNavWidget": true,
+        "clientDefaultAllowedDomains": [
+          "google.com",
+          "cloud.google.com"
+        ],
+        "backgroundBrowserScreenshot": "TIMEOUT_NOT_ACCEPTED",
+        "ownerDesktopTakeover": false,
+        "ownerKeyboardMouseFocusChanged": false,
+        "processesExitedAfterTest": true,
+        "broadwayLoopbackPortClosedAfterTest": true,
+        "ownerInstalledR25IntegrityRechecked": true,
+        "GNOMEProxyUnchanged": true,
+        "TailscaleBackendRunningPreserved": true,
+        "realOwnerInteractiveGUIUserAcceptance": false,
+        "runtimeReceiptSha256": "EBDF434E9576027E7AF971A0365BD0F908C856CDD6E4A0B4AE9177CD4D397EA6",
+        "runtimeReceipt": "MMZ ~/.local/state/fnh-mmz-r25-field-20261017/gtk-broadway-virtual-check/virtual-gtk-result.json",
+        "operations": [
+          "19bf8293-0b3a-48ae-af14-518acddb9b7f",
+          "7caed6c1-45b7-427c-9235-66036326161a"
+        ],
+        "officialReference": "https://docs.gtk.org/gtk4/gtk4-broadwayd.html",
+        "status": "VIRTUAL_MAPPED_NATIVE_WINDOW_AND_METHODS_SETTINGS_GTK_NAV_PASS_SCREENSHOT_AND_OWNER_INTERACTIVE_GUI_OPEN"
       }
     }
   },
