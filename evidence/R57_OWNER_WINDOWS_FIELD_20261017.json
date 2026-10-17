@@ -20,6 +20,14 @@
       "conclusion": "success",
       "jobSuccess": 10,
       "jobTotal": 10
+    },
+    "r57TailnetDocumentationMainCI": {
+      "commit": "a070c8f4e6fbe511faaaa62c39986bde3403b1ee",
+      "workflowRun": 39045534213,
+      "conclusion": "success",
+      "jobsPassed": 10,
+      "jobsTotal": 10,
+      "platformScope": "hosted CI runners with mobile emulators; not owner physical mobile device"
     }
   },
   "ownerWindows": {
@@ -80,6 +88,27 @@
       "linuxR24Installed": false,
       "authenticatedGoogleCloudPermissionsNotTested": true,
       "evidenceBasis": "Durable Linux start/stop operations fc38c82e-b63f-4a37-b3f1-02dfeb9d970b and 03637f9b-eeb6-4436-8c03-cf67d98aa741; Windows installed-engine probe bb141d0a-ad74-456d-8c96-bce8848a92df; private raw Win jobs c57a17ccf3e14ca7a4c602e9ac114751 and c57a17ccf3e14ca7a4c602e9ac114752"
+    },
+    "nativeWpfOffscreenLoad": {
+      "status": "PASS_IN_SCOPE",
+      "installedRelease": "4.3.13-r57-tailnet-cfon-selective-routing",
+      "file": "app/View.xaml",
+      "sha256": "4B11A70B420828B97D96D62E36A25E7B91A6F3F34B22B724D010C5E806283938",
+      "staXamlReaderInstantiatedWindow": true,
+      "selectedControlsFound": 8,
+      "methodOptionsFound": [
+        "CFON",
+        "WARP",
+        "NODE",
+        "TOR",
+        "GOOL",
+        "TAILNET"
+      ],
+      "isVisible": false,
+      "desktopFocused": false,
+      "eventsExecuted": false,
+      "guiPolicyAtCheck": "NATIVE_OUTCOME_UNCERTAIN_RESTART_REQUIRED",
+      "receiptOperationId": "fe234fc2-5724-4d4b-bebb-2fdd377f2e15"
     }
   },
   "linux": {
@@ -90,7 +119,33 @@
     "r24ArchiveZipTest": "PASS",
     "r24ManifestFiles": 29,
     "r24ManifestSHAChecks": "29/29 PASS",
-    "reasonNoFieldUpgrade": "actual active scoped CFON and GNOME auto-PAC; installer fail-closed to preserve connectivity"
+    "reasonNoFieldUpgrade": "actual active scoped CFON and GNOME auto-PAC; installer fail-closed to preserve connectivity",
+    "r24OwnerHostIsolatedGtkAdw": {
+      "status": "PASS_IN_SCOPE",
+      "exactLinuxR24ZipSha256": "D76958F80923BFC1B77E406FE00F4CE96CC83A9A54521415DBBDAE53AFFB1824",
+      "manifestFilesIntegrityConfirmed": 29,
+      "isolatedTempHome": true,
+      "GTK4AndLibadwaitaImport": true,
+      "AdwApplicationConstructed": true,
+      "windowCreated": false,
+      "appRunCalled": false,
+      "tailnetGuiMethodsFound": true,
+      "originalR21InstallHashUnchanged": true,
+      "receiptOperationId": "776e4923-4f34-4f10-acd2-23fed2bdbae2"
+    },
+    "r24RealOwnerActiveSessionInstallGuard": {
+      "status": "PASS_IN_SCOPE",
+      "expectedExitCode": 72,
+      "observedErrorCode": "FREENET_HUB_ACTIVE_SESSION",
+      "realInstalledVersion": "4.2.0-linux.21-r54",
+      "realSessionMode": "CFON",
+      "sampledPrivateOwnerFilesHashIdentical": 7,
+      "CFONSocks5HealthyBeforeAfter": true,
+      "GnomeAutoProxyPreserved": true,
+      "r24InstallationPerformed": false,
+      "firstProbeError": "Test-harness precondition expected Windows-style settings.json and data/nodes.json paths absent on Linux; corrected to real Linux owner files before invoking installer",
+      "receiptOperationId": "6495b87f-3cf3-495e-92bd-58349cd21c99"
+    }
   },
   "privateEvidence": {
     "locationRelativeToOwnerWindowsProject": ".git/maintenance/FNH_R57_OWNER_FIELD_20261017",
