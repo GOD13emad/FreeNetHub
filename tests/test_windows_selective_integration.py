@@ -47,6 +47,47 @@ class IntegrationTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     engine.dispatch("SelectiveEnable", "DIRECT", str(req))
 
+    def test_google_preset_and_403_url_additions_require_explicit_apply(self):
+        with tempfile.TemporaryDirectory() as d:
+            home=pathlib.Path(d)
+            (home/"jobs").mkdir()
+            req=home/"jobs"/"site.json"
+            req.write_text(json.dumps({"url":"https://console.cloud.google.com/apis/credentials?token=secret"}),encoding="utf-8")
+            class SiteStub:
+                GOOGLE_DOMAINS=("google.com","googleapis.com","gstatic.com")
+                def host_from_url(self,url):
+                    self.url=url
+                    return "console.cloud.google.com"
+                def diagnose_403_site(self,url,port):
+                    self.observed=(url,port)
+                    return {"ok":True,"directCode":403,"tunnelCode":302,
+                            "host":"console.cloud.google.com","suggestAdd":True,
+                            "settingsChanged":False}
+            stub=SiteStub()
+            with mock.patch.object(engine,"ROOT",home),\
+                 mock.patch.object(engine,"_selective_route",return_value=stub),\
+                 mock.patch.object(engine,"owned",return_value={"verified":True}) as owned,\
+                 mock.patch.object(engine,"verify",return_value={"healthy":True}) as verified,\
+                 mock.patch.object(engine,"ensure") as ensure:
+                preset=engine.dispatch("SelectiveGooglePreset","AUTO","")
+                self.assertIn("googleapis.com",preset["domains"])
+                self.assertFalse(preset["settingsChanged"])
+                added=engine.dispatch("SelectiveAddSite","AUTO",str(req))
+                self.assertEqual(added["host"],"console.cloud.google.com")
+                self.assertFalse(added["settingsChanged"])
+                owned.assert_not_called()
+                result=engine.dispatch("SelectiveProbe","CFON",str(req))
+                self.assertEqual(stub.observed[1],engine.PORTS["CFON"])
+                self.assertTrue(result["suggestAdd"])
+                self.assertFalse(result["settingsChanged"])
+                self.assertEqual(owned.call_count,1)
+                self.assertEqual(verified.call_count,1)
+                ensure.assert_not_called()
+                with self.assertRaises(ValueError):
+                    engine.dispatch("SelectiveProbe","DIRECT",str(req))
+                with self.assertRaises(ValueError):
+                    engine.dispatch("SelectiveAddSite","AUTO",str(home/"wrong.json"))
+
     def test_no_unverified_provider_starts(self):
         with tempfile.TemporaryDirectory() as d:
             base = pathlib.Path(d)
@@ -88,10 +129,15 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(len(names), len(set(names)))
         for name in ("SelectiveDomains", "SelectiveMethod", "SelectivePreset", "SelectiveApply",
                      "SelectiveDisable", "SelectiveRefresh", "SelectiveRouteStatus",
-                     "SelectiveRoutingCard", "MethodsScopeSelective"):
+                     "SelectiveRoutingCard", "MethodsScopeSelective",
+                     "SelectiveGooglePreset", "SelectiveSiteUrl", "SelectiveAddSite",
+                     "SelectiveProbe", "SelectiveSiteStatus"):
             self.assertEqual(names.count(name), 1)
             self.assertIn("C." + name, ui)
         for action in ("SelectiveEnable", "SelectiveDisable", "SelectiveStatus"):
+            self.assertIn("Start-Work '" + action + "'", ui)
+            self.assertIn("'" + action + "'", (ROOT / "app/engine.py").read_text(encoding="utf-8"))
+        for action in ("SelectiveGooglePreset","SelectiveAddSite","SelectiveProbe"):
             self.assertIn("Start-Work '" + action + "'", ui)
             self.assertIn("'" + action + "'", (ROOT / "app/engine.py").read_text(encoding="utf-8"))
         self.assertIn("selective_route_windows.py", installer)

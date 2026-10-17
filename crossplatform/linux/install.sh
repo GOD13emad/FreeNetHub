@@ -142,8 +142,8 @@ import json,pathlib,sys,time
 p=pathlib.Path(sys.argv[1])
 p.write_text(json.dumps({
   "schema":1,
-  "version":"4.2.0-linux.22-r55",
-  "release":"LINUX_4.2.0_R22_R55_SELECTIVE_DOMAINS",
+  "version":"4.2.0-linux.23-r56",
+  "release":"LINUX_4.2.0_R23_R56_GOOGLE_403_SCOPED_SITES",
   "installed_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
   "network_mutation_on_install":False,
   "integrity_manifest":"INSTALL.sha256"
@@ -185,5 +185,5 @@ command -v gtk4-update-icon-cache >/dev/null 2>&1 && gtk4-update-icon-cache -f "
 if [ "$RESTART_UI" = "1" ] && command -v gtk-launch >/dev/null 2>&1 && [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
   gtk-launch local.freenethub >/dev/null 2>&1 &
 fi
-echo "Installed FreeNet Hub Linux 4.2.0-linux.22-r55"
+echo "Installed FreeNet Hub Linux 4.2.0-linux.23-r56"
 echo "No network connection was started."

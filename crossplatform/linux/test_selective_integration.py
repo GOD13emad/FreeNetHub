@@ -55,4 +55,9 @@ for marker in (
 ):
     assert marker in ui, marker
 
+assert "core.selective.GOOGLE_DOMAINS" in ui
+assert "self.selective_url_entry" in ui
+assert "self.selective_google_preset" in ui
+assert "self.selective_probe_site" in ui
+assert "core.selective_probe_403" in ui
 print("LINUX_SELECTIVE_INTEGRATION_TEST_PASS")

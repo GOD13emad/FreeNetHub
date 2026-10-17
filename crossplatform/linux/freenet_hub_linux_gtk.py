@@ -529,7 +529,7 @@ class FreeNetHub(Adw.Application):
         selective.append(label("◇ تونل انتخابی · Split Tunnel دامنه‌ای","section-title"))
         selective.append(label("دامنه‌های این فهرست از SOCKS5 روش انتخاب‌شده عبور می‌کنند؛ "
                                "بقیه سایت‌ها DIRECT هستند. این قابلیت VPN سراسری نیست.","muted"))
-        selective.append(label("هر خط یک دامنه؛ شامل زیر‌دامنه‌ها (مثال: brave.com ، stripe.com)","muted"))
+        selective.append(label("هر خط یک دامنه؛ شامل زیر‌دامنه‌ها. Google Cloud Console، Google APIs و ورود گوگل در پیش‌تنظیم Google هستند.","muted"))
         self.selective_domains_view=Gtk.TextView()
         self.selective_domains_view.set_monospace(True)
         self.selective_domains_view.set_direction(Gtk.TextDirection.LTR)
@@ -543,11 +543,24 @@ class FreeNetHub(Adw.Application):
         self.selective_state_label=label("تونل انتخابی: غیرفعال","muted")
         selective.append(self.selective_state_label)
         selective.append(flow([
-            button("Brave + Stripe",self.selective_preset),
+            button("افزودن Brave + Stripe",self.selective_preset),
+            button("افزودن کل سرویس‌های Google",self.selective_google_preset),
             button("▶ فعال / اعمال انتخابی",self.apply_selective,"primary"),
             button("■ خاموش / بازگردانی",self.disable_selective,"danger"),
             button("بررسی وضعیت",self.refresh_selective),
         ],max_children=2,min_children=1,spacing=8))
+        selective.append(label("سایتی 403 می‌دهد؟ لینک آن را اینجا وارد کن؛ فقط دامنه ذخیره می‌شود، نه مسیر یا اطلاعات ورود.","muted"))
+        self.selective_url_entry=Gtk.Entry()
+        self.selective_url_entry.set_hexpand(True)
+        self.selective_url_entry.set_direction(Gtk.TextDirection.LTR)
+        self.selective_url_entry.set_placeholder_text("https://console.cloud.google.com/apis/credentials")
+        selective.append(self.selective_url_entry)
+        selective.append(flow([
+            button("افزودن دامنه به فهرست",self.selective_add_site),
+            button("مقایسه 403 مستقیم / تونلی",self.selective_probe_site),
+        ],max_children=2,min_children=1,spacing=8))
+        self.selective_probe_label=label("تست بدون حساب/کوکی و فقط روی صفحهٔ اصلی دامنه است. 403 مجوز حساب را ثابت نمی‌کند.","muted")
+        selective.append(self.selective_probe_label)
         selective.append(label("روش سالم CFON/WARP/Node/Tor/Custom SOCKS5 را انتخاب کن. "
                                "بدون دسترسی ادمین یا تغییر مسیر شبکه. "
                                "فقط برنامه‌های سازگار با PAC/GNOME از این قابلیت استفاده می‌کنند.","muted"))
@@ -619,8 +632,45 @@ class FreeNetHub(Adw.Application):
         buf=self.selective_domains_view.get_buffer()
         return buf.get_text(buf.get_start_iter(),buf.get_end_iter(),False)
 
+    def selective_append_domains(self,addition):
+        try:
+            merged=core.selective.merge_domains(self.selective_domains_text(),addition)
+            self.selective_domains_view.get_buffer().set_text("\n".join(merged))
+            self.selective_probe_label.set_text(f"فهرست آماده شد: {len(merged)} دامنه. برای مسیریابی، فعال / اعمال را بزن.")
+        except ValueError as exc:
+            self.selective_probe_label.set_text("دامنه نامعتبر: "+str(exc))
+
     def selective_preset(self,*_):
-        self.selective_domains_view.get_buffer().set_text(core.selective.DEFAULT_DOMAINS)
+        self.selective_append_domains("\n".join(core.selective.BRAVE_STRIPE_DOMAINS))
+
+    def selective_google_preset(self,*_):
+        self.selective_append_domains("\n".join(core.selective.GOOGLE_DOMAINS))
+
+    def selective_add_site(self,*_):
+        try:
+            host=core.selective.host_from_url(self.selective_url_entry.get_text())
+            self.selective_append_domains(host)
+        except ValueError as exc:
+            self.selective_probe_label.set_text("آدرس نامعتبر: "+str(exc))
+
+    def selective_probe_site(self,*_):
+        url=self.selective_url_entry.get_text().strip()
+        mode=self.method
+        self.run_async("Diagnose 403 (HEAD)",lambda:core.selective_probe_403(url,mode),self.selective_probe_done)
+
+    def selective_probe_done(self,result):
+        if not result.get("ok"):
+            self.selective_probe_label.set_text("تست ناموفق: "+str(result.get("error","PROBE_FAILED")))
+            return
+        host=result.get("host","")
+        d,p=result.get("directCode",0),result.get("tunnelCode",0)
+        if result.get("suggestAdd"):
+            self.selective_append_domains(host)
+            self.selective_probe_label.set_text(
+                f"{host}: مستقیم {d} / تونل {p} · به فهرست افزوده شد، اما هنوز اعمال نشده. مجوز حساب تأیید نشده.")
+        else:
+            self.selective_probe_label.set_text(
+                f"{host}: مستقیم {d} / تونل {p} · {result.get('verdict')} · تغییر مسیر انجام نشد.")
 
     def apply_selective(self,*_):
         self.set_scope("SELECTIVE")

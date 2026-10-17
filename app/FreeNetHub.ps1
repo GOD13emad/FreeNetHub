@@ -72,9 +72,14 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
  $work=[Windows.SystemParameters]::WorkArea;$script:Window.MinWidth=[Math]::Min(1180,$work.Width);$script:Window.MinHeight=[Math]::Min(760,$work.Height);$script:Window.Width=[Math]::Min(1440,$work.Width);$script:Window.Height=[Math]::Min(1020,$work.Height)
 
- $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false;testPathMode='BASE';pingTimeoutSec=10;downloadTimeoutSec=30;uploadTimeoutSec=30;selectiveDomains=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network")}
+ $script:Settings=@{theme='dark';country='AUTO';home='https://www.youtube.com/';monitor=$false;autoRepair=$false;showIp=$false;minimizeToTray=$true;order=@('NODE','WARP','TOR','GOOL','CFON');localProxy='socks5h://127.0.0.1:9909';includeDirect=$false;testPathMode='BASE';pingTimeoutSec=10;downloadTimeoutSec=30;uploadTimeoutSec=30;selectiveDomains=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network"+[Environment]::NewLine+"google.com"+[Environment]::NewLine+"googleapis.com"+[Environment]::NewLine+"googleusercontent.com"+[Environment]::NewLine+"gstatic.com"+[Environment]::NewLine+"googlevideo.com"+[Environment]::NewLine+"ggpht.com"+[Environment]::NewLine+"gvt1.com"+[Environment]::NewLine+"gvt2.com"+[Environment]::NewLine+"gvt3.com"+[Environment]::NewLine+"g.co"+[Environment]::NewLine+"goo.gl"+[Environment]::NewLine+"appspot.com"+[Environment]::NewLine+"firebaseapp.com"+[Environment]::NewLine+"firebaseio.com"+[Environment]::NewLine+"google.co.uk"+[Environment]::NewLine+"google.de"+[Environment]::NewLine+"google.co.in"+[Environment]::NewLine+"google.com.au"+[Environment]::NewLine+"google.ca"+[Environment]::NewLine+"google.fr"+[Environment]::NewLine+"google.co.jp"+[Environment]::NewLine+"google.ir"+[Environment]::NewLine+"youtube.com"+[Environment]::NewLine+"youtu.be"+[Environment]::NewLine+"ytimg.com"+[Environment]::NewLine+"youtube-nocookie.com"+[Environment]::NewLine+"blogspot.com"+[Environment]::NewLine+"blogger.com"+[Environment]::NewLine+"recaptcha.net"+[Environment]::NewLine+"doubleclick.net")}
 
  $stored=Read-Json (Join-Path $script:Root 'settings.json');if($stored){foreach($k in @($script:Settings.Keys)){if($stored.ContainsKey($k)){$script:Settings[$k]=$stored[$k]}}}
+ $legacySelectiveDefault=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network")
+ if($stored -and $stored.ContainsKey('selectiveDomains') -and
+    ([string]$stored['selectiveDomains']).Trim() -eq $legacySelectiveDefault){
+   $script:Settings.selectiveDomains=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network"+[Environment]::NewLine+"google.com"+[Environment]::NewLine+"googleapis.com"+[Environment]::NewLine+"googleusercontent.com"+[Environment]::NewLine+"gstatic.com"+[Environment]::NewLine+"googlevideo.com"+[Environment]::NewLine+"ggpht.com"+[Environment]::NewLine+"gvt1.com"+[Environment]::NewLine+"gvt2.com"+[Environment]::NewLine+"gvt3.com"+[Environment]::NewLine+"g.co"+[Environment]::NewLine+"goo.gl"+[Environment]::NewLine+"appspot.com"+[Environment]::NewLine+"firebaseapp.com"+[Environment]::NewLine+"firebaseio.com"+[Environment]::NewLine+"google.co.uk"+[Environment]::NewLine+"google.de"+[Environment]::NewLine+"google.co.in"+[Environment]::NewLine+"google.com.au"+[Environment]::NewLine+"google.ca"+[Environment]::NewLine+"google.fr"+[Environment]::NewLine+"google.co.jp"+[Environment]::NewLine+"google.ir"+[Environment]::NewLine+"youtube.com"+[Environment]::NewLine+"youtu.be"+[Environment]::NewLine+"ytimg.com"+[Environment]::NewLine+"youtube-nocookie.com"+[Environment]::NewLine+"blogspot.com"+[Environment]::NewLine+"blogger.com"+[Environment]::NewLine+"recaptcha.net"+[Environment]::NewLine+"doubleclick.net")
+ }
 
  function Set-ComboContent($ctrl,[string]$value){
   if(!$ctrl){return}
@@ -141,7 +146,7 @@ public static class FNHWindow { [DllImport("user32.dll")] public static extern b
 
   $busy=($null -ne $script:Task -or $null -ne $script:GatewayTask)
 
-  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','ImportWebClipboard','ImportObfsClipboard','Save','SelectivePreset','SelectiveApply','SelectiveDisable','SelectiveRefresh','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','SelectiveRoutingCard','MethodsScopeSelective','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
+  foreach($n in @('Connect','QuickConnect','QuickStop','EmergencyChatGPT','Browser','Verify','Scan','Inventory','Doctor','Speed','Updates','Export','ImportWeb','ImportObfs','ImportWebClipboard','ImportObfsClipboard','Save','SelectivePreset','SelectiveGooglePreset','SelectiveAddSite','SelectiveProbe','SelectiveApply','SelectiveDisable','SelectiveRefresh','Mode','Country','FullSystem','GatewayConsoleStart','GatewayStop','GatewayRefresh','GatewaySetupConsole','GatewayImportProfile','NodeRefreshList','NodeTestAll','NodeImportClipboard','NodeImportFile','NodeImportUrl','NodeRefreshPublic','NodeSelect','NodeFavorite','NodePin','NodeTest','NodeConnect','NodeStop','NodeSaveMeta','NodeHistory','NodeCopyLink','NodeExportRaw','NodeExportBase64','NodeFilter','NodeSort','BrowserConnectCard','FullSystemConnectCard','ConsoleConnectCard','SelectiveRoutingCard','MethodsScopeSelective','CurrentPathSpeed','ConnectSmart','TestSmart','ConnectNode','TestNodePath','ConnectWarp','TestWarpPath','ConnectCfon','TestCfonPath','ConnectTor','TestTorPath','ConnectCustom','TestCustomPath','ConnectGool','TestGoolPath','ConnectDirect','TestDirectPath','NodeBenchmarkBatch','NodeSpeed','BridgeWebTest','BridgeWebConnect','BridgeObfsTest','BridgeObfsConnect','ConsoleSpeed','UpdateCheckMain','UpdateInstallMain','MainTest','MainConnect','AdvancedMethodsOpen','ToolsNodeRefresh','MainMethodSmart','MainMethodNode','MainMethodWarp','MainMethodCfon','MainMethodTor','MainMethodCustom','MainMethodDirect')){if($script:C.ContainsKey($n)){$script:C[$n].IsEnabled=!$busy}}
 
   $script:C.Cancel.IsEnabled=($null -ne $script:Task);$script:C.Progress.IsIndeterminate=$busy
   $cap=Paint-ConsoleCapability
@@ -1072,7 +1077,40 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
  }
 
 
- $script:C.SelectivePreset.Add_Click({$script:C.SelectiveDomains.Text=("brave.com"+[Environment]::NewLine+"bravesoftware.com"+[Environment]::NewLine+"stripe.com"+[Environment]::NewLine+"stripe.network")})
+ function Append-SelectiveSites([object[]]$additional){
+  $parts=@(([string]$script:C.SelectiveDomains.Text) -split '[\s,;]+'|Where-Object {$_})
+  $new=@($parts)+@($additional)
+  $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+  $items=[Collections.Generic.List[string]]::new()
+  foreach($raw in $new){
+   $d=([string]$raw).Trim().TrimEnd('.').ToLowerInvariant()
+   if($d -and $seen.Add($d)){[void]$items.Add($d)}
+  }
+  if($items.Count -gt 64){$script:C.SelectiveSiteStatus.Text='بیش از ۶۴ دامنه مجاز نیست.';return}
+  $script:C.SelectiveDomains.Text=[string]::Join([Environment]::NewLine,$items)
+  $script:C.SelectiveSiteStatus.Text='دامنه‌های انتخابی: '+$items.Count+' · برای شروع عبور از تونل «فعال / اعمال» را بزن.'
+ }
+ $script:C.SelectivePreset.Add_Click({Append-SelectiveSites @('brave.com','bravesoftware.com','stripe.com','stripe.network')})
+ $script:C.SelectiveGooglePreset.Add_Click({
+  if(!$script:Task -and !$script:GatewayTask){Start-Work 'SelectiveGooglePreset' 'AUTO'}
+ })
+ $script:C.SelectiveAddSite.Add_Click({
+  if($script:Task -or $script:GatewayTask){return}
+  $url=[string]$script:C.SelectiveSiteUrl.Text
+  $p=Join-Path $script:Root ('jobs\selective-add-'+[guid]::NewGuid().ToString('N')+'.json')
+  Write-Json $p @{url=$url}
+  Start-Work 'SelectiveAddSite' 'AUTO' $p
+ })
+ $script:C.SelectiveProbe.Add_Click({
+  if($script:Task -or $script:GatewayTask){return}
+  $method=[string]$script:C.SelectiveMethod.SelectedItem.Tag
+  if($method -notin @('CFON','WARP','GOOL','TOR','NODE')){return}
+  $url=[string]$script:C.SelectiveSiteUrl.Text
+  $p=Join-Path $script:Root ('jobs\selective-probe-'+[guid]::NewGuid().ToString('N')+'.json')
+  Write-Json $p @{url=$url}
+  $script:C.SelectiveSiteStatus.Text='در حال مقایسه HEAD ناشناسِ ریشهٔ دامنه؛ هیچ تنظیمی تغییر نمی‌کند.'
+  Start-Work 'SelectiveProbe' $method $p
+ })
  $script:C.SelectiveApply.Add_Click({
   if($script:Task -or $script:GatewayTask){return}
   if($script:FullSystemActive){
@@ -1151,6 +1189,24 @@ $script:C.BridgeObfsTest.Add_Click({Start-ProviderBenchmark 'OBFS4'});$script:C.
      if(!$r -or $r.job -ne $script:Job -or $r.action -ne $script:Action -or $r.exit -ne $ec){$r=@{exit=1;result=@{error='RESULT_PROTOCOL_MISMATCH'};action=$script:Action}}
 
      $script:Last=$r;$script:C.Details.Text=(Sanitize $r)|ConvertTo-Json -Depth 16
+     if($r.action -in @('SelectiveGooglePreset','SelectiveAddSite','SelectiveProbe')){
+      if($r.exit -ne 0 -or !$r.result.ok){
+       $script:C.SelectiveSiteStatus.Text='آزمایش/افزودن انجام نشد: '+[string]$r.result.error
+      }elseif($r.action -eq 'SelectiveGooglePreset'){
+       Append-SelectiveSites @($r.result.domains)
+      }elseif($r.action -eq 'SelectiveAddSite'){
+       Append-SelectiveSites @([string]$r.result.host)
+      }elseif($r.action -eq 'SelectiveProbe'){
+       $host=[string]$r.result.host
+       $summary=$host+' · مستقیم '+$r.result.directCode+' / تونل '+$r.result.tunnelCode
+       if($r.result.suggestAdd){
+        Append-SelectiveSites @($host)
+        $script:C.SelectiveSiteStatus.Text=$summary+' · مشکل مسیر محتمل؛ دامنه فقط به فهرست افزوده شد، هنوز اعمال نشده و ورود حساب تأیید نشده.'
+       }else{
+        $script:C.SelectiveSiteStatus.Text=$summary+' · '+[string]$r.result.verdict+' · مسیر تغییر نکرد.'
+       }
+      }
+     }
      if($r.action -in @('SelectiveEnable','SelectiveDisable','SelectiveStatus')){
       if($r.exit -ne 0){
        $script:C.SelectiveRouteStatus.Text='تونل انتخابی ناموفق: '+[string]$r.result.error
