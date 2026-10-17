@@ -152,11 +152,10 @@ def prepare(source_root: Path, destination: Path, expected_sha: str):
             "appManifestSha256": sha(stage_app.read_bytes()),
             "releaseSha256": sha((destination / "RELEASE.json").read_bytes()),
         }
-        write_json(destination / "R55_ISOLATED_BUILD_SOURCE.json", prepared)
-        # git archive deliberately has no .git database. Public-manifest
-        # validation is done on the exact clean source checkout before staging,
-        # while this staging validates every installer-bound code-row digest.
+        # Persist every asserted field before emitting the receipt: callers must
+        # not mistake a stdout-only PASS for persisted source verification.
         prepared["installerBoundCodeHashes"] = "PASS"
+        write_json(destination / "R55_ISOLATED_BUILD_SOURCE.json", prepared)
         return prepared
     except Exception:
         if stage_created:

@@ -85,7 +85,7 @@ jobs:
           python tests/prepare_r55_selective_candidate.py --source-sha $expected --stage $stage
           if($LASTEXITCODE){throw 'R55_ISOLATED_STAGE_FAILED'}
           $receipt=Get-Content (Join-Path $stage 'R55_ISOLATED_BUILD_SOURCE.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-          if($receipt.sourceSHA -ne $expected -or $receipt.version -ne '4.3.11' -or $receipt.status -ne 'ISOLATED_SOURCE_CANDIDATE'){throw 'R55_STAGE_IDENTITY_FAILED'}
+          if($receipt.sourceSHA -ne $expected -or $receipt.version -ne '4.3.11' -or $receipt.status -ne 'ISOLATED_SOURCE_CANDIDATE' -or $receipt.installerBoundCodeHashes -ne 'PASS'){throw 'R55_STAGE_IDENTITY_OR_CODE_RECEIPT_FAILED'}
           if((Get-Content (Join-Path $stage 'RELEASE.json') -Raw -Encoding UTF8 | ConvertFrom-Json).releaseRevision -ne '4.3.11-r55-selective-domain-routing'){throw 'R55_STAGE_REVISION_WRONG'}
 
       - name: Compile one distinct candidate binary, no public release
