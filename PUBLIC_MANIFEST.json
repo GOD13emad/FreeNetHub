@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 35899,
-      "sha256": "A5B2FBEA48AAA706EF09680DA5ECB2838B04D309268D28E237313BFA7C32A9CB"
+      "bytes": 37148,
+      "sha256": "7CA66E7D0C91C408D93E2F05B8F441DBE41432A28B0CDADDF3E4103BC23381AC"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1815,8 +1815,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 213368,
-      "sha256": "CD51EEA22AF2072BDB5575649BAF320FFE7428D421181BD43332F1E52CD19C77"
+      "bytes": 213994,
+      "sha256": "A9DD9B1BDB90714B8BA9FF78EBDC696195F329600B60A04228CB94969373AABA"
     },
     {
       "file": "pytest.ini",
