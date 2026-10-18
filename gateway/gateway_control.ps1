@@ -34,6 +34,7 @@ function Assert-GatewayIntegrity{
 }
 function Write-J([string]$p,$o){$tmp=$p+'.'+[guid]::NewGuid().ToString('N')+'.tmp';$o|ConvertTo-Json -Depth 24|Set-Content -LiteralPath $tmp -Encoding UTF8;Move-Item -LiteralPath $tmp -Destination $p -Force}
 function Assert([bool]$ok,[string]$m){if(!$ok){throw $m}}
+# FNH_PC_BASE_ROUTE_SELECTION_BEGIN
 function Get-BaseRouteSnapshot{
  $routes=@(Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue)
  $rows=@()
@@ -53,10 +54,16 @@ function Get-BaseRouteSnapshot{
    }
   }catch{}
  }
+ # Fail closed before starting any provider if several default paths have the same
+ # total Windows metric; a deterministic lexical tie-break is NOT a safe uplink owner.
+ if($rows.Count -eq 0){throw 'BASE_ROUTE_UNAVAILABLE'}
+ if($rows.Count -ne $routes.Count){throw 'BASE_ROUTE_SOURCE_OR_METRIC_UNVERIFIED'}
+ $minMetric=($rows|Measure-Object -Property totalMetric -Minimum).Minimum
+ if(@($rows|Where-Object{$_.totalMetric -eq $minMetric}).Count -ne 1){throw 'BASE_ROUTE_METRIC_TIE'}
  $best=$rows|Sort-Object totalMetric,routeMetric,interfaceMetric|Select-Object -First 1
- if(!$best){throw 'BASE_ROUTE_UNAVAILABLE'}
  [ordered]@{ifIndex=$best.ifIndex;interfaceAlias=$best.interfaceAlias;sourceAddress=$best.sourceAddress;nextHop=$best.nextHop;routeMetric=$best.routeMetric;interfaceMetric=$best.interfaceMetric}
 }
+# FNH_PC_BASE_ROUTE_SELECTION_END
 function Trace{
  $t=& curl.exe -4 --noproxy '*' --max-time 20 -fsS https://www.cloudflare.com/cdn-cgi/trace 2>&1|Out-String
  if($LASTEXITCODE -ne 0){throw 'TRACE_FAIL'}
@@ -302,6 +309,8 @@ try{
      manual=[ordered]@{ip=[string]$cc.suggested_console_ip;prefix=24;gateway=[string]$cc.gateway;dns=[string]$cc.dns}
     };Write-J $Session $sess;$out.exit=0;$out.result=Get-Status
    }else{
+    # Stop before Connect/ConnectProvider when the native uplink is ambiguous.
+    [void](Get-BaseRouteSnapshot)
     Assert ($Provider -in @('WARP','NODE')) 'PC_PROVIDER_UNSUPPORTED'
     $target=Target-Country
     if($Provider -eq 'NODE'){

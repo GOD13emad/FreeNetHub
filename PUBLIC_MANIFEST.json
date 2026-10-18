@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 42404,
-      "sha256": "DA5774DA29F2DDD7FCD5F065D035E5AFC775F390FCB5164BF144476804074C76"
+      "bytes": 42554,
+      "sha256": "7BAA2F03FA7CC78477AEF940C097AAB69C074B7E51DE3C9A685F742CFAF70F95"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -25,8 +25,8 @@
     },
     {
       "file": ".github/workflows/r55-native-dns53-disposable.yml",
-      "bytes": 9995,
-      "sha256": "2B78F04C56113F1929C23D70B6C0890943962828CE9330D46DB03E120F19A612"
+      "bytes": 10152,
+      "sha256": "D1FA4FD3B6DF6B32C696470703043A7EDCFC04E9DAB9C8EE9AF20699837CF216"
     },
     {
       "file": ".github/workflows/r55-private-acceptance.yml",
@@ -1700,8 +1700,8 @@
     },
     {
       "file": "gateway/apply_elevated.ps1",
-      "bytes": 13741,
-      "sha256": "7E2D6FC3886E5180CA00A99971441E9DA9662B852BAC5FF57A35FC9907ABB810"
+      "bytes": 14939,
+      "sha256": "A58D8DEDEFB268215BC4C9F934A61B2E7C8BE6A937477F8BBBF334F9632732EA"
     },
     {
       "file": "gateway/build_isolated_mihomo.py",
@@ -1725,8 +1725,8 @@
     },
     {
       "file": "gateway/gateway_control.ps1",
-      "bytes": 25180,
-      "sha256": "6E6CA1CFC0C0F78DE00FBB0EBE819CF83BA6C4810BFD0E38BDDA2A4063DA8672"
+      "bytes": 25802,
+      "sha256": "D156CEFE04D9E1A9049134C1C1181D25F8252198342C123144BD4C280DB6B17C"
     },
     {
       "file": "gateway/gateway_defaults.json",
@@ -1751,7 +1751,7 @@
     {
       "file": "gateway/manifest.json",
       "bytes": 3071,
-      "sha256": "A7240A60CF34D5D1E2A4259FA35FDD3EB48864E6852661793B0EBB4CB7A9B5F3"
+      "sha256": "1EA8E0B401F6389BF21E58E5410476F022A4DBC40CB94C455F6BA7E2F086031C"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1900,8 +1900,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 272227,
-      "sha256": "72D121B26972FCCAD57B65757C26930EA62371047A66868B2FD4E9BBCD37E83E"
+      "bytes": 275866,
+      "sha256": "B09C824ABD4717CE9F9CC4822873EA9BD4CE7E0C40BC2C2DE62DF865503C281E"
     },
     {
       "file": "pytest.ini",
@@ -1921,7 +1921,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44142,
-      "sha256": "6F00E5951F7D56CD3C12B5EEC0FE6E6634067C8BA539364495F0D0A3262D5551"
+      "sha256": "F8419F167378CAE21EA9C8EEBA07979B9FA3802A0462CA397659468D009E5A5C"
     },
     {
       "file": "SECURITY.md",
@@ -2827,6 +2827,11 @@
       "file": "tests/test_r54_isolated_upgrade.ps1",
       "bytes": 10239,
       "sha256": "9AD33F322616C9101278FA9F7EA64C733621B19DC5C44B81788B4EF9044BAFEB"
+    },
+    {
+      "file": "tests/test_r55_native_route_metric.ps1",
+      "bytes": 7207,
+      "sha256": "1C1C041975EBD69C77DC83FC2567C3D75A1B90CA8D2F5CBB33A913CFF8F0C652"
     },
     {
       "file": "tests/test_v431_integrity_hotfix.py",

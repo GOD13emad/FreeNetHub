@@ -6,8 +6,8 @@
   "files": [
     {
       "file": "gateway_control.ps1",
-      "bytes": 25180,
-      "sha256": "6E6CA1CFC0C0F78DE00FBB0EBE819CF83BA6C4810BFD0E38BDDA2A4063DA8672"
+      "bytes": 25802,
+      "sha256": "D156CEFE04D9E1A9049134C1C1181D25F8252198342C123144BD4C280DB6B17C"
     },
     {
       "file": "gateway_request.ps1",
@@ -46,8 +46,8 @@
     },
     {
       "file": "apply_elevated.ps1",
-      "bytes": 13741,
-      "sha256": "7E2D6FC3886E5180CA00A99971441E9DA9662B852BAC5FF57A35FC9907ABB810"
+      "bytes": 14939,
+      "sha256": "A58D8DEDEFB268215BC4C9F934A61B2E7C8BE6A937477F8BBBF334F9632732EA"
     },
     {
       "file": "stop_elevated.ps1",

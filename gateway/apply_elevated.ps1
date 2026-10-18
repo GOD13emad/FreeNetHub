@@ -28,9 +28,32 @@ $cfg=(Resolve-Path -LiteralPath $ConfigPath).Path
 if((Get-FileHash $cfg -Algorithm SHA256).Hash -ne $ConfigSha256){Fail 'CONFIG_HASH_MISMATCH'}
 & $sb check -c $cfg
 if($LASTEXITCODE -ne 0){Fail 'SINGBOX_CONFIG_CHECK_FAILED'}
-$def=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0'|Sort-Object RouteMetric|Select-Object -First 1
+# FNH_DEFAULT_ROUTE_SELECTION_BEGIN
+# Windows selects among equal-prefix routes by RouteMetric + InterfaceMetric.
+# For full-system mode, a tie is not a reliable single uplink: refuse before any network mutation.
+$defaultRoutes=@(Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction Stop)
+if($defaultRoutes.Count -eq 0){Fail 'NO_DEFAULT_ROUTE'}
+if($Mode -eq 'PC_TUNNEL'){
+ $weighted=@()
+ foreach($route in $defaultRoutes){
+  try{$ipif=@(Get-NetIPInterface -InterfaceIndex $route.InterfaceIndex -AddressFamily IPv4 -ErrorAction Stop)}
+  catch{Fail 'PC_TUNNEL_DEFAULT_UPLINK_METRIC_UNREADABLE'}
+  if($ipif.Count -ne 1 -or $null -eq $ipif[0].InterfaceMetric){Fail 'PC_TUNNEL_DEFAULT_UPLINK_METRIC_UNVERIFIED'}
+  $total=[int64]$route.RouteMetric+[int64]$ipif[0].InterfaceMetric
+  $weighted+=[pscustomobject]@{route=$route;metric=$total}
+ }
+ $ranked=@($weighted|Sort-Object -Property metric)
+ $min=[int64]$ranked[0].metric
+ if(@($ranked|Where-Object{$_.metric -eq $min}).Count -ne 1){Fail 'PC_TUNNEL_DEFAULT_UPLINK_METRIC_TIE'}
+ $def=$ranked[0].route
+}else{
+ # Preserve accepted console-only route selection behavior.
+ $def=$defaultRoutes|Sort-Object RouteMetric|Select-Object -First 1
+}
 if(!$def){Fail 'NO_DEFAULT_ROUTE'}
-$uplink=Get-NetAdapter -InterfaceIndex $def.InterfaceIndex
+$uplink=Get-NetAdapter -InterfaceIndex $def.InterfaceIndex -ErrorAction Stop
+if(!$uplink){Fail 'DEFAULT_UPLINK_ADAPTER_UNVERIFIED'}
+# FNH_DEFAULT_ROUTE_SELECTION_END
 $console=Get-NetAdapter|Where-Object{$_.HardwareInterface -and $_.InterfaceDescription -eq [string]$ConsoleCfg.adapter_description}|Select-Object -First 1
 if($Mode -eq 'CONSOLE_ONLY' -and !$console){Fail 'CONSOLE_ADAPTER_NOT_FOUND'}
 if($Mode -eq 'CONSOLE_ONLY' -and $console.ifIndex -eq $uplink.ifIndex){Fail 'CONSOLE_ADAPTER_IS_DEFAULT_UPLINK'}

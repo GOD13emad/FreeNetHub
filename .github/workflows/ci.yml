@@ -70,6 +70,9 @@ jobs:
       - name: Verify WARP UI to Gateway reuse consent and fail-closed contract
         shell: pwsh
         run: ./gateway/tests/test_warp_reuse_ui_contract.ps1
+      - name: Native full-system route metrics and tie fail-closed contract
+        shell: pwsh
+        run: ./tests/test_r55_native_route_metric.ps1
       - name: Native stop owner identity transient convergence fail-closed
         shell: pwsh
         run: ./gateway/tests/test_owned_process_stop_transition.ps1
