@@ -278,10 +278,44 @@ def launch_tor(mode: str, timeout: float):
             return {"ok": False, "mode": mode, "error": "tor exited during startup", "bootstrap": pct}
         pct = bootstrap_percent(log_path)
         if pct >= 100:
-            ident = identity(p.pid)
-            if ident:
-                atomic_json(TOR_OWNER, ident | {"started": time.time(), "mode": mode, "bootstrap": 100})
-                TOR_LAST_MODE.write_text(mode, encoding="utf-8")
+            # Tor bootstrap is not enough to claim an owned, recoverable SOCKS
+            # service. Reject an unidentifiable child or a port that belongs to
+            # another process, and stop the *exact* child we spawned.
+            registered = False
+            failure = None
+            try:
+                ident = identity(p.pid)
+                if not ident:
+                    failure = "TOR_CHILD_IDENTITY_UNVERIFIED"
+                elif listener_pid(SOCKS_PORT) != p.pid:
+                    failure = "TOR_SOCKS_LISTENER_OWNER_UNVERIFIED"
+                else:
+                    atomic_json(
+                        TOR_OWNER,
+                        ident | {"started": time.time(), "mode": mode, "bootstrap": 100},
+                    )
+                    registered = True
+                    TOR_LAST_MODE.write_text(mode, encoding="utf-8")
+            except Exception:
+                failure = "TOR_OWNER_RECORD_PERSIST_FAILED"
+            if failure:
+                stopped = stop_pid(p.pid)
+                if registered and stopped:
+                    # Never erase a different process's owner record.
+                    current = load_json(TOR_OWNER)
+                    if int(current.get("pid", -1)) == p.pid:
+                        try:
+                            TOR_OWNER.unlink(missing_ok=True)
+                        except OSError:
+                            pass
+                log.close()
+                return {
+                    "ok": False,
+                    "mode": mode,
+                    "error": failure,
+                    "bootstrap": pct,
+                    "cleanupVerified": bool(stopped),
+                }
             log.close()
             return {
                 "ok": True,

@@ -109,8 +109,8 @@
     },
     {
       "file": "linux/freenet_hub_linux.py",
-      "bytes": 44627,
-      "sha256": "254D9C07332A16E75010E82324C568482EF9BB5DA5E7C20DFCDE58BE523CE9E4"
+      "bytes": 46081,
+      "sha256": "BEC5BBF4F11B787AD65A25A55B34ABE6E99FC46CC6EDF9DCC034132B7B9E73F9"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
@@ -231,6 +231,11 @@
       "file": "linux/test_tailnet_client_browser.py",
       "bytes": 13400,
       "sha256": "72BBDB8523F4D3CBEE2266CAB33E27364DFBCBA7C02A93596A72ED84C73F1B89"
+    },
+    {
+      "file": "linux/test_tor_owner_failclosed.py",
+      "bytes": 6519,
+      "sha256": "D898A194C69670B5D701E9302750BEF67722191DC349EC8250E2EE2F11BCDCE5"
     },
     {
       "file": "linux/test_update_revision.py",
