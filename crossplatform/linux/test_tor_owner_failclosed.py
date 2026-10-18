@@ -154,3 +154,72 @@ assert stops == [] and record is None and mode is None and not proc
 print("PASS_FOREIGN_PREEXISTING_LISTENER_REFUSED_BEFORE_START")
 
 print("V587_TOR_OWNER_IDENTIFICATION_AND_BOOTSTRAP_FAILCLOSED_9_CASES_PASS")
+
+
+# V590: a passing Tor bootstrap followed by failed *egress* must not erase
+# ownership metadata if the actual Tor child cannot be stopped.
+def run_egress_cleanup(*, stop_ok, reassign_owner=False, owner_after_spawn=True):
+    with tempfile.TemporaryDirectory(prefix="fnh-tor-egress-owner-") as tmp:
+        owner_file = pathlib.Path(tmp) / "owner.json"
+        old = dict(owned)
+        old.update(mode="direct")
+        if owner_after_spawn:
+            owner_file.write_text(json.dumps(old), encoding="utf-8")
+        stops = []
+        other = {**old, "pid": 77777}
+        if reassign_owner:
+            owner_file.write_text(json.dumps(other), encoding="utf-8")
+
+        def stop(pid):
+            stops.append(pid)
+            return stop_ok
+
+        with (mock.patch.object(m, "TOR_OWNER", owner_file),
+              mock.patch.object(m, "tor_owner", side_effect=[None, old if owner_after_spawn else None]),
+              mock.patch.object(m, "launch_tor", return_value={
+                  "ok": True, "mode": "direct", "proxy": "socks5h://127.0.0.1:9909",
+              }) as launch,
+              mock.patch.object(m, "trace", return_value={
+                  "ok": False, "error": "MOCK_UNREACHABLE_EGRESS",
+              }),
+              mock.patch.object(m, "stop_pid", side_effect=stop),
+              mock.patch.object(m, "set_session") as session_write):
+            result = m.start_tor("direct")
+        state = json.loads(owner_file.read_text()) if owner_file.exists() else None
+        session_write.assert_not_called()
+        launch.assert_called_once()
+        return result, stops, state
+
+
+result, stops, state = run_egress_cleanup(stop_ok=False)
+assert not result["ok"] and result["error"] == "TOR_EGRESS_STOP_UNVERIFIED"
+assert result["cleanupVerified"] is False
+assert stops == [FakeTor.pid] and state["pid"] == FakeTor.pid
+print("PASS_V590_FAILED_EGRESS_STOP_PRESERVES_OWNER")
+
+result, stops, state = run_egress_cleanup(stop_ok=True)
+assert not result["ok"] and result["state"] == "failed"
+assert stops == [FakeTor.pid] and state is None
+print("PASS_V590_SUCCESSFUL_STOP_REMOVES_EXACT_OWNER")
+
+result, stops, state = run_egress_cleanup(stop_ok=True, reassign_owner=True)
+assert not result["ok"] and stops == [FakeTor.pid]
+assert state is not None and state["pid"] == 77777
+print("PASS_V590_OWNER_RACE_DOES_NOT_UNLINK_FOREIGN_RECORD")
+
+result, stops, state = run_egress_cleanup(stop_ok=True, owner_after_spawn=False)
+assert not result["ok"] and result["error"] == "TOR_EGRESS_OWNER_UNVERIFIED"
+assert result["cleanupVerified"] is False and stops == [] and state is None
+print("PASS_V590_MISSING_EGRESS_OWNER_FAILS_CLOSED")
+
+with (mock.patch.object(m, "tor_owner", return_value=owned),
+      mock.patch.object(m, "trace", return_value={"ok": False}),
+      mock.patch.object(m, "stop_tor", return_value={"ok": False, "state": "stop-timeout"}),
+      mock.patch.object(m, "launch_tor") as new_tor):
+    result = m.start_tor("direct")
+assert not result["ok"] and result["error"] == "TOR_PREVIOUS_OWNER_STOP_UNVERIFIED"
+assert result["cleanupVerified"] is False
+new_tor.assert_not_called()
+print("PASS_V590_PREEXISTING_UNSTOPPABLE_TOR_BLOCKS_NEW_START")
+
+print("V590_TOR_EGRESS_OWNERSHIP_RECOVERY_5_CASES_PASS")

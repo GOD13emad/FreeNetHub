@@ -102,8 +102,9 @@ def trace(proxy=None, timeout=15):
     if not curl:
         return {"ok": False, "error": "curl missing"}
     args = [curl, "-4", "--max-time", str(timeout), "-fsS"]
-    if proxy:
-        args += ["--proxy", proxy]
+    # Never accept DIRECT as a tunneled trace if NO_PROXY bypasses --proxy.
+    # Conversely, direct/base traces must not use ambient proxy variables.
+    args += ["--noproxy", "", "--proxy", proxy] if proxy else ["--noproxy", "*"]
     args += ["https://www.cloudflare.com/cdn-cgi/trace"]
     p = run(args, timeout + 3)
     if p.returncode:
@@ -356,7 +357,15 @@ def start_tor(force_mode=None):
                 "proxy": f"socks5h://127.0.0.1:{SOCKS_PORT}",
                 "egress": t,
             }
-        stop_tor()
+        # A still-owned Tor child must not be superseded by another provider
+        # start when the previous connection's egress probe failed.
+        cleanup = stop_tor()
+        if not cleanup.get("ok"):
+            return {
+                "ok": False, "state": "failed",
+                "error": "TOR_PREVIOUS_OWNER_STOP_UNVERIFIED",
+                "cleanupVerified": False, "cleanup": cleanup,
+            }
     if force_mode in ("direct", "obfs4", "snowflake"):
         modes = [force_mode]
     else:
@@ -385,12 +394,43 @@ def start_tor(force_mode=None):
                 set_session("TOR", mode, {"proxy": x["proxy"]})
                 return x
             rec = tor_owner()
-            if rec:
-                stop_pid(int(rec["pid"]))
-            try:
-                TOR_OWNER.unlink(missing_ok=True)
-            except Exception:
-                pass
+            if not rec:
+                # Bootstrap was claimed but no exact owner can now be verified.
+                # Keep the opaque record for later diagnosis, never unlink a
+                # record that might belong to another process.
+                attempts[-1]["egress_error"] = t.get("error", "egress failed")
+                attempts[-1]["cleanupVerified"] = False
+                return {
+                    "ok": False, "state": "failed", "attempts": attempts,
+                    "error": "TOR_EGRESS_OWNER_UNVERIFIED",
+                    "cleanupVerified": False,
+                }
+            stopped = stop_pid(int(rec["pid"]))
+            if not stopped:
+                # A still-running Tor child needs its ownership record for
+                # later scoped recovery. Do not launch another mode.
+                attempts[-1]["egress_error"] = t.get("error", "egress failed")
+                attempts[-1]["cleanupVerified"] = False
+                return {
+                    "ok": False, "state": "failed", "attempts": attempts,
+                    "error": "TOR_EGRESS_STOP_UNVERIFIED",
+                    "cleanupVerified": False,
+                }
+            # Only remove the exact owner record for the child we stopped.
+            current = load_json(TOR_OWNER)
+            if current and all(
+                str(current.get(k)) == str(rec.get(k))
+                for k in ("pid", "exe", "start")
+            ):
+                try:
+                    TOR_OWNER.unlink(missing_ok=True)
+                except OSError:
+                    attempts[-1]["cleanup_error"] = "TOR_OWNER_RECORD_UNLINK_FAILED"
+                    attempts[-1]["egress_error"] = t.get("error", "egress failed")
+                    return {
+                        "ok": False, "state": "failed", "attempts": attempts,
+                        "error": "TOR_OWNER_RECORD_UNLINK_FAILED",
+                    }
             attempts[-1]["egress_error"] = t.get("error", "egress failed")
     return {"ok": False, "state": "failed", "attempts": attempts}
 
@@ -892,7 +932,7 @@ def inventory():
 def doctor():
     direct = trace(timeout=12)
     dns = run(["getent", "ahosts", "www.google.com"], 8)
-    youtube = run([executable("curl") or "curl", "-4", "--max-time", "12", "-L", "-o", "/dev/null", "-sS", "-w", "%{http_code}", "https://www.youtube.com/generate_204"], 15)
+    youtube = run([executable("curl") or "curl", "-4", "--noproxy", "*", "--max-time", "12", "-L", "-o", "/dev/null", "-sS", "-w", "%{http_code}", "https://www.youtube.com/generate_204"], 15)
     return {
         "ok": bool(direct.get("ok") and dns.returncode == 0),
         "direct": direct,
@@ -913,7 +953,9 @@ def speed_sample():
     args = [curl, "-4", "--max-time", "30", "-L", "-o", "/dev/null", "-sS", "-w", "%{speed_download}", "https://speed.cloudflare.com/__down?bytes=2000000"]
     proxy_port = browser_proxy_port(s)
     if proxy_port is not None:
-        args[1:1] = ["--proxy", f"socks5h://127.0.0.1:{proxy_port}"]
+        args[1:1] = ["--noproxy", "", "--proxy", f"socks5h://127.0.0.1:{proxy_port}"]
+    else:
+        args[1:1] = ["--noproxy", "*"]
     p = run(args, 35)
     try:
         bps = float(p.stdout.strip())

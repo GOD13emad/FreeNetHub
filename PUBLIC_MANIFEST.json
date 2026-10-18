@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39957,
-      "sha256": "90E83BD4B38E538961ADF27F25E091A4A240BF42B9054495BEB94203C80BF8DD"
+      "bytes": 40083,
+      "sha256": "4722412694133B68E213801374664C914C95F71B7BB70E760D3E709D531A3BC5"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -260,8 +260,8 @@
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
-      "bytes": 46081,
-      "sha256": "BEC5BBF4F11B787AD65A25A55B34ABE6E99FC46CC6EDF9DCC034132B7B9E73F9"
+      "bytes": 48484,
+      "sha256": "69774C4BB927F19D51454E6CF6265367386F7D7667CE29710E9CD9D1DA8A224C"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
@@ -270,8 +270,8 @@
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_r37.py",
-      "bytes": 65842,
-      "sha256": "CFBB10B1A4ED111378A2B52BA215B44F73858176737ABE1CDFD45940DC3EE143"
+      "bytes": 66063,
+      "sha256": "B49B8E25295310A086A77C6151EC053E5C692434D28ADB58C5302AA23FAC8BCE"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -385,8 +385,13 @@
     },
     {
       "file": "crossplatform/linux/test_tor_owner_failclosed.py",
-      "bytes": 6519,
-      "sha256": "D898A194C69670B5D701E9302750BEF67722191DC349EC8250E2EE2F11BCDCE5"
+      "bytes": 9755,
+      "sha256": "37B2806042826B563811F96F69EE8AAFBCDBE3A57CE1002BF89F0E2964299DF9"
+    },
+    {
+      "file": "crossplatform/linux/test_transport_proxy_no_bypass.py",
+      "bytes": 7786,
+      "sha256": "672077393DB41CA5FF8C267241C56A804DAE1688202B1857FAA60FF1B8CD48E2"
     },
     {
       "file": "crossplatform/linux/test_update_revision.py",
@@ -410,8 +415,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 8610,
-      "sha256": "9FF2517408113E0188A12B6B8CC240C889B9CF4853CB506F5A589A7F104847CB"
+      "bytes": 8784,
+      "sha256": "F0B5D4E657B6E3D118848EFD412C70189D9437A2F128C97029FA592A76468C80"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1860,8 +1865,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 271294,
-      "sha256": "2870543C3E0EB524C34D715765E47767BBF6292F4B00489B2D928695EE3EBD34"
+      "bytes": 274996,
+      "sha256": "C38A1F9B8014FCE69FE05DDC07BCC4FDFAFB46D02A385D52C46C3C9EED80F2E7"
     },
     {
       "file": "pytest.ini",
@@ -1881,7 +1886,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "4E16B6AD272BE41F0BF8357BD99012D381DE1E219DD0039D04F6E8EDCCEA14C2"
+      "sha256": "2263300DDD1F20C5F769F075DB5603952311C5B383E3E12DCCC4B75317CC077A"
     },
     {
       "file": "SECURITY.md",

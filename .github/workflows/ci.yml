@@ -61,11 +61,12 @@ jobs:
           fetch-depth: 0 # exact immutable R24 source must be present for archive reconstruction
       - name: Linux static checks
         run: |
-          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/selective_tunnel.py crossplatform/linux/test_selective_tunnel.py crossplatform/linux/tailnet_cfon_gateway.py crossplatform/linux/test_tailnet_cfon_gateway.py crossplatform/linux/tailnet_client_browser.py crossplatform/linux/test_tailnet_client_browser.py crossplatform/linux/test_selective_integration.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_tor_owner_failclosed.py crossplatform/linux/test_r37_parity.py crossplatform/linux/test_update_revision.py
+          python3 -m py_compile crossplatform/linux/freenet_hub_linux.py crossplatform/linux/freenet_hub_linux_r37.py crossplatform/linux/freenet_hub_linux_gtk.py crossplatform/linux/nodehub_shared.py crossplatform/linux/selective_tunnel.py crossplatform/linux/test_selective_tunnel.py crossplatform/linux/tailnet_cfon_gateway.py crossplatform/linux/test_tailnet_cfon_gateway.py crossplatform/linux/tailnet_client_browser.py crossplatform/linux/test_tailnet_client_browser.py crossplatform/linux/test_selective_integration.py crossplatform/linux/warp_guard.py crossplatform/linux/selftest.py crossplatform/linux/test_console_policy.py crossplatform/linux/test_private_state_permissions.py crossplatform/linux/test_tor_owner_failclosed.py crossplatform/linux/test_transport_proxy_no_bypass.py crossplatform/linux/test_r37_parity.py crossplatform/linux/test_update_revision.py
           python3 crossplatform/linux/selftest.py
           python3 crossplatform/linux/test_console_policy.py
           python3 crossplatform/linux/test_private_state_permissions.py
           python3 crossplatform/linux/test_tor_owner_failclosed.py
+          python3 crossplatform/linux/test_transport_proxy_no_bypass.py
           python3 crossplatform/linux/test_browser_profile.py
           python3 crossplatform/linux/test_scope_policy.py
           python3 crossplatform/linux/test_warp_tos_owner_consent.py
