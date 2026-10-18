@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39876,
-      "sha256": "799B0EBA2D3F6E0B7700457BCFC1D7D3CD5C524E3B0667B94435EFA7C9679427"
+      "bytes": 39957,
+      "sha256": "90E83BD4B38E538961ADF27F25E091A4A240BF42B9054495BEB94203C80BF8DD"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1860,8 +1860,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 267509,
-      "sha256": "4D0E2458ABDE35507778F77866E7B67674446EB1615D48283CFD57807FB4C825"
+      "bytes": 268688,
+      "sha256": "C2628C2F21A57721B0E300411E17745BB896B99E4D2E169990F374DA4F9DD3A8"
     },
     {
       "file": "pytest.ini",
@@ -1897,6 +1897,11 @@
       "file": "tests/archive/build_r37_product_installer_SUPERSEDED_20260929.ps1",
       "bytes": 2123,
       "sha256": "457AD7A825963B19F3EE639976BE5D897F8D30D86C7715BF18124AC1C365B432"
+    },
+    {
+      "file": "tests/build_frozen_linux_r25_for_ci.sh",
+      "bytes": 1550,
+      "sha256": "4B248EE2BFF01E70615BF58F04939675D80C5EDB52F64197BC5EF589B5C5E618"
     },
     {
       "file": "tests/build_linux_r11_package.py",
