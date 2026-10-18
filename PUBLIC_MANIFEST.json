@@ -320,8 +320,8 @@
     },
     {
       "file": "crossplatform/linux/selective_tunnel.py",
-      "bytes": 19070,
-      "sha256": "9462A2E5E280E56D569ABC3365CB00539A613302E7AB0C0CAA2CA45EE23E6D27"
+      "bytes": 19393,
+      "sha256": "389D1D319ACD2D182622BE974D7DFAC7913745AA3245F0BF22180347B7D21854"
     },
     {
       "file": "crossplatform/linux/selftest.py",
@@ -370,8 +370,8 @@
     },
     {
       "file": "crossplatform/linux/test_selective_tunnel.py",
-      "bytes": 9612,
-      "sha256": "2482018BB6ACBB9C7F5DFA10AE57F63A9C204209E933946686F9F8138B107D47"
+      "bytes": 12331,
+      "sha256": "68ACDA40D796C9631A30D8512FFE5D395161BF072A05BB846175340BF0A9593C"
     },
     {
       "file": "crossplatform/linux/test_tailnet_cfon_gateway.py",
@@ -410,8 +410,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 8609,
-      "sha256": "4F219621CE6CFC5788EABCAF7986CA55C2BFF7267DD68509FC077AC64005CFFA"
+      "bytes": 8610,
+      "sha256": "9FF2517408113E0188A12B6B8CC240C889B9CF4853CB506F5A589A7F104847CB"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1860,8 +1860,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 268688,
-      "sha256": "C2628C2F21A57721B0E300411E17745BB896B99E4D2E169990F374DA4F9DD3A8"
+      "bytes": 271294,
+      "sha256": "2870543C3E0EB524C34D715765E47767BBF6292F4B00489B2D928695EE3EBD34"
     },
     {
       "file": "pytest.ini",
@@ -1881,7 +1881,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "4044E6318BAE898B349DBC6D3F1E7ACEEB77BE9951DCF613D2ACC71EA370DAF7"
+      "sha256": "4E16B6AD272BE41F0BF8357BD99012D381DE1E219DD0039D04F6E8EDCCEA14C2"
     },
     {
       "file": "SECURITY.md",
