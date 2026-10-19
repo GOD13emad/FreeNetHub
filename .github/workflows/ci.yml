@@ -414,22 +414,87 @@ jobs:
           # read-only preflight button. It must visibly refuse upstream and
           # must NEVER request native VPN permission or start VpnService.
           # Never do this on an owner physical phone without native consent.
-          PROBE_XY="$(python3 - /tmp/fnh-native-preview.xml <<'PY'
+          # UIAutomator only exposes visible nodes. The explanatory paragraph
+          # can push the safe preflight button below the initial ScrollView.
+          # Scroll ONLY inside that ScrollView; resolve the exact button via
+          # accessibility text and bounds, never a hard-coded screen coordinate.
+          PROBE_XY=""
+          SCROLL_XYZ=""
+          for search_try in $(seq 1 6); do
+            if ! "$ADB" shell uiautomator dump /sdcard/fnh-private-probe-find.xml >/tmp/fnh-probe-dump.txt 2>&1; then
+              sleep 1
+              continue
+            fi
+            if ! "$ADB" pull /sdcard/fnh-private-probe-find.xml /tmp/fnh-private-probe-find.xml >/dev/null 2>&1; then
+              sleep 1
+              continue
+            fi
+            PROBE_XY="$(python3 - /tmp/fnh-private-probe-find.xml <<'PY'
           import re,sys,xml.etree.ElementTree as ET
           root=ET.parse(sys.argv[1]).getroot()
-          buttons=[e for e in root.iter('node')
+          found=[e for e in root.iter('node')
               if 'SOCKS / Google / YouTube' in e.get('text','')
-              and e.get('class')=='android.widget.Button']
-          assert len(buttons)==1,('UNIQUE_SAFE_PREFLIGHT_BUTTON_NOT_FOUND',len(buttons))
-          m=re.fullmatch(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',buttons[0].get('bounds',''))
-          assert m is not None
-          x1,y1,x2,y2=map(int,m.groups())
-          assert x2>x1 and y2>y1
-          print((x1+x2)//2,(y1+y2)//2)
+              and e.get('enabled')=='true' and e.get('clickable')=='true']
+          if len(found)>1:
+              raise SystemExit('AMBIGUOUS_PREFLIGHT_ACTION')
+          if found:
+              m=re.fullmatch(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',found[0].get('bounds',''))
+              assert m is not None
+              x1,y1,x2,y2=map(int,m.groups())
+              assert x2>x1 and y2>y1
+              print((x1+x2)//2,(y1+y2)//2)
           PY
-          )"
+            )"
+            if [ -n "$PROBE_XY" ]; then
+              echo "Safe SOCKS preflight button discovered (scan $search_try)"
+              break
+            fi
+            SCROLL_XYZ="$(python3 - /tmp/fnh-private-probe-find.xml <<'PY'
+          import re,sys,xml.etree.ElementTree as ET
+          root=ET.parse(sys.argv[1]).getroot()
+          scroll=[e for e in root.iter('node') if e.get('scrollable')=='true']
+          if scroll:
+              m=re.fullmatch(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',scroll[0].get('bounds',''))
+              assert m is not None
+              x1,y1,x2,y2=map(int,m.groups())
+              assert x2-x1>=120 and y2-y1>=200
+              print((x1+x2)//2,y1+(y2-y1)*4//5,y1+(y2-y1)//5)
+          PY
+            )"
+            if [ -z "$SCROLL_XYZ" ]; then
+              echo "No scrollable viewport or visible exact safe SOCKS button"
+              python3 - /tmp/fnh-private-probe-find.xml <<'PY'
+          import xml.etree.ElementTree as ET,sys
+          root=ET.parse(sys.argv[1]).getroot()
+          print('UI node texts (non-sensitive disposable emulator):',
+                [e.get('text','')[:80] for e in root.iter('node') if e.get('text','')][:22])
+          PY
+              exit 1
+            fi
+            read -r VIEW_X VIEW_BOTTOM VIEW_TOP <<< "$SCROLL_XYZ"
+            "$ADB" shell input swipe "$VIEW_X" "$VIEW_BOTTOM" "$VIEW_X" "$VIEW_TOP" 340
+            sleep 1
+          done
+          if [ -z "$PROBE_XY" ]; then
+            echo "Exact safe SOCKS preflight button not accessible after bounded scroll"
+            python3 - /tmp/fnh-private-probe-find.xml <<'PY'
+          import xml.etree.ElementTree as ET,sys
+          root=ET.parse(sys.argv[1]).getroot()
+          print([e.get('text','')[:90] for e in root.iter('node') if e.get('text','')][:25])
+          PY
+            exit 1
+          fi
           read -r PROBE_X PROBE_Y <<< "$PROBE_XY"
           "$ADB" shell input tap "$PROBE_X" "$PROBE_Y"
+
+          # The connection status appears above the action buttons.
+          # Scroll back within the same disposable UI before checking it.
+          if [ -n "$SCROLL_XYZ" ]; then
+            read -r VIEW_X VIEW_BOTTOM VIEW_TOP <<< "$SCROLL_XYZ"
+            for rewind in 1 2 3; do
+              "$ADB" shell input swipe "$VIEW_X" "$VIEW_TOP" "$VIEW_X" "$VIEW_BOTTOM" 320
+            done
+          fi
           dump_until_contains /sdcard/fnh-private-no-upstream.xml /tmp/fnh-private-no-upstream.xml \
             'اتصال برقرار نشد' 'private localhost SOCKS missing, FAIL CLOSED'
           echo "Private native Android prototype refused unavailable SOCKS upstream"
