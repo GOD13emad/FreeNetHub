@@ -44,7 +44,7 @@ assert settings.count('include(":app")')==1 and settings.count('include(":vpnPro
 gradle = (PRO/"build.gradle.kts").read_text()
 assert 'applicationId = "com.freenethub.mobile.prototype"' in gradle
 assert 'versionName = "0.1-private-usb"' in gradle
-assert 'targetSdk = 36' in gradle and 'compileSdk = 36' in gradle
+assert 'targetSdk = 36' in gradle and 'compileSdk = 36' in gradle and 'minSdk = 29' in gradle
 assert 'verifyHevNativeArtifact' in gradle and 'preBuild' in gradle
 print("PASS_SEPARATE_APPLICATION_ID_NO_REPLACEMENT_OF_USER_APP")
 

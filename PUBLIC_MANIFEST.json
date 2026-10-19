@@ -201,7 +201,7 @@
     {
       "file": "crossplatform/android/vpnPrototype/build.gradle.kts",
       "bytes": 1569,
-      "sha256": "6D8C80C7A62D32978C7CB927634802BA2BB3AA24D6BB7CCE0B700DA4906F02C5"
+      "sha256": "9B9C5DB2D1FE46490B037C28A63E09FFA4E57ED49760C1F9BCF843C904876C55"
     },
     {
       "file": "crossplatform/android/vpnPrototype/fetch_pinned_aar.py",
@@ -215,8 +215,8 @@
     },
     {
       "file": "crossplatform/android/vpnPrototype/README_PRIVATE.md",
-      "bytes": 2481,
-      "sha256": "828EDCBB9FBD32B9E4E088B62A3B2B16A62140D2B2F9812293FF4A264166289B"
+      "bytes": 2616,
+      "sha256": "20E7CB40846F67005649B35C89E3449F314D89559C5B8DD526075D7E30F02E0E"
     },
     {
       "file": "crossplatform/android/vpnPrototype/src/main/AndroidManifest.xml",
@@ -456,7 +456,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 10369,
-      "sha256": "099EA40ADE24862C16CB9213B8C45F256DC747FAA91E274B9E21C567F8D4E9E7"
+      "sha256": "C0A903E141CE05B5C6A0E080DAE9AD7335E49B0964529B4110792C486A143078"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1926,7 +1926,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "7CE17AC3DF8AB8C4FE70C0D141F54652ED9CE98062E5DA02BB50D9863162F60E"
+      "sha256": "744FB5108867F1B086CCF4F27E166D34F23AE95A81B902EABBCCED4C1DF4E765"
     },
     {
       "file": "SECURITY.md",
@@ -2630,8 +2630,8 @@
     },
     {
       "file": "tests/test_android_private_vpn.py",
-      "bytes": 5774,
-      "sha256": "90A782CCC23AE4F97283352E4A4B15B187CDBD1D52423D9D4C89920D102B64B1"
+      "bytes": 5802,
+      "sha256": "102BA59FE388D4744EAEA034A9170BB83059F258079F1B21B81FE6DB5EED9B74"
     },
     {
       "file": "tests/test_clean_install.py",

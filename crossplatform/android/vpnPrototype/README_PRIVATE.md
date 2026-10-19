@@ -2,7 +2,7 @@
 
 Scope: separately installed, opt-in developer test of Android VpnService plus native IPv4/IPv6 TUN-to-SOCKS. Does not modify accepted :app or public FreeNet Hub.
 
-- Package: com.freenethub.mobile.prototype, version 0.1-private-usb. No boot receiver, silent VPN permission or automatic start.
+- Package: com.freenethub.mobile.prototype, version 0.1-private-usb. **Minimum Android API 29** is mandatory because the pinned HEV 2.18.0 AAR declares minSdk29; the accepted public app retains minSdk26. No boot receiver, silent VPN permission or automatic start.
 - Source: heiher/hev-socks5-tunnel MIT version 2.18.0. AAR 590342 bytes, SHA256 15ec8ed121663b562c99caa5bb602d1009f24e5b09e733438b81988f12feaaab. Source tarball SHA256 93b3b33127436b4eab669798f1d50e019008585a27880df8cbdeffe5e70cb665. The MIT notice is included.
 - **Only allowed upstream:** 127.0.0.1:19414, normally an already authorized adb reverse tcp:19414 tcp:19414 over the owner's private USB cable to an owner-controlled Linux CFON SOCKS5 server. Public unauthenticated SOCKS endpoints are not supported.
 - Google and YouTube HTTPS must both pass SOCKS5 and PKIX/hostname-verified TLS before requesting Android's native VPN permission. The device owner must explicitly accept the system dialog; this can disconnect another VPN and MUST NOT be automated by ADB/AppOps. Dialog warns the user.

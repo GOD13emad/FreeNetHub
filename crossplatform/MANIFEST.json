@@ -50,7 +50,7 @@
     {
       "file": "android/vpnPrototype/build.gradle.kts",
       "bytes": 1569,
-      "sha256": "6D8C80C7A62D32978C7CB927634802BA2BB3AA24D6BB7CCE0B700DA4906F02C5"
+      "sha256": "9B9C5DB2D1FE46490B037C28A63E09FFA4E57ED49760C1F9BCF843C904876C55"
     },
     {
       "file": "android/vpnPrototype/fetch_pinned_aar.py",
@@ -64,8 +64,8 @@
     },
     {
       "file": "android/vpnPrototype/README_PRIVATE.md",
-      "bytes": 2481,
-      "sha256": "828EDCBB9FBD32B9E4E088B62A3B2B16A62140D2B2F9812293FF4A264166289B"
+      "bytes": 2616,
+      "sha256": "20E7CB40846F67005649B35C89E3449F314D89559C5B8DD526075D7E30F02E0E"
     },
     {
       "file": "android/vpnPrototype/src/main/AndroidManifest.xml",
