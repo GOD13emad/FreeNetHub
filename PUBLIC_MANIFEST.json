@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 40083,
-      "sha256": "4722412694133B68E213801374664C914C95F71B7BB70E760D3E709D531A3BC5"
+      "bytes": 40203,
+      "sha256": "02366677A94800370850261C41E84B7F13A1875D0EF768D72DFEE58FC264DD0E"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -260,8 +260,8 @@
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
-      "bytes": 49382,
-      "sha256": "8E591DE5B6AAFC5552F85CA33533813427ABCC8252A22D2AF9344907E7337268"
+      "bytes": 51647,
+      "sha256": "78184435807F6DF258F808A35AD09CC99CE0F52709D233952E6210ACA8968CDE"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
@@ -389,6 +389,11 @@
       "sha256": "3391961FF560387C04B7E7030623CA5D13494455D888FD1545FBF1CEF7CECD99"
     },
     {
+      "file": "crossplatform/linux/test_tor_process_group_stop.py",
+      "bytes": 4406,
+      "sha256": "40097507073FC040901770A860417CAE279D1A0957AB1B6E050EBF806D4C3A2A"
+    },
+    {
       "file": "crossplatform/linux/test_transport_proxy_no_bypass.py",
       "bytes": 7786,
       "sha256": "672077393DB41CA5FF8C267241C56A804DAE1688202B1857FAA60FF1B8CD48E2"
@@ -415,8 +420,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 8785,
-      "sha256": "6794AED5BA6DAEE76ED8CF784909DDDB6CFEFFD2DFB5D8EE48FBA2BF39531A4D"
+      "bytes": 8956,
+      "sha256": "852174884018BC0A8DFB76BBF6B9195DD783E0782B0007DEDA6AEB7379BB50A5"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1865,8 +1870,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 278442,
-      "sha256": "C5D5A62E598E0B6E42AFEB97349D26C49661C1E188F9EDB8E1E021E74CDECA41"
+      "bytes": 282771,
+      "sha256": "018C32B166BEAA5A2FDB2BE72DE07181F9495AEEFFF6CCD3569B4609A1712DF0"
     },
     {
       "file": "pytest.ini",
@@ -1886,7 +1891,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "582CF11C50AC2ED81E1EDF807F146ABA4AE3831A6B1B38C5DD19E1CCF05A8296"
+      "sha256": "AE86D9D9D209CD8B40299AA8509955DA8F9872B100D0D6CD83F90EFD7CB81746"
     },
     {
       "file": "SECURITY.md",

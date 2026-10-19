@@ -137,26 +137,79 @@ def tor_owner():
         pass
     return None
 
-def stop_pid(pid: int):
+def _live_group_members(pgid: int):
+    """Return live PIDs in the owned Tor session/group, or None if unreadable.
+
+    /proc/<pid>/stat fields after the final ')' begin with state, ppid,
+    pgrp and session. Zombies have no live egress but must not be used as
+    proof that PT helpers are still forwarding traffic.
+    """
     try:
-        os.kill(pid, signal.SIGTERM)
-    except ProcessLookupError:
-        return True
-    except Exception:
+        members = []
+        for proc in pathlib.Path("/proc").iterdir():
+            if not proc.name.isdecimal():
+                continue
+            try:
+                statline = (proc / "stat").read_text()
+                fields = statline[statline.rfind(")") + 2:].split()
+                if (len(fields) > 3 and int(fields[2]) == pgid
+                        and int(fields[3]) == pgid
+                        and fields[0] not in ("Z", "X", "x")):
+                    members.append(int(proc.name))
+            except (FileNotFoundError, ProcessLookupError):
+                continue  # PID exited during the scan.
+            except (OSError, ValueError, IndexError):
+                return None  # Cannot certify group completeness.
+        return members
+    except (OSError, ValueError):
+        return None
+
+
+def stop_pid(pid: int):
+    """Stop and verify a Tor-launched isolated session, including its PTs.
+
+    launch_tor starts Tor with start_new_session=True. Group-scope signals
+    are allowed only while the exact live Tor leader remains identifiable
+    and is both its own PGID and SID. Other process groups are untouched.
+    """
+    leader = identity(pid)
+    if not leader:
+        return False  # A missing leader does not prove orphaned PTs stopped.
+    try:
+        if os.getpgid(pid) != pid or os.getsid(pid) != pid:
+            return False
+        initial_members = _live_group_members(pid)
+        if not initial_members or pid not in initial_members:
+            return False
+        if identity(pid) != leader:
+            return False
+        os.killpg(pid, signal.SIGTERM)
+    except (OSError, ValueError):
         return False
     for _ in range(50):
-        if identity(pid) is None:
+        members = _live_group_members(pid)
+        if members is None:
+            return False
+        if not members:
             return True
         time.sleep(0.1)
+    # Any remaining member must still be in the same original group/SID.
+    # Do not signal an unverified or recycled unrelated process group.
     try:
-        os.kill(pid, signal.SIGKILL)
-    except Exception:
-        pass
+        members = _live_group_members(pid)
+        if not members:
+            return members is not None
+        os.killpg(pid, signal.SIGKILL)
+    except (OSError, ValueError):
+        return False
     for _ in range(20):
-        if identity(pid) is None:
+        members = _live_group_members(pid)
+        if members is None:
+            return False
+        if not members:
             return True
         time.sleep(0.05)
-    return identity(pid) is None
+    return False
 
 def listener_pid(port: int):
     ss = executable("ss")
