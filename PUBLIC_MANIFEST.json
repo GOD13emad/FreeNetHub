@@ -265,8 +265,8 @@
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
-      "bytes": 78028,
-      "sha256": "1DC4ECFB961F5316E257909916A6CD16C2CD3C81F1AE59613E980C23989B605F"
+      "bytes": 78433,
+      "sha256": "FB3875E727E1AEAA022FAFD05270AFD52EF479BDEC5560E55AA28765570A1612"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_r37.py",
@@ -359,6 +359,11 @@
       "sha256": "F0C418FE6D596602C6925316628A5A806EBCA3B14E572B5E1853B49578255E7B"
     },
     {
+      "file": "crossplatform/linux/test_r37_proxy_health.py",
+      "bytes": 3415,
+      "sha256": "9929CE0A1D78B2612083416E7465186730CAA41ED959DC33CFF2FCE3F5FBDC8F"
+    },
+    {
       "file": "crossplatform/linux/test_scope_policy.py",
       "bytes": 1381,
       "sha256": "AEC97B7DC1A15ABDB54B58EA9F8225DE2032EA445255CE3B56A893F3B8832282"
@@ -420,8 +425,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 8956,
-      "sha256": "852174884018BC0A8DFB76BBF6B9195DD783E0782B0007DEDA6AEB7379BB50A5"
+      "bytes": 9121,
+      "sha256": "AC5D9260A9A3EAAF8572AC6115BDCB9EFE4CD6C95E3AFA237F890AFD4A778976"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1891,7 +1896,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "AE86D9D9D209CD8B40299AA8509955DA8F9872B100D0D6CD83F90EFD7CB81746"
+      "sha256": "543DADF2D186E62DB24E78D4B864F65014526042BE0EE851C0778AB38B8538F1"
     },
     {
       "file": "SECURITY.md",
