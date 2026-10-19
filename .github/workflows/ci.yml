@@ -433,7 +433,7 @@ jobs:
           import re,sys,xml.etree.ElementTree as ET
           root=ET.parse(sys.argv[1]).getroot()
           found=[e for e in root.iter('node')
-              if 'SOCKS / Google / YouTube' in e.get('text','')
+              if 'socks / google / youtube' in e.get('text','').casefold()
               and e.get('enabled')=='true' and e.get('clickable')=='true']
           if len(found)>1:
               raise SystemExit('AMBIGUOUS_PREFLIGHT_ACTION')
