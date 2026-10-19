@@ -1,0 +1,12 @@
+# FreeNet Hub — Android USB VPN prototype (PRIVATE, not for release)
+
+Scope: separately installed, opt-in developer test of Android VpnService plus native IPv4/IPv6 TUN-to-SOCKS. Does not modify accepted :app or public FreeNet Hub.
+
+- Package: com.freenethub.mobile.prototype, version 0.1-private-usb. No boot receiver, silent VPN permission or automatic start.
+- Source: heiher/hev-socks5-tunnel MIT version 2.18.0. AAR 590342 bytes, SHA256 15ec8ed121663b562c99caa5bb602d1009f24e5b09e733438b81988f12feaaab. Source tarball SHA256 93b3b33127436b4eab669798f1d50e019008585a27880df8cbdeffe5e70cb665. The MIT notice is included.
+- **Only allowed upstream:** 127.0.0.1:19414, normally an already authorized adb reverse tcp:19414 tcp:19414 over the owner's private USB cable to an owner-controlled Linux CFON SOCKS5 server. Public unauthenticated SOCKS endpoints are not supported.
+- Google and YouTube HTTPS must both pass SOCKS5 and PKIX/hostname-verified TLS before requesting Android's native VPN permission. The device owner must explicitly accept the system dialog; this can disconnect another VPN and MUST NOT be automated by ADB/AppOps. Dialog warns the user.
+- VpnService.Builder.addDisallowedApplication(packageName) excludes only this VPN app's UID to prevent native upstream recursion. All other applications use IPv4/IPv6 TUN; DNS is configured inside TUN. Failure to reach local SOCKS must abort before establishing a VPN. If native forwarding crashes **after activation**, the owned TUN remains up to block accidental DIRECT fallback until the user explicitly presses Stop; a system revocation/process kill still overrides app protections. Runtime stop/close tears down the interface. Always-on is opted out of; no boot start.
+- UDP SOCKS5 relay over a USB TCP-only adb reverse is **NOT VERIFIED**. DNS, IPv6, encrypted DNS leak, uptime and rollback on physical device remain separate gates; TCP/TLS success alone does not prove full-system VPN.
+- Upstream references: https://github.com/heiher/hev-socks5-tunnel/releases/tag/2.18.0 and https://developer.android.com/reference/android/net/VpnService . Foreground specialUse must comply with Android/app-store policy before distribution.
+- Private build: cd crossplatform/android && gradle :vpnPrototype:verifyHevNativeArtifact :vpnPrototype:assembleDebug. Original :app remains fail-closed. Do not install or enable the prototype on owner hardware before exact APK hash, build, legal provenance, and recovery acceptance.

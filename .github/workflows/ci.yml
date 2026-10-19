@@ -201,6 +201,16 @@ jobs:
           ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         working-directory: crossplatform/android
         run: gradle :app:assembleDebug --stacktrace
+      - name: Verify and build opt-in private Android native tunnel proof
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        working-directory: crossplatform/android
+        run: |
+          python3 ../../tests/test_android_private_vpn.py
+          python3 vpnPrototype/fetch_pinned_aar.py
+          gradle :vpnPrototype:verifyHevNativeArtifact :vpnPrototype:assembleDebug --stacktrace
+          test -s vpnPrototype/build/outputs/apk/debug/vpnPrototype-debug.apk
   ios-static:
     runs-on: macos-26
     steps:
@@ -389,6 +399,23 @@ jobs:
             exit 1
           fi
           "$ADB" shell pm path com.freenethub.mobile | grep -q '^package:'
+
+          # Private opt-in native module: install/launch but NEVER request VPN
+          # ownership in CI, since no real secure upstream is configured.
+          python3 vpnPrototype/fetch_pinned_aar.py
+          gradle :vpnPrototype:verifyHevNativeArtifact :vpnPrototype:assembleDebug --stacktrace
+          "$ADB" install -r vpnPrototype/build/outputs/apk/debug/vpnPrototype-debug.apk
+          "$ADB" shell am start -W -n com.freenethub.mobile.prototype/.MainActivity | tee /tmp/fnh-private-am-start.txt
+          grep -q 'Status: ok' /tmp/fnh-private-am-start.txt
+          dump_until_contains /sdcard/fnh-native-preview.xml /tmp/fnh-native-preview.xml \
+            'USB VPN Private Preview' 'private native preview idle UI'
+          AFTER_PRIVATE="$("$ADB" shell ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
+          test "$BEFORE" = "$AFTER_PRIVATE"
+          if "$ADB" shell dumpsys activity services | grep -Fq 'com.freenethub.mobile.prototype/.PrivateVpnService'; then
+            echo 'Private VPN service started without device owner consent'
+            exit 1
+          fi
+          "$ADB" shell am force-stop com.freenethub.mobile.prototype
           "$ADB" emu kill || true
 
   ios-simulator-runtime:
