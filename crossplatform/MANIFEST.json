@@ -109,18 +109,18 @@
     },
     {
       "file": "linux/freenet_hub_linux.py",
-      "bytes": 44627,
-      "sha256": "254D9C07332A16E75010E82324C568482EF9BB5DA5E7C20DFCDE58BE523CE9E4"
+      "bytes": 51647,
+      "sha256": "78184435807F6DF258F808A35AD09CC99CE0F52709D233952E6210ACA8968CDE"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
-      "bytes": 78028,
-      "sha256": "1DC4ECFB961F5316E257909916A6CD16C2CD3C81F1AE59613E980C23989B605F"
+      "bytes": 78433,
+      "sha256": "FB3875E727E1AEAA022FAFD05270AFD52EF479BDEC5560E55AA28765570A1612"
     },
     {
       "file": "linux/freenet_hub_linux_r37.py",
-      "bytes": 65842,
-      "sha256": "CFBB10B1A4ED111378A2B52BA215B44F73858176737ABE1CDFD45940DC3EE143"
+      "bytes": 66063,
+      "sha256": "B49B8E25295310A086A77C6151EC053E5C692434D28ADB58C5302AA23FAC8BCE"
     },
     {
       "file": "linux/freenethub.desktop",
@@ -169,8 +169,8 @@
     },
     {
       "file": "linux/selective_tunnel.py",
-      "bytes": 19070,
-      "sha256": "9462A2E5E280E56D569ABC3365CB00539A613302E7AB0C0CAA2CA45EE23E6D27"
+      "bytes": 19393,
+      "sha256": "389D1D319ACD2D182622BE974D7DFAC7913745AA3245F0BF22180347B7D21854"
     },
     {
       "file": "linux/selftest.py",
@@ -208,6 +208,11 @@
       "sha256": "F0C418FE6D596602C6925316628A5A806EBCA3B14E572B5E1853B49578255E7B"
     },
     {
+      "file": "linux/test_r37_proxy_health.py",
+      "bytes": 3415,
+      "sha256": "9929CE0A1D78B2612083416E7465186730CAA41ED959DC33CFF2FCE3F5FBDC8F"
+    },
+    {
       "file": "linux/test_scope_policy.py",
       "bytes": 1381,
       "sha256": "AEC97B7DC1A15ABDB54B58EA9F8225DE2032EA445255CE3B56A893F3B8832282"
@@ -219,8 +224,8 @@
     },
     {
       "file": "linux/test_selective_tunnel.py",
-      "bytes": 9612,
-      "sha256": "2482018BB6ACBB9C7F5DFA10AE57F63A9C204209E933946686F9F8138B107D47"
+      "bytes": 12331,
+      "sha256": "68ACDA40D796C9631A30D8512FFE5D395161BF072A05BB846175340BF0A9593C"
     },
     {
       "file": "linux/test_tailnet_cfon_gateway.py",
@@ -231,6 +236,21 @@
       "file": "linux/test_tailnet_client_browser.py",
       "bytes": 13400,
       "sha256": "72BBDB8523F4D3CBEE2266CAB33E27364DFBCBA7C02A93596A72ED84C73F1B89"
+    },
+    {
+      "file": "linux/test_tor_owner_failclosed.py",
+      "bytes": 14500,
+      "sha256": "3391961FF560387C04B7E7030623CA5D13494455D888FD1545FBF1CEF7CECD99"
+    },
+    {
+      "file": "linux/test_tor_process_group_stop.py",
+      "bytes": 4406,
+      "sha256": "40097507073FC040901770A860417CAE279D1A0957AB1B6E050EBF806D4C3A2A"
+    },
+    {
+      "file": "linux/test_transport_proxy_no_bypass.py",
+      "bytes": 7786,
+      "sha256": "672077393DB41CA5FF8C267241C56A804DAE1688202B1857FAA60FF1B8CD48E2"
     },
     {
       "file": "linux/test_update_revision.py",

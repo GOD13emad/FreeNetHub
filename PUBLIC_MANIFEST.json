@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39760,
-      "sha256": "82C29AA1A98A1E0633FACCFAEAB5A2418AF7808A87C1BFB2B8631BCD4E464874"
+      "bytes": 40311,
+      "sha256": "A89F2EE22D17133FD53DCAD1C90279053BD22417E4EE35455BD94E2A9F78CBA0"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -260,18 +260,18 @@
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux.py",
-      "bytes": 44627,
-      "sha256": "254D9C07332A16E75010E82324C568482EF9BB5DA5E7C20DFCDE58BE523CE9E4"
+      "bytes": 51647,
+      "sha256": "78184435807F6DF258F808A35AD09CC99CE0F52709D233952E6210ACA8968CDE"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_gtk.py",
-      "bytes": 78028,
-      "sha256": "1DC4ECFB961F5316E257909916A6CD16C2CD3C81F1AE59613E980C23989B605F"
+      "bytes": 78433,
+      "sha256": "FB3875E727E1AEAA022FAFD05270AFD52EF479BDEC5560E55AA28765570A1612"
     },
     {
       "file": "crossplatform/linux/freenet_hub_linux_r37.py",
-      "bytes": 65842,
-      "sha256": "CFBB10B1A4ED111378A2B52BA215B44F73858176737ABE1CDFD45940DC3EE143"
+      "bytes": 66063,
+      "sha256": "B49B8E25295310A086A77C6151EC053E5C692434D28ADB58C5302AA23FAC8BCE"
     },
     {
       "file": "crossplatform/linux/freenethub.desktop",
@@ -320,8 +320,8 @@
     },
     {
       "file": "crossplatform/linux/selective_tunnel.py",
-      "bytes": 19070,
-      "sha256": "9462A2E5E280E56D569ABC3365CB00539A613302E7AB0C0CAA2CA45EE23E6D27"
+      "bytes": 19393,
+      "sha256": "389D1D319ACD2D182622BE974D7DFAC7913745AA3245F0BF22180347B7D21854"
     },
     {
       "file": "crossplatform/linux/selftest.py",
@@ -359,6 +359,11 @@
       "sha256": "F0C418FE6D596602C6925316628A5A806EBCA3B14E572B5E1853B49578255E7B"
     },
     {
+      "file": "crossplatform/linux/test_r37_proxy_health.py",
+      "bytes": 3415,
+      "sha256": "9929CE0A1D78B2612083416E7465186730CAA41ED959DC33CFF2FCE3F5FBDC8F"
+    },
+    {
       "file": "crossplatform/linux/test_scope_policy.py",
       "bytes": 1381,
       "sha256": "AEC97B7DC1A15ABDB54B58EA9F8225DE2032EA445255CE3B56A893F3B8832282"
@@ -370,8 +375,8 @@
     },
     {
       "file": "crossplatform/linux/test_selective_tunnel.py",
-      "bytes": 9612,
-      "sha256": "2482018BB6ACBB9C7F5DFA10AE57F63A9C204209E933946686F9F8138B107D47"
+      "bytes": 12331,
+      "sha256": "68ACDA40D796C9631A30D8512FFE5D395161BF072A05BB846175340BF0A9593C"
     },
     {
       "file": "crossplatform/linux/test_tailnet_cfon_gateway.py",
@@ -382,6 +387,21 @@
       "file": "crossplatform/linux/test_tailnet_client_browser.py",
       "bytes": 13400,
       "sha256": "72BBDB8523F4D3CBEE2266CAB33E27364DFBCBA7C02A93596A72ED84C73F1B89"
+    },
+    {
+      "file": "crossplatform/linux/test_tor_owner_failclosed.py",
+      "bytes": 14500,
+      "sha256": "3391961FF560387C04B7E7030623CA5D13494455D888FD1545FBF1CEF7CECD99"
+    },
+    {
+      "file": "crossplatform/linux/test_tor_process_group_stop.py",
+      "bytes": 4406,
+      "sha256": "40097507073FC040901770A860417CAE279D1A0957AB1B6E050EBF806D4C3A2A"
+    },
+    {
+      "file": "crossplatform/linux/test_transport_proxy_no_bypass.py",
+      "bytes": 7786,
+      "sha256": "672077393DB41CA5FF8C267241C56A804DAE1688202B1857FAA60FF1B8CD48E2"
     },
     {
       "file": "crossplatform/linux/test_update_revision.py",
@@ -405,8 +425,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 8440,
-      "sha256": "9C57AE2B0A36644CA000D4FB04B398E58E9861157187A42B5A6B47083EB11346"
+      "bytes": 9121,
+      "sha256": "AC5D9260A9A3EAAF8572AC6115BDCB9EFE4CD6C95E3AFA237F890AFD4A778976"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1855,8 +1875,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 264566,
-      "sha256": "3618C62D99AD22AAD0E41CB72B45797C60709BFB295622380A0DB60C26662E23"
+      "bytes": 282771,
+      "sha256": "018C32B166BEAA5A2FDB2BE72DE07181F9495AEEFFF6CCD3569B4609A1712DF0"
     },
     {
       "file": "pytest.ini",
@@ -1876,7 +1896,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "C4BEBA204F19FE78DE0FB8BBF365AB3EA96E70F91C645E6CFC782BC343D21825"
+      "sha256": "543DADF2D186E62DB24E78D4B864F65014526042BE0EE851C0778AB38B8538F1"
     },
     {
       "file": "SECURITY.md",
@@ -1892,6 +1912,11 @@
       "file": "tests/archive/build_r37_product_installer_SUPERSEDED_20260929.ps1",
       "bytes": 2123,
       "sha256": "457AD7A825963B19F3EE639976BE5D897F8D30D86C7715BF18124AC1C365B432"
+    },
+    {
+      "file": "tests/build_frozen_linux_r25_for_ci.sh",
+      "bytes": 1550,
+      "sha256": "4B248EE2BFF01E70615BF58F04939675D80C5EDB52F64197BC5EF589B5C5E618"
     },
     {
       "file": "tests/build_linux_r11_package.py",
