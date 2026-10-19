@@ -86,7 +86,8 @@ assert 'SOCKS5_REMOTE_CONNECT_REFUSED' in probe
 assert 'InetSocketAddress(TunnelConfig.SOCKS_HOST, TunnelConfig.SOCKS_PORT)' in probe
 assert "import java.net.HttpURLConnection" not in probe and "ProxySelector.getDefault(" not in probe
 assert 'SOCKS_HOST = "127.0.0.1"' in tunnel and 'SOCKS_PORT = 19414' in tunnel
-assert "udp: 'udp'" in tunnel
+assert "udp: 'tcp'" in tunnel, "UNSAFE_UDP_IN_UDP_RELAY_CONFIGURED"
+assert "udp: 'udp'" not in tunnel, "DIRECT_UDP_RELAY_MODE_FORBIDDEN"
 print("PASS_LOCALHOST_SOCKS_ONLY_AND_TLS_PEER_IDENTITY")
 
 # hev-socks5-tunnel 2.18.0 implements IPv4 A-only fake-IP DNS mapped to
@@ -113,7 +114,10 @@ assert mapped_network.subnet_of(tun_range)
 assert ipaddress.IPv4Address(match.group(1)) not in mapped_network
 assert int(ipaddress.IPv4Address(match.group(1))) != int(ipaddress.IPv4Address("198.18.0.1"))
 assert 8192 < mapped_network.num_addresses - 1
-assert "udp: 'udp'" in tunnel  # Not misrepresented as UDP-over-TCP.
+# USB ADB reverse is TCP-only; force HEV's UDP_IN_TCP branch, which must
+# fail closed if this SOCKS provider lacks HEV's non-standard UDP-over-TCP.
+assert "udp: 'tcp'" in tunnel and "udp: 'udp'" not in tunnel
+assert "UPSTREAM_UDP_OVER_TCP_UNVERIFIED" in (PRO/"README_PRIVATE.md").read_text()
 assert "IPv4 A" in (PRO/"README_PRIVATE.md").read_text()
 print("PASS_MAPPED_IPV4_DNS_WITH_SOCKS_REMOTE_HOSTNAME_NO_PUBLIC_DNS_DEFAULT")
 

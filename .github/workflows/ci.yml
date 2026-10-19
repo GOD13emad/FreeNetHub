@@ -409,6 +409,34 @@ jobs:
           grep -q 'Status: ok' /tmp/fnh-private-am-start.txt
           dump_until_contains /sdcard/fnh-native-preview.xml /tmp/fnh-native-preview.xml \
             'USB VPN Private Preview' 'private native preview idle UI'
+
+          # Synthetic emulator has NO trusted SOCKS endpoint; tap ONLY the
+          # read-only preflight button. It must visibly refuse upstream and
+          # must NEVER request native VPN permission or start VpnService.
+          # Never do this on an owner physical phone without native consent.
+          PROBE_XY="$(python3 - /tmp/fnh-native-preview.xml <<'PY'
+          import re,sys,xml.etree.ElementTree as ET
+          root=ET.parse(sys.argv[1]).getroot()
+          buttons=[e for e in root.iter('node')
+              if 'SOCKS / Google / YouTube' in e.get('text','')
+              and e.get('class')=='android.widget.Button']
+          assert len(buttons)==1,('UNIQUE_SAFE_PREFLIGHT_BUTTON_NOT_FOUND',len(buttons))
+          m=re.fullmatch(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',buttons[0].get('bounds',''))
+          assert m is not None
+          x1,y1,x2,y2=map(int,m.groups())
+          assert x2>x1 and y2>y1
+          print((x1+x2)//2,(y1+y2)//2)
+          PY
+          )"
+          read -r PROBE_X PROBE_Y <<< "$PROBE_XY"
+          "$ADB" shell input tap "$PROBE_X" "$PROBE_Y"
+          dump_until_contains /sdcard/fnh-private-no-upstream.xml /tmp/fnh-private-no-upstream.xml \
+            'اتصال برقرار نشد' 'private localhost SOCKS missing, FAIL CLOSED'
+          echo "Private native Android prototype refused unavailable SOCKS upstream"
+          if "$ADB" shell dumpsys activity services | grep -Fq 'com.freenethub.mobile.prototype/.PrivateVpnService'; then
+            echo 'Private VpnService unexpectedly started after failed preflight'
+            exit 1
+          fi
           AFTER_PRIVATE="$("$ADB" shell ip -o link | sed -E 's/^[0-9]+: ([^:]+):.*/\1/' | sort)"
           test "$BEFORE" = "$AFTER_PRIVATE"
           if "$ADB" shell dumpsys activity services | grep -Fq 'com.freenethub.mobile.prototype/.PrivateVpnService'; then

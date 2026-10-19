@@ -18,8 +18,10 @@ internal object TunnelConfig {
     const val MAPPED_FAKE_V4_MASK = "255.255.0.0"
     const val MAPPED_FAKE_V4_CACHE = 8192
 
-    // Upstream UDP ASSOCIATE transport is not guaranteed through adb reverse.
-    // Unsupported DNS/UDP packets must fail CLOSED rather than route DIRECT.
+    // CRITICAL: UDP_IN_UDP creates a direct OS SOCK_DGRAM relay socket.
+    // Our UID is excluded from VPN routing, so that socket could leave over
+    // the phone's own network. Force HEV UDP_IN_TCP instead: extension may
+    // be unsupported by CFON, then UDP fails closed inside the SOCKS stream.
     fun nativeYaml(): String = """
         tunnel:
           mtu: 1500
@@ -29,7 +31,7 @@ internal object TunnelConfig {
         socks5:
           address: 127.0.0.1
           port: 19414
-          udp: 'udp'
+          udp: 'tcp'
         # Only IPv4 A DNS is synthesized. Native maps the synthetic address
         # back to the original name before SOCKS CONNECT. UDP/AAAA unverified.
         mapdns:
