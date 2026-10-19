@@ -184,11 +184,14 @@ def recover_stale_project_listener():
         local_cfg = str(TOR_STATE.resolve()) in cmd and "torrc-" in cmd
         if trusted and local_cfg:
             stopped = stop_pid(pid)
-            try:
-                TOR_OWNER.unlink(missing_ok=True)
-            except Exception:
-                pass
-            return {"ok": bool(stopped), "state": "recovered-stale-project-listener" if stopped else "recovery-failed", "pid": pid}
+            # This PID was not authenticated by TOR_OWNER; its stored record
+            # may belong to another owner/process. Do not delete that record,
+            # even when this listener was successfully stopped.
+            return {
+                "ok": bool(stopped),
+                "state": "recovered-stale-project-listener" if stopped else "recovery-failed",
+                "pid": pid,
+            }
     except Exception:
         pass
     return {"ok": False, "error": "SOCKS port occupied by foreign or unproven process", "pid": pid}
@@ -326,9 +329,15 @@ def launch_tor(mode: str, timeout: float):
                 "proxy": f"socks5h://127.0.0.1:{SOCKS_PORT}",
             }
         time.sleep(0.25)
-    stop_pid(p.pid)
+    stopped = stop_pid(p.pid)
     log.close()
-    return {"ok": False, "mode": mode, "error": "bootstrap timeout", "bootstrap": pct}
+    return {
+        "ok": False,
+        "mode": mode,
+        "error": "bootstrap timeout",
+        "bootstrap": pct,
+        "cleanupVerified": bool(stopped),
+    }
 
 def tor_status():
     rec = tor_owner()
@@ -439,15 +448,25 @@ def stop_tor():
     if not rec:
         return {"ok": True, "state": "not-owned"}
     stopped = stop_pid(int(rec["pid"]))
-    if stopped:
+    if not stopped:
+        return {"ok": False, "state": "stop-timeout", "mode": rec.get("mode")}
+    # The owner record can be replaced while the stop is in progress. Only
+    # unlink the exact process identity that this invocation authenticated.
+    if TOR_OWNER.exists():
+        current = load_json(TOR_OWNER)
+        if not current or any(
+            str(current.get(k)) != str(rec.get(k))
+            for k in ("pid", "exe", "start")
+        ):
+            return {"ok": False, "state": "owner-record-changed", "mode": rec.get("mode")}
         try:
-            TOR_OWNER.unlink(missing_ok=True)
-        except Exception:
-            pass
-        s = session()
-        if s.get("mode") == "TOR":
-            set_session()
-    return {"ok": stopped, "state": "stopped" if stopped else "stop-timeout", "mode": rec.get("mode")}
+            TOR_OWNER.unlink()
+        except OSError:
+            return {"ok": False, "state": "owner-record-unlink-failed", "mode": rec.get("mode")}
+    s = session()
+    if s.get("mode") == "TOR":
+        set_session()
+    return {"ok": True, "state": "stopped", "mode": rec.get("mode")}
 
 def warp_status():
     cli = executable("warp-cli")
@@ -694,8 +713,11 @@ def stop_all():
         results["warp"] = {"ok": True, "state": "left-connected-not-owned"}
     else:
         results["warp"] = {"ok": True, "state": "already-disconnected"}
-    set_session()
-    return {"ok": all(bool(v.get("ok")) for v in results.values()), "results": results}
+    ok = all(bool(v.get("ok")) for v in results.values())
+    if ok:
+        # Never drop the active session after a failed Tor/WARP stop.
+        set_session()
+    return {"ok": ok, "results": results}
 
 def verify_current():
     return current_status()

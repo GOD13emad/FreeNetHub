@@ -109,8 +109,8 @@
     },
     {
       "file": "linux/freenet_hub_linux.py",
-      "bytes": 48484,
-      "sha256": "69774C4BB927F19D51454E6CF6265367386F7D7667CE29710E9CD9D1DA8A224C"
+      "bytes": 49382,
+      "sha256": "8E591DE5B6AAFC5552F85CA33533813427ABCC8252A22D2AF9344907E7337268"
     },
     {
       "file": "linux/freenet_hub_linux_gtk.py",
@@ -234,8 +234,8 @@
     },
     {
       "file": "linux/test_tor_owner_failclosed.py",
-      "bytes": 9755,
-      "sha256": "37B2806042826B563811F96F69EE8AAFBCDBE3A57CE1002BF89F0E2964299DF9"
+      "bytes": 14500,
+      "sha256": "3391961FF560387C04B7E7030623CA5D13494455D888FD1545FBF1CEF7CECD99"
     },
     {
       "file": "linux/test_transport_proxy_no_bypass.py",

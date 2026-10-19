@@ -223,3 +223,102 @@ new_tor.assert_not_called()
 print("PASS_V590_PREEXISTING_UNSTOPPABLE_TOR_BLOCKS_NEW_START")
 
 print("V590_TOR_EGRESS_OWNERSHIP_RECOVERY_5_CASES_PASS")
+
+
+# V593: Recovery must never remove an owner record just because a known
+# localhost listener was identified; a failed stop can leave it running.
+def run_stale_listener_record_case(stop_succeeds):
+    with tempfile.TemporaryDirectory(prefix="fnh-stale-owner-protection-") as tmp:
+        state = pathlib.Path(tmp) / "tor"
+        state.mkdir()
+        owner_file = state / "owner.json"
+        sentinel = {"pid": 76543, "exe": "/mock/tor", "start": "777"}
+        owner_file.write_text(json.dumps(sentinel), encoding="utf-8")
+        pid = 54321
+        real_read = pathlib.Path.read_bytes
+
+        def mocked_read_bytes(path):
+            if str(path) == f"/proc/{pid}/cmdline":
+                return f"/mock/tor\\0-f\\0{state}/torrc-obfs4\\0".replace(
+                    "\\0", "\0").encode()
+            return real_read(path)
+
+        with (mock.patch.object(m, "TOR_STATE", state),
+              mock.patch.object(m, "TOR_OWNER", owner_file),
+              mock.patch.object(m, "listener_pid", return_value=pid),
+              mock.patch.object(m, "tor_owner", return_value=None),
+              mock.patch.object(m, "identity", return_value={
+                  "pid": pid, "exe": "/mock/tor", "start": "321"}),
+              mock.patch.object(m, "executable", return_value="/mock/tor"),
+              mock.patch.object(pathlib.Path, "read_bytes", mocked_read_bytes),
+              mock.patch.object(m, "stop_pid", return_value=stop_succeeds)):
+            outcome = m.recover_stale_project_listener()
+        surviving = json.loads(owner_file.read_text()) if owner_file.exists() else None
+        return outcome, surviving, sentinel
+
+
+outcome, kept, original = run_stale_listener_record_case(False)
+assert not outcome["ok"] and kept == original
+print("PASS_V593_FAILED_STALE_RECOVERY_PRESERVES_OTHER_OWNER")
+
+outcome, kept, original = run_stale_listener_record_case(True)
+assert outcome["ok"] and kept == original
+print("PASS_V593_SUCCESSFUL_STALE_RECOVERY_DOES_NOT_ERASE_OTHER_OWNER")
+
+
+def run_stop_tor_race_case(stop_succeeds=True, owner_changed=False):
+    with tempfile.TemporaryDirectory(prefix="fnh-stop-owner-race-") as tmp:
+        owner_file = pathlib.Path(tmp) / "owner.json"
+        original = dict(owned, mode="obfs4")
+        foreign = dict(original, pid=original["pid"] + 100)
+        owner_file.write_text(json.dumps(original), encoding="utf-8")
+
+        def stop(pid):
+            assert pid == owned["pid"]
+            if owner_changed:
+                owner_file.write_text(json.dumps(foreign), encoding="utf-8")
+            return stop_succeeds
+
+        with (mock.patch.object(m, "TOR_OWNER", owner_file),
+              mock.patch.object(m, "tor_owner", return_value=original),
+              mock.patch.object(m, "stop_pid", side_effect=stop),
+              mock.patch.object(m, "session", return_value={"mode": "TOR"}),
+              mock.patch.object(m, "set_session") as clear_session):
+            result = m.stop_tor()
+        contents = json.loads(owner_file.read_text()) if owner_file.exists() else None
+        return result, contents, clear_session.call_count, original, foreign
+
+
+result, record, calls, _original, foreign = run_stop_tor_race_case(owner_changed=True)
+assert not result["ok"] and result["state"] == "owner-record-changed"
+assert record == foreign and calls == 0
+print("PASS_V593_STOP_RACE_DOES_NOT_DELETE_FOREIGN_OWNER")
+
+result, record, calls, original, _foreign = run_stop_tor_race_case(stop_succeeds=False)
+assert not result["ok"] and result["state"] == "stop-timeout"
+assert record == original and calls == 0
+print("PASS_V593_UNSTOPPABLE_OWNER_KEEPS_RECORD_AND_SESSION")
+
+result, record, calls, _original, _foreign = run_stop_tor_race_case()
+assert result["ok"] and result["state"] == "stopped"
+assert record is None and calls == 1
+print("PASS_V593_EXACT_OWNER_STOP_CLEARS_ONLY_MATCHING_RECORD")
+
+# Full Stop must not clear session when its own Tor stop has not succeeded.
+with (mock.patch.object(m, "session", return_value={"mode": "TOR"}),
+      mock.patch.object(m, "stop_tor", return_value={"ok": False, "state": "stop-timeout"}),
+      mock.patch.object(m, "warp_status", return_value={"connected": False}),
+      mock.patch.object(m, "set_session") as reset_session):
+    result = m.stop_all()
+assert not result["ok"]
+reset_session.assert_not_called()
+print("PASS_V593_STOP_ALL_FAILCLOSED_SESSION")
+
+result, stops, record, mode, proc = run_case(
+    identity=owned, listener=FakeTor.pid, startup=50, stop_fail=True,
+)
+assert not result["ok"] and result["error"] == "bootstrap timeout"
+assert result.get("cleanupVerified") is False and stops == [FakeTor.pid]
+print("PASS_V593_BOOTSTRAP_FAILED_STOP_EXPLICITLY_UNVERIFIED")
+
+print("V593_LINUX_TOR_OWNER_RECOVERY_SAFETY_7_CASES_PASS")
