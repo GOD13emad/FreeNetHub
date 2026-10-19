@@ -3,6 +3,8 @@
 Does NOT assert that its mobile network forwarding has been field-accepted.
 """
 import hashlib
+import ipaddress
+import re
 import io
 import pathlib
 import xml.etree.ElementTree as ET
@@ -56,7 +58,7 @@ for needed in (
     "ACTION_START", "ACTION_STOP", "VpnService.prepare(this)",
     'isLockdownEnabled', 'addDisallowedApplication(packageName)',
     'addRoute("0.0.0.0", 0)', 'addRoute("::", 0)',
-    "addDnsServer(TunnelConfig.DNS_V4)", "addDnsServer(TunnelConfig.DNS_V6)",
+    "addDnsServer(TunnelConfig.MAPPED_DNS_V4)",
     "builder.establish()", "TProxyService.TProxyStartService",
     "TProxyService.TProxyStopService", "TProxyService.TProxyIsRunning",
     "onRevoke()", "STOP_FOREGROUND_REMOVE",
@@ -87,6 +89,35 @@ assert 'SOCKS_HOST = "127.0.0.1"' in tunnel and 'SOCKS_PORT = 19414' in tunnel
 assert "udp: 'udp'" in tunnel
 print("PASS_LOCALHOST_SOCKS_ONLY_AND_TLS_PEER_IDENTITY")
 
+# hev-socks5-tunnel 2.18.0 implements IPv4 A-only fake-IP DNS mapped to
+# the original domain in the outbound SOCKS5 CONNECT.  adb reverse is TCP-only:
+# never claim this enables UDP ASSOCIATE, DoH/DoT, or IPv6 AAAA support.
+assert not re.search(r"(?m)^\s*const val DNS_V[46]\s*=", tunnel), "PUBLIC_DNS_CONSTANT_REMAINED"
+match = re.search(r'const val MAPPED_DNS_V4 = "([^"]+)"', tunnel)
+assert match and match.group(1) == "198.18.0.2"
+for key, value in {
+    "address": "198.18.0.2",
+    "port": "53",
+    "network": "198.19.0.0",
+    "netmask": "255.255.0.0",
+    "cache-size": "8192",
+}.items():
+    assert re.search(r"(?m)^          " + re.escape(key) + r": ['\"]?" +
+                     re.escape(value) + r"['\"]?$", tunnel), (key, value)
+assert "        mapdns:\n" in tunnel
+assert "addDnsServer(TunnelConfig.MAPPED_DNS_V4)" in service
+assert "addDnsServer(TunnelConfig.DNS_V6)" not in service
+mapped_network = ipaddress.IPv4Network("198.19.0.0/16")
+tun_range = ipaddress.IPv4Network("198.18.0.0/15")
+assert mapped_network.subnet_of(tun_range)
+assert ipaddress.IPv4Address(match.group(1)) not in mapped_network
+assert int(ipaddress.IPv4Address(match.group(1))) != int(ipaddress.IPv4Address("198.18.0.1"))
+assert 8192 < mapped_network.num_addresses - 1
+assert "udp: 'udp'" in tunnel  # Not misrepresented as UDP-over-TCP.
+assert "IPv4 A" in (PRO/"README_PRIVATE.md").read_text()
+print("PASS_MAPPED_IPV4_DNS_WITH_SOCKS_REMOTE_HOSTNAME_NO_PUBLIC_DNS_DEFAULT")
+
+
 helper = PRO/"fetch_pinned_aar.py"
 source_helper=helper.read_text()
 expected_sha="15ec8ed121663b562c99caa5bb602d1009f24e5b09e733438b81988f12feaaab"
@@ -110,4 +141,4 @@ if p.exists():
 print("PASS_UPSTREAM_MIT_NATIVE_PIN_4_ABIS")
 
 assert "PRIVATE" in (PRO/"README_PRIVATE.md").read_text()
-print("ANDROID_PRIVATE_SOURCE_ACCEPTANCE=7_OF_7_PASS_NO_MOBILE_VPN_FIELD_CLAIM")
+print("ANDROID_PRIVATE_SOURCE_ACCEPTANCE=8_OF_8_PASS_NO_MOBILE_VPN_FIELD_CLAIM")

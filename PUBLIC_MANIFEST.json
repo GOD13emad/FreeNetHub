@@ -215,8 +215,8 @@
     },
     {
       "file": "crossplatform/android/vpnPrototype/README_PRIVATE.md",
-      "bytes": 2616,
-      "sha256": "20E7CB40846F67005649B35C89E3449F314D89559C5B8DD526075D7E30F02E0E"
+      "bytes": 3288,
+      "sha256": "7D259E65BA186E6E3CBEFEA78DCF276306291B1B8B68FEE683802BAA6F006208"
     },
     {
       "file": "crossplatform/android/vpnPrototype/src/main/AndroidManifest.xml",
@@ -230,8 +230,8 @@
     },
     {
       "file": "crossplatform/android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/PrivateVpnService.kt",
-      "bytes": 9273,
-      "sha256": "D2360963F2839964CC97A11361B5453DB2B6A7060D68FA7463A7DC530C7F2642"
+      "bytes": 9461,
+      "sha256": "8B6862ED4B7CE860852EAE1E79A65CA417B40B74089AEB0D58B241C1A8E42862"
     },
     {
       "file": "crossplatform/android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/SocksPreflight.kt",
@@ -240,8 +240,8 @@
     },
     {
       "file": "crossplatform/android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/TunnelConfig.kt",
-      "bytes": 1188,
-      "sha256": "E7DD9F1EBE0B9032FF1830A590A3E133A0836808FD2869E2FF562C47C50DAF7F"
+      "bytes": 1759,
+      "sha256": "129F6F654CAA9E3951C69AD3E54F100D4C5D738F37B302F864A997DD042EE0BD"
     },
     {
       "file": "crossplatform/common/METHOD_EVIDENCE.md",
@@ -456,7 +456,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 10369,
-      "sha256": "C0A903E141CE05B5C6A0E080DAE9AD7335E49B0964529B4110792C486A143078"
+      "sha256": "1D455841AC4F8C84CC8BED2C9AED11B97ACA75714E6D99FBB077BBE3FF098356"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1926,7 +1926,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "744FB5108867F1B086CCF4F27E166D34F23AE95A81B902EABBCCED4C1DF4E765"
+      "sha256": "3BE78CC15201935C022BB989F43AF307DF1209600B208091672DE2A10CB2FB25"
     },
     {
       "file": "SECURITY.md",
@@ -2630,8 +2630,8 @@
     },
     {
       "file": "tests/test_android_private_vpn.py",
-      "bytes": 5802,
-      "sha256": "102BA59FE388D4744EAEA034A9170BB83059F258079F1B21B81FE6DB5EED9B74"
+      "bytes": 7266,
+      "sha256": "633D4D4A94A8E28C4A926DD3D4E689666F4AC58071FC947C62DECDB58E519E21"
     },
     {
       "file": "tests/test_clean_install.py",

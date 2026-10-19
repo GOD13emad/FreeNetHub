@@ -117,8 +117,10 @@ class PrivateVpnService : VpnService() {
             .addAddress(TunnelConfig.VPN_V6, 64)
             .addRoute("0.0.0.0", 0)
             .addRoute("::", 0)
-            .addDnsServer(TunnelConfig.DNS_V4)
-            .addDnsServer(TunnelConfig.DNS_V6)
+            // The HEV mapdns destination is intercepted inside the TUN.
+            // Remote SOCKS resolves the original domain for IPv4 A queries.
+            // Avoid publishing public IPv4/IPv6 DNS upstream addresses here.
+            .addDnsServer(TunnelConfig.MAPPED_DNS_V4)
             .setBlocking(false)
         // Native SOCKS sockets are created by this app's UID. Exclude ONLY this
         // UID from the TUN; otherwise the upstream can loop back into the VPN.
