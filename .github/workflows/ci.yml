@@ -410,6 +410,23 @@ jobs:
           dump_until_contains /sdcard/fnh-native-preview.xml /tmp/fnh-native-preview.xml \
             'USB VPN Private Preview' 'private native preview idle UI'
 
+          # A user-controlled VPN permission-only button is placed ABOVE the
+          # instructions. Merely rendering it must not create a tunnel.
+          # Do not tap or approve native VPN consent on this emulator test.
+          python3 - /tmp/fnh-native-preview.xml <<'PY'
+          import sys,xml.etree.ElementTree as ET
+          root=ET.parse(sys.argv[1]).getroot()
+          permission_only=[
+              n for n in root.iter('node')
+              if 'مجوز VPN بدون اتصال' in n.get('text','')
+              and n.get('enabled')=='true'
+              and n.get('clickable')=='true'
+              and n.get('class')=='android.widget.Button'
+          ]
+          assert len(permission_only)==1, ('OWNER_PERMISSION_ONLY_BUTTON_NOT_VISIBLE',len(permission_only))
+          print('Owner permission-only button visible without native VPN start')
+          PY
+
           # Synthetic emulator has NO trusted SOCKS endpoint; tap ONLY the
           # read-only preflight button. It must visibly refuse upstream and
           # must NEVER request native VPN permission or start VpnService.

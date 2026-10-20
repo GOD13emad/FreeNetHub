@@ -45,7 +45,7 @@ settings = (BASE/"settings.gradle.kts").read_text()
 assert settings.count('include(":app")')==1 and settings.count('include(":vpnPrototype")')==1
 gradle = (PRO/"build.gradle.kts").read_text()
 assert 'applicationId = "com.freenethub.mobile.prototype"' in gradle
-assert 'versionName = "0.1-private-usb"' in gradle
+assert 'versionCode = 2' in gradle and 'versionName = "0.2-private-usb"' in gradle
 assert 'targetSdk = 36' in gradle and 'compileSdk = 36' in gradle and 'minSdk = 29' in gradle
 assert 'verifyHevNativeArtifact' in gradle and 'preBuild' in gradle
 print("PASS_SEPARATE_APPLICATION_ID_NO_REPLACEMENT_OF_USER_APP")
@@ -71,6 +71,31 @@ assert "BOOT_COMPLETED" not in ui+service
 assert "VPN unavailable until forwarding core" in (
     BASE/"app/src/main/java/com/freenethub/mobile/MainActivity.kt").read_text()
 print("PASS_OWNER_CONSENT_AND_ABORT_CLEANUP_CONTRACT")
+
+# Split system authorization from any TUN establishment. Android's native
+# permission UI remains user-controlled and no upstream or VPN is needed to
+# grant authorization alone.
+assert "private const val PREPARE_ONLY_REQUEST = 17424" in ui
+assert "private fun requestVpnPermissionOnly()" in ui
+segment=ui.split("private fun requestVpnPermissionOnly()",1)[1].split("override fun onCreate",1)[0]
+assert 'VpnService.prepare(this)' in segment
+assert 'startActivityForResult(intent, PREPARE_ONLY_REQUEST)' in segment
+assert ".setPositiveButton(" in segment and ".setNegativeButton(" in segment
+for unsafe in ("startOwnedVpn(", "startForegroundService(", "PrivateVpnService.ACTION_START",
+               "TProxyService.TProxyStartService", "builder.establish()"):
+    assert unsafe not in segment, "PERMISSION_ONLY_AUTO_CONNECT_PATH:"+unsafe
+assert 'permissionOnly.setOnClickListener { requestVpnPermissionOnly() }' in ui
+assert 'outer.addView(permissionOnly)' in ui
+result=ui.split("override fun onActivityResult(",1)[1].split("override fun onResume()",1)[0]
+assert "if (requestCode == PREPARE_ONLY_REQUEST)" in result
+assert "if (requestCode != PREPARE_VPN_REQUEST)" in result
+assert result.index("if (requestCode == PREPARE_ONLY_REQUEST)") < result.index("if (requestCode != PREPARE_VPN_REQUEST)")
+prepare_branch=result.split("if (requestCode == PREPARE_ONLY_REQUEST)",1)[1].split("if (requestCode != PREPARE_VPN_REQUEST)",1)[0]
+assert "startOwnedVpn()" not in prepare_branch
+assert "refresh()" in prepare_branch and "return" in prepare_branch
+assert "consentStatus" in ui
+print("PASS_ANDROID_OWNER_NATIVE_PERMISSION_ONLY_NO_TUN_ACTIVATION")
+
 assert 'NATIVE_EXIT_TUN_STILL_BLOCKING_USER_MUST_STOP' in service
 assert 'if (!healthy)' in service and 'return' in service.split('if (!healthy)',1)[1].split('}',1)[0]
 assert 'stop.isEnabled = true' in ui
@@ -145,4 +170,4 @@ if p.exists():
 print("PASS_UPSTREAM_MIT_NATIVE_PIN_4_ABIS")
 
 assert "PRIVATE" in (PRO/"README_PRIVATE.md").read_text()
-print("ANDROID_PRIVATE_SOURCE_ACCEPTANCE=8_OF_8_PASS_NO_MOBILE_VPN_FIELD_CLAIM")
+print("ANDROID_PRIVATE_SOURCE_ACCEPTANCE=9_OF_9_PASS_NO_MOBILE_VPN_FIELD_CLAIM")

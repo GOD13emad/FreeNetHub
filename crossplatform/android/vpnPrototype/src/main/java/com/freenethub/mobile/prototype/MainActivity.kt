@@ -18,13 +18,17 @@ import hev.htproxy.TProxyService
  * SOCKS5+HTTPS preflight and a separate VPN-replacement warning confirmation.
  */
 class MainActivity : Activity() {
-    companion object { private const val PREPARE_VPN_REQUEST = 17423 }
+    companion object {
+        private const val PREPARE_VPN_REQUEST = 17423
+        private const val PREPARE_ONLY_REQUEST = 17424
+    }
 
     private lateinit var status: TextView
     private lateinit var connect: Button
     private lateinit var stop: Button
     private var checkedUpstream = false
     private var checking = false
+    private var consentStatus: String? = null
 
     private fun nativeLoaded(): Boolean = try {
         TProxyService.TProxyIsRunning()
@@ -42,10 +46,43 @@ class MainActivity : Activity() {
             active -> "وضعیت: موتور Native در حال اجرا (DNS/UDP هنوز تأیید نشده)"
             checking -> "وضعیت: بررسی Google و YouTube از SOCKS محلی..."
             checkedUpstream -> "وضعیت: خروجی SOCKS+TLS تأیید شد؛ رضایت VPN هنوز لازم است"
-            else -> "موتور Native خاموش است؛ برای رفع هر نشست مسدودشده، دکمه توقف را بزنید."
+            else -> consentStatus ?: "موتور Native خاموش است؛ برای رفع هر نشست مسدودشده، دکمه توقف را بزنید."
         }
         connect.isEnabled = checkedUpstream && !checking && !active
         stop.isEnabled = true // Always permit recovery if the native core stalled while TUN stayed open.
+    }
+
+    /**
+     * Request only Android's native VPN preparation consent. This does not
+     * start the service or call Builder.establish(); the user may grant
+     * permission now and run the guarded network field test in a later turn.
+     * Only the system's native permission dialog can approve the request.
+     */
+    private fun requestVpnPermissionOnly() {
+        if (checking || isRunning()) {
+            consentStatus = "ابتدا بررسی SOCKS یا VPN فعال را متوقف کنید."
+            refresh()
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle("فقط مجوز VPN — بدون روشن‌شدن تونل")
+            .setMessage(
+                "این مرحله فقط مجوز رسمی Android را می‌خواهد؛ هیچ VPN، TUN، " +
+                    "پروکسی یا اتصال جدیدی شروع نمی‌شود. تأیید ممکن است مجوز " +
+                    "VPN برنامهٔ دیگری را لغو کند. فقط در صورت رضایت صاحب " +
+                    "گوشی ادامه دهید. اتصال واقعی در مرحله‌ای مستقل انجام می‌شود."
+            )
+            .setNegativeButton("انصراف", null)
+            .setPositiveButton("درخواست مجوز، بدون اتصال") { _, _ ->
+                val intent = VpnService.prepare(this)
+                if (intent == null) {
+                    consentStatus = "مجوز VPN قبلاً صادر شده؛ تونل همچنان خاموش است."
+                    checkedUpstream = false
+                    refresh()
+                } else {
+                    startActivityForResult(intent, PREPARE_ONLY_REQUEST)
+                }
+            }.show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +100,10 @@ class MainActivity : Activity() {
             setPadding(0, 0, 0, 26)
         }
         outer.addView(text("FreeNet Hub — USB VPN Private Preview", 22f))
+        val permissionOnly = Button(this).apply {
+            text = "۰) مجوز VPN بدون اتصال (برای آزمون بعدی)"
+        }
+        outer.addView(permissionOnly)
         outer.addView(text(
             "فقط آزمایش توسعه روی USB خودتان. برای کارکرد، Linux CFON باید روشن باشد " +
                 "و ADB reverse tcp:19414 tcp:19414 به‌صورت مجاز برقرار شده باشد. " +
@@ -81,6 +122,7 @@ class MainActivity : Activity() {
                 "یا اطلاعات مرورگر شخصی دسترسی ندارد. خروج اینترنت در مسیر USB/CFON " +
                 "اندازه‌گیری خواهد شد؛ هیچ تضمینی دربارهٔ UDP/IPv6 یا همهٔ برنامه‌ها داده نمی‌شود.", 13f))
 
+        permissionOnly.setOnClickListener { requestVpnPermissionOnly() }
         check.setOnClickListener {
             if (checking || !nativeLoaded()) {
                 checkedUpstream = false
@@ -153,6 +195,16 @@ class MainActivity : Activity() {
     @Deprecated("Only used for the platform VPN consent Activity result.")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PREPARE_ONLY_REQUEST) {
+            checkedUpstream = false
+            consentStatus = if (resultCode == RESULT_OK) {
+                "مجوز رسمی Android پذیرفته شد؛ VPN و تونل هنوز خاموش‌اند."
+            } else {
+                "مجوز VPN تأیید نشد؛ هیچ تونلی آغاز نشده است."
+            }
+            refresh()
+            return
+        }
         if (requestCode != PREPARE_VPN_REQUEST) return
         if (resultCode == RESULT_OK) startOwnedVpn()
         else {
