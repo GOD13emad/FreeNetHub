@@ -200,8 +200,8 @@
     },
     {
       "file": "crossplatform/android/vpnPrototype/build.gradle.kts",
-      "bytes": 1569,
-      "sha256": "825573B518F3D698574EA4FB55D609BB5F7C35253255A95C77371215A5C7100F"
+      "bytes": 1581,
+      "sha256": "7150F5192E12AC609FBF76AB83BEF3533006E0BAD8A29D02D029A2E769287662"
     },
     {
       "file": "crossplatform/android/vpnPrototype/fetch_pinned_aar.py",
@@ -230,8 +230,8 @@
     },
     {
       "file": "crossplatform/android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/PrivateVpnService.kt",
-      "bytes": 9461,
-      "sha256": "8B6862ED4B7CE860852EAE1E79A65CA417B40B74089AEB0D58B241C1A8E42862"
+      "bytes": 11528,
+      "sha256": "3390C89F26B8E548ACBAD5263215C948F4309AC4627D8EEB41F52138157E0F33"
     },
     {
       "file": "crossplatform/android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/SocksPreflight.kt",
@@ -455,8 +455,8 @@
     },
     {
       "file": "crossplatform/MANIFEST.json",
-      "bytes": 10370,
-      "sha256": "18D753DAE0D60F0ECA740A7BFF26ECB50584CC2CAA4A3EA3F5280C453AA41525"
+      "bytes": 10371,
+      "sha256": "8BE20617A9FA84803D22801CAD42E05DA11692D8ACA72D06657CE0378B427622"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1926,7 +1926,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "19D0D77FBC04DF2343A68AB611455F3727B63343637D7D07E8EA3D805F85B3C0"
+      "sha256": "33BC6A97809886B416B54D38560D73BE54D4D88D2DF4A35EE4FB52B31488AFCE"
     },
     {
       "file": "SECURITY.md",
@@ -2630,8 +2630,8 @@
     },
     {
       "file": "tests/test_android_private_vpn.py",
-      "bytes": 9271,
-      "sha256": "A18EFCAB640A6298093710D7CBA0F772A2CC75E0AFCB2CB59C68E85E6FDE8B0C"
+      "bytes": 10243,
+      "sha256": "AB2371E83793181F84CBCF9F94BF08BF6C3DCC1CAC15491D55972ACD9C203234"
     },
     {
       "file": "tests/test_clean_install.py",

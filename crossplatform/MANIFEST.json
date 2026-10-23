@@ -49,8 +49,8 @@
     },
     {
       "file": "android/vpnPrototype/build.gradle.kts",
-      "bytes": 1569,
-      "sha256": "825573B518F3D698574EA4FB55D609BB5F7C35253255A95C77371215A5C7100F"
+      "bytes": 1581,
+      "sha256": "7150F5192E12AC609FBF76AB83BEF3533006E0BAD8A29D02D029A2E769287662"
     },
     {
       "file": "android/vpnPrototype/fetch_pinned_aar.py",
@@ -79,8 +79,8 @@
     },
     {
       "file": "android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/PrivateVpnService.kt",
-      "bytes": 9461,
-      "sha256": "8B6862ED4B7CE860852EAE1E79A65CA417B40B74089AEB0D58B241C1A8E42862"
+      "bytes": 11528,
+      "sha256": "3390C89F26B8E548ACBAD5263215C948F4309AC4627D8EEB41F52138157E0F33"
     },
     {
       "file": "android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/SocksPreflight.kt",
