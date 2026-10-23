@@ -11,8 +11,8 @@ android {
         applicationId = "com.freenethub.mobile.prototype"
         minSdk = 29
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2-private-usb"
+        versionCode = 3
+        versionName = "0.3-private-usb-diagnostics"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

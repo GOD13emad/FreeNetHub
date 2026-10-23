@@ -45,7 +45,7 @@ settings = (BASE/"settings.gradle.kts").read_text()
 assert settings.count('include(":app")')==1 and settings.count('include(":vpnPrototype")')==1
 gradle = (PRO/"build.gradle.kts").read_text()
 assert 'applicationId = "com.freenethub.mobile.prototype"' in gradle
-assert 'versionCode = 2' in gradle and 'versionName = "0.2-private-usb"' in gradle
+assert 'versionCode = 3' in gradle and 'versionName = "0.3-private-usb-diagnostics"' in gradle
 assert 'targetSdk = 36' in gradle and 'compileSdk = 36' in gradle and 'minSdk = 29' in gradle
 assert 'verifyHevNativeArtifact' in gradle and 'preBuild' in gradle
 print("PASS_SEPARATE_APPLICATION_ID_NO_REPLACEMENT_OF_USER_APP")
@@ -95,6 +95,20 @@ assert "startOwnedVpn()" not in prepare_branch
 assert "refresh()" in prepare_branch and "return" in prepare_branch
 assert "consentStatus" in ui
 print("PASS_ANDROID_OWNER_NATIVE_PERMISSION_ONLY_NO_TUN_ACTIVATION")
+
+# Persistent diagnostic milestones are private-app-only, no packet or account data.
+# They must not enable a tunnel, weaken native consent or change fail-closed logic.
+for stage in ("START_REQUESTED", "SOCKS_PREFLIGHT_STARTED",
+              "SOCKS_PREFLIGHT_PASSED", "TUN_ESTABLISHED",
+              "NATIVE_ENGINE_STARTED", "NATIVE_ENGINE_RUNNING",
+              "STOP_REQUESTED", "STOP_CLEANUP_DONE"):
+    assert stage in service, "MISSING_NATIVE_QA_STAGE:"+stage
+assert 'getSharedPreferences("fnh_private_native_qa", MODE_PRIVATE)' in service
+assert 'last_failure' in service and 'tun_reached' in service and 'native_reached' in service
+assert 'VpnService.prepare(this)' in service
+assert service.index('VpnService.prepare(this)') < service.index('qaStage("TUN_ESTABLISHED")')
+assert not any(t in service for t in ('getExternalFilesDir(', 'Environment.getExternalStorageDirectory('))
+print("PASS_PRIVATE_NATIVE_STARTUP_TELEMETRY_ISOLATED_NO_PACKET_DATA")
 
 assert 'NATIVE_EXIT_TUN_STILL_BLOCKING_USER_MUST_STOP' in service
 assert 'if (!healthy)' in service and 'return' in service.split('if (!healthy)',1)[1].split('}',1)[0]
