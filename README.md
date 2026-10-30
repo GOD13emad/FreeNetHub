@@ -1,5 +1,9 @@
 # FreeNet Hub — Current Public Release: Windows R53 and Linux R21
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/TandemVector-Labs/.github/main/brand/social/FreeNetHub.png" alt="FreeNet Hub visual project card" width="720">
+</p>
+
 **Official GitHub Latest release (verified 17 October 2026):** [Free Net Hub 4.3.9 R53](https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.9-r53-windows-stable)
 
 Use the exact asset names and SHA-256 values below for **public stable** installations. Newer `main` source code, pre-release builds and owner-only field candidates are **not** automatically public stable installers. [راهنمای نصب فارسی](README_FA.md).
