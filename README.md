@@ -1,8 +1,9 @@
 # FreeNet Hub — Current Public Release: Windows R53 and Linux R21
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/TandemVector-Labs/.github/main/brand/social/FreeNetHub.png" alt="FreeNet Hub visual project card" width="720">
+  <a href="evidence/R37_INSTALLED_UI_DASHBOARD_20260929.png"><img src="evidence/R37_INSTALLED_UI_DASHBOARD_20260929.png" alt="FreeNet Hub — authentic installed dashboard screenshot captured from R37" width="1000"></a>
 </p>
+<p align="center"><sub>Historical installed-interface evidence (R37, September 2026), not a screenshot of the current R53 release or proof of a live protected connection.</sub></p>
 
 **Official GitHub Latest release (verified 17 October 2026):** [Free Net Hub 4.3.9 R53](https://github.com/GOD13emad/FreeNetHub/releases/tag/v4.3.9-r53-windows-stable)
 
