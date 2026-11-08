@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 }
 rootProject.name="FreeNetHub"
 include(":app")
+// Private, separately installed VPN proof; the accepted :app remains fail-closed.
+include(":vpnPrototype")

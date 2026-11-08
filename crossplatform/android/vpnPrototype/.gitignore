@@ -1,0 +1,7 @@
+/.gradle/
+/build/
+/.hev-source-2.18.0.tar.xz
+/.hev-source-2.18.0.tar.xz.partial
+/local.properties
+*.apk
+/libs/hev-socks5-tunnel-2.18.0.aar

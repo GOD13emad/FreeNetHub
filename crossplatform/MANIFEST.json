@@ -39,8 +39,58 @@
     },
     {
       "file": "android/settings.gradle.kts",
-      "bytes": 490,
-      "sha256": "BA70A4A01D20D335AA1617B13135619EB42D5C708B6817BE460063349AB26B90"
+      "bytes": 598,
+      "sha256": "4523658E04937F1E3F0AB14942D42ED8EB9BD1912EC168BF9D0B7FDA839E82E1"
+    },
+    {
+      "file": "android/vpnPrototype/.gitignore",
+      "bytes": 139,
+      "sha256": "F9976CC737AF20361CDEEBEC8B54E39E5858000A18EDA739F6F4851DF3DCC4BF"
+    },
+    {
+      "file": "android/vpnPrototype/build.gradle.kts",
+      "bytes": 1581,
+      "sha256": "7150F5192E12AC609FBF76AB83BEF3533006E0BAD8A29D02D029A2E769287662"
+    },
+    {
+      "file": "android/vpnPrototype/fetch_pinned_aar.py",
+      "bytes": 2554,
+      "sha256": "9ED12CA217D0A2E6EC23EEE49DB68A376BF43B0AFCDAA6EB0E1D59C7FB49B63E"
+    },
+    {
+      "file": "android/vpnPrototype/LICENSE-hev-socks5-tunnel.txt",
+      "bytes": 1047,
+      "sha256": "3CCA1A91CA82E9B9C41852945EF15858F932828CEEB765B86BC1FE3F39127514"
+    },
+    {
+      "file": "android/vpnPrototype/README_PRIVATE.md",
+      "bytes": 4830,
+      "sha256": "5E1C4633885DD0CE686364D9C4ECF54A9931E472647AB4A3D030BAF222BA8842"
+    },
+    {
+      "file": "android/vpnPrototype/src/main/AndroidManifest.xml",
+      "bytes": 1489,
+      "sha256": "0582FED1BEA1E537FE50F4D80B1030D0F691D3D92303C958FA8A98B17C120D56"
+    },
+    {
+      "file": "android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/MainActivity.kt",
+      "bytes": 10134,
+      "sha256": "F52B6C9EF655B586BEEA9E5A10C3AFD2B4872CEF96DF0EC445887783A873EDF1"
+    },
+    {
+      "file": "android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/PrivateVpnService.kt",
+      "bytes": 11528,
+      "sha256": "3390C89F26B8E548ACBAD5263215C948F4309AC4627D8EEB41F52138157E0F33"
+    },
+    {
+      "file": "android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/SocksPreflight.kt",
+      "bytes": 4731,
+      "sha256": "D14092075C9559EDE7F8EA4931B6FF8A381498514DA0EFC0803597691E82E758"
+    },
+    {
+      "file": "android/vpnPrototype/src/main/java/com/freenethub/mobile/prototype/TunnelConfig.kt",
+      "bytes": 1906,
+      "sha256": "75570F68F198F27E9CBF73D093DD00ECBA4222247B2309A9DDF68F14364D4BFA"
     },
     {
       "file": "common/METHOD_EVIDENCE.md",
