@@ -89,6 +89,56 @@ for(const [host,expected] of tests){
         self.assertEqual(r.returncode, 0, r.stderr)
 
 
+class ProxyHealthFailClosedTests(unittest.TestCase):
+    def test_socks_health_forces_proxy_despite_ambient_no_proxy(self):
+        # Reproduces a real curl failure mode: NO_PROXY=* bypasses the
+        # explicitly selected local SOCKS server unless --noproxy "" wins.
+        observed = []
+        def fake_command(args, timeout=8):
+            observed.append(list(args))
+            self.assertEqual(timeout, 12)
+            self.assertEqual(args[0], "curl")
+            self.assertIn("--socks5-hostname", args)
+            i = args.index("--noproxy")
+            self.assertEqual(args[i + 1], "")
+            self.assertEqual(args[args.index("--socks5-hostname") + 1], "127.0.0.1:19414")
+            self.assertEqual(args[-1], "https://www.cloudflare.com/cdn-cgi/trace")
+            return subprocess.CompletedProcess(args, 0, "200", "")
+        with (mock.patch.object(st.socket, "create_connection") as socket_check,
+              mock.patch.object(st, "_command", side_effect=fake_command),
+              mock.patch.dict("os.environ", {"NO_PROXY": "*", "no_proxy": "*"})):
+            st._probe(19414)
+        self.assertEqual(len(observed), 1)
+        socket_check.assert_called_once_with(("127.0.0.1", 19414), timeout=2)
+
+    def test_dead_socks_listener_must_not_be_accepted_as_direct_https(self):
+        def fake_command(args, timeout=8):
+            self.assertEqual(args[args.index("--noproxy") + 1], "")
+            raise subprocess.CalledProcessError(97, args, stderr="SOCKS protocol failure")
+        with (mock.patch.object(st.socket, "create_connection"),
+              mock.patch.object(st, "_command", side_effect=fake_command),
+              mock.patch.dict("os.environ", {"NO_PROXY": "*", "no_proxy": "*"})):
+            with self.assertRaisesRegex(st.SelectiveError, "SELECTIVE_PROXY_UNREACHABLE"):
+                st._probe(19414)
+
+    def test_unreachable_socks_listener_is_rejected_before_http(self):
+        with (mock.patch.object(st.socket, "create_connection",
+                               side_effect=ConnectionRefusedError),
+              mock.patch.object(st, "_command") as called):
+            with self.assertRaisesRegex(st.SelectiveError, "SELECTIVE_PROXY_NOT_LISTENING"):
+                st._probe(19414)
+        called.assert_not_called()
+
+    def test_invalid_port_rejected_before_any_network(self):
+        with mock.patch.object(st.socket, "create_connection") as connect:
+            for invalid in (0, 80, 65536, True, "19414"):
+                with self.subTest(invalid=invalid), self.assertRaisesRegex(
+                    st.SelectiveError, "SELECTIVE_PROXY_PORT_INVALID"
+                ):
+                    st._probe(invalid)
+        connect.assert_not_called()
+
+
 class LifecycleTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="fnh-selective-test-")

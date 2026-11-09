@@ -82,6 +82,13 @@ METHODS=[
     ("TAILNET","Tailnet CFON Peer","CFON همتای Linux · مرورگر مجزا","مرورگر انتخابی ✓ · بدون PAC سیستم"),
 ]
 
+def method_youtube_status(result):
+    if not isinstance(result,dict):return ""
+    probe=result.get("youtubeReachable")
+    if probe is True:return "YouTube HTTPS: PASS"
+    if probe is False:return "YouTube HTTPS: FAIL"
+    return ""
+
 def label(text="",css=None,xalign=1.0,wrap=True):
     w=Gtk.Label(label=text)
     w.set_xalign(xalign);w.set_wrap(wrap)
@@ -909,10 +916,17 @@ class FreeNetHub(Adw.Application):
         self.metrics[method]=result
         p=result.get("pingMs");d=result.get("downloadMbps");u=result.get("uploadMbps")
         fmt=f"Ping {p if p is not None else '—'} · Down {d if d is not None else '—'} · Up {u if u is not None else '—'}"
+        yt=method_youtube_status(result)
+        if yt:fmt+=" · "+yt
         for met in self.method_metric.get(method,[]):met.set_text(fmt)
         key="AUTO" if method.startswith("AUTO") else method
         if key in self.compare_metric:
-            vals=self.compare_metric[key];vals[0].set_text("—" if p is None else f"{p} ms");vals[1].set_text("—" if d is None else f"{d} Mbps");vals[2].set_text("—" if u is None else f"{u} Mbps");vals[3].set_text("PASS" if result.get("ok") else str(result.get("error") or "FAIL"))
+            vals=self.compare_metric[key]
+            vals[0].set_text("—" if p is None else f"{p} ms")
+            vals[1].set_text("—" if d is None else f"{d} Mbps")
+            vals[2].set_text("—" if u is None else f"{u} Mbps")
+            state="PASS" if result.get("ok") else str(result.get("error") or "FAIL")
+            vals[3].set_text(state+(" · "+yt if yt else ""))
         self.dash_ping.set_text("—" if p is None else f"{p} ms")
         self.refresh_nodes()
 
