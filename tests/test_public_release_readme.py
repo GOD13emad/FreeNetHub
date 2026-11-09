@@ -20,19 +20,25 @@ EVIDENCE = json.loads(
 )
 RELEASE = json.loads((ROOT / "RELEASE.json").read_text(encoding="utf-8"))
 CONFIRMED = EVIDENCE["confirmed"]
-revision = RELEASE["releaseRevision"]
-assert RELEASE["version"] == "4.3.9", "Release version drifted; reverify public latest."
-assert revision == CONFIRMED["ownerWindows"]["version"], "R53 evidence/release mismatch"
+# The public Latest release is independently pinned by the accepted R53/R21
+# post-publish receipt. A private R55 source review must not become Latest.
+public_version = "4.3.9"
+revision = CONFIRMED["ownerWindows"]["version"]
+assert revision == "4.3.9-r53-inno-root-guard", "Accepted public evidence drifted"
+assert (RELEASE["version"], RELEASE["releaseRevision"], RELEASE["status"]) in {
+    (public_version, revision, "R53_UNSIGNED_INSTALLER_RELEASE_LINE"),
+    ("4.3.11", "4.3.11-r55-native-status-review", "R55_PRIVATE_CANDIDATE_NOT_FOR_RELEASE"),
+}, "Unknown source release line; do not infer public Latest"
 match = re.search(r"-r(\d+)-", revision)
 assert match, "Unexpected Windows release revision format"
 r_number = match.group(1)
 assert r_number == "53", "Update public evidence and guide before promoting a new stable"
 tag = CONFIRMED["publicRelease"]
-assert tag == f"v{RELEASE['version']}-r{r_number}-windows-stable"
+assert tag == f"v{public_version}-r{r_number}-windows-stable"
 url = f"https://github.com/GOD13emad/FreeNetHub/releases/tag/{tag}"
 stable = {
     "tag": url,
-    "Windows asset": f"FreeNetHub_{RELEASE['version']}_R{r_number}_Setup.exe",
+    "Windows asset": f"FreeNetHub_{public_version}_R{r_number}_Setup.exe",
     "Windows revision": revision,
     "Windows SHA-256": CONFIRMED["windowsR53InstallerSHA256"],
     "Linux asset": "FreeNetHub_4.2.0_Linux_R21.zip",

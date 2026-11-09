@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "status": "R55_PRIVATE_CANDIDATE_NOT_FOR_RELEASE",
+  "version": "4.3.11",
+  "revision": "4.3.11-r55-native-status-review",
+  "baseSHA": "406447b8ca7793064b15dab8cf4420bed4a4684d",
+  "acceptedOwnerR54": "4.3.10-r54-update-cache-retention",
+  "controllerSha256": "E850C849EC5F6A062F7D4E5ADE5D625B907A299F35DCF413514183F77FA9D38E",
+  "gatewayManifestSha256": "B86470A682CD42B097628E5CFD581BA94773AD7F54EA8F6E97C2AACC93805B51",
+  "appManifestSha256": "F8481CDD00F974FB17F29DF722D7718402F4113F4FBC8774AB8BECF6259BB1D1",
+  "fixedAppId": "BCE83A4E-8897-4D52-A650-BB67A2BB8142",
+  "unsigned": true,
+  "publicRelease": false,
+  "installedOwnerMutation": false,
+  "openGates": [
+    "isolated_build",
+    "fresh_install",
+    "R54_upgrade",
+    "rollback",
+    "CI",
+    "WiFi_DNS53",
+    "signing"
+  ],
+  "verificationStatus": "ISOLATED_REVIEW_ACCEPTANCE_PENDING"
+}

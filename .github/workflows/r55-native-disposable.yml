@@ -1,0 +1,234 @@
+name: R55 disposable Windows Native TUN live smoke
+
+on:
+  push:
+    branches:
+      - candidate/r55-v519-private-review
+
+permissions:
+  contents: read
+
+jobs:
+  r55-disposable-native-warp:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact branch/source and disposable administrator preflight
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          python tests/verify_public_tree.py
+          if($LASTEXITCODE -ne 0){throw 'R55_NATIVE_SOURCE_IDENTITY_INVALID'}
+          python tests/verify_release_line.py --expected R55
+          if($LASTEXITCODE -ne 0){throw 'R55_NATIVE_RELEASE_LINE_INVALID'}
+          if(([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) -ne $true){throw 'DISPOSABLE_RUNNER_ADMIN_UNAVAILABLE'}
+          if(@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object Name -eq 'FreeNetHub').Count -ne 0){throw 'PREEXISTING_TUN_REFUSE_START'}
+          if(@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop).Count -ne 0){throw 'PREEXISTING_DNS53_GUARD_REFUSE_START'}
+          Write-Host 'R55_NATIVE_ISOLATED_ADMIN_SOURCE_PREFLIGHT_PASS'
+      - name: Compile and freshly install a disposable private R55 package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $paths=@(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'),
+            (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 7\ISCC.exe'),
+            (Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe')
+          )
+          $iscc=$paths|Where-Object{Test-Path $_}|Select-Object -First 1
+          if(!$iscc){
+            choco install innosetup --no-progress -y
+            if($LASTEXITCODE -ne 0){throw 'R55_INNO_INSTALL_FAILED'}
+            $iscc=$paths|Where-Object{Test-Path $_}|Select-Object -First 1
+          }
+          if(!$iscc){throw 'R55_ISCC_MISSING'}
+          & $iscc /Qp windows/installer/FreeNetHub.iss
+          if($LASTEXITCODE -ne 0){throw 'R55_NATIVE_INNO_COMPILE_FAILED'}
+          $exe=(Resolve-Path 'delivery\release_candidate_v4.3.11\FreeNetHub_4.3.11_R55_V519_PRIVATE_REVIEW_DO_NOT_RELEASE.exe').Path
+          $probe=Join-Path $env:RUNNER_TEMP 'fnh-r55-native-disposable'
+          if(Test-Path $probe){throw 'NATIVE_DISPOSABLE_ROOT_ALREADY_EXISTS'}
+          $p=Start-Process -FilePath $exe -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',('/DIR='+$probe)) -Wait -PassThru
+          if($p.ExitCode -ne 0){throw ('R55_NATIVE_PACKAGE_INSTALL_FAILED_'+$p.ExitCode)}
+          $r=Get-Content (Join-Path $probe 'RELEASE.json') -Raw|ConvertFrom-Json
+          if($r.releaseRevision -ne '4.3.11-r55-native-status-review'){throw 'R55_NATIVE_INSTALL_REVISION_MISMATCH'}
+          $g=Join-Path $probe 'gateway'
+          $bootstrap=Join-Path $g 'Setup-GatewayCore.ps1'
+          & pwsh -NoProfile -NonInteractive -File $bootstrap | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'R55_PINNED_SINGBOX_BOOTSTRAP_FAILED'}
+          $local=Join-Path $g 'runtime\local_gateway.json'
+          if(!(Test-Path $local)){throw 'R55_PINNED_GATEWAY_CONFIG_MISSING'}
+          "R55_NATIVE_PROBE=$probe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "R55_NATIVE_EXE=$exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host 'R55_NATIVE_INSTALLED_PINNED_RUNTIME_PASS'
+      - name: Bounded real Native WARP StartPc, verify and STOP on disposable runner
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $root=$env:R55_NATIVE_PROBE
+          if([string]::IsNullOrWhiteSpace($root) -or !(Test-Path $root)){throw 'DISPOSABLE_ROOT_MISSING'}
+          $gateway=Join-Path $root 'gateway\gateway_control.ps1'
+          $before=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction Stop|Sort-Object RouteMetric|Select-Object -First 1
+          if(!$before){throw 'PRE_NATIVE_ROUTE_MISSING'}
+          $started=$false; $proof=$null; $startError=''; $stopError=''
+          $runtime=Join-Path $root 'gateway\runtime'
+          $armed=Join-Path $runtime 'r55-runner-watchdog-armed'
+          $disarmed=Join-Path $runtime 'r55-runner-watchdog-disarmed'
+          $watchReceipt=Join-Path $runtime 'r55-runner-watchdog-receipt.json'
+          if((Test-Path $armed) -or (Test-Path $disarmed) -or (Test-Path $watchReceipt)){throw 'NATIVE_WATCHDOG_PREEXISTING_STATE'}
+          $null=New-Item -ItemType File -Path $armed -ErrorAction Stop
+          $startProc=$null
+          $watchProc=$null
+          try {
+            $startPath=Join-Path $root 'jobs\r55-native-disposable-start.json'
+            $args=@('-NoProfile','-NonInteractive','-File',('"'+$gateway+'"'),'-Action','StartPc','-Provider','WARP','-ResultPath',('"'+$startPath+'"'))
+            $startProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList $args -PassThru -WindowStyle Hidden
+            if(!$startProc){throw 'NATIVE_START_PROCESS_FAILED'}
+            $startTicks=$startProc.StartTime.ToUniversalTime().Ticks
+            $watchScript=(Resolve-Path 'tests/r55_native_disposable_watchdog.ps1').Path
+            $watchArgs=@('-NoProfile','-NonInteractive','-File',('"'+$watchScript+'"'),'-InstallRoot',('"'+$root+'"'),'-StartPid',[string]$startProc.Id,'-StartTicks',[string]$startTicks,'-Seconds','150')
+            $watchProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList $watchArgs -PassThru -WindowStyle Hidden
+            if(!$watchProc){throw 'NATIVE_INDEPENDENT_WATCHDOG_FAILED'}
+            Write-Host 'R55_NATIVE_INDEPENDENT_WATCHDOG_ARMED'
+            $deadline=[DateTime]::UtcNow.AddSeconds(175)
+            while(!$startProc.HasExited -and [DateTime]::UtcNow -lt $deadline){
+              if(Test-Path -LiteralPath $watchReceipt){
+                $wr=Get-Content $watchReceipt -Raw|ConvertFrom-Json
+                if($wr.state -ne 'DISARMED'){Write-Host ('NATIVE_WATCHDOG_STATE='+$wr.state)}
+              }
+              Start-Sleep -Milliseconds 500
+              $startProc.Refresh()
+            }
+            if(!$startProc.HasExited){throw 'NATIVE_CONTROLLER_STILL_RUNNING_AFTER_175S'}
+            # The watchdog now terminates without touching network state.
+            $null=New-Item -ItemType File -Path $disarmed -ErrorAction Stop
+            if(!(Test-Path -LiteralPath $startPath)){throw ('R55_NATIVE_START_RECEIPT_MISSING_RC_'+$startProc.ExitCode)}
+            $startEvidence=Get-Content -LiteralPath $startPath -Raw|ConvertFrom-Json
+            if($startProc.ExitCode -ne 0 -or $startEvidence.exit -ne 0){
+              $code=[string]$startEvidence.result.error
+              if($code -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$code='GATEWAY_ERROR_UNCLASSIFIED'}
+              Write-Host ('R55_NATIVE_START_GATEWAY_ERROR='+$code)
+              throw ('R55_NATIVE_START_REJECTED_'+$code)
+            }
+            if(Test-Path $watchReceipt){
+              $wr=Get-Content $watchReceipt -Raw|ConvertFrom-Json
+              if($wr.state -ne 'DISARMED'){throw ('NATIVE_WATCHDOG_TRIGGERED_'+$wr.state)}
+            }
+            $start=Get-Content $startPath -Raw|ConvertFrom-Json
+            if($start.exit -ne 0 -or !$start.result.running -or $start.result.mode -ne 'PC_TUNNEL'){throw ('R55_NATIVE_START_REJECTED_'+[string]$start.result.error)}
+            $started=$true
+            $tun=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object Name -eq 'FreeNetHub')
+            if($tun.Count -ne 1){throw 'R55_NATIVE_TUN_NOT_PRESENT'}
+            $sessionPath=Join-Path $root 'gateway\runtime\gateway-session.json'
+            if(!(Test-Path $sessionPath)){throw 'R55_NATIVE_SESSION_EVIDENCE_MISSING'}
+            $session=Get-Content $sessionPath -Raw|ConvertFrom-Json
+            if($session.mode -ne 'PC_TUNNEL' -or $session.provider -ne 'WARP'){throw 'R55_NATIVE_SESSION_MODE_UNTRUSTED'}
+            $trace=(& curl.exe -4 --noproxy '*' --connect-timeout 5 --max-time 18 -fsS 'https://www.cloudflare.com/cdn-cgi/trace' | Out-String)
+            if($LASTEXITCODE -ne 0 -or $trace -notmatch '(?m)^warp=on\r?$'){throw 'R55_NATIVE_FULL_SYSTEM_WARP_NOT_VERIFIED'}
+            $proof=[ordered]@{
+              status='R55_DISPOSABLE_NATIVE_START_STOP_PASS'
+              version='4.3.11'
+              sourceSha=$env:GITHUB_SHA
+              installerSHA256=(Get-FileHash $env:R55_NATIVE_EXE -Algorithm SHA256).Hash
+              mode='PC_TUNNEL'
+              provider='WARP'
+              dnsMode=[string]$session.dnsMode
+              nativeTunCount=$tun.Count
+              exitWarpObserved=$true
+              publicRelease=$false
+              ownerHostChanged=$false
+            }
+            Write-Host 'R55_NATIVE_TUN_WARP_TRACE_PASS'
+          } catch {
+            $startError=$_.Exception.Message
+            Write-Host ('R55_NATIVE_START_ERROR='+$startError)
+          } finally {
+            # A watchdog-start error must not strand the newly launched controller.
+            if(!$watchProc -and $startProc -and !$startProc.HasExited){
+              try{$startProc.Kill($true);[void]$startProc.WaitForExit(3000)}catch{}
+            }
+            # Never run an unbounded native Stop; the runner must return control.
+            try{
+              $triggered=$false
+              if(Test-Path $watchReceipt){
+                $watch=Get-Content $watchReceipt -Raw|ConvertFrom-Json
+                $triggered=$watch.state -notin @('DISARMED')
+              }
+              if($triggered -and $watchProc){
+                # Allow the independent timeout-stop to complete before reading
+                # its final receipt, even when the controller already exited.
+                if(!$watchProc.WaitForExit(70000)){throw 'INDEPENDENT_WATCHDOG_CLEANUP_TIMEOUT'}
+                $watch=Get-Content $watchReceipt -Raw|ConvertFrom-Json
+              }
+              if(!$triggered){
+                if(!(Test-Path $disarmed)){ $null=New-Item -ItemType File -Path $disarmed -ErrorAction SilentlyContinue }
+                $stopPath=Join-Path $root 'jobs\r55-native-disposable-stop.json'
+                $stopArgs=@('-NoProfile','-NonInteractive','-File',('"'+$gateway+'"'),'-Action','Stop','-ResultPath',('"'+$stopPath+'"'))
+                $stopProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList $stopArgs -PassThru -WindowStyle Hidden
+                if(!$stopProc.WaitForExit(65000)){
+                  try{$stopProc.Kill($true);[void]$stopProc.WaitForExit(3000)}catch{}
+                  throw 'R55_NATIVE_STOP_TIMEOUT_65S'
+                }
+                $stop=$null
+                if(Test-Path -LiteralPath $stopPath){try{$stop=Get-Content $stopPath -Raw|ConvertFrom-Json}catch{}}
+                if($stopProc.ExitCode -ne 0 -or !$stop -or $stop.exit -ne 0){
+                  $code=if($stop){[string]$stop.result.error}else{'NO_CONTROLLER_STOP_RECEIPT'}
+                  if($code -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$code='GATEWAY_STOP_UNCLASSIFIED'}
+                  Write-Host ('R55_NATIVE_STOP_GATEWAY_ERROR='+$code)
+                  $stopReceipt=Join-Path $root 'gateway\runtime\stop_result.json'
+                  $firstNative=$null
+                  if(Test-Path $stopReceipt){try{$firstNative=Get-Content $stopReceipt -Raw|ConvertFrom-Json}catch{}}
+                  $firstError=if($firstNative){[string]$firstNative.error}else{'NATIVE_STOP_RECEIPT_MISSING'}
+                  if($firstError -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$firstError='NATIVE_STOP_DETAIL_UNCLASSIFIED'}
+                  Write-Host ('R55_NATIVE_FIRST_STOP_ELEVATED_ERROR='+$firstError)
+                  $direct=Join-Path $root 'gateway\stop_elevated.ps1'
+                  $directProc=Start-Process -FilePath 'pwsh.exe' -ArgumentList @('-NoProfile','-NonInteractive','-File',('"'+$direct+'"')) -PassThru -WindowStyle Hidden
+                  if(!$directProc.WaitForExit(60000)){
+                    try{$directProc.Kill($true)}catch{}
+                    throw 'R55_NATIVE_DIRECT_CLEANUP_TIMEOUT'
+                  }
+                  $stopReceipt=Join-Path $root 'gateway\runtime\stop_result.json'
+                  $nativeStop=$null
+                  if(Test-Path $stopReceipt){try{$nativeStop=Get-Content $stopReceipt -Raw|ConvertFrom-Json}catch{}}
+                  Write-Host ('R55_NATIVE_DIRECT_CLEANUP='+$(if($directProc.ExitCode -eq 0 -and $nativeStop -and $nativeStop.status -eq 'PASS'){'PASS'}else{'UNVERIFIED'}))
+                  if($nativeStop -and $nativeStop.status -ne 'PASS'){
+                    $directError=[string]$nativeStop.error
+                    if($directError -notmatch '^[A-Z][A-Z0-9_]{2,90}$'){$directError='DIRECT_STOP_DETAIL_UNCLASSIFIED'}
+                    Write-Host ('R55_NATIVE_DIRECT_STOP_ERROR='+$directError)
+                  }
+                  throw ('R55_NATIVE_STOP_CONTROLLER_REJECTED_'+$code)
+                }
+              }else{
+                # The independent watchdog attempted direct stop_elevated.
+                # Never treat its timeout cleanup as successful Native acceptance.
+                if($watch.state -ne 'TIMEOUT_CLEANUP_VERIFIED'){throw ('NATIVE_WATCHDOG_CLEANUP_UNVERIFIED_'+$watch.state)}
+                $stopError='NATIVE_START_TIMED_OUT_BUT_CLEANUP_VERIFIED'
+              }
+            }catch{$stopError=$_.Exception.Message}
+          }
+          $after=Get-NetRoute -AddressFamily IPv4 -DestinationPrefix '0.0.0.0/0' -ErrorAction Stop|Sort-Object RouteMetric|Select-Object -First 1
+          $tunAfter=@(Get-NetAdapter -IncludeHidden -ErrorAction Stop|Where-Object Name -eq 'FreeNetHub')
+          $guardAfter=@(Get-NetFirewallRule -Name 'FreeNetHub-PC-DNS53-Guard-*' -PolicyStore ActiveStore -ErrorAction Stop)
+          if($stopError){throw ('DISPOSABLE_NATIVE_CLEANUP_FAILED_'+$stopError)}
+          if($tunAfter.Count -ne 0 -or $guardAfter.Count -ne 0){throw 'DISPOSABLE_NATIVE_LEFT_NETWORK_MUTATIONS'}
+          if(!$after -or $after.InterfaceIndex -ne $before.InterfaceIndex -or $after.NextHop -ne $before.NextHop){throw 'DISPOSABLE_NATIVE_DEFAULT_ROUTE_NOT_RESTORED'}
+          if($startError){throw ('R55_NATIVE_LIVE_ACCEPTANCE_UNPROVEN_'+$startError)}
+          if(!$proof){throw 'R55_NATIVE_PROOF_NOT_CREATED'}
+          $proof.restoredRoute=$true
+          $proof.residualTunCount=0
+          $proof.residualDnsGuardCount=0
+          $proof|ConvertTo-Json -Depth 4|Set-Content (Join-Path $env:RUNNER_TEMP 'r55-native-live-receipt.json') -Encoding utf8
+          Write-Host 'R55_NATIVE_DISPOSABLE_START_STOP_ROUTE_RESTORED_PASS'
+      - name: Upload metadata receipt only, no installer or secrets
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: r55-native-disposable-live-receipt
+          path: ${{ runner.temp }}/r55-native-live-receipt.json
+          if-no-files-found: error
+          retention-days: 14
