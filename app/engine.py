@@ -1597,11 +1597,13 @@ def dispatch(action,mode,payload):
    raise ValueError('SELECTIVE_LOCAL_OR_AUTHENTICATED_TAILNET_PROVIDER_REQUIRED')
   # Match CLI identity to a file enumerated from the trusted jobs root.
   # Never construct an I/O path from --payload (even after resolving it).
-  jobs=(ROOT/'jobs').resolve()
+  jobs=ROOT/'jobs'
   q=None
-  if jobs.is_dir() and isinstance(payload,str) and len(payload)<=1024:
+  if jobs.is_dir() and not jobs.is_symlink() and isinstance(payload,str) and len(payload)<=1024:
    for entry in jobs.iterdir():
-    if str(entry)==payload:
+    # Windows spelling/case of a resolved directory may differ from the
+    # caller's original path; compare paths using the OS's case semantics.
+    if os.path.normcase(str(entry))==os.path.normcase(payload):
      q=entry
      break
   if q is None or q.is_symlink() or not q.is_file() or q.stat().st_size > 16384:
