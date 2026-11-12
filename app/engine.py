@@ -1595,8 +1595,16 @@ def dispatch(action,mode,payload):
    return outcome
   if action != 'SelectiveAddSite' and mode not in ('NODE','WARP','GOOL','CFON','TOR','WEBTUNNEL','OBFS4','TAILNET'):
    raise ValueError('SELECTIVE_LOCAL_OR_AUTHENTICATED_TAILNET_PROVIDER_REQUIRED')
-  q=pathlib.Path(payload).resolve()
-  if not q.is_relative_to((ROOT/'jobs').resolve()) or not q.is_file() or q.stat().st_size > 16384:
+  # Match CLI identity to a file enumerated from the trusted jobs root.
+  # Never construct an I/O path from --payload (even after resolving it).
+  jobs=(ROOT/'jobs').resolve()
+  q=None
+  if jobs.is_dir() and isinstance(payload,str) and len(payload)<=1024:
+   for entry in jobs.iterdir():
+    if str(entry)==payload:
+     q=entry
+     break
+  if q is None or q.is_symlink() or not q.is_file() or q.stat().st_size > 16384:
    raise ValueError('SELECTIVE_REQUEST_NOT_OWNED')
   request=read(q,{})
   if not isinstance(request,dict):
