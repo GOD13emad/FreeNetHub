@@ -85,7 +85,9 @@ for(const [host,expected] of tests){
 }
 """
         with mock.patch.object(subprocess, "run", wraps=subprocess.run) as real:
-            r = real(["node", "-e", js, pac], capture_output=True, text=True, timeout=5)
+            # Hosted Linux runners can cold-start Node during parallel CI jobs.
+            # Keep the PAC assertions unchanged; bound startup, not behavior.
+            r = real(["node", "-e", js, pac], capture_output=True, text=True, timeout=20)
         self.assertEqual(r.returncode, 0, r.stderr)
 
 
