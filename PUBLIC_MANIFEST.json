@@ -120,8 +120,8 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 122825,
-      "sha256": "7EC4EF80CDE8BF98A8BE94CB496799459E8CBCD8E669B066DFD59E74235A8643"
+      "bytes": 123112,
+      "sha256": "6D04489313223755A4DF76627F85973A592322C4925D0D5E4B1D2403B3E203CB"
     },
     {
       "file": "app/FreeNetHub.ps1",
@@ -131,7 +131,7 @@
     {
       "file": "app/manifest.json",
       "bytes": 5436,
-      "sha256": "2CAF5558A33BC3D0E2EDDFEEE2030BFB6ED26BD40AF4975AAC45FD3CC9661B09"
+      "sha256": "691D4AC28F1B3B08324AD9E54430BFFACB489A3DA7166431941B412CF8A85BB8"
     },
     {
       "file": "app/nodehub.py",
@@ -1876,7 +1876,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "C4BEBA204F19FE78DE0FB8BBF365AB3EA96E70F91C645E6CFC782BC343D21825"
+      "sha256": "062B13E5FCD774026F199387D72D222FF561565479D9B15B9D8E36D0A89241B1"
     },
     {
       "file": "SECURITY.md",
@@ -2190,8 +2190,8 @@
     },
     {
       "file": "tests/cleanup_r24_rollback_residue.py",
-      "bytes": 13088,
-      "sha256": "C3E0BF097005A04B515601352EA77518BEBBEF2911C2295C01F99C6F1E7608E4"
+      "bytes": 13208,
+      "sha256": "CA8F3F28AC3B3C80B3626F42D21BBE2C690C2A51E179BFBC84FA686219D0D643"
     },
     {
       "file": "tests/cleanup_r25_rollback_residue.py",
