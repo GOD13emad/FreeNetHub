@@ -370,8 +370,8 @@
     },
     {
       "file": "crossplatform/linux/test_selective_tunnel.py",
-      "bytes": 9612,
-      "sha256": "2482018BB6ACBB9C7F5DFA10AE57F63A9C204209E933946686F9F8138B107D47"
+      "bytes": 9771,
+      "sha256": "A62E8A75B13DA6D590CE802F88FC04EE334B153BB05C3C20433AF9E48476FE99"
     },
     {
       "file": "crossplatform/linux/test_tailnet_cfon_gateway.py",
@@ -406,7 +406,7 @@
     {
       "file": "crossplatform/MANIFEST.json",
       "bytes": 8440,
-      "sha256": "9C57AE2B0A36644CA000D4FB04B398E58E9861157187A42B5A6B47083EB11346"
+      "sha256": "786AD05EE3856E76D16EE711D78B49B0467F29276D257C20F49D60F9F71CD708"
     },
     {
       "file": "crossplatform/README_FA.md",
@@ -1876,7 +1876,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "063BE778F9D757E9E8E985312A85724C78BA2D20F0B2D5E9CBB8718BC3A04AE6"
+      "sha256": "57CE08219058D2BB8208868EF0959987F6D079D6F438286347C26BD004134C25"
     },
     {
       "file": "SECURITY.md",
