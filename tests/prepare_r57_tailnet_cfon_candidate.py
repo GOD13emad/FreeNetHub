@@ -43,19 +43,25 @@ def replace_one(value, old, new):
     return value.replace(old, new)
 
 
-def prepare(source_root: Path, destination: Path, expected_sha: str):
+def prepare(source_root: Path, stage_hint: str, expected_sha: str):
     source_root = source_root.resolve(strict=True)
     # An allowed staging destination must have a predictable name and live
     # below the runner's explicit temp authority, not inside a user's install.
     runner_tmp = os.environ.get("RUNNER_TEMP")
     if not runner_tmp:
         raise ValueError("R57_RUNNER_TEMP_REQUIRED")
-    root = Path(runner_tmp).resolve(strict=True)
-    # The CLI stage is only an identity hint, not an I/O authority.
-    # Derive all mutable paths from the runner root and pinned stage name.
-    if not destination.is_absolute() or destination != root / "fnh-r57-selective-stage":
-        raise ValueError("R57_STAGE_MUST_USE_RUNNER_TEMP")
+    # GitHub runner layout: checkout is WORK/<repo>/<repo> and its
+    # temporary directory is WORK/_temp. Only the resolved checkout,
+    # never an environment variable or CLI option, grants path authority.
+    workspace = source_root.parents[1]
+    if workspace == Path(workspace.anchor):
+        raise ValueError("R57_WORKSPACE_ROOT_UNTRUSTED")
+    root = workspace / "_temp"
+    if not root.is_dir() or root.is_symlink() or root.resolve(strict=True) != root:
+        raise ValueError("R57_RUNNER_TEMP_UNTRUSTED")
     destination = root / "fnh-r57-selective-stage"
+    if runner_tmp != str(root) or str(stage_hint) != str(destination):
+        raise ValueError("R57_STAGE_MUST_USE_RUNNER_TEMP")
     if destination.exists() or destination.is_symlink():
         raise ValueError("R57_STAGE_PREEXISTS_OR_WRONG_NAME")
     dest_parent = root
@@ -178,7 +184,7 @@ def main():
     parser.add_argument("--stage", required=True)
     args = parser.parse_args()
     result = prepare(Path(__file__).resolve().parents[1],
-                     Path(args.stage), args.source_sha)
+                     args.stage, args.source_sha)
     print(json.dumps(result, ensure_ascii=False))
 
 
