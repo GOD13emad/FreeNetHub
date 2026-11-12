@@ -2225,18 +2225,18 @@
     },
     {
       "file": "tests/prepare_r55_selective_candidate.py",
-      "bytes": 8664,
-      "sha256": "85E5A7F922BF941DB3F6599FBB3C59ABFA7FD0CD044B6F2383A589EBCB526EF7"
+      "bytes": 8965,
+      "sha256": "2C0E5D464359A2AA4877F146A0CC2E081F136AB1DCFF86A5CDCBA6E1B650A9BE"
     },
     {
       "file": "tests/prepare_r56_google_403_candidate.py",
-      "bytes": 8842,
-      "sha256": "AB029AE7BACC48405DD1F933459DEB8E9FBA37739849195171EC541C86B970D4"
+      "bytes": 9143,
+      "sha256": "5FAC97B14B45A0ADECE5696B64F55130AB6CF670525306ADE13E6FB74D8E0568"
     },
     {
       "file": "tests/prepare_r57_tailnet_cfon_candidate.py",
-      "bytes": 8848,
-      "sha256": "A5E8A08563AEDECC7029E946B5BA40432E91A0B2EAD5DD1661D62F185B643F95"
+      "bytes": 9149,
+      "sha256": "6404C5B87A765B85B35B6F0BC080079F14E5ED207787E970F7FB4175FD16865E"
     },
     {
       "file": "tests/prepare_v465_gateway_review.py",
