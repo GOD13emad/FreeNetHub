@@ -62,10 +62,11 @@ def directory_owned(path: Path) -> bool:
 
 
 def app_root(value: str) -> Path:
-    root = Path(value).expanduser()
-    if (os.name != "posix" or not root.is_absolute()
-            or (root.name, root.parent.name, root.parent.parent.name)
-            != ("FreeNetHub", "share", ".local")
+    # A CLI string is never a filesystem authority. The process owner's
+    # HOME (which the disposable integration suite supplies explicitly) is
+    # the sole candidate; --app-home must match its exact expected path.
+    root = Path.home() / ".local" / "share" / "FreeNetHub"
+    if (os.name != "posix" or value != str(root)
             or not all(directory_owned(x) for x in (root, root.parent, root.parent.parent))):
         raise Refusal("EXACT_OWNED_USER_LOCAL_APP_ROOT_REQUIRED")
     return root

@@ -120,8 +120,8 @@
     },
     {
       "file": "app/engine.py",
-      "bytes": 122825,
-      "sha256": "7EC4EF80CDE8BF98A8BE94CB496799459E8CBCD8E669B066DFD59E74235A8643"
+      "bytes": 123309,
+      "sha256": "D59C7B1235859E3E14963CC8D5C68704295F0EA4DB98FABF25EB41204764D54F"
     },
     {
       "file": "app/FreeNetHub.ps1",
@@ -131,7 +131,7 @@
     {
       "file": "app/manifest.json",
       "bytes": 5436,
-      "sha256": "2CAF5558A33BC3D0E2EDDFEEE2030BFB6ED26BD40AF4975AAC45FD3CC9661B09"
+      "sha256": "65724886197363F798C9E6B589E4676B64C442D36247989D96A23693EEF9F53E"
     },
     {
       "file": "app/nodehub.py",
@@ -1876,7 +1876,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "C4BEBA204F19FE78DE0FB8BBF365AB3EA96E70F91C645E6CFC782BC343D21825"
+      "sha256": "063BE778F9D757E9E8E985312A85724C78BA2D20F0B2D5E9CBB8718BC3A04AE6"
     },
     {
       "file": "SECURITY.md",
@@ -2190,8 +2190,8 @@
     },
     {
       "file": "tests/cleanup_r24_rollback_residue.py",
-      "bytes": 13088,
-      "sha256": "C3E0BF097005A04B515601352EA77518BEBBEF2911C2295C01F99C6F1E7608E4"
+      "bytes": 13208,
+      "sha256": "CA8F3F28AC3B3C80B3626F42D21BBE2C690C2A51E179BFBC84FA686219D0D643"
     },
     {
       "file": "tests/cleanup_r25_rollback_residue.py",
@@ -2225,18 +2225,18 @@
     },
     {
       "file": "tests/prepare_r55_selective_candidate.py",
-      "bytes": 8409,
-      "sha256": "56D5AD8F1D822D8B15A82D365261DBD3577DA36CEA167F2D22D38E3DD0462EC4"
+      "bytes": 8965,
+      "sha256": "2C0E5D464359A2AA4877F146A0CC2E081F136AB1DCFF86A5CDCBA6E1B650A9BE"
     },
     {
       "file": "tests/prepare_r56_google_403_candidate.py",
-      "bytes": 8587,
-      "sha256": "A5E7ACA5E5C6F487F39BEBA09D2BF948C2213E71841B53A8C605E990F9BE70A7"
+      "bytes": 9143,
+      "sha256": "5FAC97B14B45A0ADECE5696B64F55130AB6CF670525306ADE13E6FB74D8E0568"
     },
     {
       "file": "tests/prepare_r57_tailnet_cfon_candidate.py",
-      "bytes": 8593,
-      "sha256": "ACDEA054AC4D196A0C425E2E7B66FAA7D3CAB275E3DF31F70A3EA1BA68247639"
+      "bytes": 9149,
+      "sha256": "6404C5B87A765B85B35B6F0BC080079F14E5ED207787E970F7FB4175FD16865E"
     },
     {
       "file": "tests/prepare_v465_gateway_review.py",

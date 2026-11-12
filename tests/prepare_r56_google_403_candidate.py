@@ -43,19 +43,28 @@ def replace_one(value, old, new):
     return value.replace(old, new)
 
 
-def prepare(source_root: Path, destination: Path, expected_sha: str):
+def prepare(source_root: Path, stage_hint: str, expected_sha: str):
     source_root = source_root.resolve(strict=True)
     # An allowed staging destination must have a predictable name and live
     # below the runner's explicit temp authority, not inside a user's install.
     runner_tmp = os.environ.get("RUNNER_TEMP")
     if not runner_tmp:
         raise ValueError("R56_RUNNER_TEMP_REQUIRED")
-    dest_parent = destination.parent.resolve(strict=True)
-    root = Path(runner_tmp).resolve(strict=True)
-    if dest_parent != root:
+    # GitHub runner layout: checkout is WORK/<repo>/<repo> and its
+    # temporary directory is WORK/_temp. Only the resolved checkout,
+    # never an environment variable or CLI option, grants path authority.
+    workspace = source_root.parents[1]
+    if workspace == Path(workspace.anchor):
+        raise ValueError("R56_WORKSPACE_ROOT_UNTRUSTED")
+    root = workspace / "_temp"
+    if not root.is_dir() or root.is_symlink() or root.resolve(strict=True) != root:
+        raise ValueError("R56_RUNNER_TEMP_UNTRUSTED")
+    destination = root / "fnh-r56-selective-stage"
+    if runner_tmp != str(root) or str(stage_hint) != str(destination):
         raise ValueError("R56_STAGE_MUST_USE_RUNNER_TEMP")
-    if destination.name != "fnh-r56-selective-stage" or destination.exists():
+    if destination.exists() or destination.is_symlink():
         raise ValueError("R56_STAGE_PREEXISTS_OR_WRONG_NAME")
+    dest_parent = root
     if len(expected_sha) != 40 or not re.fullmatch("[a-f0-9]{40}", expected_sha):
         raise ValueError("R56_EXPECTED_SHA_INVALID")
     got = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=source_root, text=True).strip()
@@ -84,7 +93,8 @@ def prepare(source_root: Path, destination: Path, expected_sha: str):
         with tarfile.open(temp_tar, "r") as archive:
             for member in archive.getmembers():
                 pure = PurePosixPath(member.name)
-                if pure.is_absolute() or ".." in pure.parts or member.issym() or member.islnk():
+                if (pure.is_absolute() or ".." in pure.parts or "\\" in member.name
+                        or not (member.isfile() or member.isdir())):
                     raise ValueError("R56_UNSAFE_GIT_ARCHIVE_MEMBER")
             archive.extractall(path=destination, filter="data")
 
@@ -174,7 +184,7 @@ def main():
     parser.add_argument("--stage", required=True)
     args = parser.parse_args()
     result = prepare(Path(__file__).resolve().parents[1],
-                     Path(args.stage), args.source_sha)
+                     args.stage, args.source_sha)
     print(json.dumps(result, ensure_ascii=False))
 
 
