@@ -50,12 +50,15 @@ def prepare(source_root: Path, destination: Path, expected_sha: str):
     runner_tmp = os.environ.get("RUNNER_TEMP")
     if not runner_tmp:
         raise ValueError("R56_RUNNER_TEMP_REQUIRED")
-    dest_parent = destination.parent.resolve(strict=True)
     root = Path(runner_tmp).resolve(strict=True)
-    if dest_parent != root:
+    # The CLI stage is only an identity hint, not an I/O authority.
+    # Derive all mutable paths from the runner root and pinned stage name.
+    if not destination.is_absolute() or destination != root / "fnh-r56-selective-stage":
         raise ValueError("R56_STAGE_MUST_USE_RUNNER_TEMP")
-    if destination.name != "fnh-r56-selective-stage" or destination.exists():
+    destination = root / "fnh-r56-selective-stage"
+    if destination.exists() or destination.is_symlink():
         raise ValueError("R56_STAGE_PREEXISTS_OR_WRONG_NAME")
+    dest_parent = root
     if len(expected_sha) != 40 or not re.fullmatch("[a-f0-9]{40}", expected_sha):
         raise ValueError("R56_EXPECTED_SHA_INVALID")
     got = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=source_root, text=True).strip()
@@ -84,7 +87,8 @@ def prepare(source_root: Path, destination: Path, expected_sha: str):
         with tarfile.open(temp_tar, "r") as archive:
             for member in archive.getmembers():
                 pure = PurePosixPath(member.name)
-                if pure.is_absolute() or ".." in pure.parts or member.issym() or member.islnk():
+                if (pure.is_absolute() or ".." in pure.parts or "\\" in member.name
+                        or not (member.isfile() or member.isdir())):
                     raise ValueError("R56_UNSAFE_GIT_ARCHIVE_MEMBER")
             archive.extractall(path=destination, filter="data")
 
