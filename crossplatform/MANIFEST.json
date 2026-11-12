@@ -219,8 +219,8 @@
     },
     {
       "file": "linux/test_selective_tunnel.py",
-      "bytes": 9771,
-      "sha256": "A62E8A75B13DA6D590CE802F88FC04EE334B153BB05C3C20433AF9E48476FE99"
+      "bytes": 9612,
+      "sha256": "2482018BB6ACBB9C7F5DFA10AE57F63A9C204209E933946686F9F8138B107D47"
     },
     {
       "file": "linux/test_tailnet_cfon_gateway.py",
