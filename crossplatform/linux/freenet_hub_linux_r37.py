@@ -297,7 +297,10 @@ def base_route():
     return _load(BASE_ROUTE, {}) or _route_snapshot()
 
 def _proxy_args(proxy):
-    return ["--proxy", proxy] if proxy else []
+    # curl honors NO_PROXY even when an explicit --proxy is supplied.
+    # Force the selected tunnel for protected tests, and force DIRECT for
+    # baseline tests rather than implicitly taking an ambient proxy.
+    return ["--noproxy", "", "--proxy", proxy] if proxy else ["--noproxy", "*"]
 
 def _curl(url, timeout=15, proxy=None, body=True, interface=None):
     curl = legacy.executable("curl") or "curl"
@@ -305,8 +308,7 @@ def _curl(url, timeout=15, proxy=None, body=True, interface=None):
     args = [curl, "-4", "--max-time", str(int(timeout)), "-L", "-sS"]
     if not body:
         args += ["-o", "/dev/null"]
-    if proxy:
-        args += _proxy_args(proxy)
+    args += _proxy_args(proxy)
     if interface:
         args += ["--interface", interface]
     args += ["-w", "\n__FNH__"+fmt, url]
@@ -344,8 +346,7 @@ def _upload(proxy=None, timeout=30, bytes_count=350000, interface=None):
             f.write(b"0" * int(bytes_count))
         fmt = "%{http_code}\t%{time_total}\t%{speed_upload}"
         args = [curl,"-4","--max-time",str(int(timeout)),"-sS","-o","/dev/null"]
-        if proxy:
-            args += _proxy_args(proxy)
+        args += _proxy_args(proxy)
         if interface:
             args += ["--interface", interface]
         args += ["--data-binary","@"+name,"-w",fmt,f"https://speed.cloudflare.com/__up?bytes={int(bytes_count)}"]
@@ -964,7 +965,7 @@ def test_active_sites(targets=ACTIVE_SITE_TARGETS, timeout=8):
         # The explicit destination must be last; never mark a missing-URL curl failure as a provider failure.
         argv=[curl,"-4","--head","--location","--silent","--show-error",
               "--connect-timeout",str(min(5,limit)),"--max-time",str(limit),
-              "--proxy",proxy,"--output","/dev/null","--write-out","%{http_code}",url]
+              "--noproxy","","--proxy",proxy,"--output","/dev/null","--write-out","%{http_code}",url]
         assert argv[-1]==url
         try:
             proc=legacy.run(argv,limit+3)

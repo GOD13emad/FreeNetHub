@@ -102,8 +102,9 @@ def trace(proxy=None, timeout=15):
     if not curl:
         return {"ok": False, "error": "curl missing"}
     args = [curl, "-4", "--max-time", str(timeout), "-fsS"]
-    if proxy:
-        args += ["--proxy", proxy]
+    # Never accept DIRECT as a tunneled trace if NO_PROXY bypasses --proxy.
+    # Conversely, direct/base traces must not use ambient proxy variables.
+    args += ["--noproxy", "", "--proxy", proxy] if proxy else ["--noproxy", "*"]
     args += ["https://www.cloudflare.com/cdn-cgi/trace"]
     p = run(args, timeout + 3)
     if p.returncode:
@@ -136,26 +137,79 @@ def tor_owner():
         pass
     return None
 
-def stop_pid(pid: int):
+def _live_group_members(pgid: int):
+    """Return live PIDs in the owned Tor session/group, or None if unreadable.
+
+    /proc/<pid>/stat fields after the final ')' begin with state, ppid,
+    pgrp and session. Zombies have no live egress but must not be used as
+    proof that PT helpers are still forwarding traffic.
+    """
     try:
-        os.kill(pid, signal.SIGTERM)
-    except ProcessLookupError:
-        return True
-    except Exception:
+        members = []
+        for proc in pathlib.Path("/proc").iterdir():
+            if not proc.name.isdecimal():
+                continue
+            try:
+                statline = (proc / "stat").read_text()
+                fields = statline[statline.rfind(")") + 2:].split()
+                if (len(fields) > 3 and int(fields[2]) == pgid
+                        and int(fields[3]) == pgid
+                        and fields[0] not in ("Z", "X", "x")):
+                    members.append(int(proc.name))
+            except (FileNotFoundError, ProcessLookupError):
+                continue  # PID exited during the scan.
+            except (OSError, ValueError, IndexError):
+                return None  # Cannot certify group completeness.
+        return members
+    except (OSError, ValueError):
+        return None
+
+
+def stop_pid(pid: int):
+    """Stop and verify a Tor-launched isolated session, including its PTs.
+
+    launch_tor starts Tor with start_new_session=True. Group-scope signals
+    are allowed only while the exact live Tor leader remains identifiable
+    and is both its own PGID and SID. Other process groups are untouched.
+    """
+    leader = identity(pid)
+    if not leader:
+        return False  # A missing leader does not prove orphaned PTs stopped.
+    try:
+        if os.getpgid(pid) != pid or os.getsid(pid) != pid:
+            return False
+        initial_members = _live_group_members(pid)
+        if not initial_members or pid not in initial_members:
+            return False
+        if identity(pid) != leader:
+            return False
+        os.killpg(pid, signal.SIGTERM)
+    except (OSError, ValueError):
         return False
     for _ in range(50):
-        if identity(pid) is None:
+        members = _live_group_members(pid)
+        if members is None:
+            return False
+        if not members:
             return True
         time.sleep(0.1)
+    # Any remaining member must still be in the same original group/SID.
+    # Do not signal an unverified or recycled unrelated process group.
     try:
-        os.kill(pid, signal.SIGKILL)
-    except Exception:
-        pass
+        members = _live_group_members(pid)
+        if not members:
+            return members is not None
+        os.killpg(pid, signal.SIGKILL)
+    except (OSError, ValueError):
+        return False
     for _ in range(20):
-        if identity(pid) is None:
+        members = _live_group_members(pid)
+        if members is None:
+            return False
+        if not members:
             return True
         time.sleep(0.05)
-    return identity(pid) is None
+    return False
 
 def listener_pid(port: int):
     ss = executable("ss")
@@ -183,11 +237,14 @@ def recover_stale_project_listener():
         local_cfg = str(TOR_STATE.resolve()) in cmd and "torrc-" in cmd
         if trusted and local_cfg:
             stopped = stop_pid(pid)
-            try:
-                TOR_OWNER.unlink(missing_ok=True)
-            except Exception:
-                pass
-            return {"ok": bool(stopped), "state": "recovered-stale-project-listener" if stopped else "recovery-failed", "pid": pid}
+            # This PID was not authenticated by TOR_OWNER; its stored record
+            # may belong to another owner/process. Do not delete that record,
+            # even when this listener was successfully stopped.
+            return {
+                "ok": bool(stopped),
+                "state": "recovered-stale-project-listener" if stopped else "recovery-failed",
+                "pid": pid,
+            }
     except Exception:
         pass
     return {"ok": False, "error": "SOCKS port occupied by foreign or unproven process", "pid": pid}
@@ -278,10 +335,44 @@ def launch_tor(mode: str, timeout: float):
             return {"ok": False, "mode": mode, "error": "tor exited during startup", "bootstrap": pct}
         pct = bootstrap_percent(log_path)
         if pct >= 100:
-            ident = identity(p.pid)
-            if ident:
-                atomic_json(TOR_OWNER, ident | {"started": time.time(), "mode": mode, "bootstrap": 100})
-                TOR_LAST_MODE.write_text(mode, encoding="utf-8")
+            # Tor bootstrap is not enough to claim an owned, recoverable SOCKS
+            # service. Reject an unidentifiable child or a port that belongs to
+            # another process, and stop the *exact* child we spawned.
+            registered = False
+            failure = None
+            try:
+                ident = identity(p.pid)
+                if not ident:
+                    failure = "TOR_CHILD_IDENTITY_UNVERIFIED"
+                elif listener_pid(SOCKS_PORT) != p.pid:
+                    failure = "TOR_SOCKS_LISTENER_OWNER_UNVERIFIED"
+                else:
+                    atomic_json(
+                        TOR_OWNER,
+                        ident | {"started": time.time(), "mode": mode, "bootstrap": 100},
+                    )
+                    registered = True
+                    TOR_LAST_MODE.write_text(mode, encoding="utf-8")
+            except Exception:
+                failure = "TOR_OWNER_RECORD_PERSIST_FAILED"
+            if failure:
+                stopped = stop_pid(p.pid)
+                if registered and stopped:
+                    # Never erase a different process's owner record.
+                    current = load_json(TOR_OWNER)
+                    if int(current.get("pid", -1)) == p.pid:
+                        try:
+                            TOR_OWNER.unlink(missing_ok=True)
+                        except OSError:
+                            pass
+                log.close()
+                return {
+                    "ok": False,
+                    "mode": mode,
+                    "error": failure,
+                    "bootstrap": pct,
+                    "cleanupVerified": bool(stopped),
+                }
             log.close()
             return {
                 "ok": True,
@@ -291,9 +382,15 @@ def launch_tor(mode: str, timeout: float):
                 "proxy": f"socks5h://127.0.0.1:{SOCKS_PORT}",
             }
         time.sleep(0.25)
-    stop_pid(p.pid)
+    stopped = stop_pid(p.pid)
     log.close()
-    return {"ok": False, "mode": mode, "error": "bootstrap timeout", "bootstrap": pct}
+    return {
+        "ok": False,
+        "mode": mode,
+        "error": "bootstrap timeout",
+        "bootstrap": pct,
+        "cleanupVerified": bool(stopped),
+    }
 
 def tor_status():
     rec = tor_owner()
@@ -322,7 +419,15 @@ def start_tor(force_mode=None):
                 "proxy": f"socks5h://127.0.0.1:{SOCKS_PORT}",
                 "egress": t,
             }
-        stop_tor()
+        # A still-owned Tor child must not be superseded by another provider
+        # start when the previous connection's egress probe failed.
+        cleanup = stop_tor()
+        if not cleanup.get("ok"):
+            return {
+                "ok": False, "state": "failed",
+                "error": "TOR_PREVIOUS_OWNER_STOP_UNVERIFIED",
+                "cleanupVerified": False, "cleanup": cleanup,
+            }
     if force_mode in ("direct", "obfs4", "snowflake"):
         modes = [force_mode]
     else:
@@ -351,12 +456,43 @@ def start_tor(force_mode=None):
                 set_session("TOR", mode, {"proxy": x["proxy"]})
                 return x
             rec = tor_owner()
-            if rec:
-                stop_pid(int(rec["pid"]))
-            try:
-                TOR_OWNER.unlink(missing_ok=True)
-            except Exception:
-                pass
+            if not rec:
+                # Bootstrap was claimed but no exact owner can now be verified.
+                # Keep the opaque record for later diagnosis, never unlink a
+                # record that might belong to another process.
+                attempts[-1]["egress_error"] = t.get("error", "egress failed")
+                attempts[-1]["cleanupVerified"] = False
+                return {
+                    "ok": False, "state": "failed", "attempts": attempts,
+                    "error": "TOR_EGRESS_OWNER_UNVERIFIED",
+                    "cleanupVerified": False,
+                }
+            stopped = stop_pid(int(rec["pid"]))
+            if not stopped:
+                # A still-running Tor child needs its ownership record for
+                # later scoped recovery. Do not launch another mode.
+                attempts[-1]["egress_error"] = t.get("error", "egress failed")
+                attempts[-1]["cleanupVerified"] = False
+                return {
+                    "ok": False, "state": "failed", "attempts": attempts,
+                    "error": "TOR_EGRESS_STOP_UNVERIFIED",
+                    "cleanupVerified": False,
+                }
+            # Only remove the exact owner record for the child we stopped.
+            current = load_json(TOR_OWNER)
+            if current and all(
+                str(current.get(k)) == str(rec.get(k))
+                for k in ("pid", "exe", "start")
+            ):
+                try:
+                    TOR_OWNER.unlink(missing_ok=True)
+                except OSError:
+                    attempts[-1]["cleanup_error"] = "TOR_OWNER_RECORD_UNLINK_FAILED"
+                    attempts[-1]["egress_error"] = t.get("error", "egress failed")
+                    return {
+                        "ok": False, "state": "failed", "attempts": attempts,
+                        "error": "TOR_OWNER_RECORD_UNLINK_FAILED",
+                    }
             attempts[-1]["egress_error"] = t.get("error", "egress failed")
     return {"ok": False, "state": "failed", "attempts": attempts}
 
@@ -365,15 +501,25 @@ def stop_tor():
     if not rec:
         return {"ok": True, "state": "not-owned"}
     stopped = stop_pid(int(rec["pid"]))
-    if stopped:
+    if not stopped:
+        return {"ok": False, "state": "stop-timeout", "mode": rec.get("mode")}
+    # The owner record can be replaced while the stop is in progress. Only
+    # unlink the exact process identity that this invocation authenticated.
+    if TOR_OWNER.exists():
+        current = load_json(TOR_OWNER)
+        if not current or any(
+            str(current.get(k)) != str(rec.get(k))
+            for k in ("pid", "exe", "start")
+        ):
+            return {"ok": False, "state": "owner-record-changed", "mode": rec.get("mode")}
         try:
-            TOR_OWNER.unlink(missing_ok=True)
-        except Exception:
-            pass
-        s = session()
-        if s.get("mode") == "TOR":
-            set_session()
-    return {"ok": stopped, "state": "stopped" if stopped else "stop-timeout", "mode": rec.get("mode")}
+            TOR_OWNER.unlink()
+        except OSError:
+            return {"ok": False, "state": "owner-record-unlink-failed", "mode": rec.get("mode")}
+    s = session()
+    if s.get("mode") == "TOR":
+        set_session()
+    return {"ok": True, "state": "stopped", "mode": rec.get("mode")}
 
 def warp_status():
     cli = executable("warp-cli")
@@ -620,8 +766,11 @@ def stop_all():
         results["warp"] = {"ok": True, "state": "left-connected-not-owned"}
     else:
         results["warp"] = {"ok": True, "state": "already-disconnected"}
-    set_session()
-    return {"ok": all(bool(v.get("ok")) for v in results.values()), "results": results}
+    ok = all(bool(v.get("ok")) for v in results.values())
+    if ok:
+        # Never drop the active session after a failed Tor/WARP stop.
+        set_session()
+    return {"ok": ok, "results": results}
 
 def verify_current():
     return current_status()
@@ -858,7 +1007,7 @@ def inventory():
 def doctor():
     direct = trace(timeout=12)
     dns = run(["getent", "ahosts", "www.google.com"], 8)
-    youtube = run([executable("curl") or "curl", "-4", "--max-time", "12", "-L", "-o", "/dev/null", "-sS", "-w", "%{http_code}", "https://www.youtube.com/generate_204"], 15)
+    youtube = run([executable("curl") or "curl", "-4", "--noproxy", "*", "--max-time", "12", "-L", "-o", "/dev/null", "-sS", "-w", "%{http_code}", "https://www.youtube.com/generate_204"], 15)
     return {
         "ok": bool(direct.get("ok") and dns.returncode == 0),
         "direct": direct,
@@ -879,7 +1028,9 @@ def speed_sample():
     args = [curl, "-4", "--max-time", "30", "-L", "-o", "/dev/null", "-sS", "-w", "%{speed_download}", "https://speed.cloudflare.com/__down?bytes=2000000"]
     proxy_port = browser_proxy_port(s)
     if proxy_port is not None:
-        args[1:1] = ["--proxy", f"socks5h://127.0.0.1:{proxy_port}"]
+        args[1:1] = ["--noproxy", "", "--proxy", f"socks5h://127.0.0.1:{proxy_port}"]
+    else:
+        args[1:1] = ["--noproxy", "*"]
     p = run(args, 35)
     try:
         bps = float(p.stdout.strip())

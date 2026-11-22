@@ -301,6 +301,11 @@ def _probe(port):
     try:
         r = _command([
             "curl", "-4", "-sS", "-L", "--max-time", "9",
+            # Without an explicit empty bypass list, ambient NO_PROXY=* (or
+            # this target's hostname) overrides --socks5-hostname and can
+            # return HTTP 200 over DIRECT for a dead local SOCKS listener.
+            # Never accept a direct response as a proxy health pass.
+            "--noproxy", "",
             "--socks5-hostname", f"127.0.0.1:{port}", "-o", "/dev/null",
             "-w", "%{http_code}", "https://www.cloudflare.com/cdn-cgi/trace",
         ], timeout=12)
