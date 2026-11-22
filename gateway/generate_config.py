@@ -11,11 +11,19 @@ def load_profile(path):
  if x["endpoint"].get("tag")!="provider":raise ValueError("BAD_PROVIDER_TAG")
  return x
 def socks_out(p):return {"type":"socks","tag":"provider","server":p["host"],"server_port":int(p["port"]),"version":"5"}
-def build(mode,provider="WARP",profile_path=None):
+def build(mode,provider="WARP",profile_path=None,dns_mode="hijack"):
  d=defaults();tun=d["tun"];console=d["console"]
  private={"ip_is_private":True,"action":"route","outbound":"direct"}
  selfproc={"process_name":["warp-plus.exe","sing-box.exe"],"action":"route","outbound":"direct"}
- rules=[private,selfproc];tun_in={"type":"tun","tag":"fnh-tun","interface_name":tun["interface_name"],"address":tun["address"],"mtu":tun["mtu"],"auto_route":True,"strict_route":True,"stack":"system","dns_mode":"disabled"}
+ # Reject the assigned TUN subnet before ip_is_private => direct.
+ # Otherwise UDP aimed at the TUN peer can loop back through direct into TUN
+ # (particularly with Windows auto_route and Tailscale gateway probes).
+ # Prefixes are generated from the same addresses as the TUN; no arbitrary
+ # external IP ranges are blocked and this never touches the host firewall.
+ import ipaddress
+ peer_ranges=[str(ipaddress.ip_interface(a).network) for a in tun["address"]]
+ reject_self_tun={"inbound":["fnh-tun"],"ip_cidr":peer_ranges,"action":"reject","method":"drop"}
+ rules=[reject_self_tun,private,selfproc];tun_in={"type":"tun","tag":"fnh-tun","interface_name":tun["interface_name"],"address":tun["address"],"mtu":tun["mtu"],"auto_route":True,"strict_route":True,"stack":"system","dns_mode":"disabled"}
  cfg={
   "log":{"level":"warn","timestamp":True},
   "inbounds":[tun_in],
@@ -33,15 +41,17 @@ def build(mode,provider="WARP",profile_path=None):
    # which collapses the local SOCKS provider after a few seconds.
    tun_in["route_exclude_address"]=["162.159.192.0/24","162.159.193.0/24","162.159.197.0/24"]
  if mode=="PC_TUNNEL":
+  if dns_mode not in ("hijack","native"):raise ValueError("PC_DNS_MODE_INVALID")
   # Keep the independent Tailscale recovery path outside the full-device TUN.
   # Official Tailscale split-tunnel ranges; do not route this CGNAT/ULA
   # traffic through another VPN. This intentionally bypasses the provider.
   tailnet=["100.64.0.0/10","fd7a:115c:a1e0::/48"]
   tun_in["route_exclude_address"]=list(dict.fromkeys(tun_in.get("route_exclude_address",[])+tailnet))
   cfg["route"]["final"]="provider"
-  cfg["inbounds"][0]["dns_mode"]="hijack"
+  cfg["inbounds"][0]["dns_mode"]=dns_mode
   cfg["dns"]={"servers":[{"type":"udp","tag":"dns-provider","server":"1.1.1.1","server_port":53,"detour":"provider"}],"final":"dns-provider"}
  elif mode=="CONSOLE_ONLY":
+  if dns_mode!="hijack":raise ValueError("PC_ONLY_DNS_MODE")
   cfg["route"]["rules"].append({"source_ip_cidr":[console["subnet"]],"action":"route","outbound":"provider"});cfg["route"]["final"]="direct"
  else:raise ValueError("BAD_MODE")
  return cfg,profile
@@ -64,12 +74,13 @@ def main():
  ap=argparse.ArgumentParser()
  ap.add_argument("--mode",choices=["PC_TUNNEL","CONSOLE_ONLY"],required=True)
  ap.add_argument("--provider",default="WARP")
+ ap.add_argument("--dns-mode",choices=["native","hijack"],default="hijack",help="PC_TUNNEL only; native enables coexistence with Tailscale MagicDNS")
  ap.add_argument("--profile")
  ap.add_argument("--target-country",default="")
  ap.add_argument("--output",required=True)
  ap.add_argument("--allow-unverified-console",action="store_true")
  ns=ap.parse_args()
- cfg,profile=build(ns.mode,ns.provider,ns.profile)
+ cfg,profile=build(ns.mode,ns.provider,ns.profile,dns_mode=ns.dns_mode)
  if ns.mode=="CONSOLE_ONLY" and not ns.allow_unverified_console:
   c=console_contract(ns.provider,profile,ns.target_country)
   if not c["ready"]:raise SystemExit("CONSOLE_PROVIDER_CONTRACT_FAILED:"+",".join(c["reasons"]))

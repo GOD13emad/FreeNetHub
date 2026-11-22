@@ -6,6 +6,7 @@ on:
       - '.github/workflows/r57-tailnet-cfon-candidate.yml'
       - 'tests/prepare_r57_tailnet_cfon_candidate.py'
       - 'tests/test_windows_r57_isolated.ps1'
+      - 'tests/r57_source_eligibility.py'
       - 'app/engine.py'
       - 'app/selective_route_windows.py'
       - 'app/selective_http_bridge.py'
@@ -20,7 +21,25 @@ permissions:
   contents: read
 
 jobs:
+  r57_source_line:
+    runs-on: ubuntu-24.04
+    outputs:
+      eligible: ${{ steps.eligibility.outputs.eligible }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Determine R57 R53-baseline-only fixture eligibility
+        id: eligibility
+        run: python3 tests/r57_source_eligibility.py --github-output
+
   windows-disposable-r57:
+    needs: r57_source_line
+    if: needs.r57_source_line.outputs.eligible == 'true'
     runs-on: windows-latest
     timeout-minutes: 40
     steps:

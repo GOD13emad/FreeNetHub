@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "4.3.9-r53-inno-root-guard",
+  "version": "4.3.11-r55-native-status-review",
   "source": "git-clean-filtered-candidate",
   "files": [
     {
@@ -10,13 +10,28 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39760,
-      "sha256": "82C29AA1A98A1E0633FACCFAEAB5A2418AF7808A87C1BFB2B8631BCD4E464874"
+      "bytes": 42554,
+      "sha256": "7BAA2F03FA7CC78477AEF940C097AAB69C074B7E51DE3C9A685F742CFAF70F95"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
       "bytes": 4602,
       "sha256": "D934F9A83BE1484372B0F8F41D164A61E9E532F7CF10F3C15C721DC8FDD8C958"
+    },
+    {
+      "file": ".github/workflows/r55-native-disposable.yml",
+      "bytes": 15328,
+      "sha256": "BE2141FFE8002754987D66D67A28088741BD7FAE9E88BEA5E832A1FEDB5EB52F"
+    },
+    {
+      "file": ".github/workflows/r55-native-dns53-disposable.yml",
+      "bytes": 10152,
+      "sha256": "D1FA4FD3B6DF6B32C696470703043A7EDCFC04E9DAB9C8EE9AF20699837CF216"
+    },
+    {
+      "file": ".github/workflows/r55-private-acceptance.yml",
+      "bytes": 16576,
+      "sha256": "E8AE064D45C7DF40AD7FDA78BE9DB101C555B4A81D246B6E4C93F1688EE5CCDC"
     },
     {
       "file": ".github/workflows/r55-selective-candidate.yml",
@@ -30,13 +45,13 @@
     },
     {
       "file": ".github/workflows/r57-tailnet-cfon-candidate.yml",
-      "bytes": 9977,
-      "sha256": "157F6CE3417F88570ACBDE2C3DCABB035A9396F89887EE2B391B46A85D117008"
+      "bytes": 10717,
+      "sha256": "BB79F68B25BD6D8B4ABE9C498727F63958FF178ADD212156CA6C1245DB17E56F"
     },
     {
       "file": ".github/workflows/v465-private-gateway-review.yml",
-      "bytes": 3661,
-      "sha256": "D2DE3D53D17E7DF4B5BDE9FE677C35F0CE91356D0306B1F9DDEE57787BBE53FC"
+      "bytes": 4571,
+      "sha256": "9A2B8D049377F5C01DFE2DB42897211E2FFBB28F060534E8E45B0FDB1356DA71"
     },
     {
       "file": ".gitignore",
@@ -125,13 +140,13 @@
     },
     {
       "file": "app/FreeNetHub.ps1",
-      "bytes": 116848,
-      "sha256": "2E9104CEC51A9B97885B651464B02E46522F214537DCAFBF508D5748D74FD3EA"
+      "bytes": 117934,
+      "sha256": "E424259C9C5F4572462A49E9D2012624A7F16B43F5CBC758424ABC8420CF773A"
     },
     {
       "file": "app/manifest.json",
-      "bytes": 5436,
-      "sha256": "2CAF5558A33BC3D0E2EDDFEEE2030BFB6ED26BD40AF4975AAC45FD3CC9661B09"
+      "bytes": 5484,
+      "sha256": "B2E662A20EE7854488CB349C97A6E51413863CF6650B2272BACFF14036D3128C"
     },
     {
       "file": "app/nodehub.py",
@@ -1239,6 +1254,11 @@
       "sha256": "7694F88FAA48BC09AD98352E73A5EF517E852685AD57B7F38105AC06A1643AFF"
     },
     {
+      "file": "evidence/R55_R57_INTEGRATION_PRIVATE.json",
+      "bytes": 1567,
+      "sha256": "D02E25F54C802E217149A2DAA145525405516750F5F8F7F8DA6CAAF9E4E200A3"
+    },
+    {
       "file": "evidence/R57_OWNER_WINDOWS_FIELD_20261017.json",
       "bytes": 48558,
       "sha256": "DD84E872A4E3CCDADB1561960E91448F8F93CE4D898B446FD46CC92F1CAC5EBC"
@@ -1674,9 +1694,14 @@
       "sha256": "44C3A2E8A127BDB1BE75867D6287D0D7AE425ED06E40F94A1898717E831AC7A4"
     },
     {
+      "file": "evidence/V519_R55_PRIVATE_CANDIDATE.json",
+      "bytes": 876,
+      "sha256": "076A60757955129300FF2B8A676C4A8A9409F0692487E535D1B94533E2469EDB"
+    },
+    {
       "file": "gateway/apply_elevated.ps1",
-      "bytes": 7764,
-      "sha256": "EBF73E62A50BF90B942D641ED0F8A38AB31EF58F538B24E662C64000133E44B2"
+      "bytes": 14939,
+      "sha256": "A58D8DEDEFB268215BC4C9F934A61B2E7C8BE6A937477F8BBBF334F9632732EA"
     },
     {
       "file": "gateway/build_isolated_mihomo.py",
@@ -1694,9 +1719,14 @@
       "sha256": "1B19E4A1D6632C5E55376A226C26168A017FE109351B244497A46EEDC2982E68"
     },
     {
+      "file": "gateway/dns_guard_watchdog.ps1",
+      "bytes": 4593,
+      "sha256": "ABA3FA5D770E29B8B17F5CD05B0540D29BE0C60F6B1FE404FAA3CB65536ACEE7"
+    },
+    {
       "file": "gateway/gateway_control.ps1",
-      "bytes": 16430,
-      "sha256": "52E477CC3508834D5C232E195287FA1BB7B97739BD3F102D9CB0F214597B73AF"
+      "bytes": 25802,
+      "sha256": "D156CEFE04D9E1A9049134C1C1181D25F8252198342C123144BD4C280DB6B17C"
     },
     {
       "file": "gateway/gateway_defaults.json",
@@ -1705,13 +1735,13 @@
     },
     {
       "file": "gateway/gateway_request.ps1",
-      "bytes": 3337,
-      "sha256": "E23D4341AF5DCDC243143925B7511E59BBB3CF0CFAECCDDF87F93AE338549F88"
+      "bytes": 3528,
+      "sha256": "B11353CFA011A8A81D53A2DF7F9D47090E3811BA37F8A1B72BBE725782ED7F46"
     },
     {
       "file": "gateway/generate_config.py",
-      "bytes": 4540,
-      "sha256": "F17394E38F0F5E80321982EFC9A438988BBC8E8154E5DC35A079E3BE2449B1B6"
+      "bytes": 5446,
+      "sha256": "0FB09CD5459952B85BCB8295767A8650F34C04A23A8373125C13C682606ACAD4"
     },
     {
       "file": "gateway/import_wireguard.py",
@@ -1720,8 +1750,8 @@
     },
     {
       "file": "gateway/manifest.json",
-      "bytes": 2912,
-      "sha256": "440BFCE884F1B21E2ADA55EE3727786C2504EF500AF0530D1BE36C186EFEDBB5"
+      "bytes": 3071,
+      "sha256": "1EA8E0B401F6389BF21E58E5410476F022A4DBC40CB94C455F6BA7E2F086031C"
     },
     {
       "file": "gateway/preflight.ps1",
@@ -1765,13 +1795,13 @@
     },
     {
       "file": "gateway/stop_elevated.ps1",
-      "bytes": 5216,
-      "sha256": "0B86645215F11150BEC8E8444ADF4E7ED6964D8BB53285FDBF927B2E19EB591F"
+      "bytes": 12035,
+      "sha256": "7C10892C0B0DECA8DA065770A64F5D3CFC9EE87848B327CDD68D54ECBD00D477"
     },
     {
       "file": "gateway/tests/build_gateway_manifest.py",
-      "bytes": 1155,
-      "sha256": "1EC667F5468B19016537516C9E0BC4D52654135F75F2028B8E596B400DDB6DAC"
+      "bytes": 1193,
+      "sha256": "E263A4D6518BEAD35BA0AA2C87EE4A4A630C0B76B6E002D3CFF1B8240149FA5F"
     },
     {
       "file": "gateway/tests/direct_stun.py",
@@ -1815,13 +1845,28 @@
     },
     {
       "file": "gateway/tests/test_gateway.py",
-      "bytes": 8580,
-      "sha256": "B46496F0A5F466A97908AD62569136972881C41A3277820DE6B40E163E9334D3"
+      "bytes": 12314,
+      "sha256": "3F6F42311506B309F509FDD151CDE870DD56111A373D0721D68FF634284B5019"
+    },
+    {
+      "file": "gateway/tests/test_owned_process_stop_transition.ps1",
+      "bytes": 2408,
+      "sha256": "022E8EDE046E9004F3C51E999767E187666FC1473FD462415485F09ABAC03EBB"
     },
     {
       "file": "gateway/tests/test_scope_ui_policy.py",
       "bytes": 2732,
       "sha256": "FDC63F73FFD3B5B6F0FCE124D2A134FD9305E474BC9A35937EC56A1DDCC6A83F"
+    },
+    {
+      "file": "gateway/tests/test_warp_reuse_contract.ps1",
+      "bytes": 5785,
+      "sha256": "F686A29074A49E5740C9797B3BDE01578539FB4A2BFB6C3721E957F03B521427"
+    },
+    {
+      "file": "gateway/tests/test_warp_reuse_ui_contract.ps1",
+      "bytes": 3584,
+      "sha256": "6F5EFDFA66F6FBF71C59C787FA054AED30583DAF6714B6DA6DE6CAB701F03D5F"
     },
     {
       "file": "gateway/tests/virtual_console_e2e.py",
@@ -1855,8 +1900,8 @@
     },
     {
       "file": "PROJECT_BRAIN.md",
-      "bytes": 264566,
-      "sha256": "3618C62D99AD22AAD0E41CB72B45797C60709BFB295622380A0DB60C26662E23"
+      "bytes": 275866,
+      "sha256": "B09C824ABD4717CE9F9CC4822873EA9BD4CE7E0C40BC2C2DE62DF865503C281E"
     },
     {
       "file": "pytest.ini",
@@ -1875,8 +1920,8 @@
     },
     {
       "file": "RELEASE.json",
-      "bytes": 44097,
-      "sha256": "C4BEBA204F19FE78DE0FB8BBF365AB3EA96E70F91C645E6CFC782BC343D21825"
+      "bytes": 44142,
+      "sha256": "F8419F167378CAE21EA9C8EEBA07979B9FA3802A0462CA397659468D009E5A5C"
     },
     {
       "file": "SECURITY.md",
@@ -2224,6 +2269,11 @@
       "sha256": "2581BA064F8929668C4252B5812FEC54A95E9379EF04C9188D6EAFEFBB9F4992"
     },
     {
+      "file": "tests/prepare_r55_private.py",
+      "bytes": 5926,
+      "sha256": "B33AE615C24B2E583E3044C78EFCB72B0BC28F2F209C57E3A2570ACB445776D9"
+    },
+    {
       "file": "tests/prepare_r55_selective_candidate.py",
       "bytes": 8409,
       "sha256": "56D5AD8F1D822D8B15A82D365261DBD3577DA36CEA167F2D22D38E3DD0462EC4"
@@ -2549,6 +2599,16 @@
       "sha256": "1FF71049CAB932FDD48FDC1470D8FDC1E98FDBACF115E1D39E3D573C8BD8EFF1"
     },
     {
+      "file": "tests/r55_native_disposable_watchdog.ps1",
+      "bytes": 3042,
+      "sha256": "263D5E8209E810E6DD38F3E9BC9AE754627D4469C4CFE5B29D745C8E0B6A73EB"
+    },
+    {
+      "file": "tests/r57_source_eligibility.py",
+      "bytes": 2498,
+      "sha256": "C1F816A8C3994EAAA983F7344C5E1AEF233223C48145CC3E0360BD58F5A7E1B0"
+    },
+    {
       "file": "tests/rebuild_crossplatform_manifest.py",
       "bytes": 1398,
       "sha256": "1A6572B7911000A938EBA28A70E97E049300A63D7FF878EEFD9475A537710397"
@@ -2675,8 +2735,8 @@
     },
     {
       "file": "tests/test_public_release_readme.py",
-      "bytes": 3012,
-      "sha256": "2A2DD6D2D2AFDF23EA770DBDF61C483BD046DD89B72187A6A290D13716CC9930"
+      "bytes": 3400,
+      "sha256": "E2FB2E4EF6E0C2ED171653B553811E09B695DB24B8E9A381136D74E91D8F8858"
     },
     {
       "file": "tests/test_r22_country_shadowshare.py",
@@ -2769,6 +2829,11 @@
       "sha256": "9AD33F322616C9101278FA9F7EA64C733621B19DC5C44B81788B4EF9044BAFEB"
     },
     {
+      "file": "tests/test_r55_native_route_metric.ps1",
+      "bytes": 7207,
+      "sha256": "1C1C041975EBD69C77DC83FC2567C3D75A1B90CA8D2F5CBB33A913CFF8F0C652"
+    },
+    {
       "file": "tests/test_v431_integrity_hotfix.py",
       "bytes": 2355,
       "sha256": "42DFDF41C3DFBEB8B97A4CEFAD9F3E9EE6C67B45384A620ED49E71F5D384FD58"
@@ -2787,6 +2852,11 @@
       "file": "tests/test_v462_mixed_release_update.py",
       "bytes": 2581,
       "sha256": "2DB19477918BCED1FA83315C793E7CA274167BC4AC60A34CFC2C69F505ECD580"
+    },
+    {
+      "file": "tests/test_v521_ci_routing.py",
+      "bytes": 7817,
+      "sha256": "07D9EC4AECCE7A0B9FA370B77B014EB48A7563F59C5B7BB9BDAB3884A391F9B6"
     },
     {
       "file": "tests/test_windows_r55_isolated.ps1",
@@ -2854,6 +2924,11 @@
       "sha256": "528B00CEC13F4E8CCAE9CFCDCD6A3C177DEC80A6D5E0146EDD7CA3B27D033D2E"
     },
     {
+      "file": "tests/verify_release_line.py",
+      "bytes": 3598,
+      "sha256": "EC954C2CB9778D3FFE02886D6E8AE3AC90BF60716CA56C84FB5A1AC0252F42AA"
+    },
+    {
       "file": "tests/virtual_codesign.ps1",
       "bytes": 2035,
       "sha256": "D61199A493062262922C2619AD6B311964E4C21FC0A61EF8092B2A31A6C58C4F"
@@ -2870,8 +2945,8 @@
     },
     {
       "file": "windows/installer/FreeNetHub.iss",
-      "bytes": 15726,
-      "sha256": "11B7510C1FE86E5F9283AD1E1D427373CB55F9857F633BEAE9AD68C70B463FCE"
+      "bytes": 15853,
+      "sha256": "7F6733939B58B9BC76751AC686F7C979FB0A9064D811071D6D557372522FB0A0"
     },
     {
       "file": "windows/installer/Prepare-SelectiveUpgrade.ps1",

@@ -757,11 +757,31 @@ function Persistent-SelectedNodeId{
 
  }
 
+ function Test-WarpLoopbackPortCandidate([int]$port=19410){
+  # Read-only hint only: Controller validates SHA, PID, start ticks, HTTPS, UDP.
+  if($port -ne 19410){return $false}
+  try{
+   $listeners=@(Get-NetTCPConnection -State Listen -LocalPort $port -ErrorAction Stop)
+   return [bool]($listeners.Count -eq 1 -and
+      [string]$listeners[0].LocalAddress -eq '127.0.0.1' -and
+      [int]$listeners[0].OwningProcess -gt 0)
+  }catch{return $false}
+ }
+
  function Start-GatewayRequest([string]$action,[string]$provider='WARP',[string]$nodePolicy='SELECTED'){
 
   if($script:Task -or $script:GatewayTask){return}
 
-  if($action -eq 'StartPc' -and [Windows.MessageBox]::Show(('تمام ترافیک این کامپیوتر از مسیر '+$provider+' وارد TUN می‌شود. TCP/UDP قبل و بعد از اعمال بررسی می‌شوند و شکست باعث rollback خودکار می‌شود. ادامه؟'),'FreeNet Hub · Full PC','YesNo','Warning') -ne 'Yes'){return}
+  $reuseExistingWarp=$false
+  if($action -eq 'StartPc'){
+   if($provider -eq 'WARP'){$reuseExistingWarp=Test-WarpLoopbackPortCandidate}
+   $notice=('تمام ترافیک این کامپیوتر از مسیر '+$provider+' وارد TUN می‌شود. TCP/UDP قبل و بعد از اعمال بررسی می‌شوند و شکست باعث rollback خودکار می‌شود.')
+   if($reuseExistingWarp){
+    $notice+=' پراکسی WARP موجود روی 127.0.0.1:19410 شناسایی شد. فقط پس از تطبیق فایل، SHA-256، PID، زمان شروع، HTTPS و UDP استفاده می‌شود؛ مالکیت یا فرایند قبلی تغییر نمی‌کند. اگر هویت تأیید نشود، اتصال انجام نمی‌شود.'
+   }
+   $notice+=' ادامه؟'
+   if([Windows.MessageBox]::Show($notice,'FreeNet Hub · Full PC','YesNo','Warning') -ne 'Yes'){return}
+  }
   if($action -eq 'SetupConsole' -and [Windows.MessageBox]::Show('پیش‌نیازهای Gateway کنسول بررسی و در صورت نیاز نصب می‌شوند: usbipd و sing-box pinned و ابزارهای WSL. این عملیات هیچ تونلی را روشن نمی‌کند. ادامه؟','FreeNet Hub · Console Setup','YesNo','Question') -ne 'Yes'){return}
 
   if($action -eq 'StartConsole'){
@@ -781,7 +801,7 @@ function Persistent-SelectedNodeId{
   $psi=[Diagnostics.ProcessStartInfo]::new();$psi.FileName='pwsh.exe';$psi.UseShellExecute=$false;$psi.CreateNoWindow=$true;$psi.WorkingDirectory=$script:Root
 
   foreach($a in @('-NoProfile','-WindowStyle','Hidden','-ExecutionPolicy','Bypass','-File',(Join-Path $script:Root 'gateway\gateway_request.ps1'),'-Action',$action,'-Job',$script:GatewayJob)){[void]$psi.ArgumentList.Add($a)}
-  if($action -eq 'StartPc'){[void]$psi.ArgumentList.Add('-Provider');[void]$psi.ArgumentList.Add($provider);if($provider -eq 'NODE'){[void]$psi.ArgumentList.Add('-NodePolicy');[void]$psi.ArgumentList.Add($nodePolicy)}}
+  if($action -eq 'StartPc'){[void]$psi.ArgumentList.Add('-Provider');[void]$psi.ArgumentList.Add($provider);if($provider -eq 'NODE'){[void]$psi.ArgumentList.Add('-NodePolicy');[void]$psi.ArgumentList.Add($nodePolicy)};if($provider -eq 'WARP' -and $reuseExistingWarp){[void]$psi.ArgumentList.Add('-ReuseVerifiedWarp')}}
 
   try{$script:GatewayTask=[Diagnostics.Process]::Start($psi);$script:C.GatewayState.Text='در انتظار تأیید UAC / اجرای Gateway';$script:C.GatewayDetail.Text='Job: '+$script:GatewayJob+' · '+$action;$script:C.SidebarState.Text='عملیات شبکه در حال اجرا';Set-Busy}catch{$script:GatewayTask=$null;$script:C.GatewayState.Text='شروع Gateway ناموفق';$script:C.GatewayDetail.Text=$_.Exception.Message;Set-Busy}
 

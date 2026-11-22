@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "evidenceType": "PRIVATE_SOURCE_INTEGRATION_DIAGNOSTIC",
+  "version": "4.3.11",
+  "status": "R55_PRIVATE_CANDIDATE_NOT_FOR_RELEASE",
+  "sourceAcceptance": "PENDING_EXACT_SHA_HOSTED_CI",
+  "sourceAccepted": false,
+  "fieldAccepted": false,
+  "installerAccepted": false,
+  "publicRelease": false,
+  "parents": {
+    "acceptedMain": "8b77b5041a9eb7a72988c0f0f8a373a2d7eca1cd",
+    "isolatedNative": "d1839b100506e9ef12c291135609f9fd3f01fd41"
+  },
+  "context": "Source-only R57 selective PAC, 403 handling and CFON Tailnet plus private R55 Native gateway; not the accepted public R53 binary; no owner installation",
+  "localChecks": {
+    "sourceTreesMerged": true,
+    "manifestConflictsResolved": 3,
+    "appFilesVerified": 19,
+    "gatewayFilesVerified": 18,
+    "selectiveTests": 25,
+    "gatewayNativeAndRoutingTests": 28,
+    "engineTests": 134,
+    "engineSkipped": 1,
+    "nativeOwnerNegativeCases": 6,
+    "nativeLoopNegativeCases": 4,
+    "publicManifestSecurityIntegrity": "PASS_LOCAL_BOUNDED",
+    "hostedIntegratedCI": "NOT_RUN",
+    "physicalWifiNativeDnsLeak": "UNPROVEN"
+  },
+  "releaseGates": [
+    "exact integrated hosted CI",
+    "disposable integrated R54 upgrade/rollback",
+    "owner physical Native Wi-Fi DNS53 positive capture and independent restoration",
+    "Linux real GUI and privileged TUN",
+    "actual Android and iOS forwarding",
+    "publisher rights and trusted signing",
+    "public updater install verification"
+  ],
+  "oldR55EvidenceNotInherited": true,
+  "disposition": "KEEP_DRAFT_NO_MERGE_NO_PUBLIC_RELEASE"
+}
