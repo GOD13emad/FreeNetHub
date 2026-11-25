@@ -202,9 +202,23 @@ jobs:
         working-directory: crossplatform/android
         run: gradle :app:assembleDebug --stacktrace
   ios-static:
-    runs-on: macos-26
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Select installed Xcode 26 explicitly on macOS 15
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          apps=(/Applications/Xcode_26*.app)
+          if (( ${#apps[@]} == 0 )); then
+            echo "Xcode 26 is unavailable on this runner"
+            exit 1
+          fi
+          selected="${apps[$(("${#apps[@]}"-1))]}"
+          test -x "$selected/Contents/Developer/usr/bin/xcodebuild"
+          printf 'DEVELOPER_DIR=%s/Contents/Developer\n' "$selected" >> "$GITHUB_ENV"
+          DEVELOPER_DIR="$selected/Contents/Developer" xcodebuild -version
       - name: Guard App Store 2026 Apple toolchain
         run: |
           xcodebuild -version
@@ -393,10 +407,24 @@ jobs:
 
   ios-simulator-runtime:
     needs: ios-static
-    runs-on: macos-26
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Select installed Xcode 26 explicitly on macOS 15
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          apps=(/Applications/Xcode_26*.app)
+          if (( ${#apps[@]} == 0 )); then
+            echo "Xcode 26 is unavailable on this runner"
+            exit 1
+          fi
+          selected="${apps[$(("${#apps[@]}"-1))]}"
+          test -x "$selected/Contents/Developer/usr/bin/xcodebuild"
+          printf 'DEVELOPER_DIR=%s/Contents/Developer\n' "$selected" >> "$GITHUB_ENV"
+          DEVELOPER_DIR="$selected/Contents/Developer" xcodebuild -version
       - name: Install XcodeGen
         run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
       - name: Generate and build simulator app
