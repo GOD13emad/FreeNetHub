@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39760,
-      "sha256": "82C29AA1A98A1E0633FACCFAEAB5A2418AF7808A87C1BFB2B8631BCD4E464874"
+      "bytes": 41048,
+      "sha256": "F7219B713D0B71BFFE17B9A37165108C7705D4C7DBE113754614EA65475E2CE8"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
