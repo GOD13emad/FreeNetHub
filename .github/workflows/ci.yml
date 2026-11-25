@@ -215,7 +215,8 @@ jobs:
             echo "Xcode 26 is unavailable on this runner"
             exit 1
           fi
-          selected="${apps[$(("${#apps[@]}"-1))]}"
+          last_index=$((${#apps[@]} - 1))
+          selected="${apps[$last_index]}"
           test -x "$selected/Contents/Developer/usr/bin/xcodebuild"
           printf 'DEVELOPER_DIR=%s/Contents/Developer\n' "$selected" >> "$GITHUB_ENV"
           DEVELOPER_DIR="$selected/Contents/Developer" xcodebuild -version
@@ -421,7 +422,8 @@ jobs:
             echo "Xcode 26 is unavailable on this runner"
             exit 1
           fi
-          selected="${apps[$(("${#apps[@]}"-1))]}"
+          last_index=$((${#apps[@]} - 1))
+          selected="${apps[$last_index]}"
           test -x "$selected/Contents/Developer/usr/bin/xcodebuild"
           printf 'DEVELOPER_DIR=%s/Contents/Developer\n' "$selected" >> "$GITHUB_ENV"
           DEVELOPER_DIR="$selected/Contents/Developer" xcodebuild -version
