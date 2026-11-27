@@ -1880,8 +1880,8 @@
     },
     {
       "file": "SECURITY.md",
-      "bytes": 707,
-      "sha256": "897B0EF328D99A5E45046DD381C24689F32C1395C47C5E3C7106C7D9FA5FCC50"
+      "bytes": 1275,
+      "sha256": "8E8C9314F5DD6EF7D6C1895A2249EF3B85984B36130D1DDA3E57EEC2D7812FE0"
     },
     {
       "file": "Setup-WindowsDependencies.ps1",
