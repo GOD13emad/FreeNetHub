@@ -2720,8 +2720,8 @@
     },
     {
       "file": "tests/test_r34_direct_network.py",
-      "bytes": 2573,
-      "sha256": "F73E28FF2965BAD705EDEA43198D2B7DC97BE3DE223EA34EC6FB9E48B42CFF29"
+      "bytes": 3302,
+      "sha256": "1FA02AF92ECC812B99443D72F0077B25884F5C7DF925C566974778B08A197442"
     },
     {
       "file": "tests/test_r36_directdpi_product.py",
