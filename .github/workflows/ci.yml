@@ -30,6 +30,8 @@ jobs:
       - name: Selective Windows PAC pre-upgrade native fail-closed cases
         shell: pwsh
         run: ./tests/test_prepare_selective_upgrade.ps1
+      - name: Verified TLS diagnostic offline regression
+        run: python tests/test_r34_verified_tls_probe.py
       - name: Engine unit tests
         run: python tests/test_engine.py
       - name: Selective Windows PAC policy and UI integration
