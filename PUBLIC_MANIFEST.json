@@ -14,6 +14,11 @@
       "sha256": "82C29AA1A98A1E0633FACCFAEAB5A2418AF7808A87C1BFB2B8631BCD4E464874"
     },
     {
+      "file": ".github/workflows/codeql-advanced.yml",
+      "bytes": 4318,
+      "sha256": "6CCFA4D96A52FDEF7CFFEF8343A977629B51EC8C377A4D07EB4EA5536CCFED52"
+    },
+    {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
       "bytes": 4602,
       "sha256": "D934F9A83BE1484372B0F8F41D164A61E9E532F7CF10F3C15C721DC8FDD8C958"
@@ -427,6 +432,11 @@
       "file": "docs/BRIDGES_FA.txt",
       "bytes": 769,
       "sha256": "1EF0A8E35FFE9E4603F6E44BE3F81D6C9302B052E1A8EB3098240ED05D5CC217"
+    },
+    {
+      "file": "docs/CODEQL_CUTOVER.md",
+      "bytes": 3355,
+      "sha256": "6321CD0E2C9DAD53383A1F4AF4CAA4DDB3C263D656033CDD978DB3C92D0DEC66"
     },
     {
       "file": "docs/COMPARISON.html",
