@@ -32,6 +32,16 @@ class VerifiedProbeTests(unittest.TestCase):
     def test_verified(self):
         self.assertTrue(probe.probe('example.invalid')['tls'])
         self.ctx.wrap_socket.assert_called_once_with(self.raw, server_hostname='example.invalid')
+        self.assertEqual(self.ctx.minimum_version, ssl.TLSVersion.TLSv1_2)
+
+    def test_real_context_policy_without_network(self):
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        with patch.object(probe.ssl, 'create_default_context', return_value=context), patch.object(context, 'wrap_socket', side_effect=ssl.SSLError('synthetic handshake stop')) as wrap:
+            self.assertFalse(probe.probe('example.invalid')['tls'])
+            self.assertTrue(context.check_hostname)
+            self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
+            self.assertEqual(context.minimum_version, ssl.TLSVersion.TLSv1_2)
+            wrap.assert_called_once()
 
     def test_cert_rejected(self):
         self.ctx.wrap_socket.side_effect = ssl.SSLCertVerificationError('synthetic certificate rejection')

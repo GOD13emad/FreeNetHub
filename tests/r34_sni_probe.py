@@ -30,6 +30,7 @@ def probe(host):
             raw.connect((ip, 443))
             row["tcp"] = True
             ctx = ssl.create_default_context()
+            ctx.minimum_version = ssl.TLSVersion.TLSv1_2
             if not ctx.check_hostname or ctx.verify_mode != ssl.CERT_REQUIRED:
                 raise RuntimeError("TLS verification policy unavailable")
             with ctx.wrap_socket(raw, server_hostname=host) as conn:
