@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39760,
-      "sha256": "82C29AA1A98A1E0633FACCFAEAB5A2418AF7808A87C1BFB2B8631BCD4E464874"
+      "bytes": 39898,
+      "sha256": "185402BE616C739B9916F16179BF454727B0B04AC845A8C636D19D467278DEDA"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1876,7 +1876,7 @@
     {
       "file": "RELEASE.json",
       "bytes": 44097,
-      "sha256": "C4BEBA204F19FE78DE0FB8BBF365AB3EA96E70F91C645E6CFC782BC343D21825"
+      "sha256": "90C74C2D17C9411551988F573DF76CB11FF88BDB869AFCB379AC541A225DA945"
     },
     {
       "file": "SECURITY.md",
@@ -1887,6 +1887,16 @@
       "file": "Setup-WindowsDependencies.ps1",
       "bytes": 7943,
       "sha256": "720B3CCA93C9FAF983463D0CE8CF3F305896300D5797F9335B9703CAC2D4C509"
+    },
+    {
+      "file": "tests/ShellLaunchContractTest.cs",
+      "bytes": 2623,
+      "sha256": "61AE1667DAFC658D1D6894C68C8085130021BFA3F27E9AFBC5428B80D5412224"
+    },
+    {
+      "file": "tests/Test-ShellLaunchContract.ps1",
+      "bytes": 1263,
+      "sha256": "2BAF308043C9E49611357C7B672E0C2BC90C45212DA2570D2144D4FBFB105639"
     },
     {
       "file": "tests/archive/build_r37_product_installer_SUPERSEDED_20260929.ps1",
@@ -2960,8 +2970,8 @@
     },
     {
       "file": "windows/standalone/FreeNetHub.exe",
-      "bytes": 40960,
-      "sha256": "42399C7A30ECC88588AAA0F68782629ADB4A049F2576F978C5EAC1F35E2D6435"
+      "bytes": 41472,
+      "sha256": "1AD3B576CD77EC1D3FD4C024747BB097FDC545F55A40574F10229C14D9F4A387"
     },
     {
       "file": "windows/standalone/FreeNetHub.ico",
@@ -2975,8 +2985,8 @@
     },
     {
       "file": "windows/standalone/FreeNetHubShell.cs",
-      "bytes": 15650,
-      "sha256": "394170333595B306D7332D00752693028C1A478674EEF57FACF9B0C7FDE542C6"
+      "bytes": 16331,
+      "sha256": "56F22CE74B70C5EA99A7551F376A23A6D63CE3DBFC491D61B19BF80949F26E3E"
     },
     {
       "file": "windows/standalone/FreeNetHubShell.manifest",
@@ -2985,13 +2995,13 @@
     },
     {
       "file": "windows/standalone/Install-FreeNetHubShell.ps1",
-      "bytes": 4302,
-      "sha256": "52F514126755820697455377ACAFC78CBBF11322EE2FD5EE51C521DF8D3F183C"
+      "bytes": 4177,
+      "sha256": "622E77FC078DDAB90F9BB440812E7087EBAF1F44DD113A7E383056A636DC3F8E"
     },
     {
       "file": "windows/standalone/MANIFEST.json",
       "bytes": 2871,
-      "sha256": "77919E11CB49CC1B68EB7589A453BB8C21D7DD36A11984DA8B6E128ED67901C6"
+      "sha256": "DA8B6F70B1C25DAAC75F7CA68050A4FF33DB08117E7917BB1387CD282E2CB2B3"
     },
     {
       "file": "windows/standalone/README_FA.md",

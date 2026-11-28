@@ -20,6 +20,9 @@ jobs:
         run: python tests/test_public_release_readme.py
       - name: Scan public tree for private/runtime material
         run: python tests/security_scan_public.py
+      - name: Reject untrusted Standalone PowerShell launch targets
+        shell: pwsh
+        run: ./tests/Test-ShellLaunchContract.ps1
       - name: Verify mobile fail-closed gates
         run: python crossplatform/common/verify_fail_closed.py
       - name: R53 revision-aware update and installer identity

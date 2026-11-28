@@ -271,7 +271,13 @@ internal static class Program
                 try { Native.SetCurrentProcessExplicitAppUserModelID("FreeNetHub.Desktop"); } catch { }
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                string script=args.Length>0 ? args[0] : DiscoverScript();
+                string script;
+                try { script=ResolveTrustedEntry(args); }
+                catch(Exception ex) {
+                    MessageBox.Show("FreeNet Hub entry is not an approved installed script:\n"+ex.Message,
+                        "FreeNet Hub",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                    return;
+                }
                 string ps=DiscoverPowerShell();
                 if(!ValidateDependencies(script,ps)) return;
                 Application.Run(new ShellContext(script,ps,activation));
@@ -279,23 +285,33 @@ internal static class Program
         }
     }
 
+    // The installed shell executes only its own known entry point. Caller-supplied
+    // arbitrary scripts must not be forwarded to PowerShell by the GUI launcher.
+    internal static string ResolveTrustedEntry(string[] args)
+    {
+        string expected=Path.GetFullPath(DiscoverScript());
+        if(!File.Exists(expected)) throw new FileNotFoundException("Installed entry script missing",expected);
+        if(args!=null && args.Length>0) {
+            if(args.Length!=1 || String.IsNullOrWhiteSpace(args[0]))
+                throw new ArgumentException("Expected a single installed-script path");
+            string supplied=Path.GetFullPath(args[0]);
+            if(!String.Equals(supplied,expected,StringComparison.OrdinalIgnoreCase))
+                throw new UnauthorizedAccessException("Shell entry outside approved installed script");
+        }
+        return expected;
+    }
+
+    // Do not select an executable from user-controlled PATH or arbitrary WindowsApps
+    // entries. The approved installer checks the same protected installation roots.
     static string DiscoverPowerShell()
     {
+        string pf=Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
         string[] candidates=new string[] {
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),"PowerShell","7","pwsh.exe"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),"PowerShell","7-preview","pwsh.exe")
+            Path.Combine(pf,"PowerShell","7","pwsh.exe"),
+            Path.Combine(pf,"PowerShell","7-preview","pwsh.exe")
         };
-        foreach(var p in candidates) if(File.Exists(p)) return p;
-        string path=Environment.GetEnvironmentVariable("PATH") ?? "";
-        foreach(var dir in path.Split(';')) { try { var p=Path.Combine(dir.Trim(),"pwsh.exe"); if(File.Exists(p)) return p; } catch{} }
-        try {
-            var wa=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),"WindowsApps");
-            if(Directory.Exists(wa)) {
-                var dirs=Directory.GetDirectories(wa,"Microsoft.PowerShell_*");
-                Array.Sort(dirs,StringComparer.OrdinalIgnoreCase); Array.Reverse(dirs);
-                foreach(var d in dirs) { var p=Path.Combine(d,"pwsh.exe"); if(File.Exists(p)) return p; }
-            }
-        } catch { }
+        foreach(var candidate in candidates)
+            if(File.Exists(candidate)) return Path.GetFullPath(candidate);
         return candidates[0];
     }
 
