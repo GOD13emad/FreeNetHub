@@ -1,4 +1,4 @@
-name: QA mobile CodeQL manual build (no upload)
+name: QA six-language CodeQL migration preflight (no upload)
 
 # Only this review branch; do not replace the active default setup or publish results.
 on:
@@ -11,6 +11,27 @@ permissions:
   actions: read
 
 jobs:
+  existing-languages-codeql-qa:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'qa/mobile-codeql-manual-20261128'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, csharp, javascript-typescript, python]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@915412ff23e8b7659517e607487dbeae018f2934
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+      - uses: github/codeql-action/analyze@915412ff23e8b7659517e607487dbeae018f2934
+        with:
+          category: /qa-existing/${{ matrix.language }}
+          upload: never
+
   android-codeql-qa:
     if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'qa/mobile-codeql-manual-20261128'
     runs-on: ubuntu-24.04

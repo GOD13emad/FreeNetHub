@@ -15,8 +15,8 @@
     },
     {
       "file": ".github/workflows/qa-mobile-codeql.yml",
-      "bytes": 3403,
-      "sha256": "246AAD7D03809371FCA4A441519C45510FBD2E90777A1A78A11B31E640CA9A16"
+      "bytes": 4227,
+      "sha256": "D9015AF22F206B7C8F94C79BC8A3DAA4EA39ED9509B175B9564A9F570C6BB1DA"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
