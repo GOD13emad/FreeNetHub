@@ -1895,8 +1895,8 @@
     },
     {
       "file": "tests/Test-StandaloneRollbackGuard.ps1",
-      "bytes": 5326,
-      "sha256": "61E3630540746AE463DDE18DF19123A3E8EE4E853030B1C1CD3BA8E666CA6BF4"
+      "bytes": 7920,
+      "sha256": "279C9E191D83B2EAA0C435A7070AC76A1FD74D88345F74359522BEB4D319BD97"
     },
     {
       "file": "tests/Test-ShellLaunchContract.ps1",
@@ -3006,7 +3006,7 @@
     {
       "file": "windows/standalone/MANIFEST.json",
       "bytes": 2871,
-      "sha256": "410E15BB9445EF430AA6995078E49D418AE287A7DD97818D18B7BBECF99EC690"
+      "sha256": "B1A24A888D9242155B4ADA3245C3F64FCADA0A201ABF31ECFCB6FDA3405F5824"
     },
     {
       "file": "windows/standalone/README_FA.md",
@@ -3015,8 +3015,8 @@
     },
     {
       "file": "windows/standalone/Rollback-FreeNetHubShell.ps1",
-      "bytes": 2118,
-      "sha256": "B7927E2C69C12CF89521DF9D9E8284835D975DB3CA5C80A93F55E171A4B4D213"
+      "bytes": 3859,
+      "sha256": "8E09294B74E44D34DED719937B1D0FDA20B964B3736428E287C9B52EC653B1F9"
     },
     {
       "file": "windows/standalone/RUNTIME_ACCEPTANCE.json",

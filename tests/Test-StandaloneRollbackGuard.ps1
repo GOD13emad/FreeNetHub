@@ -50,6 +50,31 @@ try{
  try { & $script -Root $root -Backup $outside|Out-Null }catch{ $rejected=([string]$_ -match 'backup is not') }
  Assert $rejected 'external backup path rejected'
  Assert ((Get-FileHash -LiteralPath $targetExe -Algorithm SHA256).Hash -eq $oldHash) 'external backup does not modify file'
+ $nested=Join-Path $root 'backup\nested\shell-v42-20261128-010204'
+ $bad=Join-Path $root 'backup\shell-v42-20261128-010205'
+ $junction=Join-Path $root 'backup\shell-v42-20261128-010206'
+ New-Item -ItemType Directory -Path $nested -Force|Out-Null
+ New-Item -ItemType Directory -Path (Join-Path $bad 'FreeNetHub.ico') -Force|Out-Null
+ 'nested-binary'|Set-Content -LiteralPath (Join-Path $nested 'FreeNetHub.exe')
+ 'bad-binary'|Set-Content -LiteralPath (Join-Path $bad 'FreeNetHub.exe')
+ $rejected=$false
+ try{& $script -Root $root -Backup $nested|Out-Null}catch{$rejected=([string]$_ -match 'immediately under this root')}
+ Assert $rejected 'nested backup refused'
+ Assert ((Get-FileHash -LiteralPath $targetExe -Algorithm SHA256).Hash -eq $oldHash) 'nested rejection leaves target untouched'
+ $rejected=$false
+ try{& $script -Root $root -Backup $bad|Out-Null}catch{$rejected=([string]$_ -match 'not a regular file')}
+ Assert $rejected 'backup directory masquerading as package file refused'
+ Assert ((Get-FileHash -LiteralPath $targetExe -Algorithm SHA256).Hash -eq $oldHash) 'all entries validated before first write'
+ New-Item -ItemType Junction -Path $junction -Target $outside|Out-Null
+ try{
+   $rejected=$false
+   try{& $script -Root $root -Backup $junction|Out-Null}catch{$rejected=([string]$_ -match 'reparse point')}
+   Assert $rejected 'linked backup directory refused'
+   Assert ((Get-FileHash -LiteralPath $targetExe -Algorithm SHA256).Hash -eq $oldHash) 'linked backup refusal leaves target untouched'
+ }finally{
+   # Delete the junction itself, never recurse into a junction target.
+   [IO.Directory]::Delete($junction)
+ }
  $own=Start-Process -FilePath $targetExe -PassThru -WindowStyle Hidden
  $other=Start-Process -FilePath $foreignExe -PassThru -WindowStyle Hidden
  Start-Sleep -Milliseconds 350
@@ -70,7 +95,21 @@ try{
  Assert ((Get-Content -LiteralPath (Join-Path $root 'FreeNetHub.ico') -Raw) -match 'backup-icon') 'expected icon restored'
  Assert ((Get-Content -LiteralPath (Join-Path $root 'SHELL_HOST_STATUS.json') -Raw) -match '"restored":true') 'status restored'
  Assert ((Get-Content -LiteralPath (Join-Path $appdata 'Microsoft\Windows\Start Menu\Programs\FreeNet Hub.lnk') -Raw) -match 'old-link') 'shortcut restored only inside sandbox'
- Write-Output ("ROLLBACK_ROOT_GUARD_PASS {0}/12; two isolated same-name probes; foreign process preserved" -f $checks)
+ $link=Join-Path $appdata 'Microsoft\Windows\Start Menu\Programs\FreeNet Hub.lnk'
+ Remove-Item -LiteralPath $link -Force
+ $ws=New-Object -ComObject WScript.Shell
+ $shortcut=$ws.CreateShortcut($link)
+ $shortcut.TargetPath=$foreignExe
+ $shortcut.Save()
+ $foreignLinkHash=(Get-FileHash -LiteralPath $link -Algorithm SHA256).Hash
+ 'new-target-bytes'|Set-Content -LiteralPath $targetExe
+ & $script -Root $root -Backup $bak|Out-Null
+ Assert ((Get-FileHash -LiteralPath $link -Algorithm SHA256).Hash -eq $foreignLinkHash) 'foreign shortcut not overwritten by backup link'
+ Assert ((Get-Content -LiteralPath $targetExe -Raw) -match 'backup-exe') 'owned target still restored with foreign shortcut'
+ Remove-Item -LiteralPath (Join-Path $bak 'FreeNet Hub.lnk') -Force
+ & $script -Root $root -Backup $bak|Out-Null
+ Assert ((Get-FileHash -LiteralPath $link -Algorithm SHA256).Hash -eq $foreignLinkHash) 'foreign shortcut not deleted when backup link absent'
+ Write-Output ("ROLLBACK_ROOT_GUARD_PASS {0}/21; direct backup and file guards; foreign process and shortcut preserved" -f $checks)
 }finally{
  if($own){try{$own.Refresh();if(-not $own.HasExited){$own.Kill();[void]$own.WaitForExit(2500)}}catch{}}
  if($other){try{$other.Refresh();if(-not $other.HasExited){$other.Kill();[void]$other.WaitForExit(2500)}}catch{}}
