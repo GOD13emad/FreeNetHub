@@ -30,8 +30,7 @@ $entry=@('app\FreeNetHub.ps1','FreeNetHub.ps1','App.ps1','app.ps1','App\App.ps1'
 if(-not $entry){ throw 'UI PowerShell entry point not found.' }
 $pwsh=@(
   "$env:ProgramFiles\PowerShell\7\pwsh.exe",
-  "$env:ProgramFiles\PowerShell\7-preview\pwsh.exe",
-  (Get-Command pwsh.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue)
+  "$env:ProgramFiles\PowerShell\7-preview\pwsh.exe"
 ) | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -First 1
 if(-not $pwsh){ throw 'PowerShell 7 (pwsh.exe) not found.' }
 $backup=Join-Path $Root ('backup\shell-v42-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
