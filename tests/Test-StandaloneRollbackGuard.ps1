@@ -3,6 +3,13 @@ param()
 $ErrorActionPreference='Stop'; Set-StrictMode -Version Latest
 $script=(Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\windows\standalone\Rollback-FreeNetHubShell.ps1')).Path
 $text=Get-Content -LiteralPath $script -Raw
+$package=Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\windows\standalone\MANIFEST.json') -Raw | ConvertFrom-Json
+$entry=@($package.files|Where-Object name -eq 'Rollback-FreeNetHubShell.ps1')
+if($entry.Count -ne 1){throw 'Expected exactly one rollback manifest entry.'}
+$sourceHash=(Get-FileHash -LiteralPath $script -Algorithm SHA256).Hash
+if($sourceHash -ine [string]$entry[0].sha256 -or $sourceHash -ine [string]$entry[0].sourceSha256){
+    throw 'Rollback package hash differs from Git canonical bytes; normalize checkout line endings before packaging.'
+}
 if($text -match '(?i)\bStop-Process\b'){ throw 'Rollback must never terminate processes by name or force.' }
 if($text -notmatch '\bGet-CimInstance\b'){throw 'Expected exact target process guard.'}
 $csc=@("$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe","$env:WINDIR\Microsoft.NET\Framework\v4.0.30319\csc.exe")|Where-Object{Test-Path -LiteralPath $_}|Select-Object -First 1

@@ -1895,8 +1895,8 @@
     },
     {
       "file": "tests/Test-StandaloneRollbackGuard.ps1",
-      "bytes": 4758,
-      "sha256": "C5060D7BBDBA318932BCBAB320F7B61E9D40E4BC15F0E59AC0EBE63B8AA60908"
+      "bytes": 5326,
+      "sha256": "61E3630540746AE463DDE18DF19123A3E8EE4E853030B1C1CD3BA8E666CA6BF4"
     },
     {
       "file": "tests/Test-ShellLaunchContract.ps1",
@@ -3006,7 +3006,7 @@
     {
       "file": "windows/standalone/MANIFEST.json",
       "bytes": 2871,
-      "sha256": "FFE9D039AB6B12005DA029847FA9E8AB56057AB79CB1A4179A92F38C2D090244"
+      "sha256": "410E15BB9445EF430AA6995078E49D418AE287A7DD97818D18B7BBECF99EC690"
     },
     {
       "file": "windows/standalone/README_FA.md",
