@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39760,
-      "sha256": "82C29AA1A98A1E0633FACCFAEAB5A2418AF7808A87C1BFB2B8631BCD4E464874"
+      "bytes": 39984,
+      "sha256": "69D1C1290C57A226D2CBC4BC6F5F971CB187963F1FE7D0A80C2ED6B19B9CCB5D"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -2485,8 +2485,8 @@
     },
     {
       "file": "tests/r34_sni_probe.py",
-      "bytes": 1300,
-      "sha256": "295883646441D4A15BF70620DD6E1E4E4D3B1E59F0BDD98E7067B407C69401B8"
+      "bytes": 1760,
+      "sha256": "CAC98A3A54C1FC3A1A4DA895CCB736044A0D6D4AE34ADFEDECA43AC1E3F18D0C"
     },
     {
       "file": "tests/r34_stun_mapping_probe.py",
@@ -2720,8 +2720,13 @@
     },
     {
       "file": "tests/test_r34_direct_network.py",
-      "bytes": 2573,
-      "sha256": "F73E28FF2965BAD705EDEA43198D2B7DC97BE3DE223EA34EC6FB9E48B42CFF29"
+      "bytes": 3302,
+      "sha256": "1FA02AF92ECC812B99443D72F0077B25884F5C7DF925C566974778B08A197442"
+    },
+    {
+      "file": "tests/test_r34_verified_tls_probe.py",
+      "bytes": 3224,
+      "sha256": "9ACC058F38E078B133833BD01288E97C0427D4FD98A1A2D8F49D0E1CD822BAEE"
     },
     {
       "file": "tests/test_r36_directdpi_product.py",

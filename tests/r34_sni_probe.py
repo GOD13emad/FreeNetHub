@@ -1,30 +1,48 @@
-import json, socket, ssl, time
+"""Historical R34 diagnostic, now verified TLS only.
 
-LOCAL="192.168.20.5"
-HOSTS=["www.youtube.com","www.google.com","chatgpt.com"]
-out=[]
-for host in HOSTS:
+The old unverified no-SNI comparison is retained in Git history, not executed.
+A successful TLS result requires both a trusted certificate and matching host.
+No-SNI results from older runs are not comparable to this verified-only probe.
+Importing this module performs no network I/O.
+"""
+import json
+import socket
+import ssl
+import time
+
+LOCAL = "192.168.20.5"
+HOSTS = ["www.youtube.com", "www.google.com", "chatgpt.com"]
+
+
+def probe(host):
+    row = {"host": host, "mode": "sni"}
     try:
-        ips=socket.getaddrinfo(host,443,socket.AF_INET,socket.SOCK_STREAM)
-        ip=ips[0][4][0]
-    except Exception as e:
-        out.append({"host":host,"resolveError":type(e).__name__+": "+str(e)})
-        continue
-    for mode in ("sni","no_sni"):
-        t=time.time(); row={"host":host,"ip":ip,"mode":mode}
-        try:
-            raw=socket.socket(socket.AF_INET,socket.SOCK_STREAM);raw.settimeout(4);raw.bind((LOCAL,0));raw.connect((ip,443))
-            row["tcp"]=True
-            ctx=ssl.create_default_context()
-            if mode=="no_sni":
-                ctx.check_hostname=False;ctx.verify_mode=ssl.CERT_NONE; server_name=None
-            else: server_name=host
-            ss=ctx.wrap_socket(raw,server_hostname=server_name)
-            row["tls"]=True;row["tlsVersion"]=ss.version();row["cipher"]=ss.cipher()[0];row["seconds"]=round(time.time()-t,3)
-            ss.close()
-        except Exception as e:
-            row["tls"]=False;row["seconds"]=round(time.time()-t,3);row["error"]=type(e).__name__+": "+str(e)
-            try: raw.close()
-            except Exception: pass
-        out.append(row)
-print(json.dumps(out,indent=2))
+        ips = socket.getaddrinfo(host, 443, socket.AF_INET, socket.SOCK_STREAM)
+        ip = ips[0][4][0]
+    except Exception as exc:
+        return {"host": host, "resolveError": type(exc).__name__ + ": " + str(exc)}
+    row["ip"] = ip
+    start = time.monotonic()
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as raw:
+            raw.settimeout(4)
+            raw.bind((LOCAL, 0))
+            raw.connect((ip, 443))
+            row["tcp"] = True
+            ctx = ssl.create_default_context()
+            ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+            if not ctx.check_hostname or ctx.verify_mode != ssl.CERT_REQUIRED:
+                raise RuntimeError("TLS verification policy unavailable")
+            with ctx.wrap_socket(raw, server_hostname=host) as conn:
+                row["tlsVersion"] = conn.version()
+                row["cipher"] = conn.cipher()[0]
+                row["tls"] = True
+    except Exception as exc:
+        row["tls"] = False
+        row["error"] = type(exc).__name__ + ": " + str(exc)
+    row["seconds"] = round(time.monotonic() - start, 3)
+    return row
+
+
+if __name__ == "__main__":
+    print(json.dumps([probe(host) for host in HOSTS], indent=2))
