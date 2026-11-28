@@ -10,8 +10,8 @@
     },
     {
       "file": ".github/workflows/ci.yml",
-      "bytes": 39898,
-      "sha256": "185402BE616C739B9916F16179BF454727B0B04AC845A8C636D19D467278DEDA"
+      "bytes": 40045,
+      "sha256": "57BA68ED7F1E54D82EC58A489EDAD2AF0014EE53A31FB782BD37E1F047D1CFE1"
     },
     {
       "file": ".github/workflows/r54-isolated-acceptance.yml",
@@ -1894,6 +1894,11 @@
       "sha256": "61AE1667DAFC658D1D6894C68C8085130021BFA3F27E9AFBC5428B80D5412224"
     },
     {
+      "file": "tests/Test-StandaloneRollbackGuard.ps1",
+      "bytes": 4758,
+      "sha256": "C5060D7BBDBA318932BCBAB320F7B61E9D40E4BC15F0E59AC0EBE63B8AA60908"
+    },
+    {
       "file": "tests/Test-ShellLaunchContract.ps1",
       "bytes": 1263,
       "sha256": "2BAF308043C9E49611357C7B672E0C2BC90C45212DA2570D2144D4FBFB105639"
@@ -3001,7 +3006,7 @@
     {
       "file": "windows/standalone/MANIFEST.json",
       "bytes": 2871,
-      "sha256": "DA8B6F70B1C25DAAC75F7CA68050A4FF33DB08117E7917BB1387CD282E2CB2B3"
+      "sha256": "FFE9D039AB6B12005DA029847FA9E8AB56057AB79CB1A4179A92F38C2D090244"
     },
     {
       "file": "windows/standalone/README_FA.md",
@@ -3010,8 +3015,8 @@
     },
     {
       "file": "windows/standalone/Rollback-FreeNetHubShell.ps1",
-      "bytes": 1041,
-      "sha256": "B851F60BDD759E068359E51003F41529E6D911321D8B1F896BFFCBDC4182B9E1"
+      "bytes": 2118,
+      "sha256": "B7927E2C69C12CF89521DF9D9E8284835D975DB3CA5C80A93F55E171A4B4D213"
     },
     {
       "file": "windows/standalone/RUNTIME_ACCEPTANCE.json",

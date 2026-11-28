@@ -23,6 +23,9 @@ jobs:
       - name: Reject untrusted Standalone PowerShell launch targets
         shell: pwsh
         run: ./tests/Test-ShellLaunchContract.ps1
+      - name: Standalone rollback preserves other roots and fails closed
+        shell: pwsh
+        run: ./tests/Test-StandaloneRollbackGuard.ps1
       - name: Verify mobile fail-closed gates
         run: python crossplatform/common/verify_fail_closed.py
       - name: R53 revision-aware update and installer identity
